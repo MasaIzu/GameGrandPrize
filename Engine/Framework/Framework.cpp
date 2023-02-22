@@ -68,7 +68,7 @@ void Framework::Update()
 	imGui->Bigin();
 
 	//デモウィンドウの表示オン
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	//シーンマネージャーの更新
 	sceneManager_->Update();

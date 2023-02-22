@@ -18,7 +18,7 @@ void GameScene::Initialize() {
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
 
-	model_.reset(Model::CreateFromOBJ("UFO", true));
+	model_.reset(Model::CreateFromOBJ("Bullet", true));
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -37,6 +37,11 @@ void GameScene::Initialize() {
 	fbxmodel = FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss");
 	fbxmodel->Initialize();
 
+	boss.Initialize();
+
+	for (int i = 0; i < 500; i++) {
+		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+	}
 
 }
 
@@ -47,12 +52,34 @@ void GameScene::Update() {
 		sceneManager_->ChangeScene("TITLE");
 	}
 
-	ImGui::Begin("test window");
 
-	ImGui::Text("test window active");
+
+	ImGui::Begin("Create Fish");
+	
+
+	//ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
+
+	ImGui::Text("enemy Count %d",boss.fishes.size());
+
+	if (ImGui::Button("Create")) {
+		boss.CreateFish(newFishPosY);
+	}
+
+	if (ImGui::Button("create 10")) {
+		for (int i = 0; i < 100; i++) {
+			boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+		}
+	}
+
+	if (ImGui::Button("create 100")) {
+		for (int i = 0; i < 100; i++) {
+			boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+		}
+	}
 
 	ImGui::End();
 
+	boss.Update();
 
 }
 
@@ -73,13 +100,16 @@ void GameScene::Draw() {
 
 	model_->Draw(worldTransform_, viewProjection_);
 
+	for (int i = 0; i < boss.fishes.size(); i++) {
+		model_->Draw(boss.fishes[i].pos, viewProjection_);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 
 	FbxModel::PreDraw(commandList);
 
-	fbxmodel->Draw(worldTransform_, viewProjection_);
+	//fbxmodel->Draw(worldTransform_, viewProjection_);
 
 	FbxModel::PostDraw();
 

@@ -4,10 +4,11 @@
 #include<vector>
 
 struct fish {
-	WorldTransform pos;
-	float radian;
-	float radius;
-	float spd;
+	WorldTransform pos;	//ワールド座標
+	float radian;	//周回軌道用の角度
+	float radius;	//周回軌道用の半径
+	float spd;	//移動速度
+	Vector3 displacement;	//親座標からの微妙なずれ
 };
 
 class Boss
@@ -18,6 +19,8 @@ public:
 	//魚群
 	std::vector<fish> fishes;
 
+	//ランダムで変化する速度の基本値
+	float randSpdParam = 0;
 
 	void Initialize();
 

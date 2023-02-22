@@ -76,6 +76,16 @@ void GameScene::Update() {
 			boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 		}
 	}
+	Vector3 parentPos = boss.fishParent.pos.translation_;
+
+	ImGui::SliderFloat("Parent posX", &parentPos.x, -boss.fishParent.radius, boss.fishParent.radius);
+	ImGui::SliderFloat("Parent posY", &parentPos.y, -boss.fishParent.radius, boss.fishParent.radius);
+	ImGui::SliderFloat("Parent posZ", &parentPos.z, -boss.fishParent.radius, boss.fishParent.radius);
+	if (ImGui::Button("parent Reset")) {
+		parentPos = {0,0,0};
+	}
+
+	boss.fishParent.pos.translation_ = parentPos;
 
 	ImGui::End();
 

@@ -9,6 +9,8 @@ void Boss::Initialize()
 	if (!fishes.empty()) {
 		fishes.clear();
 	}
+
+	randSpdParam = 3.75f;
 }
 
 void Boss::Update()
@@ -17,11 +19,12 @@ void Boss::Update()
 	fishParent.pos.TransferMatrix();
 
 	for (int i = 0; i < fishes.size(); i++) {
+
 		//魚のラジアン(球の周回軌道)を加算
 		fishes[i].radian += fishes[i].spd;
 		if (fishes[i].radian > 360.0f) {
 			fishes[i].radian -= 360.0f;
-			fishes[i].spd = Random(0.0f, 1.25f);
+			fishes[i].spd = Random(0.0f, randSpdParam);
 		}
 
 		//座標を計算
@@ -30,7 +33,10 @@ void Boss::Update()
 	//	pos.y = fishParent.radius - fishes[i].radius;
 		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.y = fishes[i].pos.translation_.y;
+		pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * (fishes[i].pos.translation_.y / fabs(fishes[i].pos.translation_.y)));
+
+		pos += fishes[i].displacement;
+
 		fishes[i].pos.translation_ = pos;
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
@@ -51,13 +57,23 @@ void Boss::CreateFish(float posY)
 	newFish.radian = Random(0.0f, 360.0f);
 	//与えられた引数から半径を設定
 	newFish.radius = sqrt(fishParent.radius * fishParent.radius - posY * posY);
+	//ワールド行列初期化
 	newFish.pos.Initialize();
 	newFish.pos.scale_ = { 5.0f,5.0f,5.0f };
+	//Y座標は引数で
 	newFish.pos.translation_.y = posY;
 	//newFish.pos.rotation_.y = 0.78f;
 	newFish.pos.TransferMatrix();
 
-	newFish.spd = Random(0.0f, 1.25f);
+	//速度をランダムに決定
+	newFish.spd = Random(0.0f, randSpdParam);
+
+	//親のポインタ貰う
+	newFish.pos.parent_ = &fishParent.pos;
+
+	//微妙なずれの大きさは自分の半径の1/10からランダムに
+	float displacementParam = newFish.radius / 10.0f * 1.5f;
+	newFish.displacement = Vector3(Random(0.0f, displacementParam), Random(0.0f, displacementParam), Random(0.0f, displacementParam));
 
 	//配列にい列
 	fishes.push_back(newFish);

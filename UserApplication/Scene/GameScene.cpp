@@ -39,6 +39,7 @@ void GameScene::Initialize() {
 	int a = 0;
 	a = 110;
 	a = 220;
+	a = 330;
 
 }
 

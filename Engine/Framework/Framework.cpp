@@ -70,11 +70,11 @@ void Framework::Update()
 	//デモウィンドウの表示オン
 	ImGui::ShowDemoWindow();
 
-	imGui->End();
-
 	//シーンマネージャーの更新
 	sceneManager_->Update();
 
+	//Imguiのコマンド受付終了
+	imGui->End();
 }
 
 
@@ -121,7 +121,7 @@ void Framework::Run()
 
 
 		//ImGui描画
-		//imGui->Draw();
+		imGui->Draw();
 
 		
 

@@ -32,8 +32,6 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCore* dxcore)
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
 	);
-	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontDefault();
 
 }
 

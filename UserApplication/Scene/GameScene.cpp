@@ -4,6 +4,7 @@
 #include <random>
 #include <fstream>
 #include "FbxLoader.h"
+#include"ImGuiManager.h"
 
 GameScene::GameScene() {}
 
@@ -36,10 +37,6 @@ void GameScene::Initialize() {
 	fbxmodel = FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss");
 	fbxmodel->Initialize();
 
-	int a = 0;
-	a = 110;
-	a = 220;
-	a = 330;
 
 }
 
@@ -49,6 +46,12 @@ void GameScene::Update() {
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}
+
+	ImGui::Begin("test window");
+
+	ImGui::Text("test window active");
+
+	ImGui::End();
 
 
 }

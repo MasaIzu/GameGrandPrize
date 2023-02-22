@@ -30,7 +30,7 @@ public://ƒƒ“ƒoŠÖ”
 
 public://GetterSetter
 
-	HWND Gethwnd() { return hwnd; }
+	HWND GetHwnd() { return hwnd; }
 
 private://ƒƒ“ƒo•Ï”
 	WinApp() = default;

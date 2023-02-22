@@ -12,7 +12,9 @@
 #include "BaseScene.h"
 #include "SceneManager.h"
 
+#include "Player.h"
 #include "FbxModel.h"
+#include "GameCamera.h"
 
 #include<memory>
 
@@ -75,6 +77,10 @@ private: // ƒƒ“ƒo•Ï”
 	//Fbxƒ‚ƒfƒ‹
 	FbxModel* fbxmodel;
 
+	//Player
+	std::unique_ptr<Player> player;
 
+	// ƒJƒƒ‰
+	std::unique_ptr<GameCamera> gameCamera;
 
 };

@@ -14,7 +14,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCore* dxcore)
 	//ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
 
-	ImGui_ImplWin32_Init(winApp->Gethwnd());
+	ImGui_ImplWin32_Init(winApp->GetHwnd());
 
 	//デスクリプタヒープ設定
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};

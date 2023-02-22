@@ -133,6 +133,12 @@
     <Filter Include="Engine\ヘッダー\FBX">
       <UniqueIdentifier>{93f4c701-600a-488e-8e14-90678053b895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ユーザーソース ファイル\GameCamera">
+      <UniqueIdentifier>{82dac384-2399-486f-959f-57b755b90d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーヘッダー ファイル\GameCamera">
+      <UniqueIdentifier>{23a6b484-676e-4517-ab52-7b404a86d3cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Obj.hlsli">
@@ -355,6 +361,9 @@
     <ClInclude Include="FbxLoader.h">
       <Filter>Engine\ヘッダー\FBX</Filter>
     </ClInclude>
+    <ClInclude Include="GameCamera.h">
+      <Filter>ユーザーヘッダー ファイル\GameCamera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -485,6 +494,9 @@
     </ClCompile>
     <ClCompile Include="FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCamera.cpp">
+      <Filter>ユーザーソース ファイル\GameCamera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

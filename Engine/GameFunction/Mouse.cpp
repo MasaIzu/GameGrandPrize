@@ -11,7 +11,7 @@ void Mouse::Initialize(IDirectInput8* dinput)
 	result = mouseDevice->SetDataFormat(&c_dfDIMouse2);
 	assert(SUCCEEDED(result));
 
-	result = mouseDevice->SetCooperativeLevel(WinApp::GetInstance()->Gethwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = mouseDevice->SetCooperativeLevel(WinApp::GetInstance()->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 }
 

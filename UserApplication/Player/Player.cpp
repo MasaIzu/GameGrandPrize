@@ -16,6 +16,7 @@ void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
 	assert(model);
 	playerModel_.reset(model);
 
+
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
 
@@ -32,18 +33,32 @@ void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
 
 void Player::Move() {
 
+	if (input_->PushKey(DIK_W)) {
+		worldTransform_.translation_.z += 0.1;
+	}
+	if (input_->PushKey(DIK_A)) {
+		worldTransform_.translation_.x += 0.1;
+	}
+	if (input_->PushKey(DIK_S)) {
+		worldTransform_.translation_.z -= 0.1;
+	}
+	if (input_->PushKey(DIK_D)) {
+		worldTransform_.translation_.x -= 0.1;
+	}
 
-	
 }
 
 
 void Player::Update(const ViewProjection& viewProjection) {
 
-	
+	Move();
+
+	worldTransform_.TransferMatrix();
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
 
+	playerModel_->Draw(worldTransform_, viewProjection_);
 	
 }
 

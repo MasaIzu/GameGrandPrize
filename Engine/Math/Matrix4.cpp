@@ -136,6 +136,24 @@ Matrix4 Matrix4::rotateZ(float angle)
 	return *this;
 }
 
+Matrix4 Matrix4::AllRotate(Vector3 angle){
+
+	Matrix4 rot;
+
+	rot.rotateX(angle.x);
+	rot.rotateY(angle.y);
+	rot.rotateZ(angle.z);
+
+	// ‘ã“ü
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			m[i][j] = rot.m[i][j];
+		}
+	}
+
+	return *this;
+}
+
 // •½sˆÚ“®s—ñ‚ð‹‚ß‚é
 Matrix4 Matrix4::translate(const Vector3& t)
 {

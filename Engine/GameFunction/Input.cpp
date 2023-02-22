@@ -32,7 +32,7 @@ void Input::Initialize()
 {
 	WinApp* winApp = WinApp::GetInstance();
 
-	hwnd_ = winApp->Gethwnd();
+	hwnd_ = winApp->GetHwnd();
 	HRESULT result = S_FALSE;
 
 	// DirectInputオブジェクトの生成

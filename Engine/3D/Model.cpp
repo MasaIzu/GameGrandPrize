@@ -590,23 +590,23 @@ void Model::Draw(
 	}
 }
 
-void Model::Draw(
-	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
-	uint32_t textureHadle) {
-
-	// ライトの描画
-	lightGroup->Draw(sCommandList_, 4);
-
-	// CBVをセット（ワールド行列）
-	sCommandList_->SetGraphicsRootConstantBufferView(0,worldTransform.constBuff_->GetGPUVirtualAddress());
-
-	// CBVをセット（ビュープロジェクション行列）
-	sCommandList_->SetGraphicsRootConstantBufferView(1,viewProjection.constBuff_->GetGPUVirtualAddress());
-
-	// 全メッシュを描画
-	for (auto& mesh : meshes_) {
-		mesh->Draw(
-			sCommandList_, 2, 3,
-			textureHadle);
-	}
-}
+//void Model::Draw(
+//	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
+//	uint32_t textureHadle) {
+//
+//	// ライトの描画
+//	lightGroup->Draw(sCommandList_, 4);
+//
+//	// CBVをセット（ワールド行列）
+//	sCommandList_->SetGraphicsRootConstantBufferView(0,worldTransform.constBuff_->GetGPUVirtualAddress());
+//
+//	// CBVをセット（ビュープロジェクション行列）
+//	sCommandList_->SetGraphicsRootConstantBufferView(1,viewProjection.constBuff_->GetGPUVirtualAddress());
+//
+//	// 全メッシュを描画
+//	for (auto& mesh : meshes_) {
+//		mesh->Draw(
+//			sCommandList_, 2, 3,
+//			textureHadle);
+//	}
+//}

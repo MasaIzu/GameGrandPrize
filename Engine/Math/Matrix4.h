@@ -26,6 +26,8 @@ public:
 	Matrix4 rotateX(float angle);
 	Matrix4 rotateY(float angle);
 	Matrix4 rotateZ(float angle);
+	Matrix4 AllRotate(Vector3 angle);
+
 
 	// •½sˆÚ“®s—ñ‚Ìì¬
 	Matrix4 translate(const Vector3& t);

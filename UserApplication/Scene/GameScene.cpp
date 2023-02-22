@@ -36,16 +36,25 @@ void GameScene::Initialize() {
 	fbxmodel = FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss");
 	fbxmodel->Initialize();
 
+	player = std::make_unique<Player>();
+	player->Initialize(model_.get(), 1280, 720);
+
+	gameCamera = std::make_unique<GameCamera>(1280, 720);
+	gameCamera->Initialize();
+
 }
 
 void GameScene::Update() {
 	
-	if (input_->TriggerKey(DIK_SPACE))
-	{
-		sceneManager_->ChangeScene("TITLE");
-	}
 
+	player->Update(viewProjection_);
 
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	gameCamera->Update(&viewProjection_);
+
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.target = gameCamera->GetTarget();
+	viewProjection_.UpdateMatrix();
 }
 
 void GameScene::Draw() {
@@ -65,6 +74,7 @@ void GameScene::Draw() {
 
 	model_->Draw(worldTransform_, viewProjection_);
 
+	player->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

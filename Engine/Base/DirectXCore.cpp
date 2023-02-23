@@ -108,7 +108,7 @@ void DirectXCore::PostDraw() {
 #endif
 
 	// コマンドリストの実行完了を待つ
-	commandQueue->Signal(fence, ++fenceVal);
+	commandQueue->Signal(fence.Get(), ++fenceVal);
 	if (fence->GetCompletedValue() != fenceVal) {
 		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
 		fence->SetEventOnCompletion(fenceVal, event);

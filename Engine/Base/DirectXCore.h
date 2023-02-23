@@ -57,7 +57,7 @@ private://メンバ変数
 	int backBufferHeight_ = 0;
 
 	//フェンスの生成
-	ID3D12Fence* fence = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12Fence> fence;
 	UINT64 fenceVal = 0;
 
 	HWND hwnd_;

@@ -13,6 +13,11 @@ TextureManager* TextureManager::GetInstance() {
 	return &instance;
 }
 
+void TextureManager::DeleteTex()
+{
+	
+}
+
 void TextureManager::Initialize(ID3D12Device* device, std::string directoryPath) {
 	assert(device);
 

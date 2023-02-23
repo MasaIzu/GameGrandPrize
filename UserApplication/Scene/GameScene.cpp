@@ -9,7 +9,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	
+	delete fbxmodel;
 }
 
 void GameScene::Initialize() {

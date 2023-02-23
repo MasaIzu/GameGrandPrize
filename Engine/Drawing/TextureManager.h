@@ -42,6 +42,12 @@ public:
 	static TextureManager* GetInstance();
 
 	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	/// <returns>デストラクタ</returns>
+	void DeleteTex();
+
+	/// <summary>
 	/// システム初期化
 	/// </summary>
 	/// <param name="device">デバイス</param>

@@ -20,10 +20,10 @@ private:
     //ワールド変換データ
     WorldTransform worldTransform;
 
-    //モデル
-    Model* model = nullptr;
-    //モデル
-    Model* enemyBulletModel = nullptr;
+    ////モデル
+    //Model* model = nullptr;
+    ////モデル
+    //Model* enemyBulletModel = nullptr;
 
     
 };

@@ -11,10 +11,11 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
+void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	//NULLポインタチェック
 	assert(model);
-	playerModel_.reset(model);
+	playerModel_ = model;
+
 
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -24,7 +25,7 @@ void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	
+
 
 
 	worldTransform_.TransferMatrix();
@@ -32,19 +33,39 @@ void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
 
 void Player::Move() {
 
+	Vector3 playerMovement = { 0,0,0 };
 
+	if (input_->PushKey(DIK_W)) {
+		playerMovement.z = -playerSpeed;
+	}
+	if (input_->PushKey(DIK_A)) {
+		playerMovement.x = playerSpeed;
+	}
+	if (input_->PushKey(DIK_S)) {
+		playerMovement.z = playerSpeed;
+	}
+	if (input_->PushKey(DIK_D)) {
+		playerMovement.x = -playerSpeed;
+	}
+
+
+	playerMovement = MyMath::MatVector(CameraRot, playerMovement);
+	worldTransform_.translation_ += playerMovement;
 	
 }
 
 
 void Player::Update(const ViewProjection& viewProjection) {
 
-	
+	Move();
+
+	worldTransform_.TransferMatrix();
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
 
-	
+	playerModel_->Draw(worldTransform_, viewProjection_);
+
 }
 
 

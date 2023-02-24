@@ -358,6 +358,9 @@
     <ClInclude Include="Boss.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCamera.h">
+      <Filter>ユーザーヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -490,6 +493,9 @@
       <Filter>Engine\ソース ファイル\FBX</Filter>
     </ClCompile>
     <ClCompile Include="Boss.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCamera.cpp">
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

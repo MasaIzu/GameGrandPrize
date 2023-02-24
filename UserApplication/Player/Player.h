@@ -39,18 +39,22 @@ public:
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	
+	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
-	//モデル
-	std::unique_ptr<Model> model_ = nullptr;
+
 	//インプット
 	Input* input_ = nullptr;
 
 	//モデル
-	std::unique_ptr<Model> playerModel_;
+	Model* playerModel_ = nullptr;
 	
+
+	Matrix4 CameraRot;
+
+	float playerSpeed = 0.5f;
 
 	float Window_Width;
 	float Window_Height;

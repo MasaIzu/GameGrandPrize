@@ -13,6 +13,8 @@
 #include "SceneManager.h"
 
 #include "FbxModel.h"
+#include "Player.h"
+#include "GameCamera.h"
 
 #include<memory>
 #include<vector>
@@ -62,6 +64,9 @@ private: // メンバ変数
 	DirectXCore* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 
+
+	std::unique_ptr<Player> player;
+	std::unique_ptr<GameCamera> gameCamera;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

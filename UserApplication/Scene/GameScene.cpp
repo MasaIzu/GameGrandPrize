@@ -18,7 +18,7 @@ void GameScene::Initialize() {
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
 
-	//model_.reset(Model::CreateFromOBJ("UFO", true));
+	model_.reset(Model::CreateFromOBJ("UFO", true));
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -29,7 +29,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = { 0,0,0 };
 	worldTransform_.rotation_ = { 0,0,0 };
-	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
+	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
 	fbxmodel = std::make_unique<FbxModel>();
@@ -37,11 +37,17 @@ void GameScene::Initialize() {
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
 	fbxmodel->Initialize();
 
+	player = std::make_unique<Player>();
+	player->Initialize(model_.get(), 1280, 720);
+
 	boss.Initialize();
 
 	for (int i = 0; i < 500; i++) {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
+
+	gameCamera = std::make_unique<GameCamera>(1280, 720);
+	gameCamera->Initialize();
 
 }
 
@@ -91,7 +97,17 @@ void GameScene::Update() {
 
 	//boss.Update();
 
+	player->SetCameraRot(gameCamera->GetCameraRot());
+	player->Update(viewProjection_);
+
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	gameCamera->Update(&viewProjection_);
+
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.target = gameCamera->GetTarget();
+	viewProjection_.UpdateMatrix();
 }
+
 
 void GameScene::Draw() {
 
@@ -113,6 +129,8 @@ void GameScene::Draw() {
 	/*for (int i = 0; i < boss.fishes.size(); i++) {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);
 	}*/
+
+	player->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

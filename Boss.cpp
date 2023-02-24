@@ -1,5 +1,7 @@
 #include "Boss.h"
 #include<random>
+#include"Quaternion.h"
+#include"Affin.h"
 
 void Boss::Initialize()
 {
@@ -11,36 +13,32 @@ void Boss::Initialize()
 	}
 
 	randSpdParam = 3.75f;
+	phase1 = BossFirstPhase::Idle;
+	nextPhaseInterval = attackCooltime;
 }
 
 void Boss::Update()
 {
-	//第一形態の魚群の更新
-	fishParent.pos.TransferMatrix();
+	//第1形態の魚群の更新
+	 
+	switch (phase1) {
+	case BossFirstPhase::Idle:
+		IdleUpdate();
+		break;
+	case BossFirstPhase::Atk_Sword:
+		AtkSwordUpdate();
+		break;
+	case BossFirstPhase::Atk_Rush:
+		AtkRushUpdate();
+		break;
+	case BossFirstPhase::BeginMotion:
+		BeginMotionUpdate();
+		break;
+	default:
+		break;
 
-	for (int i = 0; i < fishes.size(); i++) {
-
-		//魚のラジアン(球の周回軌道)を加算
-		fishes[i].radian += fishes[i].spd;
-		if (fishes[i].radian > 360.0f) {
-			fishes[i].radian -= 360.0f;
-			fishes[i].spd = Random(0.0f, randSpdParam);
-		}
-
-		//座標を計算
-		Vector3 pos;
-		
-	//	pos.y = fishParent.radius - fishes[i].radius;
-		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * (fishes[i].pos.translation_.y / fabs(fishes[i].pos.translation_.y)));
-
-		pos += fishes[i].displacement;
-
-		fishes[i].pos.translation_ = pos;
-		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
-		fishes[i].pos.TransferMatrix();
 	}
+	
 }
 
 void Boss::CreateFish(float posY)
@@ -75,8 +73,112 @@ void Boss::CreateFish(float posY)
 	float displacementParam = newFish.radius / 10.0f * 1.5f;
 	newFish.displacement = Vector3(Random(0.0f, displacementParam), Random(0.0f, displacementParam), Random(0.0f, displacementParam));
 
+	Vector3 pos;
+
+	//	pos.y = fishParent.radius - fishes[i].radius;
+	pos.x = sin(PI / 180.0f * newFish.radian) * newFish.radius;
+	pos.z = cos(PI / 180.0f * newFish.radian) * newFish.radius;
+	pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * (newFish.pos.translation_.y / fabs(newFish.pos.translation_.y)));
+
+	pos += newFish.displacement;
+
+	newFish.pos.translation_ = pos;
+	newFish.pos.TransferMatrix();
 	//配列にい列
 	fishes.push_back(newFish);
+}
+
+void Boss::IdleUpdate()
+{
+	//魚群の中心(真ん中)の座標更新
+	fishParent.pos.TransferMatrix();
+
+	//魚1匹ずつの更新
+	for (int i = 0; i < fishes.size(); i++) {
+
+		//魚のラジアン(球の周回軌道)を加算
+		fishes[i].radian += fishes[i].spd;
+		if (fishes[i].radian > 360.0f) {
+			fishes[i].radian -= 360.0f;
+			fishes[i].spd = Random(0.0f, randSpdParam);
+		}
+
+		//座標を計算
+		Vector3 pos;
+
+		//	pos.y = fishParent.radius - fishes[i].radius;
+		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+		pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * (fishes[i].pos.translation_.y / fabs(fishes[i].pos.translation_.y)));
+
+		pos += fishes[i].displacement;
+
+		fishes[i].pos.translation_ = pos;
+		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
+		fishes[i].pos.TransferMatrix();
+	}
+
+	//攻撃のクールタイムを減らす
+	nextPhaseInterval--;
+	if (nextPhaseInterval == 0) {
+		//0になったらクールタイムを攻撃開始モーションの時間に設定
+		nextPhaseInterval =  beginAttackDelay;
+		//フェーズを移行
+		phase1 = BossFirstPhase::BeginMotion;
+		//魚群の乱回転のためのランダムなベクトルを作成
+		for (int i = 0; i < fishes.size(); i++) {
+			fishes[i].randomVec = Vector3(Random(0.0f,1.0f), Random(0.0f, 1.0f), Random(0.0f, 1.0f));
+			fishes[i].randomVec.normalize();
+		}
+
+	}
+}
+
+void Boss::AtkSwordUpdate()
+{
+}
+
+void Boss::AtkRushUpdate()
+{
+}
+
+void Boss::BeginMotionUpdate()
+{
+	//魚群の中心(真ん中)の座標更新
+	fishParent.pos.TransferMatrix();
+
+	//魚1匹ずつの更新
+	for (int i = 0; i < fishes.size(); i++) {
+
+		//魚のラジアン(球の周回軌道)を加算
+		fishes[i].radian += fishes[i].spd;
+		if (fishes[i].radian > 360.0f) {
+			fishes[i].radian -= 360.0f;
+			fishes[i].spd = Random(0.0f, randSpdParam);
+		}
+
+
+		//ランダムに取得したベクトルと自座標から原点(魚群の中心)のベクトルの外積をとり、乱回転の軸を作成
+		Vector3 vec = fishes[i].pos.translation_ - fishParent.pos.translation_;
+		Vector3 cross;
+		cross = fishes[i].randomVec.cross(vec);
+
+		Vector3 pos;
+		Quaternion randomRotate =(cross,fishes[i].radian);
+		pos = randomRotate.RotateVector(fishes[i].pos.translation_);
+		fishes[i].pos.translation_ = pos;
+		fishes[i].pos.TransferMatrix();
+	
+	}
+
+	//攻撃のクールタイムを減らす
+	nextPhaseInterval--;
+	if (nextPhaseInterval == 0) {
+		//0になったらクールタイムを攻撃開始モーションの時間に設定
+		nextPhaseInterval = beginAttackDelay;
+		//フェーズを移行
+		phase1 = BossFirstPhase::BeginMotion;
+	}
 }
 
 float Random(float num1, float num2)

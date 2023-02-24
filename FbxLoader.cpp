@@ -334,8 +334,9 @@ void FbxLoader::ParseMaterial(FbxModel* model, aiMesh* fbxMesh, aiMaterial* aima
 	material->name_ = str.C_Str();
 
 	std::vector<uint32_t> deffuseMap = LoadMatrixerialTextures(aimaterial, aiTextureType_DIFFUSE, "Diffuse", mScene, model->name_);
+	uint32_t map = deffuseMap.size();
 
-	material->SetTextureHadle(deffuseMap);
+	material->SetTextureHadle(map);
 
 }
 

@@ -25,6 +25,8 @@ public://ƒƒ“ƒoŠÖ”
 	bool ProcessMessage();
 	void DeleteGameWindow();
 
+	void Destroy();
+
 	HINSTANCE GetHInstance() const { return w.hInstance; }
 
 
@@ -40,6 +42,9 @@ private://ƒƒ“ƒo•Ï”
 
 	WNDCLASSEX w{};
 	HWND hwnd;
+
+private:
+	static WinApp* WinApp_;
 
 };
 

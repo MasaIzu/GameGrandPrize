@@ -45,7 +45,7 @@ public:
 	/// デストラクタ
 	/// </summary>
 	/// <returns>デストラクタ</returns>
-	void DeleteTex();
+	void Delete();
 
 	/// <summary>
 	/// システム初期化
@@ -73,6 +73,9 @@ public:
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	void SetGraphicsRootDescriptorTable(
 		ID3D12GraphicsCommandList* commandList, UINT rootParamIndex, uint32_t textureHandle);
+
+private:
+	static TextureManager* TextureManager_;
 
 private:
 	TextureManager() = default;

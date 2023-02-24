@@ -99,34 +99,33 @@ void Mesh::CreateBuffers() {
 
 void Mesh::Draw(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-	UINT rooParameterIndexTexture,uint32_t textureIndex) {
+	UINT rooParameterIndexTexture) {
 	// 頂点バッファをセット
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	// インデックスバッファをセット
 	commandList->IASetIndexBuffer(&ibView_);
 
 	// マテリアルのグラフィックスコマンドをセット
-	material_->SetGraphicsCommand(commandList, rooParameterIndexMaterial, rooParameterIndexTexture, textureIndex);
+	material_->SetGraphicsCommand(commandList, rooParameterIndexMaterial, rooParameterIndexTexture);
 
 	// 描画コマンド
 	commandList->DrawIndexedInstanced((UINT)indices_.size(), 1, 0, 0, 0);
 }
 
-//void Mesh::Draw(
-//	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-//	UINT rooParameterIndexTexture, uint32_t textureHandle) {
-//	// 頂点バッファをセット
-//	commandList->IASetVertexBuffers(0, 1, &vbView_);
-//	// インデックスバッファをセット
-//	commandList->IASetIndexBuffer(&ibView_);
-//
-//	// マテリアルのグラフィックスコマンドをセット
-//	material_->SetGraphicsCommand(
-//		commandList, rooParameterIndexMaterial, rooParameterIndexTexture, textureHandle);
-//
-//	// 描画コマンド
-//	commandList->DrawIndexedInstanced((UINT)indices_.size(), 1, 0, 0, 0);
-//}
+void Mesh::Draw(
+	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
+	UINT rooParameterIndexTexture, uint32_t textureHandle) {
+	// 頂点バッファをセット
+	commandList->IASetVertexBuffers(0, 1, &vbView_);
+	// インデックスバッファをセット
+	commandList->IASetIndexBuffer(&ibView_);
+
+	// マテリアルのグラフィックスコマンドをセット
+	material_->SetGraphicsCommand(commandList, rooParameterIndexMaterial, rooParameterIndexTexture, textureHandle);
+
+	// 描画コマンド
+	commandList->DrawIndexedInstanced((UINT)indices_.size(), 1, 0, 0, 0);
+}
 
 void Mesh::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha) {
 	material_->SetLight(ambient, diffuse, specular, alpha);

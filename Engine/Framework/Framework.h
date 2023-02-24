@@ -48,6 +48,8 @@ protected:
 	DirectXCore* directXCore_ = nullptr;
 	Input* input_ = nullptr;
 	SceneManager* sceneManager_;
+	TextureManager* TextureManager_ = nullptr;
+
 
 	//シングルトン以外
 	std::unique_ptr<ImGuiManager> imGui;

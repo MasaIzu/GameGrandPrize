@@ -9,6 +9,8 @@
 #include "WinApp.h"
 #include "Mouse.h"
 
+
+
 // 入力
 class Input
 {
@@ -48,6 +50,8 @@ public: // メンバ関数
 	// マウスの位置
 	const Vector3 GetMouseMove();
 
+	void Destroy();
+
 private:
 	Input() = default;
 	~Input();
@@ -56,6 +60,9 @@ private:
 
 private:// 静的メンバ変数
 
+	static Input* Input_;
+
+private:
 	// DirectInputのインスタンス
 	Microsoft::WRL::ComPtr<IDirectInput8> dInput_ = nullptr;
 
@@ -74,5 +81,5 @@ private:// 静的メンバ変数
 	HWND hwnd_;
 
 	//マウス
-	Mouse* mouse = nullptr;
+	std::unique_ptr<Mouse> mouse;
 };

@@ -9,7 +9,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	
+	//model_.reset();
 }
 
 void GameScene::Initialize() {
@@ -18,7 +18,7 @@ void GameScene::Initialize() {
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
 
-	model_.reset(Model::CreateFromOBJ("UFO", true));
+	//model_.reset(Model::CreateFromOBJ("UFO", true));
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -29,14 +29,19 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = { 0,0,0 };
 	worldTransform_.rotation_ = { 0,0,0 };
-	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
+	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
-	fbxmodel = new FbxModel();
+	fbxmodel = std::make_unique<FbxModel>();
 	
-	fbxmodel = FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss");
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
 	fbxmodel->Initialize();
 
+	boss.Initialize();
+
+	for (int i = 0; i < 500; i++) {
+		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+	}
 
 }
 
@@ -47,12 +52,44 @@ void GameScene::Update() {
 		sceneManager_->ChangeScene("TITLE");
 	}
 
-	ImGui::Begin("test window");
 
-	ImGui::Text("test window active");
 
-	ImGui::End();
+	//ImGui::Begin("Create Fish");
+	//
 
+	////ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
+
+	//ImGui::Text("enemy Count %d",boss.fishes.size());
+
+	//if (ImGui::Button("Create")) {
+	//	boss.CreateFish(newFishPosY);
+	//}
+
+	//if (ImGui::Button("create 10")) {
+	//	for (int i = 0; i < 100; i++) {
+	//		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+	//	}
+	//}
+
+	//if (ImGui::Button("create 100")) {
+	//	for (int i = 0; i < 100; i++) {
+	//		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+	//	}
+	//}
+	//Vector3 parentPos = boss.fishParent.pos.translation_;
+
+	//ImGui::SliderFloat("Parent posX", &parentPos.x, -boss.fishParent.radius, boss.fishParent.radius);
+	//ImGui::SliderFloat("Parent posY", &parentPos.y, -boss.fishParent.radius, boss.fishParent.radius);
+	//ImGui::SliderFloat("Parent posZ", &parentPos.z, -boss.fishParent.radius, boss.fishParent.radius);
+	//if (ImGui::Button("parent Reset")) {
+	//	parentPos = {0,0,0};
+	//}
+
+	//boss.fishParent.pos.translation_ = parentPos;
+
+	//ImGui::End();
+
+	//boss.Update();
 
 }
 
@@ -71,8 +108,11 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	model_->Draw(worldTransform_, viewProjection_);
+	//model_->Draw(worldTransform_, viewProjection_);
 
+	/*for (int i = 0; i < boss.fishes.size(); i++) {
+		model_->Draw(boss.fishes[i].pos, viewProjection_);
+	}*/
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

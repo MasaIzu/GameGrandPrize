@@ -355,6 +355,9 @@
     <ClInclude Include="FbxLoader.h">
       <Filter>Engine\ヘッダー\FBX</Filter>
     </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>ユーザーヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -485,6 +488,9 @@
     </ClCompile>
     <ClCompile Include="FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

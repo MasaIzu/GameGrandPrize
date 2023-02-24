@@ -251,6 +251,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="Engine\3D\Light.h" />
     <ClInclude Include="Engine\3D\Mesh.h" />
     <ClInclude Include="Engine\3D\Model.h" />
@@ -304,6 +305,7 @@
     <ClInclude Include="UserApplication\Scene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Engine\3D\Light.cpp" />
     <ClCompile Include="Engine\3D\Mesh.cpp" />
     <ClCompile Include="Engine\3D\Model.cpp" />

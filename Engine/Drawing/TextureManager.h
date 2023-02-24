@@ -42,6 +42,12 @@ public:
 	static TextureManager* GetInstance();
 
 	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	/// <returns>デストラクタ</returns>
+	void Delete();
+
+	/// <summary>
 	/// システム初期化
 	/// </summary>
 	/// <param name="device">デバイス</param>
@@ -67,6 +73,9 @@ public:
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	void SetGraphicsRootDescriptorTable(
 		ID3D12GraphicsCommandList* commandList, UINT rootParamIndex, uint32_t textureHandle);
+
+private:
+	static TextureManager* TextureManager_;
 
 private:
 	TextureManager() = default;

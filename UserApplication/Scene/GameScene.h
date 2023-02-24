@@ -15,6 +15,9 @@
 #include "FbxModel.h"
 
 #include<memory>
+#include<vector>
+
+#include"Boss.h"
 
 /// <summary>
 /// ゲームシーン
@@ -73,8 +76,9 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//Fbxモデル
-	FbxModel* fbxmodel;
+	std::unique_ptr<FbxModel> fbxmodel;
 
-
-
+	Boss boss;
+	//デバッグによる生成用
+	float newFishPosY = 0;
 };

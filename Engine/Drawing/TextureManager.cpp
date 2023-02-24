@@ -3,14 +3,24 @@
 #include <cassert>
 
 using namespace DirectX;
+TextureManager* TextureManager::TextureManager_ = nullptr;
 
 uint32_t TextureManager::Load(const std::string& fileName) {
 	return TextureManager::GetInstance()->LoadInternal(fileName);
 }
 
 TextureManager* TextureManager::GetInstance() {
-	static TextureManager instance;
-	return &instance;
+	if (TextureManager_ == nullptr)
+	{
+		TextureManager_ = new TextureManager();
+	}
+
+	return TextureManager_;
+}
+
+void TextureManager::Delete()
+{
+	delete TextureManager_;
 }
 
 void TextureManager::Initialize(ID3D12Device* device, std::string directoryPath) {
@@ -64,8 +74,8 @@ void TextureManager::SetGraphicsRootDescriptorTable(
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	// シェーダリソースビューをセット
-	commandList->SetGraphicsRootDescriptorTable(
-	  rootParamIndex, textures_[textureHandle].gpuDescHandleSRV);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex, textures_[textureHandle].gpuDescHandleSRV);
+
 }
 
 uint32_t TextureManager::LoadInternal(const std::string& fileName) {

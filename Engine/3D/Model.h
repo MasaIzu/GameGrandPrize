@@ -97,6 +97,7 @@ public: // メンバ関数
 	inline const std::vector<unsigned short>& GetIndices() { return indices; }
 
 private: // メンバ変数
+
 	// 名前
 	std::string name_;
 	// メッシュコンテナ

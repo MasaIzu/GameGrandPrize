@@ -16,16 +16,26 @@
 #include <dinputd.h>
 #include <memory>
 
+Input* Input::Input_ = nullptr;
 
 Input* Input::GetInstance() {
-	static Input instance;
-	return &instance;
+	if (Input_ == nullptr)
+	{
+		Input_ = new Input();
+	}
+
+	return Input_;
 }
 
 Input::~Input() {
 	if (devKeyboard_) {
 		devKeyboard_->Unacquire();
 	}
+}
+
+void Input::Destroy()
+{
+	delete Input_;
 }
 
 void Input::Initialize()
@@ -54,7 +64,7 @@ void Input::Initialize()
 	assert(SUCCEEDED(result));
 
 	//マウスデバイスの初期化
-	mouse = new Mouse;
+	mouse = std::make_unique<Mouse>();
 	mouse->Initialize(dInput_.Get());
 }
 

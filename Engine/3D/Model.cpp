@@ -217,9 +217,9 @@ Model::~Model() {
 	}
 	meshes_.clear();
 
-	for (auto m : materials_) {
+	/*for (auto m : materials_) {
 		delete m.second;
-	}
+	}*/
 	materials_.clear();
 }
 
@@ -573,20 +573,19 @@ void Model::LoadTextures() {
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 
-	for (int i = 0; i < meshes_.size(); i++) {
 
-		// ライトの描画
-		lightGroup->Draw(sCommandList_, 4);
+	// ライトの描画
+	lightGroup->Draw(sCommandList_, 4);
 
-		// CBVをセット（ワールド行列）
-		sCommandList_->SetGraphicsRootConstantBufferView(0, worldTransform.constBuff_->GetGPUVirtualAddress());
+	// CBVをセット（ワールド行列）
+	sCommandList_->SetGraphicsRootConstantBufferView(0, worldTransform.constBuff_->GetGPUVirtualAddress());
 
-		// CBVをセット（ビュープロジェクション行列）
-		sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
+	// CBVをセット（ビュープロジェクション行列）
+	sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
 
-
-		// 全メッシュを描画
-		meshes_[i]->Draw(sCommandList_, 2, 3, i);
+	// 全メッシュを描画
+	for (auto& mesh : meshes_) {
+		mesh->Draw(sCommandList_, 2, 3);
 	}
 }
 
@@ -598,10 +597,10 @@ void Model::Draw(
 	lightGroup->Draw(sCommandList_, 4);
 
 	// CBVをセット（ワールド行列）
-	sCommandList_->SetGraphicsRootConstantBufferView(0,worldTransform.constBuff_->GetGPUVirtualAddress());
+	sCommandList_->SetGraphicsRootConstantBufferView(0, worldTransform.constBuff_->GetGPUVirtualAddress());
 
 	// CBVをセット（ビュープロジェクション行列）
-	sCommandList_->SetGraphicsRootConstantBufferView(1,viewProjection.constBuff_->GetGPUVirtualAddress());
+	sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
 
 	// 全メッシュを描画
 	for (auto& mesh : meshes_) {

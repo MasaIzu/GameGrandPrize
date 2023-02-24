@@ -28,6 +28,9 @@ public: // メンバ関数
 	static SceneManager* GetInstance();
 
 private:
+	static SceneManager* SceneManager_;
+
+private:
 	// 今のシーン（実行中シーン）
 	BaseScene* scene_ = nullptr;
 	BaseScene* nextScene_ = nullptr;

@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include <cassert>
 
+SceneManager* SceneManager::SceneManager_ = nullptr;
+
 void SceneManager::Update()
 {
 	// 次のシーンの予約があるなら
@@ -37,6 +39,7 @@ void SceneManager::Finalize()
 	// 最後のシーンの終了と解放
 	scene_->Finalize();
 	delete scene_;
+	delete SceneManager_;
 }
 
 void SceneManager::SetSceneFactory(AbstractSceneFactory* sceneFactory)
@@ -57,7 +60,10 @@ void SceneManager::ChangeScene(const std::string& sceneName)
 
 SceneManager* SceneManager::GetInstance()
 {
-	static SceneManager sceneManager;
+	if (SceneManager_ == nullptr)
+	{
+		SceneManager_ = new SceneManager();
+	}
 
-	return &sceneManager;
+	return SceneManager_;
 }

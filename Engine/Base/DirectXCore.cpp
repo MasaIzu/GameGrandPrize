@@ -9,9 +9,20 @@
 
 using namespace Microsoft::WRL;
 
+DirectXCore* DirectXCore::DirectXCore_ = nullptr;
+
 DirectXCore* DirectXCore::GetInstance() {
-	static DirectXCore instance;
-	return &instance;
+	if (DirectXCore_ == nullptr)
+	{
+		DirectXCore_ = new DirectXCore();
+	}
+
+	return DirectXCore_;
+}
+
+void DirectXCore::Destroy(){
+
+	delete DirectXCore_;
 }
 
 void DirectXCore::DirectXCoreInitialize(HWND hwnd, int window_width, int window_height) {
@@ -108,7 +119,7 @@ void DirectXCore::PostDraw() {
 #endif
 
 	// コマンドリストの実行完了を待つ
-	commandQueue->Signal(fence, ++fenceVal);
+	commandQueue->Signal(fence.Get(), ++fenceVal);
 	if (fence->GetCompletedValue() != fenceVal) {
 		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
 		fence->SetEventOnCompletion(fenceVal, event);

@@ -71,7 +71,7 @@ public:
 	/// <param name="rooParameterIndexTexture">テクスチャのルートパラメータ番号</param>
 	void SetGraphicsCommand(
 		ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-		UINT rooParameterIndexTexture, size_t index);
+		UINT rooParameterIndexTexture);
 
 	/// <summary>
 	/// グラフィックスコマンドのセット（テクスチャ差し替え版）
@@ -85,10 +85,10 @@ public:
 		UINT rooParameterIndexTexture, uint32_t textureHandle);
 
 	// セットテクスチャハンドル
-	void SetTextureHadle(std::vector<uint32_t>& textureHandles) { textureHandle_ = textureHandles; }
+	void SetTextureHadle(uint32_t& textureHandles) { textureHandle_ = textureHandles; }
 
-	// テクスチャハンドル
-	uint32_t GetTextureHadle(size_t index) { return textureHandle_[index]; }
+	//// テクスチャハンドル
+	//uint32_t GetTextureHadle(size_t index) { return textureHandle_[index]; }
 
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
@@ -98,7 +98,7 @@ private:
 	// 定数バッファのマップ
 	std::unique_ptr <ConstBufferData> constMap_;
 	// テクスチャハンドル
-	std::vector<uint32_t> textureHandle_;
+	uint32_t textureHandle_ = 0;
 
 private:
 	// コンストラクタ

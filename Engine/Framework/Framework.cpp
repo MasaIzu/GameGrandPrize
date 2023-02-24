@@ -20,7 +20,8 @@ void Framework::Initialize()
 
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(directXCore_->GetDevice());
+	TextureManager_ = TextureManager::GetInstance();
+	TextureManager_->Initialize(directXCore_->GetDevice());
 	TextureManager::Load("white1x1.png");
 
 	// FBX関連静的初期化
@@ -68,7 +69,7 @@ void Framework::Update()
 	imGui->Bigin();
 
 	//デモウィンドウの表示オン
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	//シーンマネージャーの更新
 	sceneManager_->Update();
@@ -82,14 +83,20 @@ void Framework::Update()
 void Framework::Finalize()
 {
 	// 各種解放
+	sceneManager_->Finalize();
+
 	imGui->Finalize();
 	sceneFactory_.reset();
 
+	TextureManager_->Delete();
 
+	input_->Destroy();
 
+	directXCore_->Destroy();
 
 	// ゲームウィンドウの破棄
 	winApp_->DeleteGameWindow();
+	winApp_->Destroy();
 
 
 }

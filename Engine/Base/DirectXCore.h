@@ -30,6 +30,8 @@ public://メンバ関数
 	// 深度バッファのクリア
 	void ClearDepthBuffer();
 
+	void Destroy();
+
 	// デバイスの取得
 	ID3D12Device* GetDevice() { return device.Get(); }
 
@@ -57,11 +59,12 @@ private://メンバ変数
 	int backBufferHeight_ = 0;
 
 	//フェンスの生成
-	ID3D12Fence* fence = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12Fence> fence;
 	UINT64 fenceVal = 0;
 
 	HWND hwnd_;
 
+	static DirectXCore* DirectXCore_;
 
 private://メンバ変数
 	DirectXCore() = default;

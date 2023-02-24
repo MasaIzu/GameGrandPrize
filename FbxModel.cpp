@@ -280,7 +280,7 @@ void FbxModel::Draw(
 
 
 		// ‘SƒƒbƒVƒ…‚ð•`‰æ
-		meshes_[i]->Draw(sCommandList_, 2, 3,3);
+		meshes_[i]->Draw(sCommandList_, 2, 3,2);
 	}
 }
 //

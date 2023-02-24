@@ -53,6 +53,10 @@ public:
 	// I—¹ˆ—
 	void Finalize() override;
 
+	void GameOver();
+
+	void DrawGameOver();
+
 
 private: // ƒƒ“ƒo•Ï”
 	WinApp* winApp_ = nullptr;

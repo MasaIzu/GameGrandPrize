@@ -281,6 +281,7 @@
     <ClInclude Include="Engine\Drawing\TextureManager.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="FbxModel.h" />
+    <ClInclude Include="GameClear.h" />
     <ClInclude Include="UserApplication\Enemy\Enemy.h" />
     <ClInclude Include="Engine\Framework\Framework.h" />
     <ClInclude Include="Engine\GameFunction\Input.h" />
@@ -325,6 +326,7 @@
     <ClCompile Include="Engine\Drawing\TextureManager.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="FbxModel.cpp" />
+    <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="UserApplication\Enemy\Enemy.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
     <ClCompile Include="Engine\GameFunction\Input.cpp" />

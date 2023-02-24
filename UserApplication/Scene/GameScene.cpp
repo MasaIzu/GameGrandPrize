@@ -87,3 +87,17 @@ void GameScene::Draw() {
 void GameScene::Finalize()
 {
 }
+
+//ゲームオーバー処理
+void GameScene::GameOver()
+{
+	
+
+}
+
+//ゲームオーバー関係の描画
+void GameScene::DrawGameOver()
+{
+	
+
+}

@@ -2,6 +2,7 @@
 #include"WorldTransform.h"
 #include"Model.h"
 #include<vector>
+#include<memory>
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -14,10 +15,16 @@ struct fish {
 class Boss
 {
 public:
+
+	~Boss();
+
 	//魚が形成する球の中心のワールド座標
 	fish fishParent;
 	//魚群
 	std::vector<fish> fishes;
+
+	//剣のモデルデータ　
+	Model* swordModel = nullptr;
 
 	//ランダムで変化する速度の基本値
 	float randSpdParam = 0;

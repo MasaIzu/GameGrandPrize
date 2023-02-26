@@ -1,6 +1,11 @@
 #include "Boss.h"
 #include<random>
 
+Boss::~Boss()
+{
+	delete swordModel;
+}
+
 void Boss::Initialize()
 {
 	fishParent.pos.Initialize();
@@ -11,6 +16,9 @@ void Boss::Initialize()
 	}
 
 	randSpdParam = 3.75f;
+
+	//Œ•‚Ìƒ‚ƒfƒ‹‰Šú‰»
+	swordModel = Model::CreateFromOBJ("dammySword");
 }
 
 void Boss::Update()

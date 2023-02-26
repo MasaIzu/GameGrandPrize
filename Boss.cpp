@@ -20,7 +20,7 @@ void Boss::Initialize()
 	randSpdParam = 3.75f;
 
 	//Œ•‚Ìƒ‚ƒfƒ‹‰Šú‰»
-	swordModel = Model::CreateFromOBJ("dammySword");
+	swordModel = Model::CreateFromOBJ("dammySword",true);
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 }
@@ -173,7 +173,7 @@ void Boss::BeginMotionUpdate()
 
 		Vector3 pos;
 		Quaternion randomRotate =(cross,fishes[i].radian);
-		pos = randomRotate.RotateVector(fishes[i].pos.translation_);
+	//	pos = randomRotate.RotateVector(fishes[i].pos.translation_);
 		fishes[i].pos.translation_ = pos;
 		fishes[i].pos.TransferMatrix();
 	

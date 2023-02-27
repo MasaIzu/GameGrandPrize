@@ -32,10 +32,10 @@ void GameScene::Initialize() {
 	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	//worldTransform_.TransferMatrix();
 
-	fbxmodel = std::make_unique<FbxModel>();
+	/*fbxmodel = std::make_unique<FbxModel>();
 	
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
-	fbxmodel->Initialize();
+	fbxmodel->Initialize();*/
 
 	boss.Initialize();
 

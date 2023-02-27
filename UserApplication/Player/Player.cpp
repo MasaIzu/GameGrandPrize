@@ -47,9 +47,12 @@ void Player::Move() {
 	if (input_->PushKey(DIK_D)) {
 		playerMovement.x = -playerSpeed;
 	}
-
+	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
 
 	playerMovement = MyMath::MatVector(CameraRot, playerMovement);
+	playerMovement.y = 0;
+	playerMovement.normalize();
+	playerMovement *= playerSpeed;
 	worldTransform_.translation_ += playerMovement;
 	
 }

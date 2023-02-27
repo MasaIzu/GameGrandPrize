@@ -97,7 +97,8 @@ void GameScene::Update() {
 
 	//boss.Update();
 
-	player->SetCameraRot(gameCamera->GetCameraRot());
+	//player->SetCameraRot(gameCamera->GetCameraRot());
+	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->Update(viewProjection_);
 
 	gameCamera->SetCameraPosition(player->GetWorldPosition());

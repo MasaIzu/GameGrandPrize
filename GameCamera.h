@@ -67,7 +67,7 @@ private:
 	WorldTransform worldTransform_;
 
 	Matrix4 CameraRot;
-	float playerCameraDistance = 10.0f;
+	float playerCameraDistance = 5.0f;
 
 
 };

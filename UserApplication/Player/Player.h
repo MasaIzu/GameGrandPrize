@@ -40,6 +40,7 @@ public:
 	Vector3 GetWorldPosition();
 	
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
+	void SetCameraRot(Vector3 camera) { Rot = camera; }
 
 private:
 	//ワールド変換データ
@@ -53,8 +54,8 @@ private:
 	
 
 	Matrix4 CameraRot;
-
-	float playerSpeed = 0.5f;
+	Vector3 Rot;
+	float playerSpeed = 0.3f;
 
 	float Window_Width;
 	float Window_Height;

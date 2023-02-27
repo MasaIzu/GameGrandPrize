@@ -9,7 +9,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	//model_.reset();
+	model_.reset();
 }
 
 void GameScene::Initialize() {
@@ -18,19 +18,19 @@ void GameScene::Initialize() {
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
 
-	//model_.reset(Model::CreateFromOBJ("UFO", true));
+	model_.reset(Model::CreateFromOBJ("UFO", true));
 
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = { 0,0,-100 };
+	viewProjection_.eye = { 0,0,-10 };
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,0 };
-	worldTransform_.rotation_ = { 0,0,0 };
+	//worldTransform_.translation_ = { 0,0,100 };
+	//worldTransform_.rotation_ = { 0,0,0 };
 	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
-	worldTransform_.TransferMatrix();
+	//worldTransform_.TransferMatrix();
 
 	fbxmodel = std::make_unique<FbxModel>();
 	
@@ -43,6 +43,7 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
+	model_->SetPolygonExplosion({1.0f,1.0f,1.0f,10.0f});
 }
 
 void GameScene::Update() {
@@ -51,43 +52,18 @@ void GameScene::Update() {
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}
+	
 
+	//ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
 
+	Model::ConstBufferPolygonExplosion parentPos = model_->GetPolygonExplosion();
 
-	//ImGui::Begin("Create Fish");
-	//
+	ImGui::SliderFloat("Parent Destruction", &parentPos._Destruction, 1.0f, 0.0f);
+	ImGui::SliderFloat("Parent ScaleFactor", &parentPos._ScaleFactor, 1.0f, 0.0f);
+	ImGui::SliderFloat("Parent RotationFactor", &parentPos._RotationFactor, 100.0f, 0.0f);
+	ImGui::SliderFloat("Parent PositionFactor", &parentPos._PositionFactor, 100.0f, 0.0f);
 
-	////ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
-
-	//ImGui::Text("enemy Count %d",boss.fishes.size());
-
-	//if (ImGui::Button("Create")) {
-	//	boss.CreateFish(newFishPosY);
-	//}
-
-	//if (ImGui::Button("create 10")) {
-	//	for (int i = 0; i < 100; i++) {
-	//		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
-	//	}
-	//}
-
-	//if (ImGui::Button("create 100")) {
-	//	for (int i = 0; i < 100; i++) {
-	//		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
-	//	}
-	//}
-	//Vector3 parentPos = boss.fishParent.pos.translation_;
-
-	//ImGui::SliderFloat("Parent posX", &parentPos.x, -boss.fishParent.radius, boss.fishParent.radius);
-	//ImGui::SliderFloat("Parent posY", &parentPos.y, -boss.fishParent.radius, boss.fishParent.radius);
-	//ImGui::SliderFloat("Parent posZ", &parentPos.z, -boss.fishParent.radius, boss.fishParent.radius);
-	//if (ImGui::Button("parent Reset")) {
-	//	parentPos = {0,0,0};
-	//}
-
-	//boss.fishParent.pos.translation_ = parentPos;
-
-	//ImGui::End();
+	model_->SetPolygonExplosion(parentPos);
 
 	//boss.Update();
 
@@ -105,21 +81,21 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
+	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	//model_->Draw(worldTransform_, viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_);
 
-	/*for (int i = 0; i < boss.fishes.size(); i++) {
-		model_->Draw(boss.fishes[i].pos, viewProjection_);
-	}*/
+	//for (int i = 0; i < boss.fishes.size(); i++) {
+	//	model_->Draw(boss.fishes[i].pos, viewProjection_);
+	//}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 
 	FbxModel::PreDraw(commandList);
 
-	fbxmodel->Draw(worldTransform_, viewProjection_);
+	//fbxmodel->Draw(worldTransform_, viewProjection_);
 
 	FbxModel::PostDraw();
 

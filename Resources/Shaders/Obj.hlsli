@@ -71,6 +71,14 @@ cbuffer LightGroup : register(b3)
 	CircleShadow circleShadows[CIRCLESHADOW_NUM];
 }
 
+cbuffer PolygonExplosion: register(b4)
+{
+	float _Destruction : packoffset(c0);
+	float _ScaleFactor : packoffset(c0.y);
+	float _RotationFactor : packoffset(c0.z);
+	float _PositionFactor : packoffset(c0.w);
+}
+
 // 頂点シェーダーからピクセルシェーダーへのやり取りに使用する構造体
 struct VSOutput
 {
@@ -78,4 +86,14 @@ struct VSOutput
 	float4 worldpos : POSITION; // ワールド座標
 	float3 normal :NORMAL; // 法線
 	float2 uv  :TEXCOORD; // uv値
+};
+
+struct GSOutput
+{
+	//システム用頂点座標
+	float4 svpos : SV_POSITION;
+	float4 worldpos : POSITION; // ワールド座標
+	float3 normal:NORMAL;//法線ベクトル
+	float2 uv:TEXCOORD;//uv値
+
 };

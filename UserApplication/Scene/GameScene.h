@@ -70,7 +70,7 @@ private: // メンバ変数
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	// 3Dモデル
-	std::unique_ptr<Model> model_ = nullptr;
+	std::unique_ptr<Model> model_;
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;

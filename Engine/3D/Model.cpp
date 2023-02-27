@@ -244,9 +244,9 @@ Model::~Model() {
 	}
 	meshes_.clear();
 
-	/*for (auto m : materials_) {
+	for (auto m : materials_) {
 		delete m.second;
-	}*/
+	}
 	materials_.clear();
 }
 

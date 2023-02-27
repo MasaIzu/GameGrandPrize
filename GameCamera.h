@@ -65,6 +65,7 @@ private:
 	Vector2 MouseMove;
 	Vector2 mouseMoved;
 	WorldTransform worldTransform_;
+	WorldTransform EnemyWorld_;
 
 	Matrix4 CameraRot;
 	float playerCameraDistance = 5.0f;

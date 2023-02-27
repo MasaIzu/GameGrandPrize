@@ -30,8 +30,9 @@ GameCamera::GameCamera(int window_width, int window_height)
 	MultiplyMatrix(matRotNew);
 
 	worldTransform_.Initialize();
-
-
+	EnemyWorld_.Initialize();
+	EnemyWorld_.translation_ = Vector3(0, 0, 0);
+	EnemyWorld_.TransferMatrix();
 }
 
 void GameCamera::Initialize() {
@@ -106,8 +107,13 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ğ”½‰f
 	forward = MyMath::MatVector(cameraRot, forward);
 
-	target = playerPos;
-	vTargetEye = playerPos + (forward * playerCameraDistance);
+	Vector3 x = playerPos - EnemyWorld_.translation_;
+
+	//x = MyMath::MatVector(cameraRot, x);
+
+	Vector3 pos = playerPos /*+ x*/;
+	target = pos;
+	vTargetEye = pos + (forward * playerCameraDistance);
 
 	/*viewProjection_->eye = vTargetEye;
 	viewProjection_->target = target;*/

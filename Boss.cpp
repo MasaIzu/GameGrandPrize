@@ -24,6 +24,7 @@ void Boss::Initialize()
 	swordModel = Model::CreateFromOBJ("dammySword",true);
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
+	swordTransform.Initialize();
 }
 
 void Boss::Update()
@@ -66,7 +67,7 @@ void Boss::CreateFish(float posY)
 	newFish.radius = sqrt(fishParent.radius * fishParent.radius - posY * posY);
 	//ワールド行列初期化
 	newFish.pos.Initialize();
-	newFish.pos.scale_ = { 5.0f,5.0f,5.0f };
+	newFish.pos.scale_ = { 0.5f,0.5f,0.5f };
 	//Y座標は引数で
 	newFish.pos.translation_.y = posY;
 	//newFish.pos.rotation_.y = 0.78f;
@@ -95,6 +96,11 @@ void Boss::CreateFish(float posY)
 	newFish.pos.TransferMatrix();
 	//配列にい列
 	fishes.push_back(newFish);
+}
+
+void Boss::Draw(ViewProjection viewProMat)
+{
+	swordModel->Draw(swordTransform, viewProMat);
 }
 
 void Boss::IdleUpdate()
@@ -152,7 +158,11 @@ void Boss::AtkSwordUpdate()
 	//剣の生成開始
 	//行動の切り替え(開始)タイミングで各行動のフレーム数でイージングタイマーを動かす
 	
-	
+	if (nextPhaseInterval == atkSwordMotionTime) {
+		swordTransform.scale_ = { 0,0,0 };
+		easeSwordScale.Start(120);
+	}
+
 	if (nextPhaseInterval > atkSwordMotionTime - 120) {
 		//敵中心から剣の位置の中心まで移動する(120f)
 		//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
@@ -198,6 +208,13 @@ void Boss::AtkSwordUpdate()
 			ImGui::Text("timeRate[%d]:%f", i, easePFishToSword[i].GetTimeRate());
 		}
 
+		Vector3 swordScale;
+		swordScale = Lerp({ 0,0,0 }, { 1,1,1 }, easeSwordScale.GetTimeRate());
+		easeSwordScale.Update();
+
+		swordTransform.scale_ = swordScale;
+		swordTransform.translation_ = swordPos;
+		swordTransform.TransferMatrix();
 		ImGui::End();
 	
 	//剣をプレイヤーの前まで移動(45fくらい？)

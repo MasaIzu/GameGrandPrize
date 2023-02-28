@@ -4,6 +4,7 @@
 #include<vector>
 #include<memory>
 #include"EasingData.h"
+#include"ViewProjection.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -45,6 +46,8 @@ public:
 
 	void CreateFish(float posY = 0);
 
+	void Draw(ViewProjection viewProMat);
+
 	BossFirstPhase phase1;
 	const int attackCooltime = 60 * 3;
 	const int beginAttackDelay = 60 * 1;
@@ -66,7 +69,10 @@ private:
 
 	EasingData easeData;
 
+	WorldTransform swordTransform;
 	Vector3 swordPos = { 30,15,20 };
+	EasingData easeSwordScale;
+
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
 	Vector3 spd[120];	//移動する魚の移動速度
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)

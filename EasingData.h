@@ -17,6 +17,8 @@ public:
 	//イージングが起こっているかどうか(進行割合が0より大きく1より小さい時)
 	bool GetActive() { return (timeRate < 1.0f && timeRate > 0); }
 
+	float GetTimeRate()const { return timeRate; }
+
 private:
 	long long nowCount = 0;		//PC内の現在時刻
 	long long startCount = 0;

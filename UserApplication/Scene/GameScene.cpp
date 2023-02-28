@@ -53,6 +53,11 @@ void GameScene::Update() {
 		sceneManager_->ChangeScene("TITLE");
 	}
 
+	ImGui::Begin("Phase");
+
+	ImGui::Text("Interval:%d", boss.nextPhaseInterval);
+
+	ImGui::End();
 
 
 	ImGui::Begin("Create Fish");

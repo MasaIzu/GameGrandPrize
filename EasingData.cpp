@@ -16,7 +16,7 @@ void EasingData::Update()
 	//タイマーの進み具合をfloat型に変換
 	endTimer = static_cast<float>(endCount) / 1'000.0f;
 	//(タイマーの進行度/最大時間)でイージングの進み具合を計算
-	timeRate = endTimer / maxTime;
+	timeRate = endTimer / maxTime * 60.0f;
 	//進行割合が1以上になったら(進行度100%)イージング終了
 	if (timeRate >= 1.0f) {
 		timeRate = 1.0f;

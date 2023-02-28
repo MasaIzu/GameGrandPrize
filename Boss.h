@@ -3,6 +3,7 @@
 #include"Model.h"
 #include<vector>
 #include<memory>
+#include"EasingData.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -47,6 +48,9 @@ public:
 	BossFirstPhase phase1;
 	const int attackCooltime = 60 * 3;
 	const int beginAttackDelay = 60 * 1;
+
+	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　霧散   ﾓｰｼｮﾝ補間
+	const int atkSwordMotionTime = 120 + 45 + 60 + 60 + (10 * 3);
 	int nextPhaseInterval = 0;
 
 	int GetFishCount() { return fishes.size(); }
@@ -59,6 +63,14 @@ private:
 	void AtkRushUpdate();
 
 	void BeginMotionUpdate();
+
+	EasingData easeData;
+
+	Vector3 swordPos = { 30,15,20 };
+	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
+	Vector3 spd[120];	//移動する魚の移動速度
+	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
+	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120];
 };
 
 /// <summary>
@@ -68,3 +80,23 @@ private:
 /// <param name="num2">値2</param>
 /// <returns>値1と値2の間のランダムな値</returns>
 float Random(float num1, float num2);
+
+/// <summary>
+/// 線形補間
+/// </summary>
+/// <param name="start">始点</param>
+/// <param name="end">終点</param>
+/// <param name="t">時間</param>
+/// <returns>座標</returns>
+Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
+
+/// <summary>
+/// ベジエ曲線補間
+/// </summary>
+/// <param name="start">始点</param>
+/// <param name="contRollP1">制御点1</param>
+/// <param name="contRollP2">制御点2</param>
+/// <param name="end">終点</param>
+/// <param name="t">時間</param>
+/// <returns>座標</returns>
+Vector3 LerpBezire(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t);

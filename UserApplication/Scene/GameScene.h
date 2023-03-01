@@ -76,7 +76,7 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//Fbxモデル
-	std::unique_ptr<FbxModel> fbxmodel;
+	//std::unique_ptr<FbxModel> fbxmodel;
 
 	Boss boss;
 	//デバッグによる生成用

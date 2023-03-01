@@ -25,10 +25,12 @@ private:
 public:
 	
 	// 定数バッファ用データ構造体
-	struct ConstBufferData
+	struct ConstBufferPolygonExplosion
 	{
-		Vector4 color;	// 色 (RGBA)
-		Matrix4 mat;	// ３Ｄ変換行列
+		float _Destruction = 0.0f;
+		float _ScaleFactor = 1.0f;
+		float _RotationFactor = 0.0f;
+		float _PositionFactor = 0.0f;
 	};
 
 private:
@@ -96,6 +98,11 @@ public: // メンバ関数
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices; }
 
+	const ConstBufferPolygonExplosion GetPolygonExplosion() {return *constMap ; }
+
+	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) {*constMap=polygonExplosion; }
+
+
 private: // メンバ変数
 
 	// 名前
@@ -111,6 +118,11 @@ private: // メンバ変数
 	std::vector<Mesh::VertexPosNormalUv>vertices;
 	//頂点インデックス
 	std::vector<unsigned short> indices;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource> constBuff_;
+
+	ConstBufferPolygonExplosion* constMap;
 
 private: // メンバ関数
 

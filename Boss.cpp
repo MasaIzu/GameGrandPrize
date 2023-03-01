@@ -21,7 +21,7 @@ void Boss::Initialize()
 	randSpdParam = 3.75f;
 
 	//剣のモデル初期化
-	swordModel = Model::CreateFromOBJ("dammySword",true);
+	swordModel = Model::CreateFromOBJ("dammySword", true);
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 	swordTransform.Initialize();
@@ -30,7 +30,7 @@ void Boss::Initialize()
 void Boss::Update()
 {
 	//第1形態の魚群の更新
-	 
+
 	switch (phase1) {
 	case BossFirstPhase::Idle:
 		IdleUpdate();
@@ -48,7 +48,7 @@ void Boss::Update()
 		break;
 
 	}
-	
+
 }
 
 void Boss::CreateFish(float posY)
@@ -137,7 +137,7 @@ void Boss::IdleUpdate()
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
 		//0になったらクールタイムを攻撃開始モーションの時間に設定
-		nextPhaseInterval =  beginAttackDelay;
+		nextPhaseInterval = beginAttackDelay;
 		//フェーズを移行
 		phase1 = BossFirstPhase::BeginMotion;
 		//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
@@ -146,7 +146,7 @@ void Boss::IdleUpdate()
 
 		//魚群の乱回転のためのランダムなベクトルを作成
 		for (int i = 0; i < fishes.size(); i++) {
-			fishes[i].randomVec = Vector3(Random(0.0f,1.0f), Random(0.0f, 1.0f), Random(0.0f, 1.0f));
+			fishes[i].randomVec = Vector3(Random(0.0f, 1.0f), Random(0.0f, 1.0f), Random(0.0f, 1.0f));
 			fishes[i].randomVec.normalize();
 		}
 
@@ -157,7 +157,7 @@ void Boss::AtkSwordUpdate()
 {
 	//剣の生成開始
 	//行動の切り替え(開始)タイミングで各行動のフレーム数でイージングタイマーを動かす
-	
+
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
 		easeSwordScale.Start(120);
@@ -166,7 +166,7 @@ void Boss::AtkSwordUpdate()
 	if (nextPhaseInterval > atkSwordMotionTime - 120) {
 		//敵中心から剣の位置の中心まで移動する(120f)
 		//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
-		
+
 		//最初にどの魚を剣まで移動させるか決める
 		int goFishToSwordIndex = 0;
 		goFishToSwordIndex = static_cast<int>(Random(0, fishes.size()));
@@ -184,39 +184,45 @@ void Boss::AtkSwordUpdate()
 		//配列に挿入
 		choiceFishIndex.push_back(goFishToSwordIndex);
 		//動的配列末尾の要素のイージングを時間10fで開始させる(順番に移動してもらうため)
-	
+
 		Vector3 pos;
 		float randomParam = 10.0f;
 		//移動を開始する魚の元の座標を取っておき、制御点もイイ感じに決める
-		fishesBeforePos[choiceFishIndex.size() - 1] = fishes[choiceFishIndex[choiceFishIndex.size()-1]].pos.translation_;
+		fishesBeforePos[choiceFishIndex.size() - 1] = fishes[choiceFishIndex[choiceFishIndex.size() - 1]].pos.translation_;
 		//制御点1は始点から誤差x(今は5)のランダムな地点。制御点2は終点から誤差xにランダム
 		pos = fishesBeforePos[choiceFishIndex.size() - 1];
-		fishesControllP1[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam,pos.x+ randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
+		fishesControllP1[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		pos = swordPos;
 		fishesControllP2[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
-		easePFishToSword[choiceFishIndex.size()-1].Start(30);
+		easePFishToSword[choiceFishIndex.size() - 1].Start(30);
 
 	}
-		ImGui::Begin("easing");
 
-		for (int i = 0; i < choiceFishIndex.size(); i++) {
-			easePFishToSword[i].Update();
+	for (int i = 0; i < choiceFishIndex.size(); i++) {
+		easePFishToSword[i].Update();
 
-			fishes[choiceFishIndex[i]].pos.translation_ = LerpBezire(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], swordPos,easePFishToSword[i].GetTimeRate());
-			fishes[choiceFishIndex[i]].pos.TransferMatrix();
+		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezire(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], swordPos, easePFishToSword[i].GetTimeRate());
+		fishes[choiceFishIndex[i]].pos.scale_ = Lerp({ 0.5f,0.5f,0.5f }, { 0,0,0 }, easePFishToSword[i].GetTimeRate());
+		fishes[choiceFishIndex[i]].pos.TransferMatrix();
+	}
 
-			ImGui::Text("timeRate[%d]:%f", i, easePFishToSword[i].GetTimeRate());
-		}
+	//剣を徐々におおきくする
+	Vector3 swordScale;
+	swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
+	easeSwordScale.Update();
 
-		Vector3 swordScale;
-		swordScale = Lerp({ 0,0,0 }, { 1,1,1 }, easeSwordScale.GetTimeRate());
-		easeSwordScale.Update();
+	ImGui::Begin("sword");
+	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
 
-		swordTransform.scale_ = swordScale;
-		swordTransform.translation_ = swordPos;
-		swordTransform.TransferMatrix();
-		ImGui::End();
-	
+	swordTransform.rotation_ /= 180 * PI;
+
+	swordTransform.scale_ = swordScale;
+	swordTransform.translation_ = swordPos;
+	swordTransform.TransferMatrix();
+	ImGui::End();
+
 	//剣をプレイヤーの前まで移動(45fくらい？)
 
 	//攻撃(60f)
@@ -253,11 +259,11 @@ void Boss::BeginMotionUpdate()
 		cross = fishes[i].randomVec.cross(vec);
 
 		Vector3 pos;
-		Quaternion randomRotate =(cross,fishes[i].radian);
-	//	pos = randomRotate.RotateVector(fishes[i].pos.translation_);
+		Quaternion randomRotate = (cross, fishes[i].radian);
+		//	pos = randomRotate.RotateVector(fishes[i].pos.translation_);
 		fishes[i].pos.translation_ = pos;
 		fishes[i].pos.TransferMatrix();
-	
+
 	}
 
 	//攻撃のクールタイムを減らす

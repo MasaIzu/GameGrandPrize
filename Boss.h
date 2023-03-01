@@ -70,7 +70,7 @@ private:
 	EasingData easeData;
 
 	WorldTransform swordTransform;
-	Vector3 swordPos = { 30,15,20 };
+	Vector3 swordPos = { 30,-30,20 };
 	EasingData easeSwordScale;
 
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー

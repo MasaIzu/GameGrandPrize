@@ -38,6 +38,8 @@ void Material::CreateConstantBuffer() {
 	// 定数バッファとのデータリンク
 	result = constBuff_->Map(0, nullptr, (void**)&constMap_);
 	assert(SUCCEEDED(result));
+
+
 }
 
 void Material::LoadTexture(const std::string& directoryPath) {
@@ -65,6 +67,7 @@ void Material::Update() {
 	constMap_->diffuse = diffuse_;
 	constMap_->specular = specular_;
 	constMap_->alpha = alpha_;
+	
 }
 
 void Material::SetGraphicsCommand(
@@ -95,6 +98,11 @@ void Material::SetGraphicsCommand(
 	// マテリアルの定数バッファをセット
 	commandList->SetGraphicsRootConstantBufferView(
 		rooParameterIndexMaterial, constBuff_->GetGPUVirtualAddress());
+}
+
+void Material::SetLight(float alpha)
+{
+	alpha_ = alpha;
 }
 
 void Material::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha)

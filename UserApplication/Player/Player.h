@@ -45,18 +45,28 @@ public:
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
+	WorldTransform oldWorldTransform_;
 
 	//インプット
 	Input* input_ = nullptr;
 
 	//モデル
 	Model* playerModel_ = nullptr;
-	
+	std::unique_ptr<Model> oldPlayerModel_;
 
 	Matrix4 CameraRot;
 	Vector3 Rot;
 	Vector3 Avoidance;
+
 	float playerSpeed = 0.3f;
+	float playerAvoidance = 0.0f;
+
+
+	bool isPushLeft = false;
+	bool isPushRight = false;
+	bool isPushBack = false;
+
+	int timer = 0;
 
 	float Window_Width;
 	float Window_Height;

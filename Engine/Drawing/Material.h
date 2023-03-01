@@ -90,13 +90,15 @@ public:
 	//// テクスチャハンドル
 	//uint32_t GetTextureHadle(size_t index) { return textureHandle_[index]; }
 
+	void SetLight(float alpha);
+
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
 private:
 	// 定数バッファ
 	ComPtr<ID3D12Resource> constBuff_;
 	// 定数バッファのマップ
-	std::unique_ptr <ConstBufferData> constMap_;
+	ConstBufferData* constMap_;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 

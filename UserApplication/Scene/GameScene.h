@@ -77,6 +77,8 @@ private: // メンバ変数
 	// 3Dモデル
 	std::unique_ptr<Model> model_ = nullptr;
 
+	float x = 45.0f;
+
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
 

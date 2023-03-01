@@ -127,6 +127,10 @@ void Mesh::Draw(
 	commandList->DrawIndexedInstanced((UINT)indices_.size(), 1, 0, 0, 0);
 }
 
+void Mesh::SetLight(float alpha) {
+	material_->SetLight(alpha);
+}
+
 void Mesh::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha) {
 	material_->SetLight(ambient, diffuse, specular, alpha);
 }

@@ -86,6 +86,8 @@ public: // ƒƒ“ƒoŠÖ”
 	void SetMaterial(Material* material);
 
 	
+	void SetLight(float alpha);
+
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
 	/// <summary>

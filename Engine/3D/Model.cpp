@@ -217,9 +217,9 @@ Model::~Model() {
 	}
 	meshes_.clear();
 
-	/*for (auto m : materials_) {
+	for (auto m : materials_) {
 		delete m.second;
-	}*/
+	}
 	materials_.clear();
 }
 
@@ -567,6 +567,14 @@ void Model::LoadTextures() {
 			material->LoadTexture("white1x1.png");
 			textureIndex++;
 		}
+	}
+}
+
+void Model::SetAlpha(float alpha)
+{
+	for (auto& m : materials_) {
+		m.second->alpha_ = alpha;
+		m.second->Update();
 	}
 }
 

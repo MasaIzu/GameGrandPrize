@@ -53,10 +53,10 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	
-	if (input_->TriggerKey(DIK_SPACE))
+	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
-	}
+	}*/
 
 
 
@@ -98,6 +98,14 @@ void GameScene::Update() {
 	//boss.Update();
 
 	//player->SetCameraRot(gameCamera->GetCameraRot());
+
+	if (input_->PushKey(DIK_K)) {
+		x += 0.1;
+	}
+	if (input_->PushKey(DIK_L)) {
+		x -= 0.1;
+	}
+
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->Update(viewProjection_);
 
@@ -106,6 +114,7 @@ void GameScene::Update() {
 
 	viewProjection_.eye = gameCamera->GetEye();
 	viewProjection_.target = gameCamera->GetTarget();
+	viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
 }
 

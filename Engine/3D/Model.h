@@ -96,6 +96,9 @@ public: // メンバ関数
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices; }
 
+	//アルファ値変更
+	void SetAlpha(float alpha);
+
 private: // メンバ変数
 
 	// 名前
@@ -112,6 +115,8 @@ private: // メンバ変数
 	//頂点インデックス
 	std::vector<unsigned short> indices;
 
+	bool AlphaSet = false;
+
 private: // メンバ関数
 
 	// モデル読み込み
@@ -125,4 +130,5 @@ private: // メンバ関数
 
 	// テクスチャ読み込み
 	void LoadTextures();
+
 };

@@ -23,7 +23,7 @@ private: // エイリアス
 
 
 public: // サブクラス
-  // 頂点データ構造体（テクスチャあり）
+	// 頂点データ構造体（テクスチャあり）
 	struct VertexPosNormalUv {
 		Vector3 pos;    // xyz座標
 		Vector3 normal; // 法線ベクトル
@@ -31,10 +31,10 @@ public: // サブクラス
 	};
 
 public: // メンバ関数
-  /// <summary>
-  /// 名前を取得
-  /// </summary>
-  /// <returns>名前</returns>
+	/// <summary>
+	/// 名前を取得
+	/// </summary>
+	/// <returns>名前</returns>
 	const std::string& GetName() { return name_; }
 
 	/// <summary>
@@ -85,7 +85,9 @@ public: // メンバ関数
 	/// <param name="material">マテリアル</param>
 	void SetMaterial(Material* material);
 
-	
+
+	void SetLight(float alpha);
+
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
 	/// <summary>
@@ -139,7 +141,7 @@ public: // メンバ関数
 	inline const std::vector<unsigned short>& GetIndices() { return indices_; }
 
 private: // メンバ変数
-  // 名前
+	// 名前
 	std::string name_;
 	// 頂点バッファ
 	ComPtr<ID3D12Resource> vertBuff_;

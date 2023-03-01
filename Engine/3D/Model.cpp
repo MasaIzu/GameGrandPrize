@@ -614,6 +614,14 @@ void Model::LoadTextures() {
 	}
 }
 
+void Model::SetAlpha(float alpha)
+{
+	for (auto& m : materials_) {
+		m.second->alpha_ = alpha;
+		m.second->Update();
+	}
+}
+
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 

@@ -102,6 +102,8 @@ public: // メンバ関数
 
 	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) {*constMap=polygonExplosion; }
 
+	//アルファ値変更
+	void SetAlpha(float alpha);
 
 private: // メンバ変数
 
@@ -123,6 +125,7 @@ private: // メンバ変数
 	ComPtr<ID3D12Resource> constBuff_;
 
 	ConstBufferPolygonExplosion* constMap;
+
 
 private: // メンバ関数
 

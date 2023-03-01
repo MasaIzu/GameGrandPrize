@@ -44,15 +44,22 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
+	player = std::make_unique<Player>();
+	player->Initialize(model_.get(), 1280, 720);
+
+	gameCamera = std::make_unique<GameCamera>(1280, 720);
+	gameCamera->Initialize();
+
+
 	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
 }
 
 void GameScene::Update() {
 	
-	if (input_->TriggerKey(DIK_SPACE))
+	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
-	}
+	}*/
 
 	ImGui::Begin("Phase");
 
@@ -98,6 +105,17 @@ void GameScene::Update() {
 
 	boss.Update();
 
+	player->SetCameraRot(gameCamera->GetCameraRotVec3());
+	player->Update(viewProjection_);
+
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	gameCamera->Update(&viewProjection_);
+
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.target = gameCamera->GetTarget();
+	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
+	viewProjection_.UpdateMatrix();
+
 }
 
 void GameScene::Draw() {
@@ -115,13 +133,15 @@ void GameScene::Draw() {
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	model_->Draw(worldTransform_, viewProjection_);
+	//model_->Draw(worldTransform_, viewProjection_);
 
 	for (int i = 0; i < boss.fishes.size(); i++) {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);
 	}
 
 	boss.Draw(viewProjection_);
+
+	player->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

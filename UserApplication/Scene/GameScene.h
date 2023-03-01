@@ -17,6 +17,8 @@
 #include<memory>
 #include<vector>
 
+#include "Player.h"
+#include "GameCamera.h"
 #include"Boss.h"
 
 /// <summary>
@@ -71,6 +73,9 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	// 3Dモデル
 	std::unique_ptr<Model> model_;
+
+	std::unique_ptr<Player> player;
+	std::unique_ptr<GameCamera> gameCamera;
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;

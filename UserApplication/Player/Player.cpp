@@ -11,40 +11,116 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(Model* model,float WindowWidth,float WindowHeight) {
+void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	//NULLポインタチェック
 	assert(model);
-	playerModel_.reset(model);
+	playerModel_ = model;
+	oldPlayerModel_.reset(Model::CreateFromOBJ("UFO", true));
 
+	oldPlayerModel_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
 
 	Window_Width = WindowWidth;
 	Window_Height = WindowHeight;
 
+	playerAvoidance = 6.0f;
+
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	
+	oldWorldTransform_.Initialize();
+
 
 
 	worldTransform_.TransferMatrix();
+	oldWorldTransform_.TransferMatrix();
 }
 
 void Player::Move() {
 
+	Vector3 playerMovement = { 0,0,0 };
+	Avoidance = { 0,0,0 };
+	isPushLeft = false;
+	isPushRight = false;
+	isPushBack = false;
 
-	
+	if (timer > 0) {
+		timer--;
+	}
+
+	if (input_->PushKey(DIK_W)) {
+		playerMovement.z = -playerSpeed;
+	}
+	if (input_->PushKey(DIK_A)) {
+		playerMovement.x = playerSpeed;
+		isPushLeft = true;
+	}
+	if (input_->PushKey(DIK_S)) {
+		playerMovement.z = playerSpeed;
+		isPushBack = true;
+	}
+	if (input_->PushKey(DIK_D)) {
+		playerMovement.x = -playerSpeed;
+		isPushRight = true;
+	}
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+
+		timer = 8;
+		oldWorldTransform_.translation_ = worldTransform_.translation_;
+
+		if (isPushLeft == true) {
+			Avoidance.x = playerAvoidance;
+		}
+		else if (isPushRight == true) {
+			Avoidance.x = -playerAvoidance;
+		}
+		else if (isPushBack == true) {
+			Avoidance.z = playerAvoidance;
+		}
+		else {
+			Avoidance.z = -playerAvoidance;
+		}
+	}
+
+
+
+	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
+
+	playerMovement = MyMath::MatVector(CameraRot, playerMovement);
+	playerMovement.y = 0;
+	playerMovement.normalize();
+	playerMovement *= playerSpeed;
+
+	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
+	Avoidance.y = 0;
+	Avoidance.normalize();
+	Avoidance *= playerAvoidance;
+
+	worldTransform_.translation_ += playerMovement;
+	worldTransform_.translation_ += Avoidance;
+
 }
 
 
 void Player::Update(const ViewProjection& viewProjection) {
 
-	
+	Move();
+
+	worldTransform_.TransferMatrix();
+	oldWorldTransform_.TransferMatrix();
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
 
-	
+	if (timer == 0) {
+		playerModel_->Draw(worldTransform_, viewProjection_);
+	}
+	if (timer > 0) {
+		oldPlayerModel_->SetAlpha(0.3f);
+		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
+	}
+
 }
 
 

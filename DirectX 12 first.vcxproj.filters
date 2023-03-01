@@ -364,6 +364,9 @@
     <ClInclude Include="EasingData.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCamera.h">
+      <Filter>ユーザーヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -499,6 +502,9 @@
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="EasingData.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCamera.cpp">
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

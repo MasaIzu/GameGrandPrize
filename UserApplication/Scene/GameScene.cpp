@@ -44,7 +44,7 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
-	model_->SetPolygonExplosion({1.0f,1.0f,1.0f,10.0f});
+	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
 }
 
 void GameScene::Update() {

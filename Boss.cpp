@@ -194,7 +194,7 @@ void Boss::AtkSwordUpdate()
 		fishesControllP1[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		pos = swordPos;
 		fishesControllP2[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
-		easePFishToSword[choiceFishIndex.size() - 1].Start(30);
+		easePFishToSword[choiceFishIndex.size() - 1].Start(15);
 
 	}
 

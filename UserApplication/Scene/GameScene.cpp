@@ -40,7 +40,7 @@ void GameScene::Initialize() {
 
 	boss.Initialize();
 
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < 200; i++) {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 

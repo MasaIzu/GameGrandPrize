@@ -44,7 +44,8 @@ void WorldTransform::TransferMatrix() {
 	//スケール、回転、平行移動行列の計算
 	matScale = MyMath::Scale(scale_);
 	matRot = MyMath::Initialize();
-	matRot *= QuaternionMatRot.Rotate();
+	//matRot *= QuaternionMatRot.Rotate();
+	matRot *= MyMath::Rotation(rotation_, 6);
 	matTrans = MyMath::Translation(translation_);
 
 	//ワールド行列の合成

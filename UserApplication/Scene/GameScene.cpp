@@ -10,7 +10,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	//model_.reset();
+	model_.reset();
 }
 
 void GameScene::Initialize() {
@@ -24,19 +24,19 @@ void GameScene::Initialize() {
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = { 0,0,-100 };
+	viewProjection_.eye = { 0,0,-10 };
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,0 };
-	worldTransform_.rotation_ = { 0,0,0 };
+	//worldTransform_.translation_ = { 0,0,100 };
+	//worldTransform_.rotation_ = { 0,0,0 };
 	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
-	worldTransform_.TransferMatrix();
+	//worldTransform_.TransferMatrix();
 
-	fbxmodel = std::make_unique<FbxModel>();
+	/*fbxmodel = std::make_unique<FbxModel>();
 	
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
-	fbxmodel->Initialize();
+	fbxmodel->Initialize();*/
 
 	boss.Initialize();
 
@@ -44,6 +44,7 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
+	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
 }
 
 void GameScene::Update() {
@@ -111,10 +112,10 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
+	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	//model_->Draw(worldTransform_, viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_);
 
 	for (int i = 0; i < boss.fishes.size(); i++) {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);

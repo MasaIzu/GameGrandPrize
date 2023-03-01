@@ -100,7 +100,9 @@ void Boss::CreateFish(float posY)
 
 void Boss::Draw(ViewProjection viewProMat)
 {
-	swordModel->Draw(swordTransform, viewProMat);
+	if (phase1 == BossFirstPhase::Atk_Sword) {
+		swordModel->Draw(swordTransform, viewProMat);
+	}
 }
 
 void Boss::IdleUpdate()
@@ -216,7 +218,8 @@ void Boss::AtkSwordUpdate()
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
 
-	swordTransform.rotation_ /= 180 * PI;
+	swordTransform.rotation_.z = PI / 2;
+	swordTransform.rotation_.y = PI / 6;
 
 	swordTransform.scale_ = swordScale;
 	swordTransform.translation_ = swordPos;

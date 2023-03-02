@@ -35,7 +35,7 @@ public:
 	std::vector<fish> fishes;
 
 	//剣のモデルデータ　
-	Model* swordModel = nullptr;
+	std::unique_ptr<Model> swordModel = nullptr;
 
 	//ランダムで変化する速度の基本値
 	float randSpdParam = 0;
@@ -70,6 +70,8 @@ private:
 	EasingData easeData;
 
 	WorldTransform swordTransform;
+
+	WorldTransform Transform;
 	Vector3 swordPos = { 30,-30,20 };
 	EasingData easeSwordScale;
 

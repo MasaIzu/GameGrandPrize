@@ -53,7 +53,9 @@ void GameCamera::Initialize() {
 
 void GameCamera::Update(ViewProjection* viewProjection_) {
 
-	PlaySceneCamera(viewProjection_);
+	if (input_->PushKey(DIK_F1)) {
+		PlaySceneCamera(viewProjection_);
+	}
 
 }
 

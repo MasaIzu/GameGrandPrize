@@ -6,7 +6,7 @@
 
 Boss::~Boss()
 {
-	delete swordModel;
+	
 }
 
 void Boss::Initialize()
@@ -21,10 +21,14 @@ void Boss::Initialize()
 	randSpdParam = 3.75f;
 
 	//Œ•‚Ìƒ‚ƒfƒ‹‰Šú‰»
-	swordModel = Model::CreateFromOBJ("dammySword", true);
+	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
+
+	swordModel->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
+
 	swordTransform.Initialize();
+	swordTransform.TransferMatrix();
 }
 
 void Boss::Update()
@@ -103,6 +107,8 @@ void Boss::Draw(ViewProjection viewProMat)
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
 	}
+
+	swordModel->Draw(swordTransform, viewProMat);
 }
 
 void Boss::IdleUpdate()

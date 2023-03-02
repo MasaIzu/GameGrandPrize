@@ -25,8 +25,6 @@ void Boss::Initialize()
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	swordModel->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
-
 	swordTransform.Initialize();
 	swordTransform.TransferMatrix();
 }

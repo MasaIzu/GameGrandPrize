@@ -17,7 +17,6 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	playerModel_ = model;
 	oldPlayerModel_.reset(Model::CreateFromOBJ("UFO", true));
 
-	oldPlayerModel_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
 

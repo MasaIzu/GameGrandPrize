@@ -298,6 +298,9 @@ void Model::Initialize(const std::string& modelname, bool smoothing) {
 	//定数バッファのマッピング
 	result = constBuff_->Map(0, nullptr, (void**)&constMap);
 	assert(SUCCEEDED(result));
+
+	SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
+
 }
 
 void Model::LoadModel(const std::string& modelname, bool smoothing) {

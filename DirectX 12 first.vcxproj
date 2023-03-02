@@ -258,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boss.h" />
+    <ClInclude Include="Easing.h" />
     <ClInclude Include="EasingData.h" />
     <ClInclude Include="Engine\3D\Light.h" />
     <ClInclude Include="Engine\3D\Mesh.h" />
@@ -314,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="Easing.cpp" />
     <ClCompile Include="EasingData.cpp" />
     <ClCompile Include="Engine\3D\Light.cpp" />
     <ClCompile Include="Engine\3D\Mesh.cpp" />

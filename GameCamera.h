@@ -5,12 +5,15 @@
 #include <Input.h>
 #include "WorldTransform.h"
 #include "ViewProjection.h"
+#include "Easing.h"
 
 class GameCamera {
 
 public:
 
 	GameCamera(int window_width, int window_height);
+
+	~GameCamera();
 
 	void Initialize();
 
@@ -29,9 +32,11 @@ public://ゲッターセッター
 	Vector3 GetCameraRotVec3() { return this->rot; }
 
 	void SetCameraPosition(Vector3 pos) { playerPos = pos; }
-
+	void SetSpaceInput(bool isSpaceInput) { spaceInput = isSpaceInput; }
 
 private:
+
+	Easing* easing_;
 
 	// カメラ注視点までの距離
 	float distance_ = 10;
@@ -48,6 +53,8 @@ private:
 	float mousepoint_a;//マウス位置
 	float mousepoint_b;//マウス位置
 	bool dirty = false;
+
+	bool spaceInput = false;
 
 	// スケーリング
 	float scaleX_ = 1.0f;
@@ -70,5 +77,7 @@ private:
 	Matrix4 CameraRot;
 	float playerCameraDistance = 5.0f;
 
+	int cameraTime = 0;
+	int MaxCameraTime = 0;
 
 };

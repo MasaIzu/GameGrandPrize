@@ -108,6 +108,7 @@ void GameScene::Update() {
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->Update(viewProjection_);
 
+	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	gameCamera->Update(&viewProjection_);
 

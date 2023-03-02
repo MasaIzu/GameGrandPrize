@@ -8,7 +8,6 @@
 #include "Sprite.h"
 #include <list>
 
-
 class Player {
 
 public:
@@ -39,6 +38,8 @@ public:
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	
+	bool GetSpaceInput() { return spaceInput; }
+
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
 
@@ -65,6 +66,8 @@ private:
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
+
+	bool spaceInput = false;
 
 	int timer = 0;
 

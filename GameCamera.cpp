@@ -3,10 +3,13 @@
 #include "WinApp.h"
 #include "MyMath.h"
 
+
 GameCamera::GameCamera(int window_width, int window_height)
 {
 
 	input_ = Input::GetInstance();
+
+	easing_ = new Easing();
 
 	winWidth = window_width;
 	winHeight = window_height;
@@ -19,6 +22,8 @@ GameCamera::GameCamera(int window_width, int window_height)
 	float angleX = 0;
 	float angleY = 0;
 
+	MaxCameraTime = 300;
+	cameraTime = MaxCameraTime;
 	oldMousePos = mousePos;
 	mousePos = input_->GetMousePos();
 
@@ -35,6 +40,11 @@ GameCamera::GameCamera(int window_width, int window_height)
 	EnemyWorld_.TransferMatrix();
 }
 
+GameCamera::~GameCamera()
+{
+	delete easing_;
+}
+
 void GameCamera::Initialize() {
 
 
@@ -48,6 +58,15 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 }
 
 void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
+
+	if (spaceInput == true) {
+		cameraTime = 0;
+	}
+
+	if (cameraTime < MaxCameraTime) {
+		cameraTime++;
+	}
+	
 
 	//ƒJƒƒ‰‚Ì‰ñ“]ƒxƒNƒgƒ‹
 	Vector3 rotat = { 0, 0, 0 };
@@ -107,16 +126,13 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ð”½‰f
 	forward = MyMath::MatVector(cameraRot, forward);
 
-	Vector3 x = playerPos - EnemyWorld_.translation_;
+	Vector3 pos = playerPos;
 
-	//x = MyMath::MatVector(cameraRot, x);
+	target = easing_->InOutVec3(target, playerPos, cameraTime, MaxCameraTime);
 
-	Vector3 pos = playerPos /*+ x*/;
-	target = pos;
-	vTargetEye = pos + (forward * playerCameraDistance);
+	//target = pos;
+	vTargetEye = target + (forward * playerCameraDistance);
 
-	/*viewProjection_->eye = vTargetEye;
-	viewProjection_->target = target;*/
 }
 
 void GameCamera::MultiplyMatrix(Matrix4& matrix) {

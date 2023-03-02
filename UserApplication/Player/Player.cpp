@@ -43,6 +43,7 @@ void Player::Move() {
 	isPushLeft = false;
 	isPushRight = false;
 	isPushBack = false;
+	spaceInput = false;
 
 	if (timer > 0) {
 		timer--;
@@ -65,7 +66,7 @@ void Player::Move() {
 	}
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-
+		spaceInput = true;
 		timer = 8;
 		oldWorldTransform_.translation_ = worldTransform_.translation_;
 

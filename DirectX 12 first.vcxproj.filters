@@ -367,6 +367,9 @@
     <ClInclude Include="GameCamera.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Easing.h">
+      <Filter>Engine\ヘッダー\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -506,6 +509,9 @@
     </ClCompile>
     <ClCompile Include="GameCamera.cpp">
       <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Easing.cpp">
+      <Filter>Engine\ソース ファイル\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

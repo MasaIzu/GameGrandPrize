@@ -3,6 +3,7 @@
 #include"Quaternion.h"
 #include"Affin.h"
 #include"ImGuiManager.h"
+#include"Easing.h"
 
 Boss::~Boss()
 {
@@ -29,16 +30,18 @@ void Boss::Initialize()
 	swordTransform.TransferMatrix();
 }
 
-void Boss::Update()
+void Boss::Update(const Vector3& targetPos)
 {
 	//第1形態の魚群の更新
+	ImGui::Begin("sword");
+
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
 		IdleUpdate();
 		break;
 	case BossFirstPhase::Atk_Sword:
-		AtkSwordUpdate();
+		AtkSwordUpdate(targetPos);
 		break;
 	case BossFirstPhase::Atk_Rush:
 		AtkRushUpdate();
@@ -50,6 +53,9 @@ void Boss::Update()
 		break;
 
 	}
+
+	
+	ImGui::End();
 
 }
 
@@ -159,17 +165,32 @@ void Boss::IdleUpdate()
 	}
 }
 
-void Boss::AtkSwordUpdate()
+void Boss::AtkSwordUpdate(const Vector3& targetPos)
 {
 	//剣の生成開始
 	//行動の切り替え(開始)タイミングで各行動のフレーム数でイージングタイマーを動かす
 
+	const int swordCreateTime = 120;
+	const int swordMoveTime = 45;
+	const int swordAtkTime = 150;
+
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
-		easeSwordScale.Start(120);
+		easeSwordScale.Start(120 + 15);
+		//剣の座標
+		swordPos.x = fishParent.pos.translation_.x + 30;
+		swordPos.y = fishParent.pos.translation_.y - 30;
+		swordPos.z = fishParent.pos.translation_.z;
+		//swordPos.x = fishParent.pos.translation_.x;
+	}
+	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime)
+	{
+		easeSwordMove.Start(swordAtkTime);
 	}
 
-	if (nextPhaseInterval > atkSwordMotionTime - 120) {
+	float distancePtoSword = 90.0f;
+
+	if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime) {
 		//敵中心から剣の位置の中心まで移動する(120f)
 		//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
 
@@ -200,39 +221,85 @@ void Boss::AtkSwordUpdate()
 		fishesControllP1[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		pos = swordPos;
 		fishesControllP2[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
-		easePFishToSword[choiceFishIndex.size() - 1].Start(15);
+		easePFishToSword[choiceFishIndex.size() - 1].Start(60);
+
+		//剣を徐々におおきくする
+		Vector3 swordScale;
+		swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
+		easeSwordScale.Update();
+		swordTransform.scale_ = swordScale;
+		swordTransform.translation_ = swordPos;
+
+		//剣移動のイージングを開始する(実際の座標移動や更新は後ろのif文でやってるので影響なし)
+		easeSwordMove.Start(swordMoveTime);
+
+	}//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime) {
+
+		Vector3 rotaVec;
+		rotaVec.x = sin(PI / 3.0f);
+		rotaVec.z = cos(PI / 3.0f);
+		rotaVec.normalize();
+		rotaVec *= distancePtoSword;
+
+		//標的の座標と掛け算
+		Vector3 aftetVec;
+		aftetVec = targetPos + rotaVec;
+
+		ImGui::Text("afterVec:%f,%f,%f", aftetVec.x, aftetVec.y, aftetVec.z);
+
+		easeSwordMove.Update();
+		Vector3 pos;
+		pos =  Lerp(swordPos, aftetVec, LerpConbertOut( easeSwordMove.GetTimeRate()));
+		swordTransform.rotation_.z = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
+		swordTransform.rotation_.x = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
+
+		swordTransform.translation_ = pos;
 
 	}
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime) {
+		Vector3 rotaVec;
+		rotaVec.x = sin(PI / 3.0f);
+		rotaVec.z = cos(PI / 3.0f);
+		rotaVec.normalize();
+		rotaVec *= distancePtoSword;
 
+		//標的の座標と掛け算
+		Vector3 beforePos,afterPos;
+		beforePos = targetPos + rotaVec;
+		afterPos = beforePos;
+		afterPos.x = -afterPos.x;
+		//afterPos.z = -afterPos.z;
+
+		easeSwordMove.Update();
+		Vector3 pos;
+		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordMove.GetTimeRate()));
+
+		swordTransform.rotation_.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordMove.GetTimeRate()) * PI / 3.0f);
+		swordTransform.translation_ = pos;
+	}
+
+
+	//イージングによるスケールと座標の制御
 	for (int i = 0; i < choiceFishIndex.size(); i++) {
 		easePFishToSword[i].Update();
 
-		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezire(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], swordPos, easePFishToSword[i].GetTimeRate());
+		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezireCubic(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], swordPos, easePFishToSword[i].GetTimeRate());
 		fishes[choiceFishIndex[i]].pos.scale_ = Lerp({ 0.5f,0.5f,0.5f }, { 0,0,0 }, easePFishToSword[i].GetTimeRate());
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();
 	}
 
-	//剣を徐々におおきくする
-	Vector3 swordScale;
-	swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
-	easeSwordScale.Update();
-
-	ImGui::Begin("sword");
 	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
 
-	swordTransform.rotation_.z = PI / 2;
-	swordTransform.rotation_.y = PI / 6;
+	
 
-	swordTransform.scale_ = swordScale;
-	swordTransform.translation_ = swordPos;
+	//swordTransform.rotation_.z = -PI / 2;
+	//swordTransform.rotation_.y = PI / 6;
+
+	
 	swordTransform.TransferMatrix();
-	ImGui::End();
-
-	//剣をプレイヤーの前まで移動(45fくらい？)
-
-	//攻撃(60f)
 
 	//タイマー制御
 	nextPhaseInterval--;
@@ -309,7 +376,7 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t)
 	return start * (1.0f - t) + end * t;
 }
 
-Vector3 LerpBezire(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t)
+Vector3 LerpBezireCubic(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t)
 {
 	Vector3 p1, p2, p3, p4, p5, result;
 	p1 = Lerp(start, contRollP1, t);
@@ -321,3 +388,30 @@ Vector3 LerpBezire(const Vector3& start, const Vector3& contRollP1, const Vector
 
 	return result;
 }
+
+Vector3 LerpBezireQuadratic(const Vector3& start, const Vector3& contRollP, const Vector3& end, float t)
+{
+	Vector3 p1, p2,p3;
+	p1 = Lerp(start, contRollP, t);
+	p2 = Lerp(contRollP,end, t);
+	p3 = Lerp(p1, p2, t);
+
+	return p3;
+}
+
+float LerpConbertInback(float t)
+{
+	const float c1 = 1.70158;
+	const float c3 = c1 + 1;
+
+	return c3 * t *t *t - c1 * t * t;
+}
+
+float LerpConbertOut(float t)
+{
+	return 1 - pow(1-t,5);
+}
+
+
+
+

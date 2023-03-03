@@ -42,7 +42,7 @@ public:
 
 	void Initialize();
 
-	void Update();
+	void Update(const Vector3& targetPos);
 
 	void CreateFish(float posY = 0);
 
@@ -61,18 +61,18 @@ private:
 	//フェーズごとの更新処理
 	void IdleUpdate();
 
-	void AtkSwordUpdate();
+	void AtkSwordUpdate(const Vector3& targetPos);
 
 	void AtkRushUpdate();
 
 	void BeginMotionUpdate();
 
-	EasingData easeData;
+	EasingData easeSwordMove;
 
 	WorldTransform swordTransform;
 
 	WorldTransform Transform;
-	Vector3 swordPos = { 30,-30,20 };
+	Vector3 swordPos = {0,0,0 };
 	EasingData easeSwordScale;
 
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
@@ -99,7 +99,7 @@ float Random(float num1, float num2);
 Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 
 /// <summary>
-/// ベジエ曲線補間
+/// 3次ベジエ曲線補間
 /// </summary>
 /// <param name="start">始点</param>
 /// <param name="contRollP1">制御点1</param>
@@ -107,4 +107,16 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 /// <param name="end">終点</param>
 /// <param name="t">時間</param>
 /// <returns>座標</returns>
-Vector3 LerpBezire(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t);
+Vector3 LerpBezireCubic(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t);
+
+Vector3 LerpBezireQuadratic(const Vector3& start, const Vector3& contRollP, const Vector3& end, float t);
+
+
+/// <summary>
+/// 0~1への線形補間をInBackの補間に変換する
+///</summary>
+/// <param name="t">時間</param>
+/// <returns></returns>
+float LerpConbertInback(float t);
+
+float LerpConbertOut(float t);

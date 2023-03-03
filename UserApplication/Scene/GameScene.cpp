@@ -24,7 +24,7 @@ void GameScene::Initialize() {
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = { 0,0,-10 };
+	viewProjection_.eye = { 0,100,-100 };
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
@@ -44,8 +44,12 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
+	boss.fishParent.pos.translation_ = { 0,0,100 };
+	boss.Update({0,0,0});
+
 	player = std::make_unique<Player>();
 	player->Initialize(model_.get(), 1280, 720);
+	//player->worldTransform_.translation = { 0,0,-100 };
 
 	gameCamera = std::make_unique<GameCamera>(1280, 720);
 	gameCamera->Initialize();
@@ -103,17 +107,25 @@ void GameScene::Update() {
 
 	ImGui::End();
 
-	boss.Update();
+	boss.Update(player->GetWorldPosition());
 
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->Update(viewProjection_);
 
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
 
-	viewProjection_.eye = gameCamera->GetEye();
-	viewProjection_.target = gameCamera->GetTarget();
+//	viewProjection_.eye = gameCamera->GetEye();
+	ImGui::Begin("Camera");
+	ImGui::SliderFloat("PosX", &viewProjection_.eye.x, -100.0f, 200.0f);
+	ImGui::SliderFloat("PosY", &viewProjection_.eye.y, -100.0f, 100.0f);
+	ImGui::SliderFloat("PosZ", &viewProjection_.eye.z, -100.0f, 200.0f);
+	ImGui::End();
+
+	//viewProjection_.target = gameCamera->GetTarget();
+	viewProjection_.target = { 0,0,0 };
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
 

@@ -370,6 +370,9 @@
     <ClInclude Include="Easing.h">
       <Filter>Engine\ヘッダー\Math</Filter>
     </ClInclude>
+    <ClInclude Include="PouseUi.h">
+      <Filter>ユーザーヘッダー ファイル\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -512,6 +515,9 @@
     </ClCompile>
     <ClCompile Include="Easing.cpp">
       <Filter>Engine\ソース ファイル\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PouseUi.cpp">
+      <Filter>ユーザーソース ファイル\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

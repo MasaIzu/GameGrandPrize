@@ -11,6 +11,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	model_.reset();
+	delete pouseUi;
 }
 
 void GameScene::Initialize() {
@@ -50,6 +51,7 @@ void GameScene::Initialize() {
 	gameCamera = std::make_unique<GameCamera>(1280, 720);
 	gameCamera->Initialize();
 
+	pouseUi->Initialize();
 
 	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
 }
@@ -116,6 +118,11 @@ void GameScene::Update() {
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
+	pouseUi->Update();
+	if (input_->TriggerKey(DIK_P) && isPouse == FALSE)
+	{
+		isPouse = TRUE;
+	}
 
 }
 
@@ -129,6 +136,11 @@ void GameScene::Draw() {
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
+
+	if (isPouse)
+	{
+		pouseUi->Draw();
+	}
 
 #pragma region 3Dオブジェクト描画
 	//// 3Dオブジェクト描画前処理

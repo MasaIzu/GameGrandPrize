@@ -21,6 +21,8 @@
 #include "GameCamera.h"
 #include"Boss.h"
 
+#include "PouseUi.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -87,4 +89,9 @@ private: // メンバ変数
 	Boss boss;
 	//デバッグによる生成用
 	float newFishPosY = 0;
+
+	//pouse
+	PouseUi* pouseUi = new PouseUi;
+
+	bool isPouse = false;
 };

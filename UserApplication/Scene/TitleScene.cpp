@@ -6,6 +6,7 @@ void TitleScene::Initialize()
 
 	loserTexture_ = TextureManager::Load("kyomu.png");
 	sprite_=  Sprite::Create(loserTexture_);
+
 	sceneManager_ = SceneManager::GetInstance();
 
 }

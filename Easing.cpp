@@ -146,12 +146,21 @@ double Easing::InOut_Bounce(double start, double end, double time, double max_ti
 	}
 }
 
+
+double Easing::easeOutCubic(double start, double end, double time, double max_time){
+	time /= max_time;
+
+	double x = 1 - pow(1 - time, 3);
+
+	return start + (end - start) * x;
+}
+
 Vector3 Easing::InOutVec3(Vector3 start, Vector3 end, double time, double max_time)
 {
 	Vector3 InOutVec;
-	double x = Out(static_cast <double>(start.x), static_cast <double>(end.x), time, max_time);
-	double y = Out(static_cast <double>(start.y), static_cast <double>(end.y), time, max_time);
-	double z = Out(static_cast <double>(start.z), static_cast <double>(end.z), time, max_time);
+	double x = easeOutCubic(static_cast <double>(start.x), static_cast <double>(end.x), time, max_time);
+	double y = easeOutCubic(static_cast <double>(start.y), static_cast <double>(end.y), time, max_time);
+	double z = easeOutCubic(static_cast <double>(start.z), static_cast <double>(end.z), time, max_time);
 
 	InOutVec = { static_cast <float>(x),static_cast <float>(y),static_cast <float>(z) };
 

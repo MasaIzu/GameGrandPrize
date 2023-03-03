@@ -65,6 +65,8 @@ private:
 	Vector3 playerPos;
 	Vector3 target;
 
+	bool cameraMode = false;
+
 	int cameraType = 0;
 
 	int winWidth = 0;

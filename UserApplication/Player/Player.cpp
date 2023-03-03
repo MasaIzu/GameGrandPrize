@@ -31,6 +31,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
 
+	//worldTransform_.SetRot(Vector3(60, 30, 2));
 
 
 	worldTransform_.TransferMatrix();
@@ -108,6 +109,12 @@ void Player::Move() {
 void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
+
+	if (input_->PushKey(DIK_J)) {
+		x += playerSpeed;
+	}
+
+	worldTransform_.SetRot(Vector3(x, 30, 2));
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();

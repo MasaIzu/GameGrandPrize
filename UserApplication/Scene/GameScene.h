@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "affin.h"
+#include"ParticleManager.h"
 
 #include "BaseScene.h"
 #include "SceneManager.h"
@@ -81,4 +82,6 @@ private: // メンバ変数
 	Boss boss;
 	//デバッグによる生成用
 	float newFishPosY = 0;
+
+	std::unique_ptr< ParticleManager> ParticleMan;
 };

@@ -48,4 +48,59 @@ void ViewProjection::UpdateMatrix() {
 	constMap->view = matView;
 	constMap->projection = matProjection;
 	constMap->cameraPos = eye;
+
+	//視点座標
+	Vector3 eyePosition = eye;
+	//注視点座標X
+	Vector3 targetPosition = target;
+	//(仮の)上方向
+	Vector3 upVector = up;
+
+	//カメラZ軸(視点方向)
+	Vector3 cameraAxisZ = targetPosition - eyePosition;
+
+	//ベクトルを正規化
+	cameraAxisZ.normalize();
+
+	//カメラのX軸(右方向)
+	Vector3 cameraAxisX;
+	//X軸は上方向→Z軸の外積で求まる
+	cameraAxisX = upVector.cross(cameraAxisZ);
+	//ベクトルを正規化
+	cameraAxisX.normalize();
+
+	//カメラのY軸(上方向)
+	Vector3 cameraAxisY;
+	//Y軸は上方向→Z軸の外積で求まる
+	cameraAxisY = cameraAxisZ.cross(cameraAxisX);
+	//ベクトルを正規化
+	cameraAxisY.normalize();
+
+	//視点座標に-1を掛けた座標
+	Vector3 reverseEyePosition = eyePosition * -1;
+	//カメラの位置からワールド原点へのベクトル(カメラ座標系)
+	float tX = cameraAxisX.dot(reverseEyePosition);
+	float tY = cameraAxisY.dot(reverseEyePosition);
+	float tZ = cameraAxisZ.dot(reverseEyePosition);
+	//一つのベクトルにまとめる
+	Vector3 translation = { tX, tY, tZ };
+
+#pragma region 全方向ビルボード行列の計算
+	//ビルボード行列
+	matBillboard.m[0][0] = cameraAxisX.x;
+	matBillboard.m[0][1] = cameraAxisX.y;
+	matBillboard.m[0][2] = cameraAxisX.z;
+	matBillboard.m[0][3] = 0;
+	matBillboard.m[1][0] = cameraAxisY.x;
+	matBillboard.m[1][1] = cameraAxisY.y;
+	matBillboard.m[1][2] = cameraAxisY.z;
+	matBillboard.m[1][3] = 0;
+	matBillboard.m[2][0] = cameraAxisZ.x;
+	matBillboard.m[2][1] = cameraAxisZ.y;
+	matBillboard.m[2][2] = cameraAxisZ.z;
+	matBillboard.m[2][3] = 0;
+	matBillboard.m[3][0] = 0;
+	matBillboard.m[3][1] = 0;
+	matBillboard.m[3][2] = 0;
+	matBillboard.m[3][3] = 1;
 }

@@ -156,6 +156,9 @@
     <None Include="test.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
@@ -201,6 +204,15 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\ObjGS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticlePS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -364,6 +376,9 @@
     <ClInclude Include="EasingData.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -500,6 +515,9 @@
     </ClCompile>
     <ClCompile Include="EasingData.cpp">
       <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

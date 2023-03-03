@@ -48,6 +48,8 @@ struct ViewProjection {
 	// Ë‰es—ñ
 	Matrix4 matProjection;
 
+	Matrix4 matBillboard;
+
 	/// <summary>
 	/// ‰Šú‰»
 	/// </summary>

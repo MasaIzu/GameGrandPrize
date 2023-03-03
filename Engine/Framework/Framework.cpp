@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include <FbxLoader.h>
 #include "FbxModel.h"
+#include"ParticleManager.h"
 
 void Framework::Initialize()
 {
@@ -41,7 +42,7 @@ void Framework::Initialize()
 
 	fps = std::make_unique<FPS>();
 
-	
+	ParticleManager::StaticInitialize(DirectXCore::GetInstance()->GetDevice());
 
 #pragma endregion
 

@@ -34,6 +34,7 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void Attack();
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();

@@ -130,7 +130,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 }
 
+void Player::Attack() {
 
+	
+
+}
 
 
 Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {

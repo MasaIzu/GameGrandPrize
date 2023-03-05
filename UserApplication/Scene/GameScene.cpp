@@ -75,7 +75,7 @@ void GameScene::Update() {
 	ImGui::Begin("Create Fish");
 	
 
-	ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
+	//ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
 
 	ImGui::Text("enemy Count %d",boss.fishes.size());
 

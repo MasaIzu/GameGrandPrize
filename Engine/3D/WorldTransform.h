@@ -4,7 +4,6 @@
 #include "MyMath.h"
 #include <d3d12.h>
 #include <wrl.h>
-#include "Quaternion.h"
 
 // 定数バッファ用データ構造体
 struct ConstBufferDataWorldTransform {
@@ -25,8 +24,6 @@ struct WorldTransform {
 	Vector3 rotation_ = { 0, 0, 0 };
 	// ローカル座標
 	Vector3 translation_ = { 0, 0, 0 };
-	//任意軸のローカル回転
-	Quaternion quaternion = { 0,0,0,0 };
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
 	// 親となるワールド変換へのポインタ
@@ -48,16 +45,4 @@ struct WorldTransform {
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();
-
-	void SetRot(const Vector3& rot);
-
-	void MoveRot(const Vector3& move);
-
-	void SetQuater(const Quaternion& quater);
-
-	void MoveQuater(const Quaternion& move);
-	
-	Quaternion& GetQuaternion();
-	
-
 };

@@ -22,7 +22,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	float angleX = 0;
 	float angleY = 0;
 
-	MaxCameraTime = 200;
+	MaxCameraTime = 300;
 	cameraTime = MaxCameraTime;
 	oldMousePos = mousePos;
 	mousePos = input_->GetMousePos();
@@ -53,17 +53,10 @@ void GameCamera::Initialize() {
 
 void GameCamera::Update(ViewProjection* viewProjection_) {
 
-	if (input_->TriggerKey(DIK_F1)) {
-		if (cameraMode == false) {
-			cameraMode = true;
-		}
-		else {
-			cameraMode = false;
-		}
-	}
-	if (cameraMode == true) {
+	if (input_->PushKey(DIK_F1)) {
 		PlaySceneCamera(viewProjection_);
 	}
+
 }
 
 void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {

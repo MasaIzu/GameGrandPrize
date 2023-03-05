@@ -59,8 +59,6 @@ private:
 	Vector3 Rot;
 	Vector3 Avoidance;
 
-	float x = 0;
-
 	float playerSpeed = 0.3f;
 	float playerAvoidance = 0.0f;
 

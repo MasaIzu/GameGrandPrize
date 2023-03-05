@@ -39,12 +39,13 @@ void WorldTransform::Map() {
 void WorldTransform::TransferMatrix() {
 
 	Matrix4 matScale, matRot, matTrans;
+	Quaternion QuaternionMatRot = { rotation_.x,rotation_.y,rotation_.z,0 };
 
 	//スケール、回転、平行移動行列の計算
 	matScale = MyMath::Scale(scale_);
 	matRot = MyMath::Initialize();
-	//matRot *= MyMath::Rotation(rotation_, 6);
-	matRot = quaternion.Rotate();
+	//matRot *= QuaternionMatRot.Rotate();
+	matRot *= MyMath::Rotation(rotation_, 6);
 	matTrans = MyMath::Translation(translation_);
 
 	//ワールド行列の合成
@@ -62,38 +63,3 @@ void WorldTransform::TransferMatrix() {
 	constMap->matWorld = matWorld_;
 
 }
-
-
-void WorldTransform::SetRot(const Vector3& rot)
-{
-	rotation_ = rot;
-
-	quaternion.SeTEuler(rotation_);
-}
-
-void WorldTransform::MoveRot(const Vector3& move)
-{
-	rotation_ += move;
-
-	quaternion.SeTEuler(rotation_);
-}
-
-void WorldTransform::SetQuater(const Quaternion& quater)
-{
-	quaternion = quater;
-
-	rotation_ = quaternion.GetEulerAngles();
-}
-
-void WorldTransform::MoveQuater(const Quaternion& move)
-{
-	quaternion += move;
-
-	rotation_ = quaternion.GetEulerAngles();
-}
-
-Quaternion& WorldTransform::GetQuaternion()
-{
-	return quaternion;
-}
-

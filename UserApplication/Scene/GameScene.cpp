@@ -56,8 +56,20 @@ void GameScene::Initialize() {
 	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
 }
 
-void GameScene::Update() {
+void GameScene::Update()
+{
 	
+	pouseUi->Update();
+	
+	if (pouseUi->GetisPouse() == FALSE)
+	{
+		GameUpdate();
+	}
+	
+}
+
+void GameScene::GameUpdate()
+{
 	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
@@ -71,11 +83,11 @@ void GameScene::Update() {
 
 
 	ImGui::Begin("Create Fish");
-	
+
 
 	//ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
 
-	ImGui::Text("enemy Count %d",boss.fishes.size());
+	ImGui::Text("enemy Count %d", boss.fishes.size());
 
 	if (ImGui::Button("Create")) {
 		boss.CreateFish(newFishPosY);
@@ -98,7 +110,7 @@ void GameScene::Update() {
 	ImGui::SliderFloat("Parent posY", &parentPos.y, -boss.fishParent.radius, boss.fishParent.radius);
 	ImGui::SliderFloat("Parent posZ", &parentPos.z, -boss.fishParent.radius, boss.fishParent.radius);
 	if (ImGui::Button("parent Reset")) {
-		parentPos = {0,0,0};
+		parentPos = { 0,0,0 };
 	}
 
 	boss.fishParent.pos.translation_ = parentPos;
@@ -118,11 +130,7 @@ void GameScene::Update() {
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
-	pouseUi->Update();
-	if (input_->TriggerKey(DIK_P) && isPouse == FALSE)
-	{
-		isPouse = TRUE;
-	}
+	//pouseUi->Update(bool isPouse);
 
 }
 
@@ -137,7 +145,7 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
-	if (isPouse)
+	if (pouseUi->GetisPouse())
 	{
 		pouseUi->Draw();
 	}

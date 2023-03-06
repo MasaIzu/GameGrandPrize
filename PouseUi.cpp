@@ -28,7 +28,7 @@ void PouseUi::Destroy()
 
 void PouseUi::Initialize()
 {
-	input = Input::GetInstance();
+	input_ = Input::GetInstance();
 
 	//UI背景
 	loserUi_ = TextureManager::Load("UI/UIPouse.png");
@@ -60,8 +60,31 @@ void PouseUi::Initialize()
 
 void PouseUi::Update()
 {
+	if (input_->TriggerKey(DIK_P) && isPouse == FALSE)
+	{
+		isPouse = TRUE;
+	}
+	else if (input_->TriggerKey(DIK_P) && isPouse == TRUE)
+	{
+		isPouse = FALSE;
+	}
+
+
+	if (isPouse)
+	{
+		Select();
+		
+		//ポーズ画面決定させたときの処理
+		Process();
+	}
+	
+}
+
+void PouseUi::Select()
+{
+
 	//下選択させる
-	if (input->TriggerKey(DIK_DOWN))
+	if (input_->TriggerKey(DIK_DOWN))
 	{
 		//項目最大値に行ったら最大で止める
 		if (select >= MAX)
@@ -74,7 +97,7 @@ void PouseUi::Update()
 		}
 	}
 	//上に選択させる
-	if (input->TriggerKey(DIK_UP))
+	if (input_->TriggerKey(DIK_UP))
 	{
 		//項目最小値に行ったら最小で止める
 		if (select <= MIN)
@@ -91,57 +114,96 @@ void PouseUi::Update()
 
 
 	//決定させる
-	if (input->TriggerKey(DIK_RETURN))
+	if (input_->TriggerKey(DIK_RETURN))
 	{
-		ok = select;
+		decided = select;
 		OK = TRUE;
 	}
-	//ポーズ画面決定させたときの処理
+
+}
+
+void PouseUi::Process()
+{
 	if (OK)
 	{
-		switch (ok)
+		switch (decided)
 		{
 		case 1://ゲームへ戻る0
+			Back();
 			OK = FALSE;
 			break;
 
 		case 2://リセット1
+			GameReset();
 			OK = FALSE;
-			Reset();
 			break;
 
 		case 3://設定2
-			OK = FALSE;
-			Reset();
+			Setting();
+
 			break;
 
 		case 4://タイトルへ3
-			OK = FALSE;
+			Title();
 			Reset();
+			OK = FALSE;
 			break;
 
 		case 5://ゲーム終了4
-			OK = FALSE;
+			Exit();
 			Reset();
+			OK = FALSE;
 			break;
-		} 
+		}
 	}
 
-	//Draw();
-	
 }
 
 void PouseUi::Draw()
 {
 	//ポーズ画面項目すべて表示
-	spriteUi_->Draw({640,360},{1,1,1,1});
+	//spriteUi_->		Draw({spriteSizeX,spriteSizeY+296},{1,1,1,1});
+	spriteBack_->	Draw({ spriteSizeX,spriteSizeY }, { 1,1,1,1 });
+	spriteReset_->	Draw({ spriteSizeX,spriteSizeY * 2 + size}, { 1,1,1,1 });
+	spriteTitle_->	Draw({ spriteSizeX,spriteSizeY * 3 + size*2}, { 1,1,1,1 });
+	spriteSetting_->Draw({ spriteSizeX,spriteSizeY * 4 + size*3}, { 1,1,1,1 });
+	spriteExit_->	Draw({ spriteSizeX,spriteSizeY * 5 + size*4}, { 1,1,1,1 });
+	
+
 
 
 	//選択中のものを表示
-
+	spriteSelect_->Draw({ spriteSizeX,spriteSizeY * select + size * (select-1) }, { 1,1,1,1 });
 
 }
 
 void PouseUi::Reset()
 {
+
 }
+
+void PouseUi::Back()
+{
+	isPouse = FALSE;
+}
+
+void PouseUi::GameReset()
+{
+
+}
+
+void PouseUi::Title()
+{
+
+}
+
+void PouseUi::Setting()
+{
+
+}
+
+void PouseUi::Exit()
+{
+
+}
+

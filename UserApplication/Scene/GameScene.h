@@ -52,6 +52,8 @@ public:
 	/// –ˆƒtƒŒ[ƒ€ˆ—
 	/// </summary>
 	void Update() override;
+	
+	void GameUpdate();
 
 	/// <summary>
 	/// •`‰æ

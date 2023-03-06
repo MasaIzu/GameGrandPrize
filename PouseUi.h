@@ -18,30 +18,47 @@ public:
 	void Update();
 	//描画
 	void Draw();
+
+	void Select();
+
+	void Process();
+
 	//リセット関数
 	void Reset();
+	
 
 	void Destroy();
 
-	//static PouseUi* GetInstance();
+	void Back();
+
+	void GameReset();
+
+	void Title();
+	
+	void Setting();
+
+	void Exit();
+
+	bool GetisPouse() { return isPouse; }
 
 
 private:
 
 	//static PouseUi* PouseUi_;
 
-	Input* input = nullptr;
+	Input* input_ = nullptr;
 
-	const int MIN = 0;
-	const int MAX = 4;
+	const int MIN = 1;
+	const int MAX = 5;
 	const int SMAX = 3;
 	int select = MIN;
+
 	//決定させたやつを代入
-	int ok = MIN;
+	int decided = MIN;
 	
 	//フラグ
 	bool OK = false;
-
+	bool isPouse = false;
 	//テクスチャ
 	//ポーズ画面の背景
 	std::unique_ptr<Sprite> spriteUi_ = nullptr;
@@ -64,5 +81,10 @@ private:
 	//セレクト
 	std::unique_ptr<Sprite> spriteSelect_ = nullptr;
 	uint32_t loserSelect_ = 0;
+
+	float spriteSizeX = 640.0f;
+	float spriteSizeY = 64.0f;
+
+	float size = 32.0f;
 };
 

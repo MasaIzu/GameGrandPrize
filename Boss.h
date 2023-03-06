@@ -52,8 +52,8 @@ public:
 	const int attackCooltime = 60 * 3;
 	const int beginAttackDelay = 60 * 1;
 
-	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　霧散   ﾓｰｼｮﾝ補間
-	const int atkSwordMotionTime = 120 + 45 + 60 + 60 + (10 * 3);
+	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
+	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
 	int nextPhaseInterval = 0;
 
 	int GetFishCount() { return fishes.size(); }

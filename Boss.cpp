@@ -170,9 +170,10 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	//剣の生成開始
 	//行動の切り替え(開始)タイミングで各行動のフレーム数でイージングタイマーを動かす
 
-	const int swordCreateTime = 120;
-	const int swordMoveTime = 45;
-	const int swordAtkTime = 150;
+	const int swordCreateTime = 120;	//剣の生成時間
+	const int swordMoveTime = 45;		//剣の移動時間
+	const int swordAtkTime = 150;		//剣の攻撃時間
+	const int swordBreakTime = 120;		//剣の崩壊時間
 
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
@@ -251,8 +252,12 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		easeSwordMove.Update();
 		Vector3 pos;
 		pos =  Lerp(swordPos, aftetVec, LerpConbertOut( easeSwordMove.GetTimeRate()));
-		swordTransform.rotation_.z = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
-		swordTransform.rotation_.x = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
+		/*swordTransform.rotation_.z = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
+		swordTransform.rotation_.x = easeSwordMove.GetTimeRate() * -(PI / 2.0f);*/
+
+		Vector3 rot = { easeSwordMove.GetTimeRate() * -(PI / 2.0f),0,easeSwordMove.GetTimeRate() * -(PI / 2.0f) };
+		swordTransform.SetRot(rot);
+
 
 		swordTransform.translation_ = pos;
 
@@ -272,11 +277,20 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//afterPos.z = -afterPos.z;
 
 		easeSwordMove.Update();
-		Vector3 pos;
+		Vector3 pos,rot;
 		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordMove.GetTimeRate()));
-
-		swordTransform.rotation_.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordMove.GetTimeRate()) * PI / 3.0f);
+		rot = swordTransform.rotation_;
+		rot.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordMove.GetTimeRate()) * PI / 3.0f);
+		swordTransform.SetRot(rot);
 		swordTransform.translation_ = pos;
+	}
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime) {
+		//崩壊モーションのための座標設定
+		int fishIndex = nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime;
+
+
+
+
 	}
 
 

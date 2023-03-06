@@ -23,6 +23,15 @@ ComPtr<ID3D12Resource> ParticleManager::vertBuff;
 //ComPtr<ID3D12Resource> Object3d::indexBuff;
 D3D12_VERTEX_BUFFER_VIEW ParticleManager::vbView{};
 
+float easeOutQuint(float x)
+{
+	return 1 - sqrt(1 - pow(x, 2));
+}
+float easeInQuint(float x)
+{
+	return x * x * x * x * x;
+}
+
 void ParticleManager::StaticInitialize(ID3D12Device* device)
 {
 	// nullptrチェック
@@ -318,35 +327,33 @@ void ParticleManager::Update()
 
 	//寿命が尽きたパーティクルを全削除
 	Particles.remove_if([](Particle& x) {
-		return x.frame >= x.num_frame;
+		return x.frame >= x.numFrame;
 		});
 	//全パーティクル
 	for (std::list<Particle>::iterator it = Particles.begin(); it != Particles.end(); it++)
 	{
 		//経過フレーム数をカウント
 		it->frame++;
-		//速度に加速度を加算
-		it->velocity = it->velocity + it->accel;
-		//速度による移動
-		it->position = it->position + it->velocity;
 
-		float f = (float)it->frame / it->num_frame;
+		float f = (float)it->frame / it->numFrame;
+		//速度による移動
+		it->position = easeInQuint(f) * (it->endPosition - it->startPosition)+it->startPosition;
 		//スケールの線形補間
-		it->scale = (it->e_scale - it->s_scale) * f;
-		it->scale += it->s_scale;
+		it->scale = (it->endScale - it->startScale) * f;
+		it->scale += it->startScale;
 
 		//赤の線形補間
-		it->color.x = (it->e_color.x - it->s_color.x) * f;
-		it->color.x += it->s_color.x;
+		it->color.x = (it->endColor.x - it->startColor.x) * f;
+		it->color.x += it->startColor.x;
 		//青の線形補間
-		it->color.y = (it->e_color.y - it->s_color.y) * f;
-		it->color.y += it->s_color.y;
+		it->color.y = (it->endColor.y - it->startColor.y) * f;
+		it->color.y += it->startColor.y;
 		//緑の線形補間
-		it->color.z = (it->e_color.z - it->s_color.z) * f;
-		it->color.z += it->s_color.z;
+		it->color.z = (it->endColor.z - it->startColor.z) * f;
+		it->color.z += it->startColor.z;
 		//緑の線形補間
-		it->color.w = (it->e_color.w - it->s_color.w) * f;
-		it->color.w += it->s_color.w;
+		it->color.w = (it->endColor.w - it->startColor.w) * f;
+		it->color.w += it->startColor.w;
 	}
 	//頂点バッファへデータ転送
 	VertexPos* vertMap = nullptr;
@@ -398,20 +405,19 @@ void ParticleManager::Draw(ViewProjection view)
 	cmdList->DrawInstanced(Particles.size(), 1, 0, 0);
 }
 
-void ParticleManager::Add(int life, Vector3 position, Vector3 velocity, Vector3 accel, float start_scale, float end_scale, Vector4 start_color, Vector4 end_color)
+void ParticleManager::Add(int life, Vector3 startPosition, Vector3 endPosition,float startScale, float endScale, Vector4 startColor, Vector4 endColor)
 {
 	//リストに要素を追加
 	Particles.emplace_front();
 	//追加した要素の参照
 	Particle& p = Particles.front();
 	//値のセット
-	p.position = position;
-	p.velocity = velocity;
-	p.accel = accel;
-	p.num_frame = life;
-	p.s_scale = start_scale;
-	p.e_scale = end_scale;
-	p.s_color = start_color;
-	p.e_color = end_color;
+	p.startPosition = startPosition;
+	p.endPosition = endPosition;
+	p.numFrame = life;
+	p.startScale= startScale;
+	p.endScale= endScale;
+	p.startColor = startColor;
+	p.endColor = endColor;
 }
 

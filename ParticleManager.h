@@ -51,26 +51,26 @@ public: // サブクラス
 	{
 		//座標
 		Vector3 position = {};
-		// 速度
-		Vector3 velocity = {};
-		// 加速度
-		Vector3 accel = {};
+
+		Vector3 startPosition;
+
+		Vector3 endPosition;
 		// 現在フレーム
 		int frame = 0;
 		//終了フレーム
-		int num_frame = 0;
+		int numFrame = 0;
 		
 		float scale = 1.0f;
 
-		float s_scale = 1.0f;
+		float startScale = 1.0f;
 
-		float e_scale = 0.0f;
+		float endScale = 0.0f;
 
 		Vector4 color = {};
 
-		Vector4 s_color = {};
+		Vector4 startColor = {};
 
-		Vector4 e_color = {};
+		Vector4 endColor = {};
 
 	};
 
@@ -144,7 +144,7 @@ public: // メンバ関数
 	///<param name="position">初期座標</param>
 	/// <param name="velocity">	速度</param>
 	/// <param name="life">加速度</param>
-	void Add(int life, Vector3 position, Vector3 velocity, Vector3 accel,float start_scale,float end_scale,Vector4 start_color,Vector4 end_color);
+	void Add(int life, Vector3 startPosition, Vector3 endPosition,float start_scale,float end_scale,Vector4 start_color,Vector4 end_color);
 
 private: // メンバ変数
 	ComPtr<ID3D12Resource> constBuff; // 定数バッファ

@@ -7,6 +7,7 @@
 #include"ImGuiManager.h"
 
 
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -18,6 +19,9 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCore::GetInstance();
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
+
+	//当たり判定
+	collisionManager = CollisionManager::GetInstance();
 
 	model_.reset(Model::CreateFromOBJ("UFO", true));
 
@@ -116,6 +120,9 @@ void GameScene::Update() {
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
+
+	//全ての衝突をチェック
+	collisionManager->CheckAllCollisions();
 
 }
 

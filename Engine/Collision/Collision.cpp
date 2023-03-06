@@ -85,6 +85,8 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB,
 	float radius2 = sphereA.radius + sphereB.radius;
 	radius2 *= radius2;
 
+
+
 	if (dist <= radius2)
 	{
 		if (inter)

@@ -1,6 +1,9 @@
 #include "Player.h"
 #include "WinApp.h"
 #include"MyMath.h"
+#include "CollisionManager.h"
+#include "SphereCollider.h"
+#include <CollisionAttribute.h>
 
 
 Player::Player()
@@ -23,6 +26,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	Window_Width = WindowWidth;
 	Window_Height = WindowHeight;
 
+	// コリジョンマネージャに追加
+	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+	CollisionManager::GetInstance()->AddCollider(collider);
+
 	playerAvoidance = 6.0f;
 
 	//ワールド変換の初期化
@@ -31,6 +38,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	//worldTransform_.SetRot(Vector3(60, 30, 2));
 
+	collider->Update(worldTransform_.matWorld_);
+	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -116,6 +125,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+
+	collider->Update(worldTransform_.matWorld_);
 }
 
 void Player::Draw(ViewProjection viewProjection_) {

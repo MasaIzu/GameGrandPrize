@@ -7,6 +7,9 @@
 #include <memory>
 #include "Sprite.h"
 #include <list>
+#include "BaseCollider.h"
+
+#include "Vector4.h"
 
 class Player {
 
@@ -52,6 +55,9 @@ private:
 	//インプット
 	Input* input_ = nullptr;
 
+	// コライダー
+	BaseCollider* collider = nullptr;
+
 	//モデル
 	Model* playerModel_ = nullptr;
 	std::unique_ptr<Model> oldPlayerModel_;
@@ -60,8 +66,13 @@ private:
 	Vector3 Rot;
 	Vector3 Avoidance;
 
-	float x = 0;
+	int timer = 0;
 
+
+	float x = 0;
+	float radius = 2.0f;//当たり判定半径
+	float Window_Width;
+	float Window_Height;
 	float playerSpeed = 0.3f;
 	float playerAvoidance = 0.0f;
 
@@ -69,11 +80,6 @@ private:
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
-
 	bool spaceInput = false;
 
-	int timer = 0;
-
-	float Window_Width;
-	float Window_Height;
 };

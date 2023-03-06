@@ -5,6 +5,7 @@
 #include"ImGuiManager.h"
 #include"Easing.h"
 
+
 Boss::~Boss()
 {
 
@@ -35,6 +36,7 @@ void Boss::Update(const Vector3& targetPos)
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
 
+	ImGui::Text("scale:%f", swordTransform.scale_.x);
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -112,7 +114,8 @@ void Boss::Draw(ViewProjection viewProMat)
 		swordModel->Draw(swordTransform, viewProMat);
 	}
 
-	swordModel->Draw(swordTransform, viewProMat);
+
+	//swordModel->Draw(swordTransform, viewProMat);
 }
 
 void Boss::IdleUpdate()
@@ -136,7 +139,14 @@ void Boss::IdleUpdate()
 		//	pos.y = fishParent.radius - fishes[i].radius;
 		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * (fishes[i].pos.translation_.y / fabs(fishes[i].pos.translation_.y)));
+
+		float plus = Random(-1.0f, 1.0f);
+		float num = 1;
+		if (plus < 0) {
+			num = -1;
+		}
+
+		pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
 
 		pos += fishes[i].displacement;
 
@@ -155,6 +165,9 @@ void Boss::IdleUpdate()
 		//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
 		phase1 = BossFirstPhase::Atk_Sword;
 		nextPhaseInterval = atkSwordMotionTime;
+		swordTransform.scale_ = { 0,0,0 };
+		swordTransform.SetRot({ 0,0,0 });
+		swordTransform.TransferMatrix();
 
 		//魚群の乱回転のためのランダムなベクトルを作成
 		for (int i = 0; i < fishes.size(); i++) {
@@ -175,9 +188,10 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	const int swordAtkTime = 150;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 
+	//モーション開始の瞬間
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
-		easeSwordScale.Start(120 + 15);
+		easeSwordScale.Start(swordCreateTime);
 		//剣の座標
 		swordPos.x = fishParent.pos.translation_.x + 30;
 		swordPos.y = fishParent.pos.translation_.y - 30;
@@ -186,12 +200,20 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		beforeScale = { 0.5f,0.5f,0.5f };
 		afterScale = { 0,0,0 };
 
-	}
-	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime)
+		if (!choiceFishIndex.empty()) {
+			choiceFishIndex.clear();
+		}
+
+	}//移動開始の瞬間
+	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - 60) {
+		easeSwordMove.Start(swordMoveTime);
+
+	}//攻撃開始の瞬間
+	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - 60)
 	{
 		easeSwordMove.Start(swordAtkTime);
-	}
-	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime) {
+	}//霧散の瞬間
+	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
 		easeSwordScale.Start(swordBreakTime);
 		afterScale = { 0.5f,0.5f,0.5f };
 		beforeScale = { 0,0,0 };
@@ -221,13 +243,25 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		choiceFishIndex.push_back(goFishToSwordIndex);
 		//動的配列末尾の要素のイージングを時間10fで開始させる(順番に移動してもらうため)
 
+		size_t sizeA = choiceFishIndex.size();
+		size_t indexA = choiceFishIndex[choiceFishIndex.size() - 1];
+
 		Vector3 pos;
 		float randomParam = 10.0f;
 		//移動を開始する魚の元の座標を取っておき、制御点もイイ感じに決める
 		fishesBeforePos[choiceFishIndex.size() - 1] = fishes[choiceFishIndex[choiceFishIndex.size() - 1]].pos.translation_;
+		if (isnan(fishesBeforePos[choiceFishIndex.size() - 1].y)) {
+			static int a = 0;
+			a++;
+		}
+
 		//選択された魚は親子関係をいったん切る
 		fishes[choiceFishIndex[choiceFishIndex.size() - 1]].pos.parent_ = nullptr;
 		fishesBeforePos[choiceFishIndex.size() - 1] = fishParent.pos.matWorld_.transform(fishesBeforePos[choiceFishIndex.size() - 1], fishParent.pos.matWorld_);
+		if (isnan(fishesBeforePos[choiceFishIndex.size() - 1].y)) {
+			static int a = 0;
+			a++;
+		}
 
 		//制御点1は始点から誤差x(今は5)のランダムな地点。制御点2は終点から誤差xにランダム
 		pos = fishesBeforePos[choiceFishIndex.size() - 1];
@@ -239,16 +273,19 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 		//剣を徐々におおきくする
 		Vector3 swordScale;
-		swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
 		easeSwordScale.Update();
+		swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
+
 		swordTransform.scale_ = swordScale;
 		swordTransform.translation_ = swordPos;
 
 		//剣移動のイージングを開始する(実際の座標移動や更新は後ろのif文でやってるので影響なし)
-		easeSwordMove.Start(swordMoveTime);
+		//easeSwordMove.Start(swordMoveTime);
 
 	}//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
-	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime) {
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - 60) {
+
+		nextPhaseInterval -= swordAtkTime;
 
 		Vector3 rotaVec;
 		rotaVec.x = sin(PI / 3.0f);
@@ -275,7 +312,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		swordTransform.translation_ = pos;
 
 	}
-	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime) {
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime -60) {
 		Vector3 rotaVec;
 		rotaVec.x = sin(PI / 3.0f);
 		rotaVec.z = cos(PI / 3.0f);
@@ -297,7 +334,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		swordTransform.SetRot(rot);
 		swordTransform.translation_ = pos;
 	}
-	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime) {
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
 		//崩壊モーションのための座標設定
 		int fishIndex = swordBreakTime - nextPhaseInterval;
 		if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
@@ -309,7 +346,10 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//前座標は自座標
 		fishesBeforePos[fishIndex] = fishes[choiceFishIndex[fishIndex]].pos.translation_;
 		fishesBeforePos[fishIndex] = swordTransform.translation_;//制御点1は自座標から誤差x
-		
+		if (isnan(fishesBeforePos[fishIndex].x)) {
+			static int a = 0;
+			a++;
+		}
 
 		pos = fishesBeforePos[fishIndex];
 		fishesControllP1[fishIndex] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
@@ -326,7 +366,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 		fishesAfterPos[fishIndex] = fishParent.pos.matWorld_.transform(fishesAfterPos[fishIndex], fishParent.pos.matWorld_);
 		fishesControllP2[fishIndex] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
-		easePFishToSword[fishIndex].Start(60);
+		easePFishToSword[fishIndex].Start(10);
 
 		//剣を徐々におおきくする
 		Vector3 swordScale;
@@ -335,28 +375,33 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		swordTransform.scale_ = swordScale;
 
 	}
+	else if(nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 70) {
 
-	/*if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime) {
-		nextPhaseInterval--;
-	}
-	else {
-		if (ImGui::Button("Frame")) {
-			nextPhaseInterval--;
+		//親子関係を戻す
+		for (int i = 0; i < fishes.size(); i++) {
+			if (fishes[i].pos.parent_ == nullptr) {
+				fishes[i].pos.parent_ = &fishParent.pos;
+			}
 		}
-	}*/
+
+
+		//モーション終了
+		nextPhaseInterval = attackCooltime;
+		//フェーズを移行
+		phase1 = BossFirstPhase::Idle;
+		return;
+	}
+
 
 
 	//イージングによるスケールと座標の制御6
 	for (int i = 0; i < choiceFishIndex.size(); i++) {
 		easePFishToSword[i].Update();
-		
+
 		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezireCubic(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], fishesAfterPos[i], easePFishToSword[i].GetTimeRate());
-		//fishes[choiceFishIndex[i]].pos.translation_.z = 0;
 		ImGui::Text("afterPosZ[%d]:%1.5f", i, fishesAfterPos[i].z);
 		if (easePFishToSword[i].GetActive()) {
 			fishes[choiceFishIndex[i]].pos.scale_ = Lerp(beforeScale, afterScale, easePFishToSword[i].GetTimeRate());
-
-			//ImGui::Text("scale[%d]:%1.1f,%1.1f,%1.1f", i, fishes[choiceFishIndex[i]].pos.scale_.x, fishes[choiceFishIndex[i]].pos.scale_.y, fishes[choiceFishIndex[i]].pos.scale_.z);
 		}
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();
 	}
@@ -364,21 +409,13 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
-
 	ImGui::Text("ParentPosZ:%1.5f", fishParent.pos.translation_.z);
 	ImGui::Text("swordPosZ:%1.5f", swordTransform.translation_.z);
-
-
-	//swordTransform.rotation_.z = -PI / 2;
-	//swordTransform.rotation_.y = PI / 6;
-
 
 	swordTransform.TransferMatrix();
 
 	//タイマー制御
 	nextPhaseInterval--;
-
-	//モーション終了
 }
 
 void Boss::AtkRushUpdate()

@@ -57,6 +57,10 @@ public:
 	int nextPhaseInterval = 0;
 
 	int GetFishCount() { return fishes.size(); }
+
+	WorldTransform swordTransform;
+
+
 private:
 	//フェーズごとの更新処理
 	void IdleUpdate();
@@ -69,16 +73,16 @@ private:
 
 	EasingData easeSwordMove;
 
-	WorldTransform swordTransform;
-
+	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
 	EasingData easeSwordScale;
 
+	const int moveFishMax = 120;
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
-	Vector3 spd[120];	//移動する魚の移動速度
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120];
+	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120],fishesAfterPos[120];
+	Vector3 beforeScale, afterScale;
 };
 
 /// <summary>

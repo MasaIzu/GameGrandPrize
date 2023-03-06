@@ -152,6 +152,8 @@ void GameScene::Draw() {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);
 	}
 
+	model_->Draw(boss.swordTransform, viewProjection_);
+
 	boss.Draw(viewProjection_);
 
 	player->Draw(viewProjection_);

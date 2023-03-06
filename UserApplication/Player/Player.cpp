@@ -2,7 +2,6 @@
 #include "WinApp.h"
 #include"MyMath.h"
 #include "CollisionManager.h"
-#include "SphereCollider.h"
 #include <CollisionAttribute.h>
 
 
@@ -35,8 +34,6 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
-
-	//worldTransform_.SetRot(Vector3(60, 30, 2));
 
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
@@ -117,11 +114,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
 
-	if (input_->PushKey(DIK_J)) {
-		x += playerSpeed;
+	if (input_->MouseInputTrigger(0)) {
+		Attack(Vector3(0,0,0),Vector3(5,5,5));
 	}
-
-	worldTransform_.SetRot(Vector3(x, 30, 2));
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -141,9 +136,27 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 }
 
-void Player::Attack() {
+void Player::Attack(Vector3 start, Vector3 Finish) {
 
-	
+	float sphereX = Finish.x - start.x;
+	float sphereY = Finish.y - start.y;
+	float sphereZ = Finish.z - start.z;
+
+	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+
+		Vector3 colliderPos = start + sphere * i;
+
+		Matrix4 worldSpherePos = MyMath::Translation(colliderPos);
+
+		AttackCollider[i]->Update(worldSpherePos);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+	}
 
 }
 

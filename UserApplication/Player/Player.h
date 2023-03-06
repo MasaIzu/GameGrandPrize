@@ -10,6 +10,7 @@
 #include "BaseCollider.h"
 
 #include "Vector4.h"
+#include <SphereCollider.h>
 
 class Player {
 
@@ -37,7 +38,7 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void Attack();
+	void Attack(Vector3 start,Vector3 Finish);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -57,6 +58,10 @@ private:
 
 	// コライダー
 	BaseCollider* collider = nullptr;
+
+	static const int SphereCount = 24;
+
+	BaseCollider* AttackCollider[SphereCount];
 
 	//モデル
 	Model* playerModel_ = nullptr;

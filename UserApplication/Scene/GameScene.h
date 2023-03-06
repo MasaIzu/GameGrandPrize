@@ -80,6 +80,8 @@ private: // メンバ変数
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
 
+	float pol = 0.0f;
+
 	//Fbxモデル
 	//std::unique_ptr<FbxModel> fbxmodel;
 

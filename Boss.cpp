@@ -351,7 +351,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	//崩壊モーション
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
 		//崩壊モーションのための座標設定
-		int fishIndex = swordBreakTime - nextPhaseInterval;
+		int fishIndex = swordBreakTime - nextPhaseInterval - 60;
 		if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
 		ImGui::Text("fishIndex:%d", fishIndex);
 
@@ -371,7 +371,16 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		fish newFish = fishes[choiceFishIndex[fishIndex]];
 		pos.x = sin(PI / 180.0f * fishes[choiceFishIndex[fishIndex]].radian) * fishes[choiceFishIndex[fishIndex]].radius;
 		pos.z = cos(PI / 180.0f * fishes[choiceFishIndex[fishIndex]].radian) * fishes[choiceFishIndex[fishIndex]].radius;
-		pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * (posY / fabs(posY)));
+
+
+		float plus = Random(-1.0f, 1.0f);
+		float num = 1;
+		if (plus < 0) {
+			num = -1;
+		}
+
+		pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * num);
+
 		pos += newFish.displacement;
 		fishesAfterPos[fishIndex] = pos;
 
@@ -387,8 +396,10 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 	}
 	//モーション終了
-	else if(nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 120) {
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 120) {
 
+	}
+	else {
 		//親子関係を戻す
 		for (int i = 0; i < fishes.size(); i++) {
 			if (fishes[i].pos.parent_ == nullptr) {
@@ -410,8 +421,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		easePFishToSword[i].Update();
 
 		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezireCubic(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], fishesAfterPos[i], easePFishToSword[i].GetTimeRate());
-		ImGui::Text("afterPosZ[%d]:%1.5f", i, fishesAfterPos[i].z);
+		
 		if (easePFishToSword[i].GetActive()) {
+			ImGui::Text("fish[%d]scalling Active!", i);
 			fishes[choiceFishIndex[i]].pos.scale_ = Lerp(beforeScale, afterScale, easePFishToSword[i].GetTimeRate());
 		}
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();

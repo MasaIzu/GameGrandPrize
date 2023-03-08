@@ -49,7 +49,7 @@ public:
 	void Draw(ViewProjection viewProMat);
 
 	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 1;
+	const int attackCooltime = 60 * 3;
 	const int beginAttackDelay = 60 * 1;
 
 	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散

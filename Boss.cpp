@@ -143,11 +143,25 @@ void Boss::IdleUpdate()
 		//座標を計算
 		Vector3 pos;
 
-		pos = fishes[i].pos.translation_ - fishes[i].displacement;
+		pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+
+		Vector3 rotaVec;
+		Vector3 vec = { 0, 1, 0 };
+		vec.normalize();
+
+		Quaternion rotaQuaternion = {vec,fishes[i].radian * PI / 180.0f};
+		Quaternion posQ = { pos.x,pos.y,pos.z,0 };
+		rotaVec = rotaQuaternion.multiply(posQ.GetAxis());
+
+		rotaVec *= fishes[i].radius;
 
 		//	pos.y = fishParent.radius - fishes[i].radius;
 		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+
+		pos.x = rotaVec.x;
+		pos.z = rotaVec.z;
+		//pos = rotaVec;
 
 		float plus = Random(-1.0f, 1.0f);
 		float num = 1;
@@ -172,16 +186,30 @@ void Boss::IdleUpdate()
 		//フェーズを移行
 		phase1 = BossFirstPhase::BeginMotion;
 		//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
-		phase1 = BossFirstPhase::Atk_Sword;
-		nextPhaseInterval = atkSwordMotionTime;
+	/*	phase1 = BossFirstPhase::Atk_Sword;
+		nextPhaseInterval = atkSwordMotionTime;*/
 		swordTransform.scale_ = { 0,0,0 };
 		swordTransform.SetRot({ 0,0,0 });
 		swordTransform.TransferMatrix();
 
 		//魚群の乱回転のためのランダムなベクトルを作成
 		for (int i = 0; i < fishes.size(); i++) {
-			fishes[i].randomVec = Vector3(Random(0.0f, 1.0f), Random(0.0f, 1.0f), Random(0.0f, 1.0f));
+			fishes[i].randomVec = Vector3(Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f));
+			fishes[i].randomVec  = -fishes[i].randomVec;
+			//fishes[i].randomVec -= fishParent.pos.translation_;
+			Matrix4 randRotaMat;
+			randRotaMat.identity();
+			randRotaMat.rotateZ(Random(0.0f, 360.0f) * PI / 180.0f);
+			randRotaMat.rotateX(Random(0.0f, 360.0f) * PI / 180.0f);
+			randRotaMat.rotateY(Random(0.0f, 360.0f) * PI / 180.0f);
+			//fishes[i].randomVec = randRotaMat.transform(fishes[i].randomVec, randRotaMat)/* * fishParent.pos.translation_*/;
+			fishes[i].randomVec  += fishParent.pos.translation_;
 			fishes[i].randomVec.normalize();
+			fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
+			
+			float displacement = fishParent.radius / 10.0f;
+			fishes[i].radius = Random(fishParent.radius - displacement, fishParent.radius+ displacement);
+			fishes[i].radius =fishParent.radius;
 		}
 
 	}
@@ -458,17 +486,60 @@ void Boss::BeginMotionUpdate()
 		if (fishes[i].radian > 360.0f) {
 			fishes[i].radian -= 360.0f;
 			fishes[i].spd = Random(0.0f, randSpdParam);
+			fishes[i].spd = Random(randSpdParam/2.0f, randSpdParam);
+			//fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
 		}
 
 
 		//ランダムに取得したベクトルと自座標から原点(魚群の中心)のベクトルの外積をとり、乱回転の軸を作成
-		Vector3 vec = fishes[i].pos.translation_ - fishParent.pos.translation_;
-		Vector3 cross;
-		cross = fishes[i].randomVec.cross(vec);
+		Vector3 vec = fishes[i].randomVec * fishes[i].radius;
+		//vec.normalize();
+		//vec *= fishes[i].radius;
+		Vector3 baseVec;
+		baseVec = fishes[i].randomVec * fishes[i].radius;
+	/*	baseVec.x = fishParent.pos.translation_.x * fishes[i].randomVec.x;
+		baseVec.y = fishParent.pos.translation_.y * fishes[i].randomVec.y;
+		baseVec.z = fishParent.pos.translation_.z * fishes[i].randomVec.z;*/
+		baseVec.normalize();
 
-		Vector3 pos;
-		Quaternion randomRotate = (cross, fishes[i].radian);
+		Quaternion baseQ = { baseVec,fishes[i].radian * PI / 180.0f };
+		
+		//baseQ = { Vector3(0,0,1),fishes[i].radian * PI / 180.0f };
+		Quaternion posQ = { vec.x,vec.y,vec.z,0};
+
+		Vector3 pos = baseQ.multiply(posQ.GetAxis());
+		//pos -= fishes[i].randomVec;
+		pos *= fishes[i].radius;
+		//pos.y = vec.y;
+	//	pos += fishes[i].displacement;
+		
 		//	pos = randomRotate.RotateVector(fishes[i].pos.translation_);
+
+
+
+		if (i <= 5 && i >= 0) {
+			fishes[i].pos.scale_ = { 1,1,1 };
+			if (i == 0) {
+				pos = { fishes[i].radius,0,0 };
+			}
+			else if (i == 1) {
+				pos = { -fishes[i].radius,0,0 };
+			}
+			else if (i == 2) {
+				pos = { 0,fishes[i].radius,0 };
+			}
+			else if (i == 3) {
+				pos = { 0,-fishes[i].radius,0 };
+			}
+			else if (i == 4) {
+				pos = { 0,0,fishes[i].radius };
+			}
+			else if (i == 5) {
+				pos = { 0,0,-fishes[i].radius };
+			}
+		}
+
+
 		fishes[i].pos.translation_ = pos;
 		fishes[i].pos.TransferMatrix();
 

@@ -162,10 +162,6 @@ Vector3 Matrix4::transform(const Vector3& v, const Matrix4& m)
 {
 	float W = v.x * m.m[0][3] + v.y * m.m[1][3] + v.z * m.m[2][3] + m.m[3][3];
 
-	if (isnan(W)||std::abs(W)<1.0e-10) {
-		static int a = 0;
-		a++;
-	}
 
 	Vector3 result
 	{

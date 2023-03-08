@@ -38,6 +38,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
+
+
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 }
@@ -138,24 +140,32 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 void Player::Attack(Vector3 start, Vector3 Finish) {
 
-	float sphereX = Finish.x - start.x;
-	float sphereY = Finish.y - start.y;
-	float sphereZ = Finish.z - start.z;
+	if (makeColliders == false) {
+		float sphereX = Finish.x - start.x;
+		float sphereY = Finish.y - start.y;
+		float sphereZ = Finish.z - start.z;
 
-	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
 
 
-	for (int i = 0; i < SphereCount; i++) {
-		// コリジョンマネージャに追加
-		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
-		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		for (int i = 0; i < SphereCount; i++) {
+			// コリジョンマネージャに追加
+			AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 
-		Vector3 colliderPos = start + sphere * i;
+			colliderPos[i] = start + sphere * i;
 
-		Matrix4 worldSpherePos = MyMath::Translation(colliderPos);
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
 
-		AttackCollider[i]->Update(worldSpherePos);
-		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+		}
+	}
+	else {
+		for (int i = 0; i < SphereCount; i++) {
+			
+			AttackCollider[i]->Update(worldSpherePos[i]);
+		}
 	}
 
 }

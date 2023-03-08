@@ -62,6 +62,9 @@ private:
 	static const int SphereCount = 24;
 
 	BaseCollider* AttackCollider[SphereCount];
+	Vector3 colliderPos[SphereCount];
+	Matrix4 worldSpherePos[SphereCount];
+	bool makeColliders = false;
 
 	//ƒ‚ƒfƒ‹
 	Model* playerModel_ = nullptr;

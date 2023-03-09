@@ -25,7 +25,7 @@ D3D12_VERTEX_BUFFER_VIEW ParticleManager::vbView{};
 
 float easeOutQuint(float x)
 {
-	return 1 - sqrt(1 - pow(x, 2));
+	return sin((x * PI) / 2);
 }
 float easeInQuint(float x)
 {
@@ -173,10 +173,10 @@ void ParticleManager::InitializeGraphicsPipeline()
 	// サンプルマスク
 	gpipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK; // 標準設定
 	// ラスタライザステート
-	gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	//gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	//gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;//ポリゴン内塗りつぶし
-	//gpipeline.RasterizerState.DepthClipEnable = true;//深度グリッピングを有効に
+	//gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;//ポリゴン内塗りつぶし
+	gpipeline.RasterizerState.DepthClipEnable = true;//深度グリッピングを有効に
 	// デプスステンシルステート
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
@@ -255,11 +255,11 @@ void ParticleManager::InitializeGraphicsPipeline()
 
 void ParticleManager::InitializeVerticeBuff()
 {
-	VertexPos vertexs[1024];
+	//VertexPos vertexs[1024];
 
 	HRESULT result;
 
-	UINT sizeVB = static_cast<UINT>(sizeof(vertexs));
+	UINT sizeVB = static_cast<UINT>(sizeof(VertexPos))*1024;
 
 	// ヒーププロパティ
 	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -274,8 +274,8 @@ void ParticleManager::InitializeVerticeBuff()
 
 	// 頂点バッファビューの作成
 	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-	vbView.SizeInBytes = sizeof(vertexs);
-	vbView.StrideInBytes = sizeof(vertexs[0]);
+	vbView.SizeInBytes =sizeVB;
+	vbView.StrideInBytes = sizeof(VertexPos);
 }
 
 void ParticleManager::SetTextureHandle(uint32_t textureHandle) {
@@ -326,11 +326,11 @@ void ParticleManager::Update()
 	//}
 
 	//寿命が尽きたパーティクルを全削除
-	Particles.remove_if([](Particle& x) {
+	inParticles.remove_if([](InParticle& x) {
 		return x.frame >= x.numFrame;
 		});
 	//全パーティクル
-	for (std::list<Particle>::iterator it = Particles.begin(); it != Particles.end(); it++)
+	for (std::list<InParticle>::iterator it = inParticles.begin(); it != inParticles.end(); it++)
 	{
 		//経過フレーム数をカウント
 		it->frame++;
@@ -355,13 +355,56 @@ void ParticleManager::Update()
 		it->color.w = (it->endColor.w - it->startColor.w) * f;
 		it->color.w += it->startColor.w;
 	}
+	//寿命が尽きたパーティクルを全削除
+	outParticles.remove_if([](OutParticle& x) {
+		return x.frame >= x.numFrame;
+		});
+	//全パーティクル
+	for (std::list<OutParticle>::iterator it = outParticles.begin(); it != outParticles.end(); it++)
+	{
+		//経過フレーム数をカウント
+		it->frame++;
+
+		float f = easeOutQuint((float)it->frame / it->numFrame);
+		//速度による移動
+		Vector3 p1 = it->startPosition*(1.0f-f)+it->controlPosition*f;
+		Vector3 p2 =it->controlPosition * (1.0f - f) + it->endPosition * f;
+
+		it->position = p1 * (1.0f - f) + p2 * f;
+		//スケールの線形補間
+		it->scale = (it->endScale - it->startScale) * f;
+		it->scale += it->startScale;
+
+		//赤の線形補間
+		it->color.x = (it->endColor.x - it->startColor.x) * f;
+		it->color.x += it->startColor.x;
+		//青の線形補間
+		it->color.y = (it->endColor.y - it->startColor.y) * f;
+		it->color.y += it->startColor.y;
+		//緑の線形補間
+		it->color.z = (it->endColor.z - it->startColor.z) * f;
+		it->color.z += it->startColor.z;
+		//緑の線形補間
+		it->color.w = (it->endColor.w - it->startColor.w) * f;
+		it->color.w += it->startColor.w;
+	}
 	//頂点バッファへデータ転送
 	VertexPos* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	if (SUCCEEDED(result))
 	{
 		//パーティクルの情報を1つずつ反映
-		for (std::list<Particle>::iterator it = Particles.begin(); it != Particles.end(); it++)
+		for (std::list<InParticle>::iterator it = inParticles.begin(); it != inParticles.end(); it++)
+		{
+			//座標
+			vertMap->pos = it->position;
+			vertMap->scale = it->scale;
+			vertMap->color = it->color;
+			//次の頂点へ
+			vertMap++;
+		}
+		//パーティクルの情報を1つずつ反映
+		for (std::list<OutParticle>::iterator it = outParticles.begin(); it != outParticles.end(); it++)
 		{
 			//座標
 			vertMap->pos = it->position;
@@ -402,21 +445,38 @@ void ParticleManager::Draw(ViewProjection view)
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(cmdList, 1, textureHandle_);
 	// 描画コマンド
 	//cmdList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);
-	cmdList->DrawInstanced(Particles.size(), 1, 0, 0);
+	cmdList->DrawInstanced(inParticles.size()+outParticles.size(), 1, 0, 0);
 }
 
-void ParticleManager::Add(int life, Vector3 startPosition, Vector3 endPosition,float startScale, float endScale, Vector4 startColor, Vector4 endColor)
+void ParticleManager::InAdd(int life, Vector3 startPosition, Vector3 endPosition,float startScale, float endScale, Vector4 startColor, Vector4 endColor)
 {
 	//リストに要素を追加
-	Particles.emplace_front();
+	inParticles.emplace_front();
 	//追加した要素の参照
-	Particle& p = Particles.front();
+	InParticle& p = inParticles.front();
 	//値のセット
 	p.startPosition = startPosition;
 	p.endPosition = endPosition;
 	p.numFrame = life;
 	p.startScale= startScale;
 	p.endScale= endScale;
+	p.startColor = startColor;
+	p.endColor = endColor;
+}
+
+void ParticleManager::OutAdd(int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor)
+{
+	//リストに要素を追加
+	outParticles.emplace_front();
+	//追加した要素の参照
+	OutParticle& p = outParticles.front();
+	//値のセット
+	p.startPosition = startPosition;
+	p.endPosition = endPosition;
+	p.controlPosition = {endPosition.x,startPosition.y,endPosition.z};
+	p.numFrame = life;
+	p.startScale = startScale;
+	p.endScale = endScale;
 	p.startColor = startColor;
 	p.endColor = endColor;
 }

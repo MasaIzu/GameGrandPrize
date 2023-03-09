@@ -47,7 +47,7 @@ public: // サブクラス
 	};
 
 	//パーティクル一粒
-	struct Particle
+	struct InParticle
 	{
 		//座標
 		Vector3 position = {};
@@ -60,6 +60,36 @@ public: // サブクラス
 		//終了フレーム
 		int numFrame = 0;
 		
+		float scale = 1.0f;
+
+		float startScale = 1.0f;
+
+		float endScale = 0.0f;
+
+		Vector4 color = {};
+
+		Vector4 startColor = {};
+
+		Vector4 endColor = {};
+
+	};
+
+	//パーティクル一粒
+	struct OutParticle
+	{
+		//座標
+		Vector3 position = {};
+
+		Vector3 startPosition;
+
+		Vector3 controlPosition;
+
+		Vector3 endPosition;
+		// 現在フレーム
+		int frame = 0;
+		//終了フレーム
+		int numFrame = 0;
+
 		float scale = 1.0f;
 
 		float startScale = 1.0f;
@@ -135,16 +165,25 @@ public: // メンバ関数
 
 	void SetTextureHandle(uint32_t textureHandle);
 
-	size_t GetParticlesListSize() {return Particles.size() ; }
+	size_t GetParticlesListSize() {return outParticles.size() ; }
 
 	///<summary>
-	///パーティクルの追加
+	///パーティクルの追加(一か所に集まるパーティクル)
 	///</summary>
 	///<param name="life">生存時間</param>
 	///<param name="position">初期座標</param>
 	/// <param name="velocity">	速度</param>
 	/// <param name="life">加速度</param>
-	void Add(int life, Vector3 startPosition, Vector3 endPosition,float start_scale,float end_scale,Vector4 start_color,Vector4 end_color);
+	void InAdd(int life, Vector3 startPosition, Vector3 endPosition,float startScale,float endScale,Vector4 startColor,Vector4 endColor);
+
+	///<summary>
+	///パーティクルの追加（離れていくパーティクル）
+	///</summary>
+	///<param name="life">生存時間</param>
+	///<param name="position">初期座標</param>
+	/// <param name="velocity">	速度</param>
+	/// <param name="life">加速度</param>
+	void OutAdd(int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor);
 
 private: // メンバ変数
 	ComPtr<ID3D12Resource> constBuff; // 定数バッファ
@@ -161,7 +200,10 @@ private: // メンバ変数
 	//// 親オブジェクト
 	//ParticleManager* parent = nullptr;
 	//パーティクル配列
-	std::list<Particle>Particles;
+	std::list<InParticle>inParticles;
+
+	//パーティクル配列
+	std::list<OutParticle>outParticles;
 
 	UINT textureHandle_ = 0;
 };

@@ -21,7 +21,7 @@ void GameScene::Initialize() {
 
 	model_.reset(Model::CreateFromOBJ("UFO", true));
 
-	viewProjection_.eye = { 0,0,5 };
+	viewProjection_.eye = { 0,0,-10 };
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -72,19 +72,19 @@ void GameScene::Update() {
 
 	if (input_->TriggerKey(DIK_Z)) {
 		//スペースキーを押していたら
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			const float rnd_life = 290.0f;
 			float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
 
 			//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-			const float rnd_pos = 10.0f;
+			const float rnd_pos = 30.0f;
 			Vector3 pos{};
 			pos.x = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
 			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 1;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
 			//追加
-			ParticleMan->InAdd(life, { 0,-3,0 }, pos, 0.1f, 0.1f, { 1,1,1,1 }, { 1,1,1,1 });
+			ParticleMan->OutAdd(life, { 0,0,0 }, {0,100,0}, 10, 10, { 1,1,1,1 }, { 1,1,1,1 });
 		}
 		////スペースキーを押していたら
 		//for (int i = 0; i < 50; i++)

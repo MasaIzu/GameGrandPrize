@@ -49,12 +49,16 @@ public:
 	void Draw(ViewProjection viewProMat);
 
 	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 3;
-	const int beginAttackDelay = 60 * 1;
+	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
+	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
+
 
 	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
 	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
 	int nextPhaseInterval = 0;
+	const int rushMaxCount = 3;	//突進攻撃(片道)をする回数
+	int rushCount = 0;	//突進攻撃の残り回数
+
 
 	int GetFishCount() { return fishes.size(); }
 
@@ -67,15 +71,15 @@ private:
 
 	void AtkSwordUpdate(const Vector3& targetPos);
 
-	void AtkRushUpdate();
+	void AtkRushUpdate(const Vector3& targetPos);
 
 	void BeginMotionUpdate();
 
-	EasingData easeSwordMove;
 
 	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
+	EasingData easeSwordPos;
 	EasingData easeSwordScale;
 
 	const int moveFishMax = 120;
@@ -83,6 +87,9 @@ private:
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
 	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120],fishesAfterPos[120];
 	Vector3 beforeScale, afterScale;
+
+	EasingData easeParentPos;
+
 };
 
 /// <summary>

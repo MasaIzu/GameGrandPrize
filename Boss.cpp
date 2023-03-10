@@ -36,6 +36,10 @@ void Boss::Update(const Vector3& targetPos)
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
 
+	ImGui::Text("Ease parent Pos:%f", easeParentPos.GetTimeRate());
+	ImGui::Text("interVal:%d", nextPhaseInterval);
+	ImGui::Text("rush count:%d", rushCount);
+
 	ImGui::Text("scale:%f", swordTransform.scale_.x);
 
 	switch (phase1) {
@@ -46,7 +50,7 @@ void Boss::Update(const Vector3& targetPos)
 		AtkSwordUpdate(targetPos);
 		break;
 	case BossFirstPhase::Atk_Rush:
-		AtkRushUpdate();
+		AtkRushUpdate(targetPos);
 		break;
 	case BossFirstPhase::BeginMotion:
 		BeginMotionUpdate();
@@ -181,22 +185,36 @@ void Boss::IdleUpdate()
 	//攻撃のクールタイムを減らす
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
-		//0になったらクールタイムを攻撃開始モーションの時間に設定
-		nextPhaseInterval = beginAttackDelay;
-		//フェーズを移行
-		phase1 = BossFirstPhase::BeginMotion;
-		//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
+		int random = 0;
 
 
-		//魚群の乱回転のためのランダムなベクトルを作成
-		for (int i = 0; i < fishes.size(); i++) {
-			fishes[i].randomVec = Vector3(Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f));
-			fishes[i].randomVec.normalize();
-			fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
+		//50%で突進、残りで剣撃
+		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 0) {
+			//突進攻撃の回数を初期化
+			rushCount = rushMaxCount;
+			//フェーズ移行
+			phase1 = BossFirstPhase::Atk_Rush;
+		}
+		else {
 
-			float displacement = fishParent.radius / 10.0f;
-			fishes[i].radius = Random(fishParent.radius - displacement, fishParent.radius + displacement);
-			fishes[i].radius = fishParent.radius;
+
+
+			//0になったらクールタイムを攻撃開始モーションの時間に設定
+			nextPhaseInterval = beginAttackDelay;
+			//フェーズを移行
+			phase1 = BossFirstPhase::BeginMotion;
+			//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
+
+			//魚群の乱回転のためのランダムなベクトルを作成
+			for (int i = 0; i < fishes.size(); i++) {
+				fishes[i].randomVec = Vector3(Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f));
+				fishes[i].randomVec.normalize();
+				fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
+
+				float displacement = fishParent.radius / 10.0f;
+				fishes[i].radius = Random(fishParent.radius - displacement, fishParent.radius + displacement);
+				fishes[i].radius = fishParent.radius;
+			}
 		}
 
 	}
@@ -230,14 +248,14 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 	}//移動開始の瞬間
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - 60) {
-		easeSwordMove.Start(swordMoveTime);
+		easeSwordPos.Start(swordMoveTime);
 		swordTransform.translation_ = swordPos;
 		swordTransform.SetRot({ 0,0,0 });
 
 	}//攻撃開始の瞬間
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - 60)
 	{
-		easeSwordMove.Start(swordAtkTime);
+		easeSwordPos.Start(swordAtkTime);
 	}//霧散の瞬間
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
 		easeSwordScale.Start(swordBreakTime);
@@ -324,13 +342,13 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 		ImGui::Text("afterVec:%f,%f,%f", aftetVec.x, aftetVec.y, aftetVec.z);
 
-		easeSwordMove.Update();
+		easeSwordPos.Update();
 		Vector3 pos;
-		pos = Lerp(swordPos, aftetVec, LerpConbertOut(easeSwordMove.GetTimeRate()));
+		pos = Lerp(swordPos, aftetVec, LerpConbertOut(easeSwordPos.GetTimeRate()));
 		/*swordTransform.rotation_.z = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
 		swordTransform.rotation_.x = easeSwordMove.GetTimeRate() * -(PI / 2.0f);*/
 
-		Vector3 rot = { easeSwordMove.GetTimeRate() * -(PI / 2.0f),0,easeSwordMove.GetTimeRate() * -(PI / 2.0f) };
+		Vector3 rot = { easeSwordPos.GetTimeRate() * -(PI / 2.0f),0,easeSwordPos.GetTimeRate() * -(PI / 2.0f) };
 		swordTransform.SetRot(rot);
 
 		swordTransform.translation_ = pos;
@@ -352,14 +370,14 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//afterPos.z = -afterPos.z;
 
 		//イージング更新
-		easeSwordMove.Update();
+		easeSwordPos.Update();
 		Vector3 pos, rot;
 		//ベジエ曲線で座標を補完
-		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordMove.GetTimeRate()));
+		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordPos.GetTimeRate()));
 		//ワールド行列から回転を借りてくる
 		rot = swordTransform.rotation_;
 		//回転
-		rot.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordMove.GetTimeRate()) * PI / 3.0f);
+		rot.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
 		swordTransform.SetRot(rot);
 		swordTransform.translation_ = pos;
 	}
@@ -456,8 +474,58 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	nextPhaseInterval--;
 }
 
-void Boss::AtkRushUpdate()
+void Boss::AtkRushUpdate(const Vector3& targetPos)
 {
+	const int rushMaxTime = 120;		//突進攻撃の始点から終点までかかる時間
+	const int rushCoolTime = 30;	//次の突進攻撃までのクールタイム
+
+	easeParentPos.Update();
+
+	if (easeParentPos.GetActive()) {
+		//突進中は始点と終点でイージング
+		Vector3 pos = Lerp(fishesBeforePos[0], fishesAfterPos[0], easeParentPos.GetTimeRate());
+		Vector3 pBeforePos = fishesBeforePos[0];
+		Vector3 pAfterPos = fishesAfterPos[0];
+		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+
+		fishParent.pos.translation_ = pos;
+		fishParent.pos.TransferMatrix();
+		for (int i = 0; i < fishes.size(); i++) {
+			fishes[i].pos.TransferMatrix();
+		}
+	}
+	else {
+		//突進のクールタイムが終わっている
+		if (nextPhaseInterval <= 0) {
+			//突進の回数が残っている
+			if (rushCount > 0) {
+				//突進回数を減らし、クールタイムを設定しておき、挙動を開始
+				rushCount--;
+				nextPhaseInterval = rushCoolTime;
+				easeParentPos.Start(rushMaxTime);
+				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				float len = vecfishTotarget.length();
+				//挙動に使う座標を設定
+				fishesBeforePos[0] = fishParent.pos.translation_;
+				fishesAfterPos[0].x = fishesBeforePos[0].x - (len * 2);
+				fishesAfterPos[0].z = fishesBeforePos[0].z - (len * 2);
+				fishesAfterPos[0].y = fishesBeforePos[0].y;
+			}
+			else {
+				//突進の回数が残っていないならモーション終わり
+				nextPhaseInterval = attackCooltime;
+				phase1 = BossFirstPhase::Idle;
+			}
+		}
+		else {
+			//突進のクールタイムが終わっていないならタイム減らす
+			nextPhaseInterval--;
+		}
+	}
+
+
+
 }
 
 void Boss::BeginMotionUpdate()

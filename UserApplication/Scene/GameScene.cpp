@@ -24,7 +24,7 @@ void GameScene::Initialize() {
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = { 0,100,-100 };
+	viewProjection_.eye = { 0,20,-100 };
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
@@ -125,7 +125,7 @@ void GameScene::Update() {
 	ImGui::End();
 
 	//viewProjection_.target = gameCamera->GetTarget();
-	viewProjection_.target = { 0,0,0 };
+	viewProjection_.target =boss.fishParent.pos.translation_;
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
 

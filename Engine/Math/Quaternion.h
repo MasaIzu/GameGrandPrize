@@ -76,6 +76,8 @@ public:
 	Quaternion& operator /= (float s);
 	Quaternion& operator *= (const Quaternion& q);
 
+	Vector3 multiply(const Vector3& vec);
+
 };
 
 //2項演算子オーバーロード

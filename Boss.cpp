@@ -149,7 +149,7 @@ void Boss::IdleUpdate()
 		Vector3 vec = { 0, 1, 0 };
 		vec.normalize();
 
-		Quaternion rotaQuaternion = {vec,fishes[i].radian * PI / 180.0f};
+		Quaternion rotaQuaternion = { vec,fishes[i].radian * PI / 180.0f };
 		Quaternion posQ = { pos.x,pos.y,pos.z,0 };
 		rotaVec = rotaQuaternion.multiply(posQ.GetAxis());
 
@@ -169,7 +169,7 @@ void Boss::IdleUpdate()
 			num = -1;
 		}
 
-	//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+		//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
 
 		pos += fishes[i].displacement;
 
@@ -186,30 +186,17 @@ void Boss::IdleUpdate()
 		//フェーズを移行
 		phase1 = BossFirstPhase::BeginMotion;
 		//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
-	/*	phase1 = BossFirstPhase::Atk_Sword;
-		nextPhaseInterval = atkSwordMotionTime;*/
-		swordTransform.scale_ = { 0,0,0 };
-		swordTransform.SetRot({ 0,0,0 });
-		swordTransform.TransferMatrix();
+
 
 		//魚群の乱回転のためのランダムなベクトルを作成
 		for (int i = 0; i < fishes.size(); i++) {
 			fishes[i].randomVec = Vector3(Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f));
-			fishes[i].randomVec  = -fishes[i].randomVec;
-			//fishes[i].randomVec -= fishParent.pos.translation_;
-			Matrix4 randRotaMat;
-			randRotaMat.identity();
-			randRotaMat.rotateZ(Random(0.0f, 360.0f) * PI / 180.0f);
-			randRotaMat.rotateX(Random(0.0f, 360.0f) * PI / 180.0f);
-			randRotaMat.rotateY(Random(0.0f, 360.0f) * PI / 180.0f);
-			//fishes[i].randomVec = randRotaMat.transform(fishes[i].randomVec, randRotaMat)/* * fishParent.pos.translation_*/;
-			fishes[i].randomVec  += fishParent.pos.translation_;
 			fishes[i].randomVec.normalize();
 			fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
-			
+
 			float displacement = fishParent.radius / 10.0f;
-			fishes[i].radius = Random(fishParent.radius - displacement, fishParent.radius+ displacement);
-			fishes[i].radius =fishParent.radius;
+			fishes[i].radius = Random(fishParent.radius - displacement, fishParent.radius + displacement);
+			fishes[i].radius = fishParent.radius;
 		}
 
 	}
@@ -349,8 +336,8 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		swordTransform.translation_ = pos;
 
 	}
-	
-	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime -60) {
+
+	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
 		Vector3 rotaVec;
 		rotaVec.x = sin(PI / 3.0f);
 		rotaVec.z = cos(PI / 3.0f);
@@ -449,7 +436,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		easePFishToSword[i].Update();
 
 		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezireCubic(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], fishesAfterPos[i], easePFishToSword[i].GetTimeRate());
-		
+
 		if (easePFishToSword[i].GetActive()) {
 			ImGui::Text("fish[%d]scalling Active!", i);
 			fishes[choiceFishIndex[i]].pos.scale_ = Lerp(beforeScale, afterScale, easePFishToSword[i].GetTimeRate());
@@ -486,60 +473,28 @@ void Boss::BeginMotionUpdate()
 		if (fishes[i].radian > 360.0f) {
 			fishes[i].radian -= 360.0f;
 			fishes[i].spd = Random(0.0f, randSpdParam);
-			fishes[i].spd = Random(randSpdParam/2.0f, randSpdParam);
+			fishes[i].spd = Random(randSpdParam / 2.0f, randSpdParam);
 			//fishes[i].spd = Random(randSpdParam, randSpdParam * 2);
 		}
 
 
-		//ランダムに取得したベクトルと自座標から原点(魚群の中心)のベクトルの外積をとり、乱回転の軸を作成
-		Vector3 vec = fishes[i].randomVec * fishes[i].radius;
-		//vec.normalize();
-		//vec *= fishes[i].radius;
-		Vector3 baseVec;
-		baseVec = fishes[i].randomVec * fishes[i].radius;
-	/*	baseVec.x = fishParent.pos.translation_.x * fishes[i].randomVec.x;
-		baseVec.y = fishParent.pos.translation_.y * fishes[i].randomVec.y;
-		baseVec.z = fishParent.pos.translation_.z * fishes[i].randomVec.z;*/
+		//回転で動かす座標は回転の中心である親座標
+		Vector3 vec = fishParent.pos.translation_;
+		//回転軸用のベクトルを生成
+		Vector3 baseVec = fishes[i].randomVec * fishes[i].radius;
 		baseVec.normalize();
 
+		//回転軸、座標を表すクォータニオンの生成
 		Quaternion baseQ = { baseVec,fishes[i].radian * PI / 180.0f };
-		
-		//baseQ = { Vector3(0,0,1),fishes[i].radian * PI / 180.0f };
-		Quaternion posQ = { vec.x,vec.y,vec.z,0};
+		Quaternion posQ = { vec.x,vec.y,vec.z,0 };
 
+		//回転
 		Vector3 pos = baseQ.multiply(posQ.GetAxis());
-		//pos -= fishes[i].randomVec;
+
+		//座標に半径をかけて整える(回転後の座標は正規化されている)
 		pos *= fishes[i].radius;
-		//pos.y = vec.y;
-	//	pos += fishes[i].displacement;
-		
-		//	pos = randomRotate.RotateVector(fishes[i].pos.translation_);
 
-
-
-		if (i <= 5 && i >= 0) {
-			fishes[i].pos.scale_ = { 1,1,1 };
-			if (i == 0) {
-				pos = { fishes[i].radius,0,0 };
-			}
-			else if (i == 1) {
-				pos = { -fishes[i].radius,0,0 };
-			}
-			else if (i == 2) {
-				pos = { 0,fishes[i].radius,0 };
-			}
-			else if (i == 3) {
-				pos = { 0,-fishes[i].radius,0 };
-			}
-			else if (i == 4) {
-				pos = { 0,0,fishes[i].radius };
-			}
-			else if (i == 5) {
-				pos = { 0,0,-fishes[i].radius };
-			}
-		}
-
-
+		//ワールド行列に送る
 		fishes[i].pos.translation_ = pos;
 		fishes[i].pos.TransferMatrix();
 
@@ -548,10 +503,14 @@ void Boss::BeginMotionUpdate()
 	//攻撃のクールタイムを減らす
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
-		//0になったらクールタイムを攻撃開始モーションの時間に設定
-		nextPhaseInterval = beginAttackDelay;
-		//フェーズを移行
-		phase1 = BossFirstPhase::BeginMotion;
+		//フェーズの変更とクールタイム再設定
+		phase1 = BossFirstPhase::Atk_Sword;
+		nextPhaseInterval = atkSwordMotionTime;
+
+		//剣の大きさ、回転を初期化
+		swordTransform.scale_ = { 0,0,0 };
+		swordTransform.SetRot({ 0,0,0 });
+		swordTransform.TransferMatrix();
 	}
 }
 

@@ -78,7 +78,7 @@ void GameScene::Update() {
 
 	ImGui::End();
 
-	boss.Update();
+	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
 	
@@ -92,10 +92,10 @@ void GameScene::Update() {
 			const float rnd_pos = 30.0f;
 			Vector3 pos{};
 			pos.x = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
-			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 1;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 200;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
 			//追加
-			ParticleMan->OutAdd(life, { 0,0,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
+			ParticleMan->OutAdd(life, { 0,50,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
 		}
 		////スペースキーを押していたら
 		//for (int i = 0; i < 50; i++)
@@ -151,9 +151,9 @@ void GameScene::Draw() {
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	//model_->Draw(worldTransform_, viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_);
 
-	/*for (int i = 0; i < boss.fishes.size(); i++) {
+	for (int i = 0; i < boss.fishes.size(); i++) {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);
 	}
 
@@ -163,7 +163,7 @@ void GameScene::Draw() {
 
 	player->Draw(viewProjection_);
 
-	// 3Dオブジェクト描画後処理
+	 //3Dオブジェクト描画後処理
 	Model::PostDraw();
 
 	FbxModel::PreDraw(commandList);
@@ -191,3 +191,4 @@ void GameScene::Draw() {
 void GameScene::Finalize()
 {
 }
+

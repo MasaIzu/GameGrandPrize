@@ -21,10 +21,11 @@ void GameScene::Initialize() {
 
 	model_.reset(Model::CreateFromOBJ("UFO", true));
 
+	viewProjection_.eye = { 0,10,-10 };
+
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = { 0,20,-100 };
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
@@ -56,6 +57,11 @@ void GameScene::Initialize() {
 
 
 	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
+	ParticleMan = std::make_unique<ParticleManager>();
+	ParticleMan->Initialize();
+
+	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
+	ParticleMan->SetTextureHandle(tex);
 }
 
 void GameScene::Update() {
@@ -67,45 +73,43 @@ void GameScene::Update() {
 
 	ImGui::Begin("Phase");
 
-	ImGui::Text("Interval:%d", boss.nextPhaseInterval);
+	ImGui::Text("ParticleListSize:%d", ParticleMan->GetParticlesListSize());
+
 
 	ImGui::End();
 
+	boss.Update();
+	viewProjection_.UpdateMatrix();
 
-	ImGui::Begin("Create Fish");
 	
+		//スペースキーを押していたら
+		for (int i = 0; i < 5; i++)
+		{
+			const float rnd_life = 290.0f;
+			float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
 
-	ImGui::SliderFloat("posY", &newFishPosY, -boss.fishParent.radius, boss.fishParent.radius);
-
-	ImGui::Text("enemy Count %d",boss.fishes.size());
-
-	if (ImGui::Button("Create")) {
-		boss.CreateFish(newFishPosY);
-	}
-
-	if (ImGui::Button("create 10")) {
-		for (int i = 0; i < 100; i++) {
-			boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
+			//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
+			const float rnd_pos = 30.0f;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 1;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
+			//追加
+			ParticleMan->OutAdd(life, { 0,0,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
 		}
-	}
+		////スペースキーを押していたら
+		//for (int i = 0; i < 50; i++)
+		//{
 
-	if (ImGui::Button("create 100")) {
-		for (int i = 0; i < 100; i++) {
-			boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
-		}
-	}
-	Vector3 parentPos = boss.fishParent.pos.translation_;
-
-	ImGui::SliderFloat("Parent posX", &parentPos.x, -boss.fishParent.radius, boss.fishParent.radius);
-	ImGui::SliderFloat("Parent posY", &parentPos.y, -boss.fishParent.radius, boss.fishParent.radius);
-	ImGui::SliderFloat("Parent posZ", &parentPos.z, -boss.fishParent.radius, boss.fishParent.radius);
-	if (ImGui::Button("parent Reset")) {
-		parentPos = {0,0,0};
-	}
-
-	boss.fishParent.pos.translation_ = parentPos;
-
-	ImGui::End();
+		//	//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
+		//	const float rnd_pos = 10.0f;
+		//	Vector3 pos{};
+		//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//	pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//	//追加
+		//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
+		//}
 
 	boss.Update(player->GetWorldPosition());
 
@@ -128,6 +132,7 @@ void GameScene::Update() {
 	viewProjection_.target =boss.fishParent.pos.translation_;
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
+	ParticleMan->Update();
 
 }
 
@@ -148,7 +153,7 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-	for (int i = 0; i < boss.fishes.size(); i++) {
+	/*for (int i = 0; i < boss.fishes.size(); i++) {
 		model_->Draw(boss.fishes[i].pos, viewProjection_);
 	}
 
@@ -166,6 +171,13 @@ void GameScene::Draw() {
 	//fbxmodel->Draw(worldTransform_, viewProjection_);
 
 	FbxModel::PostDraw();
+
+	ParticleManager::PreDraw(commandList);
+
+	ParticleMan->Draw(viewProjection_);
+
+	ParticleManager::PostDraw();
+
 
 #pragma endregion
 

@@ -21,7 +21,7 @@ void GameScene::Initialize() {
 
 	model_.reset(Model::CreateFromOBJ("UFO", true));
 
-	viewProjection_.eye = { 0,0,-10 };
+	viewProjection_.eye = { 0,10,-10 };
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 	ParticleMan = std::make_unique<ParticleManager>();
 	ParticleMan->Initialize();
 
-	UINT tex = TextureManager::GetInstance()->Load("effect4.png");
+	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
 	ParticleMan->SetTextureHandle(tex);
 }
 
@@ -70,9 +70,9 @@ void GameScene::Update() {
 	boss.Update();
 	viewProjection_.UpdateMatrix();
 
-	if (input_->TriggerKey(DIK_Z)) {
+	
 		//スペースキーを押していたら
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			const float rnd_life = 290.0f;
 			float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
@@ -84,7 +84,7 @@ void GameScene::Update() {
 			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 1;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
 			//追加
-			ParticleMan->OutAdd(life, { 0,0,0 }, {0,100,0}, 10, 10, { 1,1,1,1 }, { 1,1,1,1 });
+			ParticleMan->OutAdd(life, { 0,0,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
 		}
 		////スペースキーを押していたら
 		//for (int i = 0; i < 50; i++)
@@ -99,7 +99,6 @@ void GameScene::Update() {
 		//	//追加
 		//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 		//}
-	}
 
 	ParticleMan->Update();
 

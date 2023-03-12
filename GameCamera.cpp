@@ -62,6 +62,12 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 		}
 	}
 	if (cameraMode == true) {
+		/*if (input_->PushKey(DIK_LSHIFT)) {
+			PlayerLockOnCamera(viewProjection_);
+		}
+		else {
+			PlaySceneCamera(viewProjection_);
+		}*/
 		PlaySceneCamera(viewProjection_);
 	}
 }
@@ -75,7 +81,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	if (cameraTime < MaxCameraTime) {
 		cameraTime++;
 	}
-	
+
 
 	//カメラの回転ベクトル
 	Vector3 rotat = { 0, 0, 0 };
@@ -110,7 +116,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	MouseMove = Vector2(0, 0);
 	MouseMove = (Vector2(mousePosition.y, mousePosition.x) - Vector2(windowWH.y, windowWH.x));//座標軸で回転している関係でこうなる(XとYが入れ替え)
 
-	mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
+	if (input_->PushKey(DIK_LSHIFT) == 0) {
+		mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
+	}
 
 	//カメラ制限
 	if (mouseMoved.x < -0.80f) {
@@ -124,7 +132,6 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	Matrix4 cameraRot;
 
-
 	cameraRot = MyMath::Rotation(rotation, 6);
 
 	rot = rotation;
@@ -133,14 +140,83 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	//ワールド前方ベクトル
 	Vector3 forward(0, 0, playerCameraDistance);
 	//レールカメラの回転を反映
-	forward = MyMath::MatVector(cameraRot, forward);
+	forward = MyMath::MatVector(CameraRot, forward);
 
-	Vector3 pos = playerPos;
-
-	target = easing_->InOutVec3(target, playerPos, cameraTime, MaxCameraTime);
+	target = easing_->InOutVec3(target, playerPos_, cameraTime, MaxCameraTime);
 
 	//target = pos;
 	vTargetEye = target + (forward * playerCameraDistance);
+
+	if (input_->PushKey(DIK_LSHIFT)) {
+
+		//if (input_->TriggerKey(DIK_F)) {	//カメラのモード切り替え
+		//	if (cameraMode_ == 0) {
+		//		cameraMode_ = 1;
+		//	}
+		//	else if (cameraMode_ == 1) {
+		//		cameraMode_ = 0;
+		//	}
+		//	else {
+		//		cameraMode_ = 0;
+		//	}
+		//}
+
+		//カメラの注視点（仮）
+		target = EnemyPos_;
+
+		//カメラの位置
+		Vector3 eyeVec = playerPos_ - EnemyPos_;
+
+		Vector3 eyePos = eyeVec;
+
+		float mag = 1.0f;
+		float eyeLen = std::sqrt(eyePos.x * eyePos.x + eyePos.y * eyePos.y + eyePos.z * eyePos.z);	//ベクトルの長さ
+
+		if (eyeLen > 1.0f) {	//もし差分のベクトルが単位ベクトルより大きかったら
+			mag = 1.0f / eyeLen; //ベクトルの長さを1にする
+		};
+
+		eyePos.x *= mag;	//magをかけると正規化される
+		eyePos.y *= mag;
+		eyePos.z *= mag;
+
+
+		if (cameraMode_ == 0) {
+			if (cameraModeChangeCountTimer < MAX_CHANGE_TIMER) {
+				cameraModeChangeCountTimer++;
+			}
+		}
+		else if (cameraMode_ == 1) {
+			if (cameraModeChangeCountTimer > 0) {
+				cameraModeChangeCountTimer--;
+			}
+		}
+
+		cameraDistance_ = easing_->InOut(MIN_CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
+		cameraHeight_ = easing_->InOut(3, 6, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
+
+		Vector3 primalyCamera =
+		{ playerPos_.x + eyePos.x * cameraDistance_,//自機から引いた位置にカメラをセット
+		cameraHeight_,
+		playerPos_.z + eyePos.z * cameraDistance_ };
+
+		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//カメラをずらす際に使われる
+
+		float shiftLen = -5.0f;	//ずらす量
+		Vector3 shiftVec = { primalyCamera.x + sinf(eyeVecAngle + PI / 2) * shiftLen,primalyCamera.y,primalyCamera.z + cosf(eyeVecAngle + PI / 2) * shiftLen };
+
+		vTargetEye = shiftVec;//ビュープロジェクションに代入
+	}
+
+
+
+}
+
+void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)
+{
+	Vector3 PlayerAndEnemy = (playerPos_ + EnemyPos_) / 2;
+
+	target = EnemyPos_;
 
 }
 
@@ -155,4 +231,23 @@ void GameCamera::MultiplyMatrix(Matrix4& matrix) {
 	// ベクトルを回転
 	vTargetEye = MyMath::MatVector(matRot, vTargetEye);
 
+}
+
+// カメラの位置を計算する関数
+Vector3 GameCamera::calculateCameraPosition(ViewProjection* viewProjection_, float distance, float angle) {
+	/*float horizontalDistance = distance * cos(angle);
+	float verticalDistance = distance * sin(angle);
+	Vector3 playerPos = playerPos_;
+	Vector3 cameraPos = playerPos_;
+	cameraPos.y += verticalDistance;
+	float pitch = getPitch(viewProjection_);
+	float yaw = getYaw();
+	cameraPos.x += -horizontalDistance * sin(yaw);
+	cameraPos.z += -horizontalDistance * cos(yaw);*/
+	return Vector3(0, 0, 0);
+}
+Vector3 GameCamera::calculateLookAtPosition(Vector3 target, Vector3 camera) {
+	Vector3 direction = target - camera;
+	direction.norm();
+	return camera + direction;
 }

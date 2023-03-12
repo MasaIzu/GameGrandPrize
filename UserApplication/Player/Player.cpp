@@ -109,6 +109,7 @@ void Player::Move() {
 	worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
+	worldTransform_.matWorld_ *= CameraRot;
 }
 
 

@@ -31,6 +31,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	playerAvoidance = 6.0f;
 
+	//worldTransform_.translation_ = { 0,0,-100 };
+
 	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();

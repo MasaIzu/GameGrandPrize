@@ -42,43 +42,60 @@ public:
 
 	void Initialize();
 
-	void Update();
+	void Update(const Vector3& targetPos);
 
 	void CreateFish(float posY = 0);
 
 	void Draw(ViewProjection viewProMat);
 
 	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 3;
-	const int beginAttackDelay = 60 * 1;
+	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
+	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
 
-	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　霧散   ﾓｰｼｮﾝ補間
-	const int atkSwordMotionTime = 120 + 45 + 60 + 60 + (10 * 3);
+
+	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
+	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
 	int nextPhaseInterval = 0;
+	const int rushMaxCount = 3;	//突進攻撃(片道)をする回数
+	int rushCount = 0;	//突進攻撃の残り回数
+
 
 	int GetFishCount() { return fishes.size(); }
+
+	WorldTransform swordTransform;
+
+	static const int fishMaxCount = 200;
+
 private:
 	//フェーズごとの更新処理
 	void IdleUpdate();
 
-	void AtkSwordUpdate();
+	void AtkSwordUpdate(const Vector3& targetPos);
 
-	void AtkRushUpdate();
+	void AtkRushUpdate(const Vector3& targetPos);
 
 	void BeginMotionUpdate();
 
-	EasingData easeData;
 
-	WorldTransform swordTransform;
-
+	
 	WorldTransform Transform;
-	Vector3 swordPos = { 30,-30,20 };
+	Vector3 swordPos = {0,0,0 };
+	EasingData easeSwordPos;
 	EasingData easeSwordScale;
 
+	const int moveFishMax = 120;
+
+
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
-	Vector3 spd[120];	//移動する魚の移動速度
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120];
+	Vector3 parentBeforePos, parentAfterPos;
+	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
+	Vector3 beforeScale, afterScale;
+
+
+
+	EasingData easeParentPos;
+
 };
 
 /// <summary>
@@ -99,7 +116,7 @@ float Random(float num1, float num2);
 Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 
 /// <summary>
-/// ベジエ曲線補間
+/// 3次ベジエ曲線補間
 /// </summary>
 /// <param name="start">始点</param>
 /// <param name="contRollP1">制御点1</param>
@@ -107,4 +124,16 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 /// <param name="end">終点</param>
 /// <param name="t">時間</param>
 /// <returns>座標</returns>
-Vector3 LerpBezire(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t);
+Vector3 LerpBezireCubic(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t);
+
+Vector3 LerpBezireQuadratic(const Vector3& start, const Vector3& contRollP, const Vector3& end, float t);
+
+
+/// <summary>
+/// 0~1への線形補間をInBackの補間に変換する
+///</summary>
+/// <param name="t">時間</param>
+/// <returns></returns>
+float LerpConbertInback(float t);
+
+float LerpConbertOut(float t);

@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "affin.h"
+#include"ParticleManager.h"
 
 #include "BaseScene.h"
 #include "SceneManager.h"
@@ -17,9 +18,12 @@
 #include<memory>
 #include<vector>
 
+#include "BoxCollision.h"
+
 #include "Player.h"
 #include "GameCamera.h"
 #include"Boss.h"
+#include <CollisionManager.h>
 
 /// <summary>
 /// ゲームシーン
@@ -77,6 +81,12 @@ private: // メンバ変数
 	std::unique_ptr<Player> player;
 	std::unique_ptr<GameCamera> gameCamera;
 
+	//当たり判定
+	CollisionManager* collisionManager = nullptr;
+
+	//ボックス当たり判定
+	std::unique_ptr <BoxCollision> boxCollision;
+
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
 
@@ -86,4 +96,6 @@ private: // メンバ変数
 	Boss boss;
 	//デバッグによる生成用
 	float newFishPosY = 0;
+
+	std::unique_ptr< ParticleManager> ParticleMan;
 };

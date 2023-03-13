@@ -34,8 +34,12 @@ public:
 	//魚群
 	std::vector<fish> fishes;
 
-	//剣のモデルデータ　
+	//剣のモデルデータ
 	std::unique_ptr<Model> swordModel = nullptr;
+
+	//魚のモデルデータ
+	std::unique_ptr<Model> fishBodyModel = nullptr;
+	std::unique_ptr<Model> fishEyeModel = nullptr;
 
 	//ランダムで変化する速度の基本値
 	float randSpdParam = 0;
@@ -49,36 +53,53 @@ public:
 	void Draw(ViewProjection viewProMat);
 
 	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 3;
-	const int beginAttackDelay = 60 * 1;
+	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
+	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
 
-	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　霧散   ﾓｰｼｮﾝ補間
-	const int atkSwordMotionTime = 120 + 45 + 60 + 60 + (10 * 3);
+
+	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
+	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
 	int nextPhaseInterval = 0;
+	const int rushMaxCount = 3;	//突進攻撃(片道)をする回数
+	int rushCount = 0;	//突進攻撃の残り回数
+
 
 	int GetFishCount() { return fishes.size(); }
+
+	WorldTransform swordTransform;
+
+	static const int fishMaxCount = 200;
+
 private:
 	//フェーズごとの更新処理
 	void IdleUpdate();
 
 	void AtkSwordUpdate(const Vector3& targetPos);
 
-	void AtkRushUpdate();
+	void AtkRushUpdate(const Vector3& targetPos);
 
 	void BeginMotionUpdate();
 
-	EasingData easeSwordMove;
-
-	WorldTransform swordTransform;
-
+	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
+	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
+	EasingData easeSwordPos;
 	EasingData easeSwordScale;
 
+	const int moveFishMax = 120;
+
+
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
-	Vector3 spd[120];	//移動する魚の移動速度
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120];
+	Vector3 parentBeforePos, parentAfterPos;
+	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
+	Vector3 beforeScale, afterScale;
+
+
+
+	EasingData easeParentPos;
+
 };
 
 /// <summary>

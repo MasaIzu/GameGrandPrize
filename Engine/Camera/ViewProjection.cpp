@@ -44,8 +44,49 @@ void ViewProjection::UpdateMatrix() {
 	// 透視投影による射影行列の生成
 	matProjection = MyMath::PerspectiveFovLH(fovAngleY, aspectRatio, nearZ, farZ);
 
+	cameraLook = target - eye;
+	cameraLook.y = 0;
+	cameraLook.norm();
+
 	// 定数バッファに書き込み
 	constMap->view = matView;
 	constMap->projection = matProjection;
 	constMap->cameraPos = eye;
+
+	//視点座標
+	Vector3 eyePosition = eye;
+	//注視点座標X
+	Vector3 targetPosition = target;
+	//(仮の)上方向
+	Vector3 upVector = up;
+
+	//カメラZ軸(視点方向)
+	Vector3 cameraAxisZ = targetPosition - eyePosition;
+
+	//ベクトルを正規化
+	cameraAxisZ.normalize();
+
+	//カメラのX軸(右方向)
+	Vector3 cameraAxisX;
+	//X軸は上方向→Z軸の外積で求まる
+	cameraAxisX = upVector.cross(cameraAxisZ);
+	//ベクトルを正規化
+	cameraAxisX.normalize();
+
+	//カメラのY軸(上方向)
+	Vector3 cameraAxisY;
+	//Y軸は上方向→Z軸の外積で求まる
+	cameraAxisY = cameraAxisZ.cross(cameraAxisX);
+	//ベクトルを正規化
+	cameraAxisY.normalize();
+
+	//視点座標に-1を掛けた座標
+	Vector3 reverseEyePosition = eyePosition * -1;
+	//カメラの位置からワールド原点へのベクトル(カメラ座標系)
+	float tX = cameraAxisX.dot(reverseEyePosition);
+	float tY = cameraAxisY.dot(reverseEyePosition);
+	float tZ = cameraAxisZ.dot(reverseEyePosition);
+	//一つのベクトルにまとめる
+	Vector3 translation = { tX, tY, tZ };
+
 }

@@ -48,6 +48,9 @@ struct ViewProjection {
 	// Ë‰es—ñ
 	Matrix4 matProjection;
 
+	//ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚éŒü‚«
+	Vector3 cameraLook = target.norm();
+
 	/// <summary>
 	/// ‰Šú‰»
 	/// </summary>

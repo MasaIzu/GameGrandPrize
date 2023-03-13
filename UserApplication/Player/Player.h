@@ -7,6 +7,10 @@
 #include <memory>
 #include "Sprite.h"
 #include <list>
+#include "BaseCollider.h"
+
+#include "Vector4.h"
+#include <SphereCollider.h>
 
 class Player {
 
@@ -34,14 +38,16 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void Attack(Vector3 start,Vector3 Finish);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
-	
+
 	bool GetSpaceInput() { return spaceInput; }
 
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
+	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
 
 private:
 	//ワールド変換データ
@@ -51,6 +57,16 @@ private:
 	//インプット
 	Input* input_ = nullptr;
 
+	// コライダー
+	BaseCollider* collider = nullptr;
+
+	static const int SphereCount = 24;
+
+	BaseCollider* AttackCollider[SphereCount];
+	Vector3 colliderPos[SphereCount];
+	Matrix4 worldSpherePos[SphereCount];
+	bool makeColliders = false;
+
 	//モデル
 	Model* playerModel_ = nullptr;
 	std::unique_ptr<Model> oldPlayerModel_;
@@ -59,20 +75,22 @@ private:
 	Vector3 Rot;
 	Vector3 Avoidance;
 
-	float x = 0;
+	Vector3 cameraLook;
 
-	float playerSpeed = 0.3f;
+	int timer = 0;
+
+
+	float x = 0;
+	float radius = 2.0f;//当たり判定半径
+	float Window_Width;
+	float Window_Height;
+	float playerSpeed = 0.01f;
 	float playerAvoidance = 0.0f;
 
 
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
-
 	bool spaceInput = false;
 
-	int timer = 0;
-
-	float Window_Width;
-	float Window_Height;
 };

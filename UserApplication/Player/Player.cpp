@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "WinApp.h"
 #include"MyMath.h"
+#include "CollisionManager.h"
+#include <CollisionAttribute.h>
 
 
 Player::Player()
@@ -23,6 +25,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	Window_Width = WindowWidth;
 	Window_Height = WindowHeight;
 
+	// コリジョンマネージャに追加
+	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+	CollisionManager::GetInstance()->AddCollider(collider);
+
 	playerAvoidance = 6.0f;
 
 	//worldTransform_.translation_ = { 0,0,-100 };
@@ -31,7 +37,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
 
-	//worldTransform_.SetRot(Vector3(60, 30, 2));
+	collider->Update(worldTransform_.matWorld_);
+	collider->SetAttribute(COLLISION_ATTR_ALLIES);
+
 
 
 	worldTransform_.TransferMatrix();
@@ -51,19 +59,37 @@ void Player::Move() {
 		timer--;
 	}
 
+	Matrix4 cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
+
+	Vector3 moveRot = cameraLook;
+
 	if (input_->PushKey(DIK_W)) {
 		playerMovement.z = -playerSpeed;
+		//cameraLook *= playerSpeed;
+
+		worldTransform_.translation_ += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
 		playerMovement.x = playerSpeed;
+		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
+		moveRot.y = 0;
+		moveRot.norm();
+		worldTransform_.translation_ -= moveRot * playerSpeed;
 		isPushLeft = true;
 	}
 	if (input_->PushKey(DIK_S)) {
 		playerMovement.z = playerSpeed;
+		//cameraLook *= playerSpeed;
+
+		worldTransform_.translation_ -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		playerMovement.x = -playerSpeed;
+		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
+		moveRot.y = 0;
+		moveRot.norm();
+		worldTransform_.translation_ += moveRot * playerSpeed;
 		isPushRight = true;
 	}
 
@@ -100,9 +126,10 @@ void Player::Move() {
 	Avoidance.normalize();
 	Avoidance *= playerAvoidance;
 
-	worldTransform_.translation_ += playerMovement;
+	//worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
+	worldTransform_.matWorld_ *= CameraRot;
 }
 
 
@@ -110,14 +137,14 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
 
-	if (input_->PushKey(DIK_J)) {
-		x += playerSpeed;
+	if (input_->MouseInputTrigger(0)) {
+		Attack(Vector3(0,0,0),Vector3(5,5,5));
 	}
-
-	worldTransform_.SetRot(Vector3(x, 30, 2));
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+
+	collider->Update(worldTransform_.matWorld_);
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -132,7 +159,37 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 }
 
+void Player::Attack(Vector3 start, Vector3 Finish) {
 
+	if (makeColliders == false) {
+		float sphereX = Finish.x - start.x;
+		float sphereY = Finish.y - start.y;
+		float sphereZ = Finish.z - start.z;
+
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+
+		for (int i = 0; i < SphereCount; i++) {
+			// コリジョンマネージャに追加
+			AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+
+			colliderPos[i] = start + sphere * i;
+
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+		}
+	}
+	else {
+		for (int i = 0; i < SphereCount; i++) {
+			
+			AttackCollider[i]->Update(worldSpherePos[i]);
+		}
+	}
+
+}
 
 
 Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {

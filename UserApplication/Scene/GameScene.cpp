@@ -6,6 +6,7 @@
 #include "FbxLoader.h"
 #include"ImGuiManager.h"
 
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -17,6 +18,9 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCore::GetInstance();
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();
+
+	//å½“ãŸã‚Šåˆ¤å®š
+	collisionManager = CollisionManager::GetInstance();
 
 	model_.reset(Model::CreateFromOBJ("UFO", true));
 
@@ -81,38 +85,39 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 
 	
-		//ƒXƒy[ƒXƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç
+		//ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ãŸã‚‰
 		for (int i = 0; i < 5; i++)
 		{
 			const float rnd_life = 290.0f;
 			float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
 
-			//X,Y,Z‘S‚Ä[-5.0,+5.0f]‚Åƒ‰ƒ“ƒ_ƒ€‚É•ª•z
+			//X,Y,Zå…¨ã¦[-5.0,+5.0f]ã§ãƒ©ãƒ³ãƒ€ãƒ ã«åˆ†å¸ƒ
 			const float rnd_pos = 30.0f;
 			Vector3 pos{};
 			pos.x = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
 			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 200;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
-			//’Ç‰Á
+			//è¿½åŠ 
 			ParticleMan->OutAdd(life, { 0,50,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
 		}
-		////ƒXƒy[ƒXƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç
+		////ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ãŸã‚‰
 		//for (int i = 0; i < 50; i++)
 		//{
 
-		//	//X,Y,Z‘S‚Ä[-5.0,+5.0f]‚Åƒ‰ƒ“ƒ_ƒ€‚É•ª•z
+		//	//X,Y,Zå…¨ã¦[-5.0,+5.0f]ã§ãƒ©ãƒ³ãƒ€ãƒ ã«åˆ†å¸ƒ
 		//	const float rnd_pos = 10.0f;
 		//	Vector3 pos{};
 		//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//	pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//	//’Ç‰Á
+		//	//è¿½åŠ 
 		//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 		//}
 
 	boss.Update(player->GetWorldPosition());
 
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
+	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
 
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
@@ -133,21 +138,24 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	ParticleMan->Update();
 
+	//å…¨ã¦ã®è¡çªã‚’ãƒã‚§ãƒƒã‚¯
+	collisionManager->CheckAllCollisions();
+
 }
 
 void GameScene::Draw() {
 
-	// ƒRƒ}ƒ“ƒhƒŠƒXƒg‚Ìæ“¾
+	// ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å–å¾—
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-#pragma region ”wŒiƒXƒvƒ‰ƒCƒg•`‰æ
+#pragma region èƒŒæ™¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
 	
-	// [“xƒoƒbƒtƒ@ƒNƒŠƒA
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
-#pragma region 3DƒIƒuƒWƒFƒNƒg•`‰æ
-	//// 3DƒIƒuƒWƒFƒNƒg•`‰æ‘Oˆ—
+#pragma region 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæç”»
+	//// 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæç”»å‰å‡¦ç†
 	Model::PreDraw(commandList);
 
 	model_->Draw(worldTransform_, viewProjection_);
@@ -162,7 +170,7 @@ void GameScene::Draw() {
 
 	player->Draw(viewProjection_);
 
-	 //3DƒIƒuƒWƒFƒNƒg•`‰æŒãˆ—
+	 //3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæç”»å¾Œå‡¦ç†
 	Model::PostDraw();
 
 	FbxModel::PreDraw(commandList);
@@ -180,7 +188,7 @@ void GameScene::Draw() {
 
 #pragma endregion
 
-#pragma region ‘OŒiƒXƒvƒ‰ƒCƒg•`‰æ
+#pragma region å‰æ™¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
 	
 
 

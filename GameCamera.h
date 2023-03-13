@@ -20,8 +20,17 @@ public:
 	void Update(ViewProjection* viewProjection_);
 
 	void PlaySceneCamera(ViewProjection* viewProjection_);
+	void PlayerLockOnCamera(ViewProjection* viewProjection_);
 
 	void MultiplyMatrix(Matrix4& matrix);
+
+private:
+	// カメラの位置を計算する関数
+	Vector3 calculateCameraPosition(ViewProjection* viewProjection_,float distance, float angle);
+	// カメラが向く位置を計算する関数
+	Vector3 calculateLookAtPosition(Vector3 target, Vector3 camera);
+
+	
 
 public://ゲッターセッター
 
@@ -30,8 +39,21 @@ public://ゲッターセッター
 	Vector3 GetTarget() { return target; }
 	Matrix4 GetCameraRot() { return this->CameraRot; }
 	Vector3 GetCameraRotVec3() { return this->rot; }
+	// カメラの垂直方向の角度を計算する関数
+	float getPitch(ViewProjection* viewProjection_) {
+		return -atan2(playerPos_.y - viewProjection_->eye.y, playerCameraDistance);
+	}
 
-	void SetCameraPosition(Vector3 pos) { playerPos = pos; }
+	// カメラの水平方向の角度を計算する関数
+	float getYaw(Vector3 position, Vector3 lookAt) {
+		Vector3 direction = lookAt - position;
+		direction.norm();
+		float playerYaw = atan2(direction.x, direction.z);
+		return playerYaw;
+	}
+
+	void GetEnemyPos(Vector3 EnemyPos) { EnemyPos_ = EnemyPos; }
+	void SetCameraPosition(Vector3 pos) { playerPos_ = pos; }
 	void SetSpaceInput(bool isSpaceInput) { spaceInput = isSpaceInput; }
 
 private:
@@ -62,7 +84,7 @@ private:
 
 	Vector3 vTargetEye;
 	Vector3 vUp;
-	Vector3 playerPos;
+	Vector3 playerPos_;
 	Vector3 target;
 
 	bool cameraMode = false;
@@ -75,11 +97,23 @@ private:
 	Vector2 mouseMoved;
 	WorldTransform worldTransform_;
 	WorldTransform EnemyWorld_;
+	Vector3 EnemyPos_;
 
+	float angleAroundPlayer; // プレイヤーの周りを回転する角度
 	Matrix4 CameraRot;
 	float playerCameraDistance = 5.0f;
 
 	int cameraTime = 0;
 	int MaxCameraTime = 0;
 
+
+	//カメラモード(tekito-)
+	int cameraMode_ = 0;
+	//カメラ距離関係
+	const float  MAX_CAMERA_DISTANCE = 20.0f;
+	const float  MIN_CAMERA_DISTANCE = 7.0f;
+	float cameraDistance_ = 20.0f;
+	const float MAX_CHANGE_TIMER = 30;
+	int cameraModeChangeCountTimer = 30;
+	float cameraHeight_ = 6;
 };

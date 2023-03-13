@@ -44,6 +44,10 @@ void ViewProjection::UpdateMatrix() {
 	// 透視投影による射影行列の生成
 	matProjection = MyMath::PerspectiveFovLH(fovAngleY, aspectRatio, nearZ, farZ);
 
+	cameraLook = target - eye;
+	cameraLook.y = 0;
+	cameraLook.norm();
+
 	// 定数バッファに書き込み
 	constMap->view = matView;
 	constMap->projection = matProjection;

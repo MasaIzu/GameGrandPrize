@@ -21,6 +21,7 @@
 #include "Player.h"
 #include "GameCamera.h"
 #include"Boss.h"
+#include <CollisionManager.h>
 
 /// <summary>
 /// ゲームシーン
@@ -77,6 +78,9 @@ private: // メンバ変数
 
 	std::unique_ptr<Player> player;
 	std::unique_ptr<GameCamera> gameCamera;
+
+	//当たり判定
+	CollisionManager* collisionManager = nullptr;
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;

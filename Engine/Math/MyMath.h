@@ -8,10 +8,14 @@
 //•Ö—˜Œn‚Ü‚Æ‚ß
 namespace MyMath {
 
+	const float PI = 3.141592f;
+
 	Matrix4 Initialize();
 	Matrix4 Scale(const Vector3& scale);
 	Matrix4 Rotation(const Vector3& rotation, int X_1_Y_2_Z_3_XYZ_6);
 	Matrix4 Translation(const Vector3& move);
+
+	//float MyMathToRadian(float x) { return x * (PI / 180); }
 
 	//ƒxƒNƒgƒ‹‚Ì³‹K‰»(‚¢‚Á‚Ø‚ñ‚É‚â‚é)
 	Vector3 vector3Normalize(const Vector3& v);

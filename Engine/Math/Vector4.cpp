@@ -145,19 +145,37 @@ Vector4& Vector4::operator/=(float s)
 const Vector4 operator+(const Vector4& v1, const Vector4& v2)
 {
 	Vector4 temp(v1);
-	return temp + v2;
+
+	temp.x += v2.x;
+	temp.y += v2.y;
+	temp.z += v2.z;
+	temp.w += v2.w;
+
+	return temp;
 }
 
 const Vector4 operator-(const Vector4& v1, const Vector4& v2)
 {
 	Vector4 temp(v1);
-	return temp - v2;
+
+	temp.x -= v2.x;
+	temp.y -= v2.y;
+	temp.z -= v2.z;
+	temp.w -= v2.w;
+
+	return temp;
 }
 
 const Vector4 operator*(const Vector4& v, float s)
 {
 	Vector4 temp(v);
-	return temp * s;
+
+	temp.x *= s;
+	temp.y *= s;
+	temp.z *= s;
+	temp.w *= s;
+
+	return temp;
 }
 
 const Vector4 operator*(float s, const Vector4& v)
@@ -168,7 +186,13 @@ const Vector4 operator*(float s, const Vector4& v)
 const Vector4 operator/(const Vector4& v, float s)
 {
 	Vector4 temp(v);
-	return temp / s;
+
+	temp.x /= s;
+	temp.y /= s;
+	temp.z /= s;
+	temp.w /= s;
+
+	return temp;
 }
 
 Vector4 Vector4Lerp(const Vector4& src1, const Vector4& src2, float t)

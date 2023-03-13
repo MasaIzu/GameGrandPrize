@@ -80,7 +80,7 @@ private:
 
 	void BeginMotionUpdate();
 
-
+	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };

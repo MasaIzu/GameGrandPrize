@@ -6,7 +6,6 @@
 #include "FbxLoader.h"
 #include"ImGuiManager.h"
 
-
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -41,7 +40,7 @@ void GameScene::Initialize() {
 
 	boss.Initialize();
 
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < boss.fishMaxCount; i++) {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
@@ -129,7 +128,7 @@ void GameScene::Update() {
 	ImGui::End();
 
 	//viewProjection_.target = gameCamera->GetTarget();
-	viewProjection_.target =boss.fishParent.pos.translation_;
+	//viewProjection_.target =boss.fishParent.pos.translation_;
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
 	ParticleMan->Update();

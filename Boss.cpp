@@ -476,14 +476,19 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 void Boss::AtkRushUpdate(const Vector3& targetPos)
 {
-	const int rushMaxTime = 120;		//突進攻撃の始点から終点までかかる時間
+	const int rushMaxTime = 60;		//突進攻撃の始点から終点までかかる時間
 	const int rushCoolTime = 30;	//次の突進攻撃までのクールタイム
+	const int fishesDispersionRate = 15;
 
 	easeParentPos.Update();
 
+	ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);
+
+
+
 	if (easeParentPos.GetActive()) {
 		//突進中は始点と終点でイージング
-		Vector3 pos = Lerp(fishesBeforePos[0], fishesAfterPos[0], easeParentPos.GetTimeRate());
+		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
 		Vector3 pAfterPos = fishesAfterPos[0];
 		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
@@ -491,9 +496,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 
 		fishParent.pos.translation_ = pos;
 		fishParent.pos.TransferMatrix();
-		for (int i = 0; i < fishes.size(); i++) {
-			fishes[i].pos.TransferMatrix();
-		}
+
 	}
 	else {
 		//突進のクールタイムが終わっている
@@ -503,19 +506,53 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 				//突進回数を減らし、クールタイムを設定しておき、挙動を開始
 				rushCount--;
 				nextPhaseInterval = rushCoolTime;
-				easeParentPos.Start(rushMaxTime);
+
+
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+
+				//親座標の始点と終点を決める
+				parentBeforePos = fishParent.pos.translation_;
+				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				parentAfterPos.y = parentBeforePos.y;
+
 				float len = vecfishTotarget.length();
 				//挙動に使う座標を設定
-				fishesBeforePos[0] = fishParent.pos.translation_;
-				fishesAfterPos[0].x = fishesBeforePos[0].x - (len * 2);
-				fishesAfterPos[0].z = fishesBeforePos[0].z - (len * 2);
-				fishesAfterPos[0].y = fishesBeforePos[0].y;
+				for (int i = 0; i < fishes.size(); i++) {
+
+					if (i % fishesDispersionRate == 0) {
+						int easeParam = i / fishesDispersionRate;
+						easePFishToSword[easeParam].Start(rushMaxTime - (i / fishesDispersionRate) /*+ (Random(-(rushMaxTime / 10.0f),rushMaxTime / 10.0f))*/);
+					}
+
+					//移動を親依存にはするけど、親に追従じゃ動かないので親子関係を切る
+					fishes[i].pos.parent_ = nullptr;
+
+					if (rushCount == rushMaxCount - 1) {
+						fishesBeforePos[i] = parentBeforePos + fishes[i].pos.translation_;
+						fishesAfterPos[i] = parentAfterPos + fishes[i].pos.translation_;
+					}
+					else {
+						fishesBeforePos[i] = fishesAfterPos[i];
+						fishesAfterPos[i] -= (vecfishTotarget * 2);
+					}
+
+
+					if (i == 9) {
+						easeParentPos.Start(rushMaxTime);
+					}
+
+					/*	fishesAfterPos[i].x = fishesBeforePos[i].x - (vecfishTotarget.x * 2);
+						fishesAfterPos[i].z = fishesBeforePos[i].z - (vecfishTotarget.z * 2);
+						fishesAfterPos[i].y = fishesBeforePos[i].y;*/
+				}
 			}
 			else {
 				//突進の回数が残っていないならモーション終わり
 				nextPhaseInterval = attackCooltime;
 				phase1 = BossFirstPhase::Idle;
+				for (int i = 0; i < fishes.size(); i++) {
+					fishes[i].pos.parent_ = &fishParent.pos;
+				}
 			}
 		}
 		else {
@@ -525,6 +562,29 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 	}
 
 
+
+	//親座標の移動処理
+	if (easeParentPos.GetActive()) {
+		//突進中は始点と終点でイージング
+		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
+		Vector3 pBeforePos = fishesBeforePos[0];
+		Vector3 pAfterPos = fishesAfterPos[0];
+		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+		fishParent.pos.translation_ = pos;
+		fishParent.pos.TransferMatrix();
+	}
+
+	//魚群の移動処理
+	for (int j = 0; j < fishes.size(); j++) {
+		easePFishToSword[j / fishesDispersionRate].Update();
+		if (easePFishToSword[j / fishesDispersionRate].GetActive()) {
+			
+			Vector3 fishPos = Lerp(fishesBeforePos[j], fishesAfterPos[j], easePFishToSword[j / fishesDispersionRate].GetTimeRate());
+			fishes[j].pos.translation_ = fishPos;
+			fishes[j].pos.TransferMatrix();
+		}
+	}
 
 }
 

@@ -64,6 +64,7 @@ public:
 
 	WorldTransform swordTransform;
 
+	static const int fishMaxCount = 200;
 
 private:
 	//フェーズごとの更新処理
@@ -83,10 +84,15 @@ private:
 	EasingData easeSwordScale;
 
 	const int moveFishMax = 120;
+
+
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 fishesBeforePos[120], fishesControllP1[120], fishesControllP2[120],fishesAfterPos[120];
+	Vector3 parentBeforePos, parentAfterPos;
+	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
 	Vector3 beforeScale, afterScale;
+
+
 
 	EasingData easeParentPos;
 

@@ -167,22 +167,28 @@ public: // メンバ関数
 
 	size_t GetParticlesListSize() {return outParticles.size() ; }
 
-	///<summary>
-	///パーティクルの追加(一か所に集まるパーティクル)
-	///</summary>
-	///<param name="life">生存時間</param>
-	///<param name="position">初期座標</param>
-	/// <param name="velocity">	速度</param>
-	/// <param name="life">加速度</param>
+	/// <summary>
+	/// イージングパーティクル（in）
+	/// </summary>
+	/// <param name="life">寿命(イージングなんでスピードにも関係する)</param>
+	/// <param name="startPosition">初期座標</param>
+	/// <param name="endPosition">最終座標</param>
+	/// <param name="startScale">初期サイズ</param>
+	/// <param name="endScale">最終サイズ</param>
+	/// <param name="startColor">初期色</param>
+	/// <param name="endColor">最終色</param>
 	void InAdd(int life, Vector3 startPosition, Vector3 endPosition,float startScale,float endScale,Vector4 startColor,Vector4 endColor);
 
-	///<summary>
-	///パーティクルの追加（離れていくパーティクル）
-	///</summary>
-	///<param name="life">生存時間</param>
-	///<param name="position">初期座標</param>
-	/// <param name="velocity">	速度</param>
-	/// <param name="life">加速度</param>
+	/// <summary>
+	/// イージングパーティクル（out)
+	/// </summary>
+	/// <param name="life">寿命(イージングなんでスピードにも関係する)</param>
+	/// <param name="startPosition">初期座標</param>
+	/// <param name="endPosition">最終座標</param>
+	/// <param name="startScale">初期サイズ</param>
+	/// <param name="endScale">最終サイズ</param>
+	/// <param name="startColor">初期色</param>
+	/// <param name="endColor">最終色</param>
 	void OutAdd(int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor);
 
 private: // メンバ変数

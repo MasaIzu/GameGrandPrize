@@ -18,6 +18,8 @@
 #include<memory>
 #include<vector>
 
+#include "BoxCollision.h"
+
 #include "Player.h"
 #include "GameCamera.h"
 #include"Boss.h"
@@ -81,6 +83,9 @@ private: // メンバ変数
 
 	//当たり判定
 	CollisionManager* collisionManager = nullptr;
+
+	//ボックス当たり判定
+	std::unique_ptr <BoxCollision> boxCollision;
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;

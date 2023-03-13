@@ -13,6 +13,7 @@ public:
     //プレイヤーの半径をx,y,zの順に入れる
     //エネミーの半径をx,y,zの順に入れる
     bool BoxCollision_1(Vector3 player, Vector3 enemy, Vector3 playerWidth,Vector3 enemyWidth);
+    bool BoxCollision_(Vector3 player, Vector3 playerWidth, Vector2 enemyPosX, Vector2 enemyPosY, Vector2 enemyPosZ);
     bool BoxCollision_2(Vector3 player, Vector3 enemy, Vector3 playerWidth, Vector3 enemyWidth,bool flag);
 
     void Contact(int playerMove ,Vector3 player,WorldTransform enemy,Vector3 enemyRotationMove, Vector3 enemyMove);

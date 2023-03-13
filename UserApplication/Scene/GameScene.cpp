@@ -42,6 +42,8 @@ void GameScene::Initialize() {
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
 	fbxmodel->Initialize();*/
 
+	boxCollision = std::make_unique<BoxCollision>();
+
 	boss.Initialize();
 
 	for (int i = 0; i < boss.fishMaxCount; i++) {
@@ -129,6 +131,13 @@ void GameScene::Update() {
 	ImGui::SliderFloat("PosY", &viewProjection_.eye.y, -100.0f, 100.0f);
 	ImGui::SliderFloat("PosZ", &viewProjection_.eye.z, -100.0f, 200.0f);
 	ImGui::End();
+
+	Vector3 pWith(1, 1, 1);
+	Vector3 eWith(0.6f, 9, 1);
+
+	if (boxCollision->BoxCollision_1(player->GetWorldPosition(),MyMath::GetWorldTransform(boss.swordTransform.matWorld_),pWith,eWith)) {
+
+	}
 
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.target = boss.fishParent.pos.translation_;

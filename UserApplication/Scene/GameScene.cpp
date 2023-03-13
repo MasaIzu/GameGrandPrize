@@ -38,7 +38,7 @@ void GameScene::Initialize() {
 	//worldTransform_.TransferMatrix();
 
 	/*fbxmodel = std::make_unique<FbxModel>();
-	
+
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
 	fbxmodel->Initialize();*/
 
@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 	}
 
 	boss.fishParent.pos.translation_ = { 0,0,100 };
-	boss.Update({0,0,0});
+	boss.Update({ 0,0,0 });
 
 	player = std::make_unique<Player>();
 	player->Initialize(model_.get(), 1280, 720);
@@ -59,7 +59,7 @@ void GameScene::Initialize() {
 	gameCamera->Initialize();
 
 
-	model_->SetPolygonExplosion({0.0f,1.0f,0.0f,0.0f});
+	model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
 	ParticleMan = std::make_unique<ParticleManager>();
 	ParticleMan->Initialize();
 
@@ -68,7 +68,7 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	
+
 	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
@@ -84,35 +84,35 @@ void GameScene::Update() {
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-	
-		//スペースキーを押していたら
-		for (int i = 0; i < 5; i++)
-		{
-			const float rnd_life = 290.0f;
-			float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
 
-			//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-			const float rnd_pos = 30.0f;
-			Vector3 pos{};
-			pos.x = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
-			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 200;
-			pos.z = (float)rand() / RAND_MAX * rnd_pos  - rnd_pos / 2.0f;
-			//追加
-			ParticleMan->OutAdd(life, { 0,50,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
-		}
-		////スペースキーを押していたら
-		//for (int i = 0; i < 50; i++)
-		//{
+	//スペースキーを押していたら
+	for (int i = 0; i < 5; i++)
+	{
+		const float rnd_life = 290.0f;
+		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
 
-		//	//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-		//	const float rnd_pos = 10.0f;
-		//	Vector3 pos{};
-		//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//	pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//	//追加
-		//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
-		//}
+		//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
+		const float rnd_pos = 30.0f;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 200;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->OutAdd(life, { 0,50,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
+	}
+	////スペースキーを押していたら
+	//for (int i = 0; i < 50; i++)
+	//{
+
+	//	//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
+	//	const float rnd_pos = 10.0f;
+	//	Vector3 pos{};
+	//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+	//	pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+	//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+	//	//追加
+	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
+	//}
 
 	boss.Update(player->GetWorldPosition());
 
@@ -125,15 +125,16 @@ void GameScene::Update() {
 	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
 
-//	viewProjection_.eye = gameCamera->GetEye();
+	//	viewProjection_.eye = gameCamera->GetEye();
 	ImGui::Begin("Camera");
 	ImGui::SliderFloat("PosX", &viewProjection_.eye.x, -100.0f, 200.0f);
 	ImGui::SliderFloat("PosY", &viewProjection_.eye.y, -100.0f, 100.0f);
 	ImGui::SliderFloat("PosZ", &viewProjection_.eye.z, -100.0f, 200.0f);
 	ImGui::End();
 
-	//viewProjection_.target = gameCamera->GetTarget();
-	//viewProjection_.target =boss.fishParent.pos.translation_;
+	viewProjection_.target = gameCamera->GetTarget();
+	//viewProjection_.target = boss.fishParent.pos.translation_;
+	viewProjection_.eye = gameCamera->GetEye();
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
 	ParticleMan->Update();
@@ -149,7 +150,7 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
-	
+
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
@@ -170,7 +171,7 @@ void GameScene::Draw() {
 
 	player->Draw(viewProjection_);
 
-	 //3Dオブジェクト描画後処理
+	//3Dオブジェクト描画後処理
 	Model::PostDraw();
 
 	FbxModel::PreDraw(commandList);
@@ -189,7 +190,7 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 前景スプライト描画
-	
+
 
 
 #pragma endregion

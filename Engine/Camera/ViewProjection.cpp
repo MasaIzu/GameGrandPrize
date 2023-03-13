@@ -89,22 +89,4 @@ void ViewProjection::UpdateMatrix() {
 	//一つのベクトルにまとめる
 	Vector3 translation = { tX, tY, tZ };
 
-#pragma region 全方向ビルボード行列の計算
-	//ビルボード行列
-	matBillboard.m[0][0] = cameraAxisX.x;
-	matBillboard.m[0][1] = cameraAxisX.y;
-	matBillboard.m[0][2] = cameraAxisX.z;
-	matBillboard.m[0][3] = 0;
-	matBillboard.m[1][0] = cameraAxisY.x;
-	matBillboard.m[1][1] = cameraAxisY.y;
-	matBillboard.m[1][2] = cameraAxisY.z;
-	matBillboard.m[1][3] = 0;
-	matBillboard.m[2][0] = cameraAxisZ.x;
-	matBillboard.m[2][1] = cameraAxisZ.y;
-	matBillboard.m[2][2] = cameraAxisZ.z;
-	matBillboard.m[2][3] = 0;
-	matBillboard.m[3][0] = 0;
-	matBillboard.m[3][1] = 0;
-	matBillboard.m[3][2] = 0;
-	matBillboard.m[3][3] = 1;
 }

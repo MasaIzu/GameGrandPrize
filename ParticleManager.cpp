@@ -426,7 +426,6 @@ void ParticleManager::Draw(ViewProjection view)
 	//constMap->color = color;
 	//constMap->mat = matWorld * matView * matProjection;	// 行列の合成
 	constMap->mat = view.matView * view.matProjection;	// 行列の合成
-	constMap->matBillboard = view.matBillboard;
 	constBuff->Unmap(0, nullptr);
 
 	// nullptrチェック

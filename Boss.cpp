@@ -41,12 +41,6 @@ void Boss::Update(const Vector3& targetPos)
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
 
-	ImGui::Text("Ease parent Pos:%f", easeParentPos.GetTimeRate());
-	ImGui::Text("interVal:%d", nextPhaseInterval);
-	ImGui::Text("rush count:%d", rushCount);
-
-	ImGui::Text("scale:%f", swordTransform.scale_.x);
-
 	switch (phase1) {
 	case BossFirstPhase::Idle:
 		IdleUpdate();
@@ -130,7 +124,7 @@ void Boss::Draw(ViewProjection viewProMat)
 		swordModel->Draw(swordTransform, viewProMat);
 	}
 
-	for (int i = 0; i <fishes.size(); i++) {
+	for (int i = 0; i < fishes.size(); i++) {
 		fishBodyModel->Draw(fishes[i].pos, viewProMat);
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
@@ -189,14 +183,14 @@ void Boss::IdleUpdate()
 		//回転用の移動ベクトルを作成
 		Vector3 dirvec = pos - fishes[i].pos.translation_;
 		dirvec.normalize();
-	//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
+		//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
 
-	/*	Matrix4 dirMat{
+		/*	Matrix4 dirMat{
 
-		}*/
+			}*/
 		FishLookFront(fishes[i].pos.translation_, pos, i);
 		fishes[i].pos.translation_ = pos;
-		
+
 
 
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
@@ -210,13 +204,11 @@ void Boss::IdleUpdate()
 
 
 		//50%で突進、残りで剣撃
-		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 0) {
+		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 66) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
 			phase1 = BossFirstPhase::Atk_Rush;
-			nextPhaseInterval = 100;
-			phase1 = BossFirstPhase::Idle;
 		}
 		else {
 
@@ -292,6 +284,8 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//敵中心から剣の位置の中心まで移動する(120f)
 		//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
 
+		ImGui::Text("now create!");
+
 		//最初にどの魚を剣まで移動させるか決める
 		int goFishToSwordIndex = 0;
 		goFishToSwordIndex = static_cast<int>(Random(0, fishes.size()));
@@ -348,11 +342,13 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		static int a = 0;
 		a++;
 
+		ImGui::Text("now wait!");
+
 	}
 	//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - 60) {
 
-
+		ImGui::Text("now move!");
 		Vector3 rotaVec;
 		rotaVec.x = sin(PI / 3.0f);
 		rotaVec.z = cos(PI / 3.0f);
@@ -362,8 +358,6 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//標的の座標と掛け算
 		Vector3 aftetVec;
 		aftetVec = targetPos + rotaVec;
-
-		ImGui::Text("afterVec:%f,%f,%f", aftetVec.x, aftetVec.y, aftetVec.z);
 
 		easeSwordPos.Update();
 		Vector3 pos;
@@ -379,6 +373,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	}
 
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
+		
+		ImGui::Text("now attack!");
+
 		Vector3 rotaVec;
 		rotaVec.x = sin(PI / 3.0f);
 		rotaVec.z = cos(PI / 3.0f);
@@ -397,6 +394,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		Vector3 pos, rot;
 		//ベジエ曲線で座標を補完
 		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordPos.GetTimeRate()));
+
+		ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
+
 		//ワールド行列から回転を借りてくる
 		rot = swordTransform.rotation_;
 		//回転
@@ -406,7 +406,11 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	}
 	//崩壊モーション
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
-		//崩壊モーションのための座標設定
+		
+	ImGui::Text("now break!");
+	
+
+	//崩壊モーションのための座標設定
 		int fishIndex = swordBreakTime - nextPhaseInterval - 60;
 		if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
 		ImGui::Text("fishIndex:%d", fishIndex);
@@ -479,7 +483,6 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		fishes[choiceFishIndex[i]].pos.translation_ = LerpBezireCubic(fishesBeforePos[i], fishesControllP1[i], fishesControllP2[i], fishesAfterPos[i], easePFishToSword[i].GetTimeRate());
 
 		if (easePFishToSword[i].GetActive()) {
-			ImGui::Text("fish[%d]scalling Active!", i);
 			fishes[choiceFishIndex[i]].pos.scale_ = Lerp(beforeScale, afterScale, easePFishToSword[i].GetTimeRate());
 		}
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();
@@ -489,6 +492,8 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
 	ImGui::Text("ParentPosZ:%1.5f", fishParent.pos.translation_.z);
+	ImGui::Text("swordPosX:%1.5f", swordTransform.translation_.x);
+	ImGui::Text("swordPosY:%1.5f", swordTransform.translation_.y);
 	ImGui::Text("swordPosZ:%1.5f", swordTransform.translation_.z);
 
 	swordTransform.TransferMatrix();
@@ -602,7 +607,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 	for (int j = 0; j < fishes.size(); j++) {
 		easePFishToSword[j / fishesDispersionRate].Update();
 		if (easePFishToSword[j / fishesDispersionRate].GetActive()) {
-			
+
 			Vector3 fishPos = Lerp(fishesBeforePos[j], fishesAfterPos[j], easePFishToSword[j / fishesDispersionRate].GetTimeRate());
 			fishes[j].pos.translation_ = fishPos;
 			fishes[j].pos.TransferMatrix();
@@ -665,7 +670,7 @@ void Boss::BeginMotionUpdate()
 	}
 }
 
-void Boss::FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum)
+void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
 {
 	Vector3 up{ 0,1,0 };
 	Vector3 z = dirVec - pos;

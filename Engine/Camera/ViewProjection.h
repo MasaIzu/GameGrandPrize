@@ -7,62 +7,64 @@
 
 const float PI = 3.141592f;
 
-// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì
 struct ConstBufferDataViewProjection {
-	Matrix4 view;       // ãƒ¯ãƒ¼ãƒ«ãƒ‰ â†’ ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
-	Matrix4 projection; // ãƒ“ãƒ¥ãƒ¼ â†’ ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
-	Vector3 cameraPos;  // ã‚«ãƒ¡ãƒ©åº§æ¨™ï¼ˆãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ï¼‰
+	Matrix4 view;       // ƒ[ƒ‹ƒh ¨ ƒrƒ…[•ÏŠ·s—ñ
+	Matrix4 projection; // ƒrƒ…[ ¨ ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
+	Vector3 cameraPos;  // ƒJƒƒ‰À•Wiƒ[ƒ‹ƒhÀ•Wj
 };
 
 /// <summary>
-/// ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›ãƒ‡ãƒ¼ã‚¿
+/// ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·ƒf[ƒ^
 /// </summary>
 struct ViewProjection {
-	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
+	// ’è”ƒoƒbƒtƒ@
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff_;
-	// ãƒãƒƒãƒ”ãƒ³ã‚°æ¸ˆã¿ã‚¢ãƒ‰ãƒ¬ã‚¹
+	// ƒ}ƒbƒsƒ“ƒOÏ‚İƒAƒhƒŒƒX
 	ConstBufferDataViewProjection* constMap = nullptr;
 
-#pragma region ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®è¨­å®š
-	// è¦–ç‚¹åº§æ¨™
+#pragma region ƒrƒ…[s—ñ‚Ìİ’è
+	// ‹“_À•W
 	Vector3 eye = { 0, 0, -50.0f };
-	// æ³¨è¦–ç‚¹åº§æ¨™
+	// ’‹“_À•W
 	Vector3 target = { 0, 0, 0 };
-	// ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	// ã•ûŒüƒxƒNƒgƒ‹
 	Vector3 up = { 0, 1, 0 };
 #pragma endregion
 
-#pragma region å°„å½±è¡Œåˆ—ã®è¨­å®š
-	// å‚ç›´æ–¹å‘è¦–é‡è§’
+#pragma region Ë‰es—ñ‚Ìİ’è
+	// ‚’¼•ûŒü‹–ìŠp
 	float fovAngleY = ToRadian(45.0f);
-	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
+	// ƒrƒ…[ƒ|[ƒg‚ÌƒAƒXƒyƒNƒg”ä
 	float aspectRatio = (float)16 / 9;
-	// æ·±åº¦é™ç•Œï¼ˆæ‰‹å‰å´ï¼‰
+	// [“xŒÀŠEiè‘O‘¤j
 	float nearZ = 0.1f;
-	// æ·±åº¦é™ç•Œï¼ˆå¥¥å´ï¼‰
+	// [“xŒÀŠEi‰œ‘¤j
 	float farZ = 1000.0f;
 #pragma endregion
 
-	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+	// ƒrƒ…[s—ñ
 	Matrix4 matView;
-	// å°„å½±è¡Œåˆ—
+	// Ë‰es—ñ
 	Matrix4 matProjection;
 
+	//ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚éŒü‚«
+	Vector3 cameraLook = target.norm();
 
 	/// <summary>
-	/// åˆæœŸåŒ–
+	/// ‰Šú‰»
 	/// </summary>
 	void Initialize();
 	/// <summary>
-	/// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
+	/// ’è”ƒoƒbƒtƒ@¶¬
 	/// </summary>
 	void CreateConstBuffer();
 	/// <summary>
-	/// ãƒãƒƒãƒ”ãƒ³ã‚°ã™ã‚‹
+	/// ƒ}ƒbƒsƒ“ƒO‚·‚é
 	/// </summary>
 	void Map();
 	/// <summary>
-	/// è¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹
+	/// s—ñ‚ğXV‚·‚é
 	/// </summary>
 	void UpdateMatrix();
 

@@ -34,8 +34,12 @@ public:
 	//魚群
 	std::vector<fish> fishes;
 
-	//剣のモデルデータ　
+	//剣のモデルデータ
 	std::unique_ptr<Model> swordModel = nullptr;
+
+	//魚のモデルデータ
+	std::unique_ptr<Model> fishBodyModel = nullptr;
+	std::unique_ptr<Model> fishEyeModel = nullptr;
 
 	//ランダムで変化する速度の基本値
 	float randSpdParam = 0;
@@ -76,7 +80,7 @@ private:
 
 	void BeginMotionUpdate();
 
-
+	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };

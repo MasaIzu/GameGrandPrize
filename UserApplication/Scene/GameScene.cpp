@@ -161,9 +161,7 @@ void GameScene::Draw() {
 
 	model_->Draw(worldTransform_, viewProjection_);
 
-	for (int i = 0; i < boss.fishes.size(); i++) {
-		model_->Draw(boss.fishes[i].pos, viewProjection_);
-	}
+
 
 	model_->Draw(boss.swordTransform, viewProjection_);
 

@@ -24,6 +24,11 @@ void Boss::Initialize()
 
 	//剣のモデル初期化
 	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
+
+	//魚のモデル初期化
+	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
+	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
+
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
@@ -125,6 +130,10 @@ void Boss::Draw(ViewProjection viewProMat)
 		swordModel->Draw(swordTransform, viewProMat);
 	}
 
+	for (int i = 0; i <fishes.size(); i++) {
+		fishBodyModel->Draw(fishes[i].pos, viewProMat);
+		fishEyeModel->Draw(fishes[i].pos, viewProMat);
+	}
 
 	//swordModel->Draw(swordTransform, viewProMat);
 }
@@ -177,7 +186,19 @@ void Boss::IdleUpdate()
 
 		pos += fishes[i].displacement;
 
+		//回転用の移動ベクトルを作成
+		Vector3 dirvec = pos - fishes[i].pos.translation_;
+		dirvec.normalize();
+	//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
+
+	/*	Matrix4 dirMat{
+
+		}*/
+		FishLookFront(fishes[i].pos.translation_, pos, i);
 		fishes[i].pos.translation_ = pos;
+		
+
+
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
 	}
@@ -194,6 +215,8 @@ void Boss::IdleUpdate()
 			rushCount = rushMaxCount;
 			//フェーズ移行
 			phase1 = BossFirstPhase::Atk_Rush;
+			nextPhaseInterval = 100;
+			phase1 = BossFirstPhase::Idle;
 		}
 		else {
 
@@ -640,6 +663,26 @@ void Boss::BeginMotionUpdate()
 		swordTransform.SetRot({ 0,0,0 });
 		swordTransform.TransferMatrix();
 	}
+}
+
+void Boss::FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum)
+{
+	Vector3 up{ 0,1,0 };
+	Vector3 z = dirVec - pos;
+	z.normalize();
+	Vector3 x = up.cross(z);
+	x.normalize();
+	Vector3 y = z.cross(x);
+	y.normalize();
+	Matrix4 rotaMat{
+		x.x, x.y, x.z,0,
+		y.x, y.y, y.z,0,
+		z.x, z.y, z.z,0,
+		0,0,0,1
+	};
+
+	fishes[fishNum].pos.matWorld_ *= rotaMat;
+
 }
 
 float Random(float num1, float num2)

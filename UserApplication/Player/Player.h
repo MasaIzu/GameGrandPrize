@@ -42,11 +42,12 @@ public:
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
-	
+
 	bool GetSpaceInput() { return spaceInput; }
 
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
+	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
 
 private:
 	//ワールド変換データ
@@ -74,6 +75,8 @@ private:
 	Vector3 Rot;
 	Vector3 Avoidance;
 
+	Vector3 cameraLook;
+
 	int timer = 0;
 
 
@@ -81,7 +84,7 @@ private:
 	float radius = 2.0f;//当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.3f;
+	float playerSpeed = 0.01f;
 	float playerAvoidance = 0.0f;
 
 

@@ -57,19 +57,37 @@ void Player::Move() {
 		timer--;
 	}
 
+	Matrix4 cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
+
+	Vector3 moveRot = cameraLook;
+
 	if (input_->PushKey(DIK_W)) {
 		playerMovement.z = -playerSpeed;
+		//cameraLook *= playerSpeed;
+
+		worldTransform_.translation_ += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
 		playerMovement.x = playerSpeed;
+		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
+		moveRot.y = 0;
+		moveRot.norm();
+		worldTransform_.translation_ -= moveRot * playerSpeed;
 		isPushLeft = true;
 	}
 	if (input_->PushKey(DIK_S)) {
 		playerMovement.z = playerSpeed;
+		//cameraLook *= playerSpeed;
+
+		worldTransform_.translation_ -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		playerMovement.x = -playerSpeed;
+		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
+		moveRot.y = 0;
+		moveRot.norm();
+		worldTransform_.translation_ += moveRot * playerSpeed;
 		isPushRight = true;
 	}
 
@@ -106,7 +124,7 @@ void Player::Move() {
 	Avoidance.normalize();
 	Avoidance *= playerAvoidance;
 
-	worldTransform_.translation_ += playerMovement;
+	//worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
 	worldTransform_.matWorld_ *= CameraRot;

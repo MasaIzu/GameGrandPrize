@@ -110,6 +110,7 @@ void GameScene::Update() {
 	boss.Update();
 
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
+	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
 
 	gameCamera->SetSpaceInput(player->GetSpaceInput());

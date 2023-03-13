@@ -133,6 +133,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	Matrix4 cameraRot;
 
 	cameraRot = MyMath::Rotation(rotation, 6);
+	//cameraRot *= viewProjection_->matView;
 
 	rot = rotation;
 	CameraRot = cameraRot;
@@ -202,10 +203,12 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//カメラをずらす際に使われる
 
-		float shiftLen = -5.0f;	//ずらす量
+		float shiftLen = 0.0f;	//ずらす量
 		Vector3 shiftVec = { primalyCamera.x + sinf(eyeVecAngle + PI / 2) * shiftLen,primalyCamera.y,primalyCamera.z + cosf(eyeVecAngle + PI / 2) * shiftLen };
 
-		vTargetEye = shiftVec;//ビュープロジェクションに代入
+		rot = MyMath::MatVector(viewProjection_->matView, rot);
+
+		vTargetEye = shiftVec;
 	}
 
 

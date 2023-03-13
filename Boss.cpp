@@ -24,6 +24,11 @@ void Boss::Initialize()
 
 	//Œ•‚Ìƒ‚ƒfƒ‹‰Šú‰»
 	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
+
+	//‹›‚Ìƒ‚ƒfƒ‹‰Šú‰»
+	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
+	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
+
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
@@ -125,6 +130,10 @@ void Boss::Draw(ViewProjection viewProMat)
 		swordModel->Draw(swordTransform, viewProMat);
 	}
 
+	for (int i = 0; i <fishes.size(); i++) {
+		fishBodyModel->Draw(fishes[i].pos, viewProMat);
+		fishEyeModel->Draw(fishes[i].pos, viewProMat);
+	}
 
 	//swordModel->Draw(swordTransform, viewProMat);
 }

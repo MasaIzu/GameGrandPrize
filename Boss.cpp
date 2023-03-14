@@ -4,7 +4,9 @@
 #include"Affin.h"
 #include"ImGuiManager.h"
 #include"Easing.h"
-
+#include "CollisionManager.h"
+#include <SphereCollider.h>
+#include <CollisionAttribute.h>
 
 Boss::~Boss()
 {
@@ -31,6 +33,13 @@ void Boss::Initialize()
 
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
+
+	// コリジョンマネージャに追加
+	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+	CollisionManager::GetInstance()->AddCollider(collider);
+
+	collider->Update(fishParent.pos.matWorld_);
+	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
 	swordTransform.Initialize();
 	swordTransform.TransferMatrix();
@@ -62,6 +71,7 @@ void Boss::Update(const Vector3& targetPos)
 
 	ImGui::End();
 
+	collider->Update(fishParent.pos.matWorld_);
 }
 
 void Boss::CreateFish(float posY)

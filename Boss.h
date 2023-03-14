@@ -5,6 +5,7 @@
 #include<memory>
 #include"EasingData.h"
 #include"ViewProjection.h"
+#include <BaseCollider.h>
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -96,7 +97,9 @@ private:
 	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
 	Vector3 beforeScale, afterScale;
 
-
+	// コライダー
+	BaseCollider* collider = nullptr;
+	float radius = 10.0f;//当たり判定半径
 
 	EasingData easeParentPos;
 

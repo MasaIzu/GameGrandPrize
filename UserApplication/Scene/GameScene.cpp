@@ -139,6 +139,11 @@ void GameScene::Update() {
 
 	}
 
+	//全ての衝突をチェック
+	collisionManager->CheckAllCollisions();
+
+
+	//カメラは最後にアプデ
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.target = boss.fishParent.pos.translation_;
 	viewProjection_.eye = gameCamera->GetEye();
@@ -146,8 +151,6 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	ParticleMan->Update();
 
-	//全ての衝突をチェック
-	collisionManager->CheckAllCollisions();
 
 }
 

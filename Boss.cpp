@@ -10,7 +10,7 @@
 
 Boss::~Boss()
 {
-
+	delete collider;
 }
 
 void Boss::Initialize()
@@ -39,7 +39,7 @@ void Boss::Initialize()
 	CollisionManager::GetInstance()->AddCollider(collider);
 
 	collider->Update(fishParent.pos.matWorld_);
-	collider->SetAttribute(COLLISION_ATTR_ALLIES);
+	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 
 	swordTransform.Initialize();
 	swordTransform.TransferMatrix();
@@ -139,7 +139,7 @@ void Boss::Draw(ViewProjection viewProMat)
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
 
-	//swordModel->Draw(swordTransform, viewProMat);
+	swordModel->Draw(fishParent.pos, viewProMat);
 }
 
 void Boss::IdleUpdate()

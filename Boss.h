@@ -99,7 +99,7 @@ private:
 
 	// コライダー
 	BaseCollider* collider = nullptr;
-	float radius = 10.0f;//当たり判定半径
+	float radius = 20.0f;//当たり判定半径
 
 	EasingData easeParentPos;
 

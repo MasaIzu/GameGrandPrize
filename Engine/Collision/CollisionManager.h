@@ -35,6 +35,9 @@ public://メンバ関数
 
 	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, Matrix4* worldPos = nullptr);
 
+
+	bool GetIsHit() { return isHit; }
+
 private:
 	CollisionManager() = default;
 	CollisionManager(const CollisionManager&) = delete;
@@ -43,5 +46,7 @@ private:
 
 	//コライダーのリスト
 	std::forward_list<BaseCollider*> colliders;
+
+	bool isHit = false;
 
 };

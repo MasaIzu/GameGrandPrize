@@ -2,6 +2,7 @@
 #include "BaseCollider.h"
 #include "Collision.h"
 #include "MeshCollider.h"
+#include <CollisionAttribute.h>
 
 using namespace DirectX;
 
@@ -13,6 +14,8 @@ CollisionManager* CollisionManager::GetInstance()
 
 void CollisionManager::CheckAllCollisions()
 {
+	isHit = false;
+
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
 
@@ -31,8 +34,13 @@ void CollisionManager::CheckAllCollisions()
 				Sphere* SphereA = dynamic_cast<Sphere*>(colA);
 				Sphere* SphereB = dynamic_cast<Sphere*>(colB);
 				Vector4 inter;
+				if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						isHit = true;
+					}
+				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-
+					//isHit = true;
 				}
 			}
 			else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&

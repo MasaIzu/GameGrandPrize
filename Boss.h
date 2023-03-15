@@ -107,7 +107,7 @@ private:
 
 	// コライダー
 	BaseCollider* collider = nullptr;
-	float radius = 10.0f;//当たり判定半径
+	float radius = 20.0f;//当たり判定半径
 
 	//当たり判定用の剣の大きさ用変数
 	WorldTransform testTrans;

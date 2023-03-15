@@ -211,7 +211,11 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		vTargetEye = shiftVec;
 	}
 
+	if (isHit == true) {
+		//isHit = false;
+		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
 
+	}
 
 }
 

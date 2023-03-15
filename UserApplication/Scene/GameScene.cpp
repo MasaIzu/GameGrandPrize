@@ -76,6 +76,11 @@ void GameScene::Update() {
 		sceneManager_->ChangeScene("TITLE");
 	}*/
 
+	if (collisionManager->GetIsHit()) {
+		isHit = true;
+	}
+
+
 	ImGui::Begin("Phase");
 
 	ImGui::Text("ParticleListSize:%d", ParticleMan->GetParticlesListSize());
@@ -120,6 +125,8 @@ void GameScene::Update() {
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
 
+
+	gameCamera->SetIsHit(isHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});

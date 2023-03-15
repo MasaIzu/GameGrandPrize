@@ -23,6 +23,9 @@ public:
 
 	inline CollisionShapeType GetShapeType() { return shapeType; }
 
+	inline bool GetAttribute() { return attribute; }
+
+
 	/// <summary>
 	/// 当たり判定属性をセット
 	/// </summary>

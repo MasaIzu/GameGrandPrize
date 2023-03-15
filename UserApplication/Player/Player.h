@@ -42,6 +42,7 @@ public:
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
+	
 
 	bool GetSpaceInput() { return spaceInput; }
 

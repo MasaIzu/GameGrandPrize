@@ -39,6 +39,7 @@ public://ゲッターセッター
 	Vector3 GetTarget() { return target; }
 	Matrix4 GetCameraRot() { return this->CameraRot; }
 	Vector3 GetCameraRotVec3() { return this->rot; }
+	bool GetIsHit() { return isHit; }
 	// カメラの垂直方向の角度を計算する関数
 	float getPitch(ViewProjection* viewProjection_) {
 		return -atan2(playerPos_.y - viewProjection_->eye.y, playerCameraDistance);
@@ -55,6 +56,7 @@ public://ゲッターセッター
 	void GetEnemyPos(Vector3 EnemyPos) { EnemyPos_ = EnemyPos; }
 	void SetCameraPosition(Vector3 pos) { playerPos_ = pos; }
 	void SetSpaceInput(bool isSpaceInput) { spaceInput = isSpaceInput; }
+	void SetIsHit(bool isHit_) { isHit = isHit_; }
 
 private:
 
@@ -116,4 +118,6 @@ private:
 	const float MAX_CHANGE_TIMER = 30;
 	int cameraModeChangeCountTimer = 30;
 	float cameraHeight_ = 6;
+
+	bool isHit = false;
 };

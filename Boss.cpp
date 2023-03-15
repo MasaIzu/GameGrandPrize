@@ -43,6 +43,10 @@ void Boss::Initialize()
 
 	swordTransform.Initialize();
 	swordTransform.TransferMatrix();
+
+	testTrans.Initialize();
+	testTrans2.Initialize();
+
 }
 
 void Boss::Update(const Vector3& targetPos)
@@ -132,6 +136,16 @@ void Boss::Draw(ViewProjection viewProMat)
 {
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
+
+		testTrans.scale_ = { 3,3,3 };
+		testTrans.translation_ = posSwordColCube1;
+		testTrans.TransferMatrix();
+		fishEyeModel->Draw(testTrans, viewProMat);
+		testTrans2.scale_ = { 3,3,3 };
+		testTrans2.translation_ = posSwordColCube2;
+		testTrans2.TransferMatrix();
+		fishEyeModel->Draw(testTrans2, viewProMat);
+
 	}
 
 	for (int i = 0; i < fishes.size(); i++) {
@@ -139,7 +153,6 @@ void Boss::Draw(ViewProjection viewProMat)
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
 
-	//swordModel->Draw(swordTransform, viewProMat);
 }
 
 void Boss::IdleUpdate()
@@ -201,8 +214,6 @@ void Boss::IdleUpdate()
 		FishLookFront(fishes[i].pos.translation_, pos, i);
 		fishes[i].pos.translation_ = pos;
 
-
-
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
 	}
@@ -214,15 +225,13 @@ void Boss::IdleUpdate()
 
 
 		//50%で突進、残りで剣撃
-		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 66) {
+		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 100) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
 			phase1 = BossFirstPhase::Atk_Rush;
 		}
 		else {
-
-
 
 			//0になったらクールタイムを攻撃開始モーションの時間に設定
 			nextPhaseInterval = beginAttackDelay;
@@ -255,6 +264,11 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	const int swordAtkTime = 150;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 
+
+
+	ImGui::Text("SwordColCube1 : %f,%f,%f", posSwordColCube1.x, posSwordColCube1.y, posSwordColCube1.z);
+	ImGui::Text("SwordColCube2 : %f,%f,%f", posSwordColCube2.x, posSwordColCube2.y, posSwordColCube2.z);
+
 	//モーション開始の瞬間
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
@@ -270,6 +284,11 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		if (!choiceFishIndex.empty()) {
 			choiceFishIndex.clear();
 		}
+
+
+
+
+		
 
 	}//移動開始の瞬間
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - 60) {
@@ -418,7 +437,6 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
 		
 	ImGui::Text("now break!");
-	
 
 	//崩壊モーションのための座標設定
 		int fishIndex = swordBreakTime - nextPhaseInterval - 60;
@@ -497,6 +515,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		}
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();
 	}
+
+	//剣の当たり判定座標の更新
+	SwordColCubeUpdate();
 
 	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
@@ -700,6 +721,30 @@ void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
 
 }
 
+
+void Boss::SwordColCubeUpdate()
+{
+
+	//剣の回転情報で座標を移動
+	Matrix4 matRot;
+	matRot.identity();
+	matRot *= swordTransform.quaternion.Rotate();
+
+	posSwordColCube1 = { swordSizeX1,swordSizeY1,swordSizeZ1 };
+	
+	posSwordColCube1=	matRot.transform(posSwordColCube1, swordTransform.matWorld_);
+	//posSwordColCube1 *= 4.0f;
+	//posSwordColCube1 += swordTransform.translation_;
+
+	posSwordColCube2 = { swordSizeX2,swordSizeY2,swordSizeZ2 };
+
+
+	posSwordColCube2=	matRot.transform(posSwordColCube2, swordTransform.matWorld_);
+	/*posSwordColCube2 *= 4.0f;
+	posSwordColCube2 += swordTransform.translation_;*/
+}
+
+
 float Random(float num1, float num2)
 {
 	//引数から小さい方とおおきい方を分ける
@@ -761,6 +806,8 @@ float LerpConbertOut(float t)
 {
 	return 1 - pow(1 - t, 5);
 }
+
+
 
 
 

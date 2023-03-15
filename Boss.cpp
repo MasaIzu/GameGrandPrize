@@ -225,6 +225,7 @@ void Boss::IdleUpdate()
 		int random = 0;
 
 
+
 		//50%で突進、残りで剣撃
 		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 100) {
 			//突進攻撃の回数を初期化
@@ -289,7 +290,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 
 
-		
+
 
 	}//移動開始の瞬間
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - 60) {
@@ -403,7 +404,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	}
 
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
-		
+
 		ImGui::Text("now attack!");
 
 		Vector3 rotaVec;
@@ -436,10 +437,10 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	}
 	//崩壊モーション
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
-		
-	ImGui::Text("now break!");
+
 
 	//崩壊モーションのための座標設定
+
 		int fishIndex = swordBreakTime - nextPhaseInterval - 60;
 		if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
 		ImGui::Text("fishIndex:%d", fishIndex);
@@ -563,11 +564,12 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 		if (nextPhaseInterval <= 0) {
 			//突進の回数が残っている
 			if (rushCount > 0) {
+
 				//突進回数を減らし、クールタイムを設定しておき、挙動を開始
 				rushCount--;
 				nextPhaseInterval = rushCoolTime;
 
-
+				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
 
 				//親座標の始点と終点を決める
@@ -635,14 +637,23 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 		fishParent.pos.TransferMatrix();
 	}
 
-	//魚群の移動処理
-	for (int j = 0; j < fishes.size(); j++) {
-		easePFishToSword[j / fishesDispersionRate].Update();
-		if (easePFishToSword[j / fishesDispersionRate].GetActive()) {
 
-			Vector3 fishPos = Lerp(fishesBeforePos[j], fishesAfterPos[j], easePFishToSword[j / fishesDispersionRate].GetTimeRate());
-			fishes[j].pos.translation_ = fishPos;
-			fishes[j].pos.TransferMatrix();
+	//���Q�̈ړ�����
+	for (int i = 0; i < fishes.size(); i++) {
+		//��ԍŏ��̋��̋������n�܂�Ƃ��ɋ��ƕW�I�̋������狛�̔z�񏇔Ԃ�ύX����
+		if (easePFishToSword[0].GetTimeRate() == 0) {
+			SortFishMin(targetPos);
+		}
+
+
+
+
+		easePFishToSword[i / fishesDispersionRate].Update();
+		if (easePFishToSword[i / fishesDispersionRate].GetActive()) {
+
+			Vector3 fishPos = Lerp(fishesBeforePos[i], fishesAfterPos[i], easePFishToSword[i / fishesDispersionRate].GetTimeRate());
+			fishes[i].pos.translation_ = fishPos;
+			fishes[i].pos.TransferMatrix();
 		}
 	}
 
@@ -732,17 +743,45 @@ void Boss::SwordColCubeUpdate()
 	matRot *= swordTransform.quaternion.Rotate();
 
 	posSwordColCube1 = { swordSizeX1,swordSizeY1,swordSizeZ1 };
-	
-	posSwordColCube1=	matRot.transform(posSwordColCube1, swordTransform.matWorld_);
+
+	posSwordColCube1 = matRot.transform(posSwordColCube1, swordTransform.matWorld_);
 	//posSwordColCube1 *= 4.0f;
 	//posSwordColCube1 += swordTransform.translation_;
 
 	posSwordColCube2 = { swordSizeX2,swordSizeY2,swordSizeZ2 };
 
 
-	posSwordColCube2=	matRot.transform(posSwordColCube2, swordTransform.matWorld_);
+	posSwordColCube2 = matRot.transform(posSwordColCube2, swordTransform.matWorld_);
 	/*posSwordColCube2 *= 4.0f;
 	posSwordColCube2 += swordTransform.translation_;*/
+}
+
+void Boss::SortFishMin(const Vector3& targetPos)
+{
+	Vector3 vecFishToTarget;
+	//�傫���𒲂ׂ�
+	for (int i = 0; i < fishes.size(); i++) {
+		vecFishToTarget = fishes[i].pos.translation_ - targetPos;
+		lenTargetToFishes[i] = vecFishToTarget.length();
+
+	}
+
+	float swapLen;
+	fish swapFish;
+
+	//�傫����g��ď��������ɕ�ׂ�
+	for (int i = 0; i < fishes.size()-1; i++) {
+		for (int j = i + 1; j < fishes.size(); j++) {
+			if (lenTargetToFishes[i] < lenTargetToFishes[j]) {
+				swapLen = lenTargetToFishes[i];
+				lenTargetToFishes[i] = lenTargetToFishes[j];
+				lenTargetToFishes[j] = swapLen;
+				swapFish = fishes[i];
+				fishes[i] = fishes[j];
+				fishes[j] = swapFish;
+			}
+		}
+	}
 }
 
 

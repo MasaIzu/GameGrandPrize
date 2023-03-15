@@ -87,6 +87,8 @@ private:
 	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 
 	void SwordColCubeUpdate();
+
+	void SortFishMin(const Vector3& targetPos);
 	
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
@@ -95,12 +97,13 @@ private:
 
 	const int moveFishMax = 120;
 
-
 	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
 	Vector3 parentBeforePos, parentAfterPos;
 	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
 	Vector3 beforeScale, afterScale;
+	float lenTargetToFishes[fishMaxCount];
+
 
 	// コライダー
 	BaseCollider* collider = nullptr;

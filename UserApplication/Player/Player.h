@@ -43,7 +43,7 @@ public:
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	
-
+	float GetRadius() { return radius; }
 	bool GetSpaceInput() { return spaceInput; }
 
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
@@ -82,7 +82,7 @@ private:
 
 
 	float x = 0;
-	float radius = 2.0f;//“–‚½‚è”»’è”¼Œa
+	float radius = 4.0f;//“–‚½‚è”»’è”¼Œa
 	float Window_Width;
 	float Window_Height;
 	float playerSpeed = 0.01f;

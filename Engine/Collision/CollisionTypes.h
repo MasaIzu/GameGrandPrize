@@ -11,4 +11,6 @@ enum CollisionShapeType
 	COLLISIONSHAPE_SPHERE, // 球
 
 	COLLISIONSHAPE_MESH,//メッシュ
+
+	COLLISIONSHAPE_RECT,//長方形
 };

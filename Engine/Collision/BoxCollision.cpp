@@ -66,6 +66,8 @@ bool BoxCollision::BoxCollision_(Vector3 player, Vector3 playerWidth, Vector2 en
 
 	float eZMax = enemyPosZ.y;
 
+
+
 	if ((pXMin <= eXMax && pXMax >= eXMin) && (pYMin <= eYMax && pYMax >= eYMin) && (pZMin <= eZMax && pZMax >= eZMin)) {
 		return true;
 	}

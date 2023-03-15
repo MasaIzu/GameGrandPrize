@@ -385,6 +385,9 @@
     <ClInclude Include="ParticleManager.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
+    <ClInclude Include="RectCollision.h">
+      <Filter>Engine\ヘッダー\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -530,6 +533,9 @@
     </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="RectCollision.cpp">
+      <Filter>Engine\ソース ファイル\Collision</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

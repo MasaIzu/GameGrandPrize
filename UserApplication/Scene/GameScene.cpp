@@ -5,6 +5,7 @@
 #include <fstream>
 #include "FbxLoader.h"
 #include"ImGuiManager.h"
+#include "Collision.h"
 
 
 GameScene::GameScene() {}
@@ -77,7 +78,7 @@ void GameScene::Update() {
 	}*/
 
 	if (collisionManager->GetIsHit()) {
-		isHit = true;
+		isHit = collisionManager->GetIsHit();
 	}
 
 
@@ -131,6 +132,7 @@ void GameScene::Update() {
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
+	isHit = gameCamera->GetIsHit();
 
 	//	viewProjection_.eye = gameCamera->GetEye();
 	ImGui::Begin("Camera");
@@ -142,8 +144,9 @@ void GameScene::Update() {
 	Vector3 pWith(1, 1, 1);
 	Vector3 eWith(0.6f, 9, 1);
 
-	if (boxCollision->BoxCollision_1(player->GetWorldPosition(),MyMath::GetWorldTransform(boss.swordTransform.matWorld_),pWith,eWith)) {
-
+	if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_),boss.GetSwordCollisionCube1(),boss.GetSwordCollisionCube2(),
+		player->GetWorldPosition(),player->GetRadius())) {
+		isHit = true;
 	}
 
 	//全ての衝突をチェック

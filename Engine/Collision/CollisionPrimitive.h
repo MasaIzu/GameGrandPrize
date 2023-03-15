@@ -41,3 +41,9 @@ struct Ray
 
 };
 
+//struct Rect {
+//	Vector3 center = { 0,0,0 };
+//
+//	Vector3 WidthHeightDepth = { 1,1,1 };
+//
+//};

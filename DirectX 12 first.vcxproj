@@ -311,6 +311,7 @@
     <ClInclude Include="FbxModel.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="GameCamera.h" />
+    <ClInclude Include="RectCollision.h" />
     <ClInclude Include="UserApplication\Enemy\Enemy.h" />
     <ClInclude Include="Engine\Framework\Framework.h" />
     <ClInclude Include="Engine\GameFunction\Input.h" />
@@ -360,6 +361,7 @@
     <ClCompile Include="FbxModel.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
+    <ClCompile Include="RectCollision.cpp" />
     <ClCompile Include="UserApplication\Enemy\Enemy.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
     <ClCompile Include="Engine\GameFunction\Input.cpp" />

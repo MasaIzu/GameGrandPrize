@@ -109,6 +109,98 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB,
 	return false;
 }
 
+// キューブと円の当たり判定
+bool Collision::CheckCubeCollision(Vector3 cube, float cubeSize, Vector3 sphere, float sphereRadius) {
+	// キューブの各頂点と円の中心点の距離を計算
+	float distanceX = fabs(sphere.x - cube.x);
+	float distanceY = fabs(sphere.y - cube.y);
+	float distanceZ = fabs(sphere.z - cube.z);
+
+	// キューブの各頂点と円の中心点の距離が半径よりも小さければ、当たり判定を返す
+	if (distanceX > (cubeSize / 2 + sphereRadius)) { return false; }
+	if (distanceY > (cubeSize / 2 + sphereRadius)) { return false; }
+	if (distanceZ > (cubeSize / 2 + sphereRadius)) { return false; }
+
+	if (distanceX <= (cubeSize / 2)) { return true; }
+	if (distanceY <= (cubeSize / 2)) { return true; }
+	if (distanceZ <= (cubeSize / 2)) { return true; }
+
+	// キューブの各頂点と円の中心点の距離が半径よりも大きければ、当たり判定を返さない
+	float cornerDistance_sq = pow((distanceX - cubeSize / 2), 2) +
+		pow((distanceY - cubeSize / 2), 2) +
+		pow((distanceZ - cubeSize / 2), 2);
+
+	return (cornerDistance_sq <= pow(sphereRadius, 2));
+}
+
+// 長方形と円の当たり判定
+bool Collision::CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth, Vector3 sphere, float sphereRadius) {
+	// 長方形の中心点を計算
+	float centerX = rectPos.x;
+	float centerY = rectPos.y;
+	float centerZ = rectPos.z;
+
+	if (rectWidthHeightDepth.x <= 0) {
+		rectWidthHeightDepth.x = -rectWidthHeightDepth.x;
+	}
+	if (rectWidthHeightDepth.y <= 0) {
+		rectWidthHeightDepth.y = -rectWidthHeightDepth.y;
+	}
+	if (rectWidthHeightDepth.z <= 0) {
+		rectWidthHeightDepth.z = -rectWidthHeightDepth.z;
+	}
+
+	// 各辺の長さを計算
+	float distX = fabs(sphere.x - centerX);
+	float distY = fabs(sphere.y - centerY);
+	float distZ = fabs(sphere.z - centerZ);
+
+	// 長方形の中心点と円の中心点の距離が半径よりも大きい場合、当たり判定を返さない
+	if (distX > (rectWidthHeightDepth.x / 2 + sphereRadius)) { return false; }
+	if (distY > (rectWidthHeightDepth.y / 2 + sphereRadius)) { return false; }
+	if (distZ > (rectWidthHeightDepth.z / 2 + sphereRadius)) { return false; }
+
+	// 長方形の各頂点と円の中心点の距離を計算
+	float cornerDistance_sq = pow((distX - rectWidthHeightDepth.x / 2), 2) +
+		pow((distY - rectWidthHeightDepth.y / 2), 2) +
+		pow((distZ - rectWidthHeightDepth.z / 2), 2);
+
+	// 長方形の各頂点と円の中心点の距離が半径よりも小さい場合、当たり判定を返す
+	if (cornerDistance_sq <= pow(sphereRadius, 2)) { return true; }
+
+	// 長方形の各辺と円の中心点の距離を計算
+	float edgeDistanceX = distX - rectWidthHeightDepth.x / 2;
+	float edgeDistanceY = distY - rectWidthHeightDepth.y / 2;
+	float edgeDistanceZ = distZ - rectWidthHeightDepth.z / 2;
+
+	// 長方形の各辺と円の中心点の距離が半径よりも小さい場合、当たり判定を返す
+	float edgeDistance_sq = pow(edgeDistanceX, 2) + pow(edgeDistanceY, 2) + pow(edgeDistanceZ, 2);
+	if (edgeDistance_sq <= pow(sphereRadius, 2)) { return true; }
+
+
+	// 当たり判定がない場合は、当たっていないと判断する
+	return false;
+}
+
+// 長方形と円の当たり判定
+bool Collision::CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth1, Vector3 rectWidthHeightDepth2, Vector3 sphere, float sphereRadius) {
+	// 長方形の中心点を計算
+	float centerX = rectPos.x;
+	float centerY = rectPos.y;
+	float centerZ = rectPos.z;
+
+	if (rectWidthHeightDepth1.x > sphere.x && sphere.x > rectWidthHeightDepth2.x) {
+		if (rectWidthHeightDepth1.y > sphere.y && sphere.y > rectWidthHeightDepth2.y) {
+			if (rectWidthHeightDepth1.z > sphere.z && sphere.z > rectWidthHeightDepth2.z) {
+				return true;
+			}
+		}
+	}
+
+	// 当たり判定がない場合は、当たっていないと判断する
+	return false;
+}
+
 bool Collision::CheckSphere2Plane(Sphere& sphere, Plane& plane, Vector4* inter)
 {
 

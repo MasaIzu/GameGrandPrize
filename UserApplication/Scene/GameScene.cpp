@@ -131,7 +131,6 @@ void GameScene::Update() {
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
-	isHit = gameCamera->GetIsHit();
 
 	//	viewProjection_.eye = gameCamera->GetEye();
 	ImGui::Begin("Camera");

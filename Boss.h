@@ -24,6 +24,16 @@ enum class BossFirstPhase {
 
 };
 
+enum class BossSwordPhase {
+	Start,
+	Create,
+	Cooltime_Create,
+	Move,
+	Attack,
+	Destroy,
+	Cooltime_Destroy,
+};
+
 class Boss
 {
 public:
@@ -90,6 +100,8 @@ private:
 
 	void SortFishMin(const Vector3& targetPos);
 	
+	BossSwordPhase bossSwordPhase;
+
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
 	EasingData easeSwordPos;

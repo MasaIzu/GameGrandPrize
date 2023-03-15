@@ -24,10 +24,10 @@ void Boss::Initialize()
 
 	randSpdParam = 3.75f;
 
-	//Œ•‚Ìƒ‚ƒfƒ‹‰Šú‰»
+	//å‰£ã®ãƒ¢ãƒ‡ãƒ«åˆæœŸåŒ–
 	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
 
-	//‹›‚Ìƒ‚ƒfƒ‹‰Šú‰»
+	//é­šã®ãƒ¢ãƒ‡ãƒ«åˆæœŸåŒ–
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
 	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
 
@@ -35,7 +35,7 @@ void Boss::Initialize()
 	nextPhaseInterval = attackCooltime;
 
 	radius = 30.0f;
-	// ƒRƒŠƒWƒ‡ƒ“ƒ}ƒl[ƒWƒƒ‚É’Ç‰Á
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒãƒãƒ¼ã‚¸ãƒ£ã«è¿½åŠ 
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
 
@@ -44,11 +44,15 @@ void Boss::Initialize()
 
 	swordTransform.Initialize();
 	swordTransform.TransferMatrix();
+
+	testTrans.Initialize();
+	testTrans2.Initialize();
+
 }
 
 void Boss::Update(const Vector3& targetPos)
 {
-	//‘æ1Œ`‘Ô‚Ì‹›ŒQ‚ÌXV
+	//ç¬¬1å½¢æ…‹ã®é­šç¾¤ã®æ›´æ–°
 	ImGui::Begin("sword");
 
 	switch (phase1) {
@@ -77,33 +81,33 @@ void Boss::Update(const Vector3& targetPos)
 
 void Boss::CreateFish(float posY)
 {
-	//yÀ•W‚ªe‚Ì”¼Œa‚ğ’´‚¦‚È‚¢‚æ‚¤‚É‚·‚é
+	//yåº§æ¨™ãŒè¦ªã®åŠå¾„ã‚’è¶…ãˆãªã„ã‚ˆã†ã«ã™ã‚‹
 	if (fabs(posY) > fishParent.radius) {
 		if (posY > 0)posY = fishParent.radius;
 		else posY = -fishParent.radius;
 	}
 
-	//V‚µ‚¢‹›‚ğì¬
+	//æ–°ã—ã„é­šã‚’ä½œæˆ
 	fish newFish;
-	//Šp“x‚ğƒ‰ƒ“ƒ_ƒ€‚Éw’è
+	//è§’åº¦ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«æŒ‡å®š
 	newFish.radian = Random(0.0f, 360.0f);
-	//—^‚¦‚ç‚ê‚½ˆø”‚©‚ç”¼Œa‚ğİ’è
+	//ä¸ãˆã‚‰ã‚ŒãŸå¼•æ•°ã‹ã‚‰åŠå¾„ã‚’è¨­å®š
 	newFish.radius = sqrt(fishParent.radius * fishParent.radius - posY * posY);
-	//ƒ[ƒ‹ƒhs—ñ‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—åˆæœŸåŒ–
 	newFish.pos.Initialize();
 	newFish.pos.scale_ = { 0.5f,0.5f,0.5f };
-	//YÀ•W‚Íˆø”‚Å
+	//Yåº§æ¨™ã¯å¼•æ•°ã§
 	newFish.pos.translation_.y = posY;
 	//newFish.pos.rotation_.y = 0.78f;
 	newFish.pos.TransferMatrix();
 
-	//‘¬“x‚ğƒ‰ƒ“ƒ_ƒ€‚ÉŒˆ’è
+	//é€Ÿåº¦ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«æ±ºå®š
 	newFish.spd = Random(0.0f, randSpdParam);
 
-	//e‚Ìƒ|ƒCƒ“ƒ^–á‚¤
+	//è¦ªã®ãƒã‚¤ãƒ³ã‚¿è²°ã†
 	newFish.pos.parent_ = &fishParent.pos;
 
-	//”÷–­‚È‚¸‚ê‚Ì‘å‚«‚³‚Í©•ª‚Ì”¼Œa‚Ì1/10‚©‚çƒ‰ƒ“ƒ_ƒ€‚É
+	//å¾®å¦™ãªãšã‚Œã®å¤§ãã•ã¯è‡ªåˆ†ã®åŠå¾„ã®1/10ã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ ã«
 	float displacementParam = newFish.radius / 10.0f * 1.5f;
 	newFish.displacement = Vector3(Random(0.0f, displacementParam), Random(0.0f, displacementParam), Random(0.0f, displacementParam));
 
@@ -125,7 +129,7 @@ void Boss::CreateFish(float posY)
 
 	newFish.pos.translation_ = pos;
 	newFish.pos.TransferMatrix();
-	//”z—ñ‚É‚¢—ñ
+	//é…åˆ—ã«ã„åˆ—
 	fishes.push_back(newFish);
 }
 
@@ -133,6 +137,16 @@ void Boss::Draw(ViewProjection viewProMat)
 {
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
+
+		testTrans.scale_ = { 3,3,3 };
+		testTrans.translation_ = posSwordColCube1;
+		testTrans.TransferMatrix();
+		fishEyeModel->Draw(testTrans, viewProMat);
+		testTrans2.scale_ = { 3,3,3 };
+		testTrans2.translation_ = posSwordColCube2;
+		testTrans2.TransferMatrix();
+		fishEyeModel->Draw(testTrans2, viewProMat);
+
 	}
 
 	for (int i = 0; i < fishes.size(); i++) {
@@ -140,25 +154,24 @@ void Boss::Draw(ViewProjection viewProMat)
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
 
-	swordModel->Draw(fishParent.pos, viewProMat);
 }
 
 void Boss::IdleUpdate()
 {
-	//‹›ŒQ‚Ì’†S(^‚ñ’†)‚ÌÀ•WXV
+	//é­šç¾¤ã®ä¸­å¿ƒ(çœŸã‚“ä¸­)ã®åº§æ¨™æ›´æ–°
 	fishParent.pos.TransferMatrix();
 
-	//‹›1•C‚¸‚Â‚ÌXV
+	//é­š1åŒ¹ãšã¤ã®æ›´æ–°
 	for (int i = 0; i < fishes.size(); i++) {
 
-		//‹›‚Ìƒ‰ƒWƒAƒ“(‹…‚Ìü‰ñ‹O“¹)‚ğ‰ÁZ
+		//é­šã®ãƒ©ã‚¸ã‚¢ãƒ³(çƒã®å‘¨å›è»Œé“)ã‚’åŠ ç®—
 		fishes[i].radian += fishes[i].spd;
 		if (fishes[i].radian > 360.0f) {
 			fishes[i].radian -= 360.0f;
 			fishes[i].spd = Random(0.0f, randSpdParam);
 		}
 
-		//À•W‚ğŒvZ
+		//åº§æ¨™ã‚’è¨ˆç®—
 		Vector3 pos;
 
 		pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
@@ -191,7 +204,7 @@ void Boss::IdleUpdate()
 
 		pos += fishes[i].displacement;
 
-		//‰ñ“]—p‚ÌˆÚ“®ƒxƒNƒgƒ‹‚ğì¬
+		//å›è»¢ç”¨ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’ä½œæˆ
 		Vector3 dirvec = pos - fishes[i].pos.translation_;
 		dirvec.normalize();
 		//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
@@ -202,36 +215,32 @@ void Boss::IdleUpdate()
 		FishLookFront(fishes[i].pos.translation_, pos, i);
 		fishes[i].pos.translation_ = pos;
 
-
-
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
 	}
 
-	//UŒ‚‚ÌƒN[ƒ‹ƒ^ƒCƒ€‚ğŒ¸‚ç‚·
+	//æ”»æ’ƒã®ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ã‚’æ¸›ã‚‰ã™
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
 		int random = 0;
 
 
-		//50%‚Å“ËiAc‚è‚ÅŒ•Œ‚
-		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 66) {
-			//“ËiUŒ‚‚Ì‰ñ”‚ğ‰Šú‰»
+		//50%ã§çªé€²ã€æ®‹ã‚Šã§å‰£æ’ƒ
+		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 100) {
+			//çªé€²æ”»æ’ƒã®å›æ•°ã‚’åˆæœŸåŒ–
 			rushCount = rushMaxCount;
-			//ƒtƒF[ƒYˆÚs
+			//ãƒ•ã‚§ãƒ¼ã‚ºç§»è¡Œ
 			phase1 = BossFirstPhase::Atk_Rush;
 		}
 		else {
 
-
-
-			//0‚É‚È‚Á‚½‚çƒN[ƒ‹ƒ^ƒCƒ€‚ğUŒ‚ŠJnƒ‚[ƒVƒ‡ƒ“‚ÌŠÔ‚Éİ’è
+			//0ã«ãªã£ãŸã‚‰ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ã‚’æ”»æ’ƒé–‹å§‹ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®æ™‚é–“ã«è¨­å®š
 			nextPhaseInterval = beginAttackDelay;
-			//ƒtƒF[ƒY‚ğˆÚs
+			//ãƒ•ã‚§ãƒ¼ã‚ºã‚’ç§»è¡Œ
 			phase1 = BossFirstPhase::BeginMotion;
-			//‚Ù‚ñ‚Æ‚Íª‚ÌƒtƒF[ƒY‚Í—\”õs“®‚ÉˆÚs‚¾‚¯‚Ç‚Ü‚¾Š®¬‚µ‚È‚³‚»‚¤‚È‚Ì‚Å‚¢‚Á‚½‚ñUŒ‚ŠJn‚É‘¦ˆÚ‚é
+			//ã»ã‚“ã¨ã¯â†‘ã®ãƒ•ã‚§ãƒ¼ã‚ºã¯äºˆå‚™è¡Œå‹•ã«ç§»è¡Œã ã‘ã©ã¾ã å®Œæˆã—ãªã•ãã†ãªã®ã§ã„ã£ãŸã‚“æ”»æ’ƒé–‹å§‹ã«å³ç§»ã‚‹
 
-			//‹›ŒQ‚Ì—‰ñ“]‚Ì‚½‚ß‚Ìƒ‰ƒ“ƒ_ƒ€‚ÈƒxƒNƒgƒ‹‚ğì¬
+			//é­šç¾¤ã®ä¹±å›è»¢ã®ãŸã‚ã®ãƒ©ãƒ³ãƒ€ãƒ ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’ä½œæˆ
 			for (int i = 0; i < fishes.size(); i++) {
 				fishes[i].randomVec = Vector3(Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f));
 				fishes[i].randomVec.normalize();
@@ -248,19 +257,24 @@ void Boss::IdleUpdate()
 
 void Boss::AtkSwordUpdate(const Vector3& targetPos)
 {
-	//Œ•‚Ì¶¬ŠJn
-	//s“®‚ÌØ‚è‘Ö‚¦(ŠJn)ƒ^ƒCƒ~ƒ“ƒO‚ÅŠes“®‚ÌƒtƒŒ[ƒ€”‚ÅƒC[ƒWƒ“ƒOƒ^ƒCƒ}[‚ğ“®‚©‚·
+	//å‰£ã®ç”Ÿæˆé–‹å§‹
+	//è¡Œå‹•ã®åˆ‡ã‚Šæ›¿ãˆ(é–‹å§‹)ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å„è¡Œå‹•ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã§ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ã‚¿ã‚¤ãƒãƒ¼ã‚’å‹•ã‹ã™
 
-	const int swordCreateTime = 120;	//Œ•‚Ì¶¬ŠÔ
-	const int swordMoveTime = 45;		//Œ•‚ÌˆÚ“®ŠÔ
-	const int swordAtkTime = 150;		//Œ•‚ÌUŒ‚ŠÔ
-	const int swordBreakTime = 120;		//Œ•‚Ì•ö‰óŠÔ
+	const int swordCreateTime = 120;	//å‰£ã®ç”Ÿæˆæ™‚é–“
+	const int swordMoveTime = 45;		//å‰£ã®ç§»å‹•æ™‚é–“
+	const int swordAtkTime = 150;		//å‰£ã®æ”»æ’ƒæ™‚é–“
+	const int swordBreakTime = 120;		//å‰£ã®å´©å£Šæ™‚é–“
 
-	//ƒ‚[ƒVƒ‡ƒ“ŠJn‚ÌuŠÔ
+
+
+	ImGui::Text("SwordColCube1 : %f,%f,%f", posSwordColCube1.x, posSwordColCube1.y, posSwordColCube1.z);
+	ImGui::Text("SwordColCube2 : %f,%f,%f", posSwordColCube2.x, posSwordColCube2.y, posSwordColCube2.z);
+
+	//ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹ã®ç¬é–“
 	if (nextPhaseInterval == atkSwordMotionTime) {
 		swordTransform.scale_ = { 0,0,0 };
 		easeSwordScale.Start(swordCreateTime);
-		//Œ•‚ÌÀ•W
+		//å‰£ã®åº§æ¨™
 		swordPos.x = fishParent.pos.translation_.x + 30;
 		swordPos.y = fishParent.pos.translation_.y - 30;
 		swordPos.z = fishParent.pos.translation_.z;
@@ -272,17 +286,22 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			choiceFishIndex.clear();
 		}
 
-	}//ˆÚ“®ŠJn‚ÌuŠÔ
+
+
+
+		
+
+	}//ç§»å‹•é–‹å§‹ã®ç¬é–“
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - 60) {
 		easeSwordPos.Start(swordMoveTime);
 		swordTransform.translation_ = swordPos;
 		swordTransform.SetRot({ 0,0,0 });
 
-	}//UŒ‚ŠJn‚ÌuŠÔ
+	}//æ”»æ’ƒé–‹å§‹ã®ç¬é–“
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - 60)
 	{
 		easeSwordPos.Start(swordAtkTime);
-	}//–¶U‚ÌuŠÔ
+	}//éœ§æ•£ã®ç¬é–“
 	else if (nextPhaseInterval == atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - 60) {
 		easeSwordScale.Start(swordBreakTime);
 		afterScale = { 0.5f,0.5f,0.5f };
@@ -292,42 +311,42 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	float distancePtoSword = 90.0f;
 
 	if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime) {
-		//“G’†S‚©‚çŒ•‚ÌˆÊ’u‚Ì’†S‚Ü‚ÅˆÚ“®‚·‚é(120f)
-		//–ˆƒtƒŒ[ƒ€ƒ‰ƒ“ƒ_ƒ€‚É‹›ŒQ‚©‚ç‹›‚ğ‘I‚ÑA‘I‚Î‚ê‚½‹›‚Í10f‚ÅŒ•‚Ì’†S‚Ü‚ÅˆÚ“®‚·‚é
+		//æ•µä¸­å¿ƒã‹ã‚‰å‰£ã®ä½ç½®ã®ä¸­å¿ƒã¾ã§ç§»å‹•ã™ã‚‹(120f)
+		//æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ©ãƒ³ãƒ€ãƒ ã«é­šç¾¤ã‹ã‚‰é­šã‚’é¸ã³ã€é¸ã°ã‚ŒãŸé­šã¯10fã§å‰£ã®ä¸­å¿ƒã¾ã§ç§»å‹•ã™ã‚‹
 
 		ImGui::Text("now create!");
 
-		//Å‰‚É‚Ç‚Ì‹›‚ğŒ•‚Ü‚ÅˆÚ“®‚³‚¹‚é‚©Œˆ‚ß‚é
+		//æœ€åˆã«ã©ã®é­šã‚’å‰£ã¾ã§ç§»å‹•ã•ã›ã‚‹ã‹æ±ºã‚ã‚‹
 		int goFishToSwordIndex = 0;
 		goFishToSwordIndex = static_cast<int>(Random(0, fishes.size()));
-		//d•¡‘Îô‚Å”z—ñ“à‚ğ’Tõ
+		//é‡è¤‡å¯¾ç­–ã§é…åˆ—å†…ã‚’æ¢ç´¢
 		if (!choiceFishIndex.empty()) {
 			for (int i = 0; i < choiceFishIndex.size(); i++) {
-				//d•¡‚µ‚Ä‚¢‚½‚ç‚à‚¤ˆê“xƒ‰ƒ“ƒ_ƒ€‚ÉU‚è•ª‚¯‚é
+				//é‡è¤‡ã—ã¦ã„ãŸã‚‰ã‚‚ã†ä¸€åº¦ãƒ©ãƒ³ãƒ€ãƒ ã«æŒ¯ã‚Šåˆ†ã‘ã‚‹
 				if (choiceFishIndex[i] == goFishToSwordIndex) {
 					goFishToSwordIndex = static_cast<int>(Random(0, fishes.size()));
-					//for•¶Å‰‚©‚ç‚â‚è’¼‚µ
+					//foræ–‡æœ€åˆã‹ã‚‰ã‚„ã‚Šç›´ã—
 					i = -1;
 				}
 			}
 		}
-		//”z—ñ‚É‘}“ü
+		//é…åˆ—ã«æŒ¿å…¥
 		choiceFishIndex.push_back(goFishToSwordIndex);
-		//“®“I”z—ñ––”ö‚Ì—v‘f‚ÌƒC[ƒWƒ“ƒO‚ğŠÔ10f‚ÅŠJn‚³‚¹‚é(‡”Ô‚ÉˆÚ“®‚µ‚Ä‚à‚ç‚¤‚½‚ß)
+		//å‹•çš„é…åˆ—æœ«å°¾ã®è¦ç´ ã®ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ã‚’æ™‚é–“10fã§é–‹å§‹ã•ã›ã‚‹(é †ç•ªã«ç§»å‹•ã—ã¦ã‚‚ã‚‰ã†ãŸã‚)
 
 		size_t sizeA = choiceFishIndex.size();
 		size_t indexA = choiceFishIndex[choiceFishIndex.size() - 1];
 
 		Vector3 pos;
 		float randomParam = 10.0f;
-		//ˆÚ“®‚ğŠJn‚·‚é‹›‚ÌŒ³‚ÌÀ•W‚ğæ‚Á‚Ä‚¨‚«A§Œä“_‚àƒCƒCŠ´‚¶‚ÉŒˆ‚ß‚é
+		//ç§»å‹•ã‚’é–‹å§‹ã™ã‚‹é­šã®å…ƒã®åº§æ¨™ã‚’å–ã£ã¦ãŠãã€åˆ¶å¾¡ç‚¹ã‚‚ã‚¤ã‚¤æ„Ÿã˜ã«æ±ºã‚ã‚‹
 		fishesBeforePos[choiceFishIndex.size() - 1] = fishes[choiceFishIndex[choiceFishIndex.size() - 1]].pos.translation_;
 
-		//‘I‘ğ‚³‚ê‚½‹›‚ÍeqŠÖŒW‚ğ‚¢‚Á‚½‚ñØ‚é
+		//é¸æŠã•ã‚ŒãŸé­šã¯è¦ªå­é–¢ä¿‚ã‚’ã„ã£ãŸã‚“åˆ‡ã‚‹
 		fishes[choiceFishIndex[choiceFishIndex.size() - 1]].pos.parent_ = nullptr;
 		fishesBeforePos[choiceFishIndex.size() - 1] = fishParent.pos.matWorld_.transform(fishesBeforePos[choiceFishIndex.size() - 1], fishParent.pos.matWorld_);
 
-		//§Œä“_1‚Ín“_‚©‚çŒë·x(¡‚Í5)‚Ìƒ‰ƒ“ƒ_ƒ€‚È’n“_B§Œä“_2‚ÍI“_‚©‚çŒë·x‚Éƒ‰ƒ“ƒ_ƒ€
+		//åˆ¶å¾¡ç‚¹1ã¯å§‹ç‚¹ã‹ã‚‰èª¤å·®x(ä»Šã¯5)ã®ãƒ©ãƒ³ãƒ€ãƒ ãªåœ°ç‚¹ã€‚åˆ¶å¾¡ç‚¹2ã¯çµ‚ç‚¹ã‹ã‚‰èª¤å·®xã«ãƒ©ãƒ³ãƒ€ãƒ 
 		pos = fishesBeforePos[choiceFishIndex.size() - 1];
 		fishesControllP1[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		pos = swordPos;
@@ -335,7 +354,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		fishesControllP2[choiceFishIndex.size() - 1] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		easePFishToSword[choiceFishIndex.size() - 1].Start(60);
 
-		//Œ•‚ğ™X‚É‚¨‚¨‚«‚­‚·‚é
+		//å‰£ã‚’å¾ã€…ã«ãŠãŠããã™ã‚‹
 		Vector3 swordScale;
 		easeSwordScale.Update();
 		swordScale = Lerp({ 0,0,0 }, { 4,4,4 }, easeSwordScale.GetTimeRate());
@@ -343,20 +362,20 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		swordTransform.scale_ = swordScale;
 		swordTransform.translation_ = swordPos;
 
-		//Œ•ˆÚ“®‚ÌƒC[ƒWƒ“ƒO‚ğŠJn‚·‚é(ÀÛ‚ÌÀ•WˆÚ“®‚âXV‚ÍŒã‚ë‚Ìif•¶‚Å‚â‚Á‚Ä‚é‚Ì‚Å‰e‹¿‚È‚µ)
+		//å‰£ç§»å‹•ã®ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ã‚’é–‹å§‹ã™ã‚‹(å®Ÿéš›ã®åº§æ¨™ç§»å‹•ã‚„æ›´æ–°ã¯å¾Œã‚ã®ifæ–‡ã§ã‚„ã£ã¦ã‚‹ã®ã§å½±éŸ¿ãªã—)
 	//	easeSwordMove.Start(swordMoveTime);
 
 
 	}
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - 60) {
-		//¡‚Ì‚Æ‚±‰½‚à‚·‚é—\’è‚È‚µ
+		//ä»Šã®ã¨ã“ä½•ã‚‚ã™ã‚‹äºˆå®šãªã—
 		static int a = 0;
 		a++;
 
 		ImGui::Text("now wait!");
 
 	}
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ‚ªˆÚ“®‚µ‚½(‹›‚Ì”+ÅŒã‚ÉˆÚ“®‚µ‚½‹›‚ÌˆÚ“®ŠÔ)‚æ‚è¬‚³‚­‚È‚Á‚½‚È‚çŸ‚Ìƒ‚[ƒVƒ‡ƒ“(UŒ‚ŠJnÀ•W‚Ö‚ÌˆÚ“®)‚ğŠJn
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“ãŒç§»å‹•ã—ãŸ(é­šã®æ•°+æœ€å¾Œã«ç§»å‹•ã—ãŸé­šã®ç§»å‹•æ™‚é–“)ã‚ˆã‚Šå°ã•ããªã£ãŸãªã‚‰æ¬¡ã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³(æ”»æ’ƒé–‹å§‹åº§æ¨™ã¸ã®ç§»å‹•)ã‚’é–‹å§‹
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - 60) {
 
 		ImGui::Text("now move!");
@@ -366,7 +385,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		rotaVec.normalize();
 		rotaVec *= distancePtoSword;
 
-		//•W“I‚ÌÀ•W‚ÆŠ|‚¯Z
+		//æ¨™çš„ã®åº§æ¨™ã¨æ›ã‘ç®—
 		Vector3 aftetVec;
 		aftetVec = targetPos + rotaVec;
 
@@ -393,49 +412,48 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		rotaVec.normalize();
 		rotaVec *= distancePtoSword;
 
-		//•W“I‚ÌÀ•W‚ÆŠ|‚¯Z
+		//æ¨™çš„ã®åº§æ¨™ã¨æ›ã‘ç®—
 		Vector3 beforePos, afterPos;
 		beforePos = targetPos + rotaVec;
 		afterPos = beforePos;
 		afterPos.x = -afterPos.x;
 		//afterPos.z = -afterPos.z;
 
-		//ƒC[ƒWƒ“ƒOXV
+		//ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°æ›´æ–°
 		easeSwordPos.Update();
 		Vector3 pos, rot;
-		//ƒxƒWƒG‹Èü‚ÅÀ•W‚ğ•âŠ®
+		//ãƒ™ã‚¸ã‚¨æ›²ç·šã§åº§æ¨™ã‚’è£œå®Œ
 		pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordPos.GetTimeRate()));
 
 		ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
 
-		//ƒ[ƒ‹ƒhs—ñ‚©‚ç‰ñ“]‚ğØ‚è‚Ä‚­‚é
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‹ã‚‰å›è»¢ã‚’å€Ÿã‚Šã¦ãã‚‹
 		rot = swordTransform.rotation_;
-		//‰ñ“]
+		//å›è»¢
 		rot.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
 		swordTransform.SetRot(rot);
 		swordTransform.translation_ = pos;
 	}
-	//•ö‰óƒ‚[ƒVƒ‡ƒ“
+	//å´©å£Šãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 60) {
 		
 	ImGui::Text("now break!");
-	
 
-	//•ö‰óƒ‚[ƒVƒ‡ƒ“‚Ì‚½‚ß‚ÌÀ•Wİ’è
+	//å´©å£Šãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®ãŸã‚ã®åº§æ¨™è¨­å®š
 		int fishIndex = swordBreakTime - nextPhaseInterval - 60;
 		if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
 		ImGui::Text("fishIndex:%d", fishIndex);
 
-		//–ˆƒtƒŒ[ƒ€•Ê‚Ì‹›‚ÌˆÚ“®‚ğŠJn‚·‚é
+		//æ¯ãƒ•ãƒ¬ãƒ¼ãƒ åˆ¥ã®é­šã®ç§»å‹•ã‚’é–‹å§‹ã™ã‚‹
 		Vector3 pos;
 		float randomParam = 10.0f;
-		//‘OÀ•W‚Í©À•W
+		//å‰åº§æ¨™ã¯è‡ªåº§æ¨™
 		fishesBeforePos[fishIndex] = fishes[choiceFishIndex[fishIndex]].pos.translation_;
-		fishesBeforePos[fishIndex] = swordTransform.translation_;//§Œä“_1‚Í©À•W‚©‚çŒë·x
+		fishesBeforePos[fishIndex] = swordTransform.translation_;//åˆ¶å¾¡ç‚¹1ã¯è‡ªåº§æ¨™ã‹ã‚‰èª¤å·®x
 
 		pos = fishesBeforePos[fishIndex];
 		fishesControllP1[fishIndex] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
-		//ˆÚ“®Œã‚ÌÀ•W‚Í‹›ŒQ‚Ì‹…‚É‚Â‚­‚æ‚¤‚É‚·‚é(‹›‚Ì¶¬ŠÖ”‚Æ“¯‚¶‚æ‚¤‚È‚à‚ñ‚ğg‚¤)
+		//ç§»å‹•å¾Œã®åº§æ¨™ã¯é­šç¾¤ã®çƒã«ã¤ãã‚ˆã†ã«ã™ã‚‹(é­šã®ç”Ÿæˆé–¢æ•°ã¨åŒã˜ã‚ˆã†ãªã‚‚ã‚“ã‚’ä½¿ã†)
 		float posY = Random(-fishParent.radius, fishParent.radius);
 		fishes[choiceFishIndex[fishIndex]].radian = Random(0.0f, 360.0f);
 		fishes[choiceFishIndex[fishIndex]].radius = sqrt(fishParent.radius * fishParent.radius - posY * posY);
@@ -459,35 +477,35 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		fishesControllP2[fishIndex] = Vector3(Random(pos.x - randomParam, pos.x + randomParam), Random(pos.y - randomParam, pos.y + randomParam), Random(pos.z - randomParam, pos.z + randomParam));
 		easePFishToSword[fishIndex].Start(60);
 
-		//Œ•‚ğ™X‚É‚¨‚¨‚«‚­‚·‚é
+		//å‰£ã‚’å¾ã€…ã«ãŠãŠããã™ã‚‹
 		Vector3 swordScale;
 		swordScale = Lerp({ 4,4,4 }, { 0,0,0 }, easeSwordScale.GetTimeRate());
 		easeSwordScale.Update();
 		swordTransform.scale_ = swordScale;
 
 	}
-	//ƒ‚[ƒVƒ‡ƒ“I—¹
+	//ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†
 	else if (nextPhaseInterval > atkSwordMotionTime - swordCreateTime - swordMoveTime - swordAtkTime - swordBreakTime - 120) {
 
 	}
 	else {
-		//eqŠÖŒW‚ğ–ß‚·
+		//è¦ªå­é–¢ä¿‚ã‚’æˆ»ã™
 		for (int i = 0; i < fishes.size(); i++) {
 			if (fishes[i].pos.parent_ == nullptr) {
 				fishes[i].pos.parent_ = &fishParent.pos;
 			}
 		}
 
-		//ƒ‚[ƒVƒ‡ƒ“I—¹
+		//ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†
 		nextPhaseInterval = attackCooltime;
-		//ƒtƒF[ƒY‚ğˆÚs
+		//ãƒ•ã‚§ãƒ¼ã‚ºã‚’ç§»è¡Œ
 		phase1 = BossFirstPhase::Idle;
 		return;
 	}
 
 
 
-	//ƒC[ƒWƒ“ƒO‚É‚æ‚éƒXƒP[ƒ‹‚ÆÀ•W‚Ì§Œä6
+	//ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ã«ã‚ˆã‚‹ã‚¹ã‚±ãƒ¼ãƒ«ã¨åº§æ¨™ã®åˆ¶å¾¡6
 	for (int i = 0; i < choiceFishIndex.size(); i++) {
 		easePFishToSword[i].Update();
 
@@ -499,6 +517,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		fishes[choiceFishIndex[i]].pos.TransferMatrix();
 	}
 
+	//å‰£ã®å½“ãŸã‚Šåˆ¤å®šåº§æ¨™ã®æ›´æ–°
+	SwordColCubeUpdate();
+
 	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
@@ -509,14 +530,14 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 	swordTransform.TransferMatrix();
 
-	//ƒ^ƒCƒ}[§Œä
+	//ã‚¿ã‚¤ãƒãƒ¼åˆ¶å¾¡
 	nextPhaseInterval--;
 }
 
 void Boss::AtkRushUpdate(const Vector3& targetPos)
 {
-	const int rushMaxTime = 60;		//“ËiUŒ‚‚Ìn“_‚©‚çI“_‚Ü‚Å‚©‚©‚éŠÔ
-	const int rushCoolTime = 30;	//Ÿ‚Ì“ËiUŒ‚‚Ü‚Å‚ÌƒN[ƒ‹ƒ^ƒCƒ€
+	const int rushMaxTime = 60;		//çªé€²æ”»æ’ƒã®å§‹ç‚¹ã‹ã‚‰çµ‚ç‚¹ã¾ã§ã‹ã‹ã‚‹æ™‚é–“
+	const int rushCoolTime = 30;	//æ¬¡ã®çªé€²æ”»æ’ƒã¾ã§ã®ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ 
 	const int fishesDispersionRate = 15;
 
 	easeParentPos.Update();
@@ -526,7 +547,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 
 
 	if (easeParentPos.GetActive()) {
-		//“Ëi’†‚Ín“_‚ÆI“_‚ÅƒC[ƒWƒ“ƒO
+		//çªé€²ä¸­ã¯å§‹ç‚¹ã¨çµ‚ç‚¹ã§ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°
 		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
 		Vector3 pAfterPos = fishesAfterPos[0];
@@ -538,24 +559,24 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 
 	}
 	else {
-		//“Ëi‚ÌƒN[ƒ‹ƒ^ƒCƒ€‚ªI‚í‚Á‚Ä‚¢‚é
+		//çªé€²ã®ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ãŒçµ‚ã‚ã£ã¦ã„ã‚‹
 		if (nextPhaseInterval <= 0) {
-			//“Ëi‚Ì‰ñ”‚ªc‚Á‚Ä‚¢‚é
+			//çªé€²ã®å›æ•°ãŒæ®‹ã£ã¦ã„ã‚‹
 			if (rushCount > 0) {
-				//“Ëi‰ñ”‚ğŒ¸‚ç‚µAƒN[ƒ‹ƒ^ƒCƒ€‚ğİ’è‚µ‚Ä‚¨‚«A‹““®‚ğŠJn
+				//çªé€²å›æ•°ã‚’æ¸›ã‚‰ã—ã€ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ã‚’è¨­å®šã—ã¦ãŠãã€æŒ™å‹•ã‚’é–‹å§‹
 				rushCount--;
 				nextPhaseInterval = rushCoolTime;
 
 
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
 
-				//eÀ•W‚Ìn“_‚ÆI“_‚ğŒˆ‚ß‚é
+				//è¦ªåº§æ¨™ã®å§‹ç‚¹ã¨çµ‚ç‚¹ã‚’æ±ºã‚ã‚‹
 				parentBeforePos = fishParent.pos.translation_;
 				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
 				parentAfterPos.y = parentBeforePos.y;
 
 				float len = vecfishTotarget.length();
-				//‹““®‚Ég‚¤À•W‚ğİ’è
+				//æŒ™å‹•ã«ä½¿ã†åº§æ¨™ã‚’è¨­å®š
 				for (int i = 0; i < fishes.size(); i++) {
 
 					if (i % fishesDispersionRate == 0) {
@@ -563,7 +584,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 						easePFishToSword[easeParam].Start(rushMaxTime - (i / fishesDispersionRate) /*+ (Random(-(rushMaxTime / 10.0f),rushMaxTime / 10.0f))*/);
 					}
 
-					//ˆÚ“®‚ğeˆË‘¶‚É‚Í‚·‚é‚¯‚ÇAe‚É’Ç]‚¶‚á“®‚©‚È‚¢‚Ì‚ÅeqŠÖŒW‚ğØ‚é
+					//ç§»å‹•ã‚’è¦ªä¾å­˜ã«ã¯ã™ã‚‹ã‘ã©ã€è¦ªã«è¿½å¾“ã˜ã‚ƒå‹•ã‹ãªã„ã®ã§è¦ªå­é–¢ä¿‚ã‚’åˆ‡ã‚‹
 					fishes[i].pos.parent_ = nullptr;
 
 					if (rushCount == rushMaxCount - 1) {
@@ -586,7 +607,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 				}
 			}
 			else {
-				//“Ëi‚Ì‰ñ”‚ªc‚Á‚Ä‚¢‚È‚¢‚È‚çƒ‚[ƒVƒ‡ƒ“I‚í‚è
+				//çªé€²ã®å›æ•°ãŒæ®‹ã£ã¦ã„ãªã„ãªã‚‰ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³çµ‚ã‚ã‚Š
 				nextPhaseInterval = attackCooltime;
 				phase1 = BossFirstPhase::Idle;
 				for (int i = 0; i < fishes.size(); i++) {
@@ -595,16 +616,16 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 			}
 		}
 		else {
-			//“Ëi‚ÌƒN[ƒ‹ƒ^ƒCƒ€‚ªI‚í‚Á‚Ä‚¢‚È‚¢‚È‚çƒ^ƒCƒ€Œ¸‚ç‚·
+			//çªé€²ã®ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ãŒçµ‚ã‚ã£ã¦ã„ãªã„ãªã‚‰ã‚¿ã‚¤ãƒ æ¸›ã‚‰ã™
 			nextPhaseInterval--;
 		}
 	}
 
 
 
-	//eÀ•W‚ÌˆÚ“®ˆ—
+	//è¦ªåº§æ¨™ã®ç§»å‹•å‡¦ç†
 	if (easeParentPos.GetActive()) {
-		//“Ëi’†‚Ín“_‚ÆI“_‚ÅƒC[ƒWƒ“ƒO
+		//çªé€²ä¸­ã¯å§‹ç‚¹ã¨çµ‚ç‚¹ã§ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°
 		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
 		Vector3 pAfterPos = fishesAfterPos[0];
@@ -614,7 +635,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 		fishParent.pos.TransferMatrix();
 	}
 
-	//‹›ŒQ‚ÌˆÚ“®ˆ—
+	//é­šç¾¤ã®ç§»å‹•å‡¦ç†
 	for (int j = 0; j < fishes.size(); j++) {
 		easePFishToSword[j / fishesDispersionRate].Update();
 		if (easePFishToSword[j / fishesDispersionRate].GetActive()) {
@@ -629,13 +650,13 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 
 void Boss::BeginMotionUpdate()
 {
-	//‹›ŒQ‚Ì’†S(^‚ñ’†)‚ÌÀ•WXV
+	//é­šç¾¤ã®ä¸­å¿ƒ(çœŸã‚“ä¸­)ã®åº§æ¨™æ›´æ–°
 	fishParent.pos.TransferMatrix();
 
-	//‹›1•C‚¸‚Â‚ÌXV
+	//é­š1åŒ¹ãšã¤ã®æ›´æ–°
 	for (int i = 0; i < fishes.size(); i++) {
 
-		//‹›‚Ìƒ‰ƒWƒAƒ“(‹…‚Ìü‰ñ‹O“¹)‚ğ‰ÁZ
+		//é­šã®ãƒ©ã‚¸ã‚¢ãƒ³(çƒã®å‘¨å›è»Œé“)ã‚’åŠ ç®—
 		fishes[i].radian += fishes[i].spd;
 		if (fishes[i].radian > 360.0f) {
 			fishes[i].radian -= 360.0f;
@@ -645,36 +666,36 @@ void Boss::BeginMotionUpdate()
 		}
 
 
-		//‰ñ“]‚Å“®‚©‚·À•W‚Í‰ñ“]‚Ì’†S‚Å‚ ‚éeÀ•W
+		//å›è»¢ã§å‹•ã‹ã™åº§æ¨™ã¯å›è»¢ã®ä¸­å¿ƒã§ã‚ã‚‹è¦ªåº§æ¨™
 		Vector3 vec = fishParent.pos.translation_;
-		//‰ñ“]²—p‚ÌƒxƒNƒgƒ‹‚ğ¶¬
+		//å›è»¢è»¸ç”¨ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’ç”Ÿæˆ
 		Vector3 baseVec = fishes[i].randomVec * fishes[i].radius;
 		baseVec.normalize();
 
-		//‰ñ“]²AÀ•W‚ğ•\‚·ƒNƒH[ƒ^ƒjƒIƒ“‚Ì¶¬
+		//å›è»¢è»¸ã€åº§æ¨™ã‚’è¡¨ã™ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ç”Ÿæˆ
 		Quaternion baseQ = { baseVec,fishes[i].radian * PI / 180.0f };
 		Quaternion posQ = { vec.x,vec.y,vec.z,0 };
 
-		//‰ñ“]
+		//å›è»¢
 		Vector3 pos = baseQ.multiply(posQ.GetAxis());
 
-		//À•W‚É”¼Œa‚ğ‚©‚¯‚Ä®‚¦‚é(‰ñ“]Œã‚ÌÀ•W‚Í³‹K‰»‚³‚ê‚Ä‚¢‚é)
+		//åº§æ¨™ã«åŠå¾„ã‚’ã‹ã‘ã¦æ•´ãˆã‚‹(å›è»¢å¾Œã®åº§æ¨™ã¯æ­£è¦åŒ–ã•ã‚Œã¦ã„ã‚‹)
 		pos *= fishes[i].radius;
 
-		//ƒ[ƒ‹ƒhs—ñ‚É‘—‚é
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã«é€ã‚‹
 		fishes[i].pos.translation_ = pos;
 		fishes[i].pos.TransferMatrix();
 
 	}
 
-	//UŒ‚‚ÌƒN[ƒ‹ƒ^ƒCƒ€‚ğŒ¸‚ç‚·
+	//æ”»æ’ƒã®ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ã‚’æ¸›ã‚‰ã™
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
-		//ƒtƒF[ƒY‚Ì•ÏX‚ÆƒN[ƒ‹ƒ^ƒCƒ€Äİ’è
+		//ãƒ•ã‚§ãƒ¼ã‚ºã®å¤‰æ›´ã¨ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ å†è¨­å®š
 		phase1 = BossFirstPhase::Atk_Sword;
 		nextPhaseInterval = atkSwordMotionTime;
 
-		//Œ•‚Ì‘å‚«‚³A‰ñ“]‚ğ‰Šú‰»
+		//å‰£ã®å¤§ãã•ã€å›è»¢ã‚’åˆæœŸåŒ–
 		swordTransform.scale_ = { 0,0,0 };
 		swordTransform.SetRot({ 0,0,0 });
 		swordTransform.TransferMatrix();
@@ -701,9 +722,33 @@ void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
 
 }
 
+
+void Boss::SwordColCubeUpdate()
+{
+
+	//å‰£ã®å›è»¢æƒ…å ±ã§åº§æ¨™ã‚’ç§»å‹•
+	Matrix4 matRot;
+	matRot.identity();
+	matRot *= swordTransform.quaternion.Rotate();
+
+	posSwordColCube1 = { swordSizeX1,swordSizeY1,swordSizeZ1 };
+	
+	posSwordColCube1=	matRot.transform(posSwordColCube1, swordTransform.matWorld_);
+	//posSwordColCube1 *= 4.0f;
+	//posSwordColCube1 += swordTransform.translation_;
+
+	posSwordColCube2 = { swordSizeX2,swordSizeY2,swordSizeZ2 };
+
+
+	posSwordColCube2=	matRot.transform(posSwordColCube2, swordTransform.matWorld_);
+	/*posSwordColCube2 *= 4.0f;
+	posSwordColCube2 += swordTransform.translation_;*/
+}
+
+
 float Random(float num1, float num2)
 {
-	//ˆø”‚©‚ç¬‚³‚¢•û‚Æ‚¨‚¨‚«‚¢•û‚ğ•ª‚¯‚é
+	//å¼•æ•°ã‹ã‚‰å°ã•ã„æ–¹ã¨ãŠãŠãã„æ–¹ã‚’åˆ†ã‘ã‚‹
 	float min, max;
 	min = num2;
 	max = num1;
@@ -711,14 +756,14 @@ float Random(float num1, float num2)
 		min = num1;
 		max = num2;
 	}
-	//—”ƒV[ƒh¶¬Ší
+	//ä¹±æ•°ã‚·ãƒ¼ãƒ‰ç”Ÿæˆå™¨
 	std::random_device seedGem;
-	//ƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^[‚Ì—”ƒGƒ“ƒWƒ“
+	//ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ãƒ¼ã®ä¹±æ•°ã‚¨ãƒ³ã‚¸ãƒ³
 	std::mt19937_64 engine(seedGem());
-	//—””ÍˆÍ‚Ìw’è
+	//ä¹±æ•°ç¯„å›²ã®æŒ‡å®š
 	std::uniform_real_distribution<float> dist(min, max);
 
-	//ƒ‰ƒ“ƒ_ƒ€‚È’l‚ğ¶¬‚µ‚Ä•Ô‚·
+	//ãƒ©ãƒ³ãƒ€ãƒ ãªå€¤ã‚’ç”Ÿæˆã—ã¦è¿”ã™
 	return dist(engine);
 }
 
@@ -762,6 +807,8 @@ float LerpConbertOut(float t)
 {
 	return 1 - pow(1 - t, 5);
 }
+
+
 
 
 

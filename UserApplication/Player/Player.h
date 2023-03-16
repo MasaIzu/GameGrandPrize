@@ -42,8 +42,8 @@ public:
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
-	
-
+	float GetRadius() { return radius; }
+	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }
 
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
@@ -79,7 +79,7 @@ private:
 	Vector3 cameraLook;
 
 	int timer = 0;
-
+	float alpha = 0.0f;
 
 	float x = 0;
 	float radius = 2.0f;//“–‚½‚è”»’è”¼Œa

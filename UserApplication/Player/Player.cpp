@@ -57,6 +57,11 @@ void Player::Move() {
 
 	if (timer > 0) {
 		timer--;
+		alpha -= 0.02f;
+	}
+	else {
+		spaceInput = false;
+		collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	}
 
 	Matrix4 cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
@@ -93,25 +98,28 @@ void Player::Move() {
 		isPushRight = true;
 	}
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		spaceInput = true;
-		timer = 8;
-		oldWorldTransform_.translation_ = worldTransform_.translation_;
+	if (spaceInput == false) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			spaceInput = true;
+			timer = 20;
+			alpha = 0.3f;
+			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+			oldWorldTransform_.translation_ = worldTransform_.translation_;
 
-		if (isPushLeft == true) {
-			Avoidance.x = playerAvoidance;
-		}
-		else if (isPushRight == true) {
-			Avoidance.x = -playerAvoidance;
-		}
-		else if (isPushBack == true) {
-			Avoidance.z = playerAvoidance;
-		}
-		else {
-			Avoidance.z = -playerAvoidance;
+			if (isPushLeft == true) {
+				Avoidance.x = playerAvoidance;
+			}
+			else if (isPushRight == true) {
+				Avoidance.x = -playerAvoidance;
+			}
+			else if (isPushBack == true) {
+				Avoidance.z = playerAvoidance;
+			}
+			else {
+				Avoidance.z = -playerAvoidance;
+			}
 		}
 	}
-
 
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
@@ -153,7 +161,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 		playerModel_->Draw(worldTransform_, viewProjection_);
 	}
 	if (timer > 0) {
-		oldPlayerModel_->SetAlpha(0.3f);
+		oldPlayerModel_->SetAlpha(alpha);
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
 

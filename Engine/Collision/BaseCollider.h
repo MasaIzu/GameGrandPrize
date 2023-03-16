@@ -23,7 +23,7 @@ public:
 
 	inline CollisionShapeType GetShapeType() { return shapeType; }
 
-	inline bool GetAttribute() { return attribute; }
+	inline unsigned short GetAttribute() { return attribute; }
 
 
 	/// <summary>

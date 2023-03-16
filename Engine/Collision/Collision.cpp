@@ -1,7 +1,6 @@
 #include "Collision.h"
 #include <math.h>
 
-
 void Collision::ClosestPtPoint2Triangle(const Vector4& point, const Triangle& triangle, Vector4* closest)
 {
 	// pointがp0の外側の頂点領域の中にあるかどうかチェック
@@ -106,6 +105,25 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB,
 		return true;
 	}
 
+	return false;
+}
+
+// 長方形と点の当たり判定
+bool Collision::CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth1, Vector3 rectWidthHeightDepth2, Vector3 sphere, float sphereRadius) {
+	// 長方形の中心点を計算
+	float centerX = rectPos.x;
+	float centerY = rectPos.y;
+	float centerZ = rectPos.z;
+
+	if (rectWidthHeightDepth1.x > sphere.x && sphere.x > rectWidthHeightDepth2.x) {
+		if (rectWidthHeightDepth1.y > sphere.y && sphere.y > rectWidthHeightDepth2.y) {
+			if (rectWidthHeightDepth1.z > sphere.z && sphere.z > rectWidthHeightDepth2.z) {
+				return true;
+			}
+		}
+	}
+
+	// 当たり判定がない場合は、当たっていないと判断する
 	return false;
 }
 

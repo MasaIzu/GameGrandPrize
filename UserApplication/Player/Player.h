@@ -94,4 +94,6 @@ private:
 	bool isPushBack = false;
 	bool spaceInput = false;
 
+	int invincibleModeTime = 60;
+	float alpha = 0.3f;
 };

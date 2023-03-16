@@ -116,9 +116,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	MouseMove = Vector2(0, 0);
 	MouseMove = (Vector2(mousePosition.y, mousePosition.x) - Vector2(windowWH.y, windowWH.x));//À•W²‚Å‰ñ“]‚µ‚Ä‚¢‚éŠÖŒW‚Å‚±‚¤‚È‚é(X‚ÆY‚ª“ü‚ê‘Ö‚¦)
 
-	if (input_->PushKey(DIK_LSHIFT) == 0) {
+	/*if (input_->PushKey(DIK_LSHIFT) == 0) {
 		mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
-	}
+	}*/
 
 	//ƒJƒƒ‰§ŒÀ
 	if (mouseMoved.x < -0.80f) {

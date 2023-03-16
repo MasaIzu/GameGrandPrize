@@ -77,10 +77,14 @@ void GameScene::Update() {
 		sceneManager_->ChangeScene("TITLE");
 	}*/
 
+	//前回の当たり判定の結果
 	if (collisionManager->GetIsHit()) {
 		isHit = collisionManager->GetIsHit();
 	}
-
+	if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
+		player->GetWorldPosition(), player->GetRadius())) {
+		isHit = true;
+	}
 
 	ImGui::Begin("Phase");
 
@@ -144,10 +148,6 @@ void GameScene::Update() {
 	Vector3 pWith(1, 1, 1);
 	Vector3 eWith(0.6f, 9, 1);
 
-	if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_),boss.GetSwordCollisionCube1(),boss.GetSwordCollisionCube2(),
-		player->GetWorldPosition(),player->GetRadius())) {
-		isHit = true;
-	}
 
 	//全ての衝突をチェック
 	collisionManager->CheckAllCollisions();

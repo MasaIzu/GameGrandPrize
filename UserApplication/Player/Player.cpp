@@ -44,6 +44,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+
+	ParticleMan = std::make_unique<ParticleManager>();
+
+	ParticleMan->Initialize();
 }
 
 void Player::Move() {
@@ -153,6 +157,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 	oldWorldTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
+
+	if (isHit)
+	{
+		Collision();
+	}
+
+	ParticleMan->Update();
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -165,6 +176,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
 
+}
+
+void Player::ParticleDraw(ViewProjection viewProjection_)
+{
+	ParticleMan->Draw(viewProjection_);
 }
 
 void Player::Attack(Vector3 start, Vector3 Finish) {
@@ -230,4 +246,28 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
+}
+
+void Player::Collision()
+{
+	//スペースキーを押していたら
+	for (int i = 0; i < 50; i++)
+	{
+		//消えるまでの時間
+		const float rnd_life = 190.0f;
+		//最低限のライフ
+		const float constlife = 10;
+		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f +constlife;
+
+		//XYZの広がる距離
+		const float rnd_pos = 30.0f;
+		//Y方向には最低限の飛ぶ距離
+		const float constPosY = 50;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 2, 2, {1,1,1,1}, {1,1,1,1});
+	}
 }

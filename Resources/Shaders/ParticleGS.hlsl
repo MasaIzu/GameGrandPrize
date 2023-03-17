@@ -206,7 +206,7 @@ void main(
 			//offset = mul(matBillboard, offset);
 			element.svpos = input[0].pos + offset;
 			//element.svpos = input[0].pos + offset_array[i];
-			element.svpos = mul(mat, element.svpos);
+			element.svpos =  element.svpos;
 			element.uv = uv_array[i]; 
 			element.color = input[0].color;
 			output.Append(element);

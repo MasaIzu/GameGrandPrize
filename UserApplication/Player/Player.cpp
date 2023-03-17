@@ -254,7 +254,7 @@ void Player::Collision()
 	for (int i = 0; i < 50; i++)
 	{
 		//Á‚¦‚é‚Ü‚Å‚ÌŽžŠÔ
-		const float rnd_life = 190.0f;
+		const float rnd_life = 290.0f;
 		//Å’áŒÀ‚Ìƒ‰ƒCƒt
 		const float constlife = 10;
 		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f +constlife;
@@ -268,6 +268,6 @@ void Player::Collision()
 		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//’Ç‰Á
-		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 2, 2, {1,1,1,1}, {1,1,1,1});
+		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.1, 0.1, {0,1,1,1}, {0,1,1,0});
 	}
 }

@@ -55,24 +55,33 @@ void Boss::Update(const Vector3& targetPos)
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
 
-	switch (phase1) {
-	case BossFirstPhase::Idle:
-		IdleUpdate();
-		break;
-	case BossFirstPhase::Atk_Sword:
-		AtkSwordUpdate(targetPos);
-		break;
-	case BossFirstPhase::Atk_Rush:
-		AtkRushUpdate(targetPos);
-		break;
-	case BossFirstPhase::BeginMotion:
-		BeginMotionUpdate();
-		break;
-	default:
-		break;
+	/*for (int i = 0; i < fishes.size(); i++) {
+		ImGui::Text("fishes[%d].radius:%f",i, fishes[i].radius);
+	}*/
+
+	ImGui::Checkbox("idle stop", &isStop);
+
+	if (!isStop) {
+
+		switch (phase1) {
+		case BossFirstPhase::Idle:
+			IdleUpdate();
+			break;
+		case BossFirstPhase::Atk_Sword:
+			AtkSwordUpdate(targetPos);
+			break;
+		case BossFirstPhase::Atk_Rush:
+			AtkRushUpdate(targetPos);
+			break;
+		case BossFirstPhase::BeginMotion:
+			BeginMotionUpdate();
+			break;
+		default:
+			break;
+
+		}
 
 	}
-
 
 	ImGui::End();
 
@@ -161,6 +170,8 @@ void Boss::IdleUpdate()
 	//魚群の中心(真ん中)の座標更新
 	fishParent.pos.TransferMatrix();
 
+	
+
 	//魚1匹ずつの更新
 	for (int i = 0; i < fishes.size(); i++) {
 
@@ -182,13 +193,15 @@ void Boss::IdleUpdate()
 
 		Quaternion rotaQuaternion = { vec,fishes[i].radian * PI / 180.0f };
 		Quaternion posQ = { pos.x,pos.y,pos.z,0 };
+
 		rotaVec = rotaQuaternion.multiply(posQ.GetAxis());
+
 
 		rotaVec *= fishes[i].radius;
 
 		//	pos.y = fishParent.radius - fishes[i].radius;
-		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+		/*pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;*/
 
 		pos.x = rotaVec.x;
 		pos.z = rotaVec.z;
@@ -201,6 +214,16 @@ void Boss::IdleUpdate()
 		}
 
 		//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+
+
+		Vector3 fishVecRad0;
+		Quaternion rota0Q{ vec,0 };
+		fishVecRad0 = rota0Q.multiply(posQ.GetAxis());
+
+		float theta = GetTheta(pos, fishVecRad0);
+
+		ImGui::Text("theta[%d]:%f", i, theta);
+		ImGui::Text("radian[%d]:%f", i, fishes[i].radian);
 
 		pos += fishes[i].displacement;
 
@@ -220,7 +243,9 @@ void Boss::IdleUpdate()
 	}
 
 	//攻撃のクールタイムを減らす
-	nextPhaseInterval--;
+
+
+		nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
 		int random = 0;
 
@@ -327,6 +352,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 					fishes[i].pos.parent_ = &fishParent.pos;
 				}
 			}
+
+			//
+		FishesUpdate();
 
 			//モーション終了
 			nextPhaseInterval = attackCooltime;
@@ -469,11 +497,11 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			//移動後の座標は魚群の球につくようにする(魚の生成関数と同じようなもんを使う)
 			float posY = Random(-fishParent.radius, fishParent.radius);
 			fishes[choiceFishIndex[fishIndex]].radian = Random(0.0f, 360.0f);
+		//	fishes[choiceFishIndex[fishIndex]].radian = 47.0f;
 			fishes[choiceFishIndex[fishIndex]].radius = sqrt(fishParent.radius * fishParent.radius - posY * posY);
-			fish newFish = fishes[choiceFishIndex[fishIndex]];
+		
 			pos.x = sin(PI / 180.0f * fishes[choiceFishIndex[fishIndex]].radian) * fishes[choiceFishIndex[fishIndex]].radius;
 			pos.z = cos(PI / 180.0f * fishes[choiceFishIndex[fishIndex]].radian) * fishes[choiceFishIndex[fishIndex]].radius;
-
 
 			float plus = Random(-1.0f, 1.0f);
 			float num = 1;
@@ -481,9 +509,9 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 				num = -1;
 			}
 
-			pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * num);
+			pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[choiceFishIndex[fishIndex]].radius * fishes[choiceFishIndex[fishIndex]].radius) * num);
 
-			pos += newFish.displacement;
+			pos += fishes[choiceFishIndex[fishIndex]].displacement;
 			fishesAfterPos[fishIndex] = pos;
 
 			fishesAfterPos[fishIndex] = fishParent.pos.matWorld_.transform(fishesAfterPos[fishIndex], fishParent.pos.matWorld_);
@@ -781,6 +809,40 @@ void Boss::SortFishMin(const Vector3& targetPos)
 	}
 }
 
+void Boss::FishesUpdate()
+{
+	for (int i = 0; i < fishes.size(); i++) {
+		Vector3 fishVecRad0,fishVec;
+		fishVec = fishes[i].pos.translation_;
+		fishVec.normalize();
+		//角度が0の時の魚のベクトルを求める(ここからなす角を出す用なので大きさは関係なし)
+		Vector3 up{ 0,1,0 };
+		up.normalize();
+		Quaternion rotaQRad0 = { up,0.0f };
+		Quaternion posQRad0;
+		//yは角度を求める魚と同じ
+		fishVecRad0.y = fishVec.y;
+		fishVecRad0.x = sin(PI / 180.0f * 0);
+		fishVecRad0.z = cos(PI / 180.0f * 0);
+
+		float costheta =  (fishVec.x * fishVecRad0.x + fishVec.y*fishVecRad0.y+fishVec.z * fishVecRad0.z)  / (fishVecRad0.length() * fishes[i].pos.translation_.length());
+		float theta = GetTheta(fishVec,fishVecRad0);
+		ImGui::Text("theta[%d]:%f", i, theta);
+
+
+
+		fishes[i].radian = theta;
+		fishes[i].radius = sqrt(fishParent.radius * fishParent.radius - fishVec.y * fishVec.y);
+
+
+
+
+
+	}
+
+
+}
+
 
 float Random(float num1, float num2)
 {
@@ -842,6 +904,14 @@ float LerpConbertInback(float t)
 float LerpConbertOut(float t)
 {
 	return 1 - pow(1 - t, 5);
+}
+
+float GetTheta(const Vector3& v1, const Vector3& v2)
+{
+
+	float cosTheta = (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (v1.length() * v2.length());
+
+	return acos(cosTheta) / PI * 180.0f;
 }
 
 

@@ -85,20 +85,51 @@ public:
 	Vector3 GetSwordCollisionCube2()const { return posSwordColCube2; }
 
 private:
-	//フェーズごとの更新処理
+	/// <summary>
+	/// 待機モーションの更新
+	/// </summary>
 	void IdleUpdate();
 
+	/// <summary>
+	/// 剣撃モーションの更新
+	/// </summary>
+	/// <param name="targetPos"></param>
 	void AtkSwordUpdate(const Vector3& targetPos);
 
+	/// <summary>
+	/// 突進攻撃モーションの更新
+	/// </summary>
+	/// <param name="targetPos"></param>
 	void AtkRushUpdate(const Vector3& targetPos);
 
+	/// <summary>
+	/// 攻撃の予備動作モーションの更新
+	/// </summary>
 	void BeginMotionUpdate();
 
+	/// <summary>
+	/// 魚に前を向かせる(未完成)
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <param name="dirVec"></param>
+	/// <param name="fishNum"></param>
 	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 
+	/// <summary>
+	/// 剣の当たり判定用の座標更新
+	/// </summary>
 	void SwordColCubeUpdate();
 
+	/// <summary>
+	/// 魚の配列を標的との距離が小さい順に並べる
+	/// </summary>
+	/// <param name="targetPos"></param>
 	void SortFishMin(const Vector3& targetPos);
+
+	/// <summary>
+	/// 魚群情報の更新
+	/// </summary>
+	void FishesUpdate();
 	
 	BossSwordPhase bossSwordPhase;
 
@@ -135,6 +166,8 @@ private:
 	const float swordSizeZ2 = 1.0f;
 
 	EasingData easeParentPos;
+
+	bool isStop = false;
 
 };
 
@@ -177,4 +210,6 @@ Vector3 LerpBezireQuadratic(const Vector3& start, const Vector3& contRollP, cons
 float LerpConbertInback(float t);
 
 float LerpConbertOut(float t);
+
+float GetTheta(const Vector3& v1, const Vector3& v2);
 

@@ -29,6 +29,8 @@ struct WorldTransform {
 	Quaternion quaternion = { 0,0,0,0 };
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
+	//その物体の向いている方向
+	Vector3 look = { 0,0,1 };
 	// 親となるワールド変換へのポインタ
 	const WorldTransform* parent_ = nullptr;
 

@@ -81,7 +81,12 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	if (cameraTime < MaxCameraTime) {
 		cameraTime++;
 	}
-
+	if (shakeTime > 0) {
+		shakeTime--;
+	}
+	else {
+		isShake = false;
+	}
 
 	//カメラの回転ベクトル
 	Vector3 rotat = { 0, 0, 0 };
@@ -213,10 +218,14 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	if (isHit == true) {
 		isHit = false;
-		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
+		isShake = true;
+		shakeTime = 10;
 
 	}
 
+	if (isShake == true) {
+		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
+	}
 }
 
 void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)

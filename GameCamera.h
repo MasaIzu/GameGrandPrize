@@ -120,4 +120,7 @@ private:
 	float cameraHeight_ = 6;
 
 	bool isHit = false;
+
+	bool isShake = false;
+	int shakeTime = 0;
 };

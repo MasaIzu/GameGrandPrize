@@ -254,7 +254,7 @@ void Player::Collision()
 	for (int i = 0; i < 50; i++)
 	{
 		//Á‚¦‚é‚Ü‚Å‚ÌŽžŠÔ
-		const float rnd_life = 290.0f;
+		const float rnd_life = 380.0f;
 		//Å’áŒÀ‚Ìƒ‰ƒCƒt
 		const float constlife = 10;
 		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f +constlife;
@@ -262,7 +262,7 @@ void Player::Collision()
 		//XYZ‚ÌL‚ª‚é‹——£
 		const float rnd_pos = 30.0f;
 		//Y•ûŒü‚É‚ÍÅ’áŒÀ‚Ì”ò‚Ô‹——£
-		const float constPosY = 50;
+		const float constPosY = 15;
 		Vector3 pos{};
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;

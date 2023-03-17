@@ -36,6 +36,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
+	worldTransformaaaa_.Initialize();
 
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
@@ -44,6 +45,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+	worldTransformaaaa_.TransferMatrix();
 }
 
 
@@ -57,6 +59,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+	worldTransformaaaa_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
 }
@@ -167,19 +170,19 @@ void Player::Attack(Vector3 start, Vector3 Finish) {
 	if (input_->MouseInputTrigger(1)) {
 		//実行前にカウント値を取得
 		//計測開始時間の初期化
-		QueryPerformanceCounter(&startTime);
+		nowCount = 0;
+		timeRate = 0;
 		startIndex = 1;
 	}
 
 	//補間で使うデータ
 	//start → end を5秒で完了させる
-	Vector3 p0(-10.0f, 0, 0);			//スタート地点
-	Vector3 p1(-5.0f, 5.0f, 5.0f);		//制御点その1
-	Vector3 p2(5.0f, -3.0f, -5.0f);		//制御点その2
-	Vector3 p3(10.0f, 0.0f, 0.0f);		//ゴール地点
+	Vector3 p0(-1.0f, 0, 0);			//スタート地点
+	Vector3 p1(-0.5f, 0.5f, 0.5f);		//制御点その1
+	Vector3 p2(0.5f, -0.3f, -0.5f);		//制御点その2
+	Vector3 p3(1.0f, 0.0f, 0.0f);		//ゴール地点
 
-	std::vector<Vector3>points{ p0,p0,p1,p2,p3,p3 };
-
+	points = { p0,p0,p1,p2,p3,p3 };
 
 
 	nowCount++;
@@ -207,7 +210,7 @@ void Player::Attack(Vector3 start, Vector3 Finish) {
 
 	position = splinePosition(points, startIndex, timeRate);
 
-	oldWorldTransform_.translation_ = position;
+	worldTransformaaaa_.translation_ = position;
 
 	//if (makeColliders == false) {
 	//	float sphereX = Finish.x - start.x;
@@ -248,7 +251,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->SetAlpha(alpha);
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
-	oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
+	oldPlayerModel_->Draw(worldTransformaaaa_, viewProjection_);
 }
 
 
@@ -284,20 +287,24 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t) {
-
-	//補間すべき点の数
+Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
+{
+	// 補完すべき点の数
 	size_t n = points.size() - 2;
 
-	if (startIndex > n)return points[n];
-	if (startIndex < 1)return points[1];
+	if (startIndex > n)return points[n]; // Pnの値を返す
+	if (startIndex < 1)return points[1]; // P1の値を返す
 
+	// p0～p3の制御点を取得する　※　p1～p2を補完する
 	Vector3 p0 = points[startIndex - 1];
 	Vector3 p1 = points[startIndex];
 	Vector3 p2 = points[startIndex + 1];
 	Vector3 p3 = points[startIndex + 2];
 
-	Vector3 position = 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * (t * t) + (-p0 + 3 * p1 - 3 * p2 + p3) * (t * t * t));
+	// Catmull - Romの式による補間
+	Vector3 position = 0.5 * (2 * p1 + (-p0 + p2) * t
+		+ (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t
+		+ (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 
 	return position;
 }

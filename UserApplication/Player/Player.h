@@ -58,6 +58,7 @@ private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	WorldTransform oldWorldTransform_;
+	WorldTransform worldTransformaaaa_;
 
 	//インプット
 	Input* input_ = nullptr;
@@ -123,9 +124,9 @@ private:
 	Vector3 p2;	//制御点その2
 	Vector3 p3;		//ゴール地点
 
-	std::vector<Vector3>points{ p0,p0,p1,p2,p3,p3 };
+	std::vector<Vector3>points;
 
-	float maxTime = 5.0f;				//全体時間[s]
+	float maxTime = 1.2f * 60;				//全体時間[s]
 	float timeRate;						//何％時間が進んだか
 	//球の位置
 	Vector3 position;

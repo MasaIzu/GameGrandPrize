@@ -49,6 +49,7 @@ public:
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
 	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
+	void SetAngle(float angle_) { angle = angle_; }
 
 private:
 	//ワールド変換データ
@@ -93,5 +94,7 @@ private:
 	bool isPushRight = false;
 	bool isPushBack = false;
 	bool spaceInput = false;
+
+	float angle = 0.0f;
 
 };

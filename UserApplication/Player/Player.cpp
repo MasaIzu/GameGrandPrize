@@ -68,6 +68,8 @@ void Player::Move() {
 
 	Vector3 moveRot = cameraLook;
 
+	
+
 	if (input_->PushKey(DIK_W)) {
 		playerMovement.z = -playerSpeed;
 		//cameraLook *= playerSpeed;
@@ -119,8 +121,9 @@ void Player::Move() {
 				Avoidance.z = -playerAvoidance;
 			}
 		}
-	}
+	}	
 
+	worldTransform_.SetRot({ 0,-MyMath::GetAngle(angle),0 });
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
 
@@ -137,7 +140,7 @@ void Player::Move() {
 	//worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
-	worldTransform_.matWorld_ *= CameraRot;
+	//worldTransform_.matWorld_ *= CameraRot;
 }
 
 

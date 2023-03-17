@@ -514,3 +514,8 @@ Matrix4 MyMath::Matrix4Orthographic(
 	return m;
 }
 
+float MyMath::GetAngle(float angle)
+{
+	return angle * (PI / 180);
+}
+

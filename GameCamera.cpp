@@ -216,6 +216,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		vTargetEye = shiftVec;
 	}
 
+	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
+
+
 	if (isHit == true) {
 		isHit = false;
 		isShake = true;
@@ -266,4 +269,16 @@ Vector3 GameCamera::calculateLookAtPosition(Vector3 target, Vector3 camera) {
 	Vector3 direction = target - camera;
 	direction.norm();
 	return camera + direction;
+}
+
+void GameCamera::CameraAngle(float x, float z)
+{
+	angle = atan2(x, z);
+
+	if(angle < 0 ){
+		angle = angle + 2 * MyMath::PI;
+	}
+
+	angle = floor(angle * 360 / (2 * MyMath::PI));
+
 }

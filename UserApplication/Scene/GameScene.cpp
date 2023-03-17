@@ -130,6 +130,7 @@ void GameScene::Update() {
 	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 	//}
 
+	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);

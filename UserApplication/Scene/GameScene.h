@@ -99,5 +99,5 @@ private: // ƒƒ“ƒo•Ï”
 
 	bool isHit = false;
 
-	std::unique_ptr< ParticleManager> ParticleMan;
+	std::unique_ptr<ParticleManager> ParticleMan;
 };

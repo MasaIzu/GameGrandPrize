@@ -30,6 +30,7 @@ private:
 	// カメラが向く位置を計算する関数
 	Vector3 calculateLookAtPosition(Vector3 target, Vector3 camera);
 
+	void CameraAngle(float x, float z);
 	
 
 public://ゲッターセッター
@@ -44,7 +45,7 @@ public://ゲッターセッター
 	float getPitch(ViewProjection* viewProjection_) {
 		return -atan2(playerPos_.y - viewProjection_->eye.y, playerCameraDistance);
 	}
-
+	float GetCameraAngle() { return angle; }
 	// カメラの水平方向の角度を計算する関数
 	float getYaw(Vector3 position, Vector3 lookAt) {
 		Vector3 direction = lookAt - position;
@@ -123,4 +124,6 @@ private:
 
 	bool isShake = false;
 	int shakeTime = 0;
+
+	float angle = 0.0f;
 };

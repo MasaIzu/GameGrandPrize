@@ -53,7 +53,12 @@ void WorldTransform::TransferMatrix() {
 	matWorld_ *= matRot;//ワールド行列に回転を反映
 	matWorld_ *= matTrans;//ワールド行列に平行移動を反映
 
-	look = MyMath::MatVector(matRot, look);
+	Vector3 at{ -1,0,0 };
+
+	Vector3 Pos = MyMath::GetWorldTransform(matWorld_);
+	Vector3 look_ = MyMath::MatVector(matRot, at);
+
+	look = Pos + look_;
 
 	//親オブジェクトがあれば
 	if (parent_) {

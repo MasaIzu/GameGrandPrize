@@ -46,6 +46,21 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	oldWorldTransform_.TransferMatrix();
 }
 
+
+void Player::Update(const ViewProjection& viewProjection) {
+
+	Move();
+
+	if (input_->MouseInputTrigger(0)) {
+		Attack(Vector3(0,0,0),Vector3(5,5,5));
+	}
+
+	worldTransform_.TransferMatrix();
+	oldWorldTransform_.TransferMatrix();
+
+	collider->Update(worldTransform_.matWorld_);
+}
+
 void Player::Move() {
 
 	Vector3 playerMovement = { 0,0,0 };
@@ -68,7 +83,7 @@ void Player::Move() {
 
 	Vector3 moveRot = cameraLook;
 
-	
+
 
 	if (input_->PushKey(DIK_W)) {
 		playerMovement.z = -playerSpeed;
@@ -121,7 +136,7 @@ void Player::Move() {
 				Avoidance.z = -playerAvoidance;
 			}
 		}
-	}	
+	}
 
 	worldTransform_.SetRot({ 0,-MyMath::GetAngle(angle),0 });
 
@@ -140,23 +155,13 @@ void Player::Move() {
 	//worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
-	//worldTransform_.matWorld_ *= CameraRot;
-}
-
-
-void Player::Update(const ViewProjection& viewProjection) {
-
-	Move();
-
-	if (input_->MouseInputTrigger(0)) {
-		Attack(Vector3(0,0,0),Vector3(5,5,5));
+	if (input_->MouseInputTrigger(2)) {
+		oldWorldTransform_.translation_ = worldTransform_.look;
 	}
 
-	worldTransform_.TransferMatrix();
-	oldWorldTransform_.TransferMatrix();
 
-	collider->Update(worldTransform_.matWorld_);
 }
+
 
 void Player::Draw(ViewProjection viewProjection_) {
 
@@ -167,7 +172,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->SetAlpha(alpha);
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
-
+	oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 }
 
 void Player::Attack(Vector3 start, Vector3 Finish) {

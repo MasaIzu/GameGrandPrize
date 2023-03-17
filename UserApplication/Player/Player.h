@@ -11,6 +11,7 @@
 
 #include "Vector4.h"
 #include <SphereCollider.h>
+#include"ParticleManager.h"
 
 class Player {
 
@@ -38,7 +39,9 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void Attack(Vector3 start,Vector3 Finish);
+	void ParticleDraw(ViewProjection viewProjection_);
+
+	void Attack(Vector3 start, Vector3 Finish);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -49,6 +52,10 @@ public:
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
 	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
+
+	void SetIsHit(bool isHit) { this->isHit = isHit; }
+
+	void Collision();
 
 private:
 	//ワールド変換データ
@@ -94,4 +101,7 @@ private:
 	bool isPushBack = false;
 	bool spaceInput = false;
 
+	bool isHit;
+
+	std::unique_ptr<ParticleManager> ParticleMan;
 };

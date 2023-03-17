@@ -41,11 +41,20 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
+	start = swordPos;		//スタート地点
+	p1 = Vector3(swordPos.x + 0.5f, swordPos.y + 0.5f, swordPos.z + 0.5f);		//制御点その1
+	p2 = Vector3(swordPos.x + 1.5f, swordPos.y - 0.3f, swordPos.z - 0.5f);	//制御点その2
+	end = Vector3(swordPos.x + 2.0f, swordPos.y, swordPos.z);		//ゴール地点
 
+	points = { start,start,p1,p2,end,end };
+
+	worldTransformaaaa_.translation_ = start;
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 	worldTransformaaaa_.TransferMatrix();
+
+
 }
 
 
@@ -172,17 +181,24 @@ void Player::Attack(Vector3 start, Vector3 Finish) {
 		//計測開始時間の初期化
 		nowCount = 0;
 		timeRate = 0;
+		startCount = 0;
 		startIndex = 1;
+
+		// ポイントのポジションのリセット
+
+		this->start = swordPos;		//スタート地点
+		p1 = Vector3(swordPos.x + 0.5f, swordPos.y + 0.5f, swordPos.z + 0.5f);		//制御点その1
+		p2 = Vector3(swordPos.x + 1.5f, swordPos.y - 0.3f, swordPos.z - 0.5f);	//制御点その2
+		end = Vector3(swordPos.x + 2.0f, swordPos.y, swordPos.z);		//ゴール地点
+
+		points = { this->start,this->start,p1,p2,end,end };
 	}
 
 	//補間で使うデータ
 	//start → end を5秒で完了させる
-	Vector3 p0(-1.0f, 0, 0);			//スタート地点
-	Vector3 p1(-0.5f, 0.5f, 0.5f);		//制御点その1
-	Vector3 p2(0.5f, -0.3f, -0.5f);		//制御点その2
-	Vector3 p3(1.0f, 0.0f, 0.0f);		//ゴール地点
 
-	points = { p0,p0,p1,p2,p3,p3 };
+
+	
 
 
 	nowCount++;
@@ -193,6 +209,9 @@ void Player::Attack(Vector3 start, Vector3 Finish) {
 	// 移動完了の率(経過時間/全体時間) : timeRate (%)
 	elapsedTime = nowCount - startCount;
 	timeRate = elapsedTime / maxTime;
+	if (timeRate >= 0.5f) {
+		position = splinePosition(points, startIndex, timeRate);
+	}
 
 	if (timeRate >= 1.0f)
 	{

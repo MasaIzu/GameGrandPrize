@@ -105,28 +105,26 @@ private:
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ
-	int startCount = 0;
-	int nowCount = 0;
-	int elapsedCount_ = 0;
-
-	int elapsedTime = 0;
+	// 剣のアタック開始位置
+	Vector3 swordPos = { 0,0,0 };
 
 	//計測開始時間
-	LARGE_INTEGER startTime{};
+	float startCount = 0;
 	//今の時間
-	LARGE_INTEGER nowTime{};
-	LARGE_INTEGER elapsedCount{};
+	float nowCount = 0;
+
+	float elapsedTime = 0;
 
 	//補間で使うデータ
 	//start → end を5秒で完了させる
-	Vector3 p0;			//スタート地点
+	Vector3 start;			//スタート地点
 	Vector3 p1;	//制御点その1
 	Vector3 p2;	//制御点その2
-	Vector3 p3;		//ゴール地点
+	Vector3 end;		//ゴール地点
 
 	std::vector<Vector3>points;
 
-	float maxTime = 1.2f * 60;				//全体時間[s]
+	float maxTime = 0.5f * 60;				//全体時間[s]
 	float timeRate;						//何％時間が進んだか
 	//球の位置
 	Vector3 position;

@@ -52,6 +52,9 @@ public:
 	void SetAngle(float angle_) { angle = angle_; }
 
 private:
+	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
+
+private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	WorldTransform oldWorldTransform_;
@@ -96,5 +99,38 @@ private:
 	bool spaceInput = false;
 
 	float angle = 0.0f;
+
+
+	///攻撃に使う変数
+
+	//時間計算に必要なデータ
+	int startCount = 0;
+	int nowCount = 0;
+	int elapsedCount_ = 0;
+
+	int elapsedTime = 0;
+
+	//計測開始時間
+	LARGE_INTEGER startTime{};
+	//今の時間
+	LARGE_INTEGER nowTime{};
+	LARGE_INTEGER elapsedCount{};
+
+	//補間で使うデータ
+	//start → end を5秒で完了させる
+	Vector3 p0;			//スタート地点
+	Vector3 p1;	//制御点その1
+	Vector3 p2;	//制御点その2
+	Vector3 p3;		//ゴール地点
+
+	std::vector<Vector3>points{ p0,p0,p1,p2,p3,p3 };
+
+	float maxTime = 5.0f;				//全体時間[s]
+	float timeRate;						//何％時間が進んだか
+	//球の位置
+	Vector3 position;
+	size_t startIndex = 1;
+
+	bool isAttack = false;
 
 };

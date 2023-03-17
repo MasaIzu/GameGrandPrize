@@ -51,9 +51,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
 
-	if (input_->MouseInputTrigger(0)) {
-		Attack(Vector3(0,0,0),Vector3(5,5,5));
-	}
+
+	Attack(Vector3(0, 0, 0), Vector3(5, 5, 5));
+
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -162,6 +162,82 @@ void Player::Move() {
 
 }
 
+void Player::Attack(Vector3 start, Vector3 Finish) {
+
+	if (input_->MouseInputTrigger(1)) {
+		//実行前にカウント値を取得
+		//計測開始時間の初期化
+		QueryPerformanceCounter(&startTime);
+		startIndex = 1;
+	}
+
+	//補間で使うデータ
+	//start → end を5秒で完了させる
+	Vector3 p0(-10.0f, 0, 0);			//スタート地点
+	Vector3 p1(-5.0f, 5.0f, 5.0f);		//制御点その1
+	Vector3 p2(5.0f, -3.0f, -5.0f);		//制御点その2
+	Vector3 p3(10.0f, 0.0f, 0.0f);		//ゴール地点
+
+	std::vector<Vector3>points{ p0,p0,p1,p2,p3,p3 };
+
+
+
+	nowCount++;
+	// 落下
+	// スタート地点        ：start
+	// エンド地点        ：end
+	// 経過時間            ：elapsedTime [s]
+	// 移動完了の率(経過時間/全体時間) : timeRate (%)
+	elapsedTime = nowCount - startCount;
+	timeRate = elapsedTime / maxTime;
+
+	if (timeRate >= 1.0f)
+	{
+		if (startIndex < points.size() - 3)
+		{
+			startIndex += 1.0f;
+			timeRate -= 1.0f;
+			startCount = nowCount;
+		}
+		else
+		{
+			timeRate = 1.0f;
+		}
+	}
+
+	position = splinePosition(points, startIndex, timeRate);
+
+	oldWorldTransform_.translation_ = position;
+
+	//if (makeColliders == false) {
+	//	float sphereX = Finish.x - start.x;
+	//	float sphereY = Finish.y - start.y;
+	//	float sphereZ = Finish.z - start.z;
+
+	//	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+
+	//	for (int i = 0; i < SphereCount; i++) {
+	//		// コリジョンマネージャに追加
+	//		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+	//		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+
+	//		colliderPos[i] = start + sphere * i;
+
+	//		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+
+	//		AttackCollider[i]->Update(worldSpherePos[i]);
+	//		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+	//	}
+	//}
+	//else {
+	//	for (int i = 0; i < SphereCount; i++) {
+
+	//		AttackCollider[i]->Update(worldSpherePos[i]);
+	//	}
+	//}
+
+}
 
 void Player::Draw(ViewProjection viewProjection_) {
 
@@ -173,38 +249,6 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
 	oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
-}
-
-void Player::Attack(Vector3 start, Vector3 Finish) {
-
-	if (makeColliders == false) {
-		float sphereX = Finish.x - start.x;
-		float sphereY = Finish.y - start.y;
-		float sphereZ = Finish.z - start.z;
-
-		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
-
-
-		for (int i = 0; i < SphereCount; i++) {
-			// コリジョンマネージャに追加
-			AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
-			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-
-			colliderPos[i] = start + sphere * i;
-
-			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
-
-			AttackCollider[i]->Update(worldSpherePos[i]);
-			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
-		}
-	}
-	else {
-		for (int i = 0; i < SphereCount; i++) {
-			
-			AttackCollider[i]->Update(worldSpherePos[i]);
-		}
-	}
-
 }
 
 
@@ -238,4 +282,22 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
+}
+
+Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t) {
+
+	//補間すべき点の数
+	size_t n = points.size() - 2;
+
+	if (startIndex > n)return points[n];
+	if (startIndex < 1)return points[1];
+
+	Vector3 p0 = points[startIndex - 1];
+	Vector3 p1 = points[startIndex];
+	Vector3 p2 = points[startIndex + 1];
+	Vector3 p3 = points[startIndex + 2];
+
+	Vector3 position = 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * (t * t) + (-p0 + 3 * p1 - 3 * p2 + p3) * (t * t * t));
+
+	return position;
 }

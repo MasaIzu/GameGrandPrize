@@ -112,8 +112,6 @@ private:
 	int nowCount = 0;
 	int elapsedCount_ = 0;
 
-	int elapsedTime = 0;
-
 	//Œv‘ªŠJnŠÔ
 	LARGE_INTEGER startTime{};
 	//¡‚ÌŠÔ

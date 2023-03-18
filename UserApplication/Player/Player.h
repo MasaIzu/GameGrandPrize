@@ -112,11 +112,7 @@ private:
 	int nowCount = 0;
 	int elapsedCount_ = 0;
 
-	//計測開始時間
-	LARGE_INTEGER startTime{};
-	//今の時間
-	LARGE_INTEGER nowTime{};
-	LARGE_INTEGER elapsedCount{};
+	int elapsedTime = 0;
 
 	//補間で使うデータ
 	//start → end を5秒で完了させる

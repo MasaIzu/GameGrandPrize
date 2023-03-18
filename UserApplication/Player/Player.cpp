@@ -72,25 +72,27 @@ void Player::Move() {
 
 	Vector3 moveRot = cameraLook;
 
+	Vector3 move={0,0,0};
+
 	if (input_->PushKey(DIK_W)) {
 		playerMovement.z = -playerSpeed;
 		//cameraLook *= playerSpeed;
 
-		worldTransform_.translation_ += cameraLook * playerSpeed;
+		move += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
 		playerMovement.x = playerSpeed;
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		worldTransform_.translation_ -= moveRot * playerSpeed;
+		move -= moveRot * playerSpeed;
 		isPushLeft = true;
 	}
 	if (input_->PushKey(DIK_S)) {
 		playerMovement.z = playerSpeed;
 		//cameraLook *= playerSpeed;
 
-		worldTransform_.translation_ -= cameraLook * playerSpeed;
+		move -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
@@ -98,7 +100,7 @@ void Player::Move() {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		worldTransform_.translation_ += moveRot * playerSpeed;
+		move += moveRot * playerSpeed;
 		isPushRight = true;
 	}
 
@@ -139,7 +141,18 @@ void Player::Move() {
 	Avoidance *= playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
-	worldTransform_.translation_ += Avoidance;
+	move += Avoidance;
+
+	float AR;
+	float BR;
+
+	AR = pow((worldTransform_.translation_.x + move.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + move.z) - 0, 2);
+	BR = pow((50 - worldTransform_.scale_.x * 2), 2);
+
+	if (AR <= BR)
+	{
+		worldTransform_.translation_ += move;
+	}
 
 	worldTransform_.matWorld_ *= CameraRot;
 }

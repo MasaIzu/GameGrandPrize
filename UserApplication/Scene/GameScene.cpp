@@ -68,6 +68,16 @@ void GameScene::Initialize() {
 
 	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
 	ParticleMan->SetTextureHandle(tex);
+
+	stageWorldTransform_.Initialize();
+
+	stageModel_.reset(Model::CreateFromOBJ("stage", true));
+
+	stageWorldTransform_.scale_ = { 52,50,52 };
+
+	stageWorldTransform_.translation_ = Vector3(0, -2.1f, 0);
+
+	stageWorldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
@@ -169,7 +179,7 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-
+	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	model_->Draw(boss.swordTransform, viewProjection_);
 

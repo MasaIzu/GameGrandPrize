@@ -31,21 +31,30 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	playerAvoidance = 6.0f;
 
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+	}
+
 	//worldTransform_.translation_ = { 0,0,-100 };
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
-	worldTransformaaaa_.Initialize();
+	playerAttackTransform_.Initialize();
 
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
-
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
-	worldTransformaaaa_.TransferMatrix();
+	playerAttackTransform_.TransferMatrix();
 }
 
 
@@ -53,13 +62,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
 
-
-	Attack(Vector3(0, 0, 0), Vector3(5, 5, 5));
+	Attack();
 
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
-	worldTransformaaaa_.TransferMatrix();
+	playerAttackTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
 }
@@ -82,7 +90,7 @@ void Player::Move() {
 		collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	}
 
-	Matrix4 cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
+	cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
 
 	Vector3 moveRot = cameraLook;
 
@@ -158,87 +166,101 @@ void Player::Move() {
 	//worldTransform_.translation_ += playerMovement;
 	worldTransform_.translation_ += Avoidance;
 
-	if (input_->MouseInputTrigger(2)) {
+	if (input_->MouseInputing(2)) {
 		oldWorldTransform_.translation_ = worldTransform_.look;
 	}
 
 
 }
 
-void Player::Attack(Vector3 start, Vector3 Finish) {
+void Player::Attack() {
 
-	if (input_->MouseInputTrigger(1)) {
+	Vector3 moveRot = cameraLook;
+
+	if (input_->MouseInputing(1)) {
 		//実行前にカウント値を取得
 		//計測開始時間の初期化
+		isAttack = true;
+		startCount = 0;
 		nowCount = 0;
 		timeRate = 0;
 		startIndex = 1;
 	}
 
-	//補間で使うデータ
-	//start → end を5秒で完了させる
-	Vector3 p0(-1.0f, 0, 0);			//スタート地点
-	Vector3 p1(-0.5f, 0.5f, 0.5f);		//制御点その1
-	Vector3 p2(0.5f, -0.3f, -0.5f);		//制御点その2
-	Vector3 p3(1.0f, 0.0f, 0.0f);		//ゴール地点
-
-	points = { p0,p0,p1,p2,p3,p3 };
-
-
-	nowCount++;
-	// 落下
-	// スタート地点        ：start
-	// エンド地点        ：end
-	// 経過時間            ：elapsedTime [s]
-	// 移動完了の率(経過時間/全体時間) : timeRate (%)
-	elapsedTime = nowCount - startCount;
-	timeRate = elapsedTime / maxTime;
-
-	if (timeRate >= 1.0f)
-	{
-		if (startIndex < points.size() - 3)
-		{
-			startIndex += 1.0f;
-			timeRate -= 1.0f;
-			startCount = nowCount;
+	if (isAttack == true) {
+		if (nowCount < maxTime * 4) {
+			nowCount++;
 		}
-		else
-		{
-			timeRate = 1.0f;
+		else {
+			isAttack = false;
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+			}
 		}
+
+		//補間で使うデータ
+		//start → end を知らん秒で完了させる
+		Vector3 p0(worldTransform_.lookRight);			//スタート地点
+		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
+		Vector3 p2(worldTransform_.look);										//制御点その2
+		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
+		Vector3 p4(worldTransform_.lookLeft);		//ゴール地点
+
+		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
+		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
+		p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
+		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
+		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
+
+		//p0 = p0 * attackDistance;
+		//p1 = p1 * attackDistance;
+		//p2 = p2 * attackDistance;
+		//p3 = p3 * attackDistance;
+
+		points = { p0,p0,p1,p2,p3,p4,p4 };
+
+		// 落下
+		// スタート地点        ：start
+		// エンド地点        ：end
+		// 経過時間            ：elapsedTime [s]
+		// 移動完了の率(経過時間/全体時間) : timeRate (%)
+		elapsedTime = nowCount - startCount;
+		timeRate = elapsedTime / maxTime;
+
+		if (timeRate >= 1.0f)
+		{
+			if (startIndex < points.size() - 3)
+			{
+				startIndex += 1.0f;
+				timeRate -= 1.0f;
+				startCount = nowCount;
+			}
+			else
+			{
+				timeRate = 1.0f;
+			}
+		}
+
+		position = splinePosition(points, startIndex, timeRate);
+
+		playerAttackTransform_.translation_ = position;
+
+		float sphereX = position.x - GetWorldPosition().x;
+		float sphereY = position.y - GetWorldPosition().y;
+		float sphereZ = position.z - GetWorldPosition().z;
+
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+		for (int i = 0; i < SphereCount; i++) {
+			colliderPos[i] = GetWorldPosition() + sphere * i;
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+			playerAttackTransformaaaa_[i].TransferMatrix();
+		}
+
 	}
-
-	position = splinePosition(points, startIndex, timeRate);
-
-	worldTransformaaaa_.translation_ = position;
-
-	//if (makeColliders == false) {
-	//	float sphereX = Finish.x - start.x;
-	//	float sphereY = Finish.y - start.y;
-	//	float sphereZ = Finish.z - start.z;
-
-	//	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
-
-
-	//	for (int i = 0; i < SphereCount; i++) {
-	//		// コリジョンマネージャに追加
-	//		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
-	//		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-
-	//		colliderPos[i] = start + sphere * i;
-
-	//		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
-
-	//		AttackCollider[i]->Update(worldSpherePos[i]);
-	//		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
-	//	}
-	//}
-	//else {
-	//	for (int i = 0; i < SphereCount; i++) {
-
-	//		AttackCollider[i]->Update(worldSpherePos[i]);
-	//	}
-	//}
 
 }
 
@@ -251,7 +273,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->SetAlpha(alpha);
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
-	oldPlayerModel_->Draw(worldTransformaaaa_, viewProjection_);
+	if (isAttack) {
+		for (int i = 0; i < SphereCount; i++) {
+			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+		}
+	}
 }
 
 

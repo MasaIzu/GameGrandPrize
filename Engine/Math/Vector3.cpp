@@ -57,14 +57,11 @@ const Vector3 lerp(const Vector3& start, const Vector3& end, const float t) {
 	return start * (1.0f - t) + end * t;
 }
 
-Vector3 Vector3::operator+() const
-{
-	return Vector3(x, y, z);
+Vector3 Vector3::operator+()const {
+	return *this;
 }
-
-Vector3 Vector3::operator-() const
-{
-	return Vector3(x, y, z);
+Vector3 Vector3::operator-()const {
+	return Vector3(-x, -y, -z);
 }
 
 Vector3& Vector3::operator+=(const Vector3& v)

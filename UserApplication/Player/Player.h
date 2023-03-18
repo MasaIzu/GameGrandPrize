@@ -38,7 +38,7 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void Attack(Vector3 start,Vector3 Finish);
+	void Attack();
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -58,7 +58,7 @@ private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	WorldTransform oldWorldTransform_;
-	WorldTransform worldTransformaaaa_;
+	WorldTransform playerAttackTransform_;
 
 	//インプット
 	Input* input_ = nullptr;
@@ -66,12 +66,15 @@ private:
 	// コライダー
 	BaseCollider* collider = nullptr;
 
-	static const int SphereCount = 24;
+	static const int SphereCount = 20;
 
 	BaseCollider* AttackCollider[SphereCount];
 	Vector3 colliderPos[SphereCount];
 	Matrix4 worldSpherePos[SphereCount];
 	bool makeColliders = false;
+
+
+	WorldTransform playerAttackTransformaaaa_[SphereCount];
 
 	//モデル
 	Model* playerModel_ = nullptr;
@@ -100,7 +103,7 @@ private:
 	bool spaceInput = false;
 
 	float angle = 0.0f;
-
+	Matrix4 cameraLookmat;
 
 	///攻撃に使う変数
 
@@ -126,7 +129,7 @@ private:
 
 	std::vector<Vector3>points;
 
-	float maxTime = 1.2f * 60;				//全体時間[s]
+	float maxTime = 0.1f * 60;				//全体時間[s]
 	float timeRate;						//何％時間が進んだか
 	//球の位置
 	Vector3 position;
@@ -134,4 +137,6 @@ private:
 
 	bool isAttack = false;
 
+	float attackDistanceX = 4.0f;
+	float attackDistanceZ = 10.0f;
 };

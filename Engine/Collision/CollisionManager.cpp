@@ -39,6 +39,11 @@ void CollisionManager::CheckAllCollisions()
 						isHit = true;
 					}
 				}
+				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_ENEMYS) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						isHit = true;
+					}
+				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 					//isHit = true;
 				}

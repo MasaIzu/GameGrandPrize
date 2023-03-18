@@ -177,7 +177,7 @@ void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
 
-	if (input_->MouseInputing(1)) {
+	if (input_->MouseInputing(0)) {
 		//実行前にカウント値を取得
 		//計測開始時間の初期化
 		isAttack = true;

@@ -71,7 +71,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Attack();
 
-	if (isHit) {
+	if (isEnemyHit) {
 		SetKnockBackCount();
 		Collision();
 	}

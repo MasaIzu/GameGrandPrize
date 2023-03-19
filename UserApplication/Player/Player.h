@@ -52,7 +52,7 @@ public:
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }
 
-	void SetIsHit(bool isHit_) { isHit = isHit_; }
+	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
 	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
@@ -72,7 +72,7 @@ private:
 	WorldTransform oldWorldTransform_;
 	WorldTransform playerAttackTransform_;
 
-	bool isHit = false;
+	bool isEnemyHit = false;
 
 	//インプット
 	Input* input_ = nullptr;

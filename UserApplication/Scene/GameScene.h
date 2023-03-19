@@ -97,7 +97,8 @@ private: // メンバ変数
 	//デバッグによる生成用
 	float newFishPosY = 0;
 
-	bool isHit = false;
+	bool isEnemyHit = false;
+	bool isAttackHit = false;
 
 	std::unique_ptr< ParticleManager> ParticleMan;
 

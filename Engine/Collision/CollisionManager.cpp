@@ -14,7 +14,8 @@ CollisionManager* CollisionManager::GetInstance()
 
 void CollisionManager::CheckAllCollisions()
 {
-	isHit = false;
+	isEnemyHit = false;
+	isAttackHit = false;
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -37,12 +38,12 @@ void CollisionManager::CheckAllCollisions()
 				if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						WorldPos = colB->GetWorldPos();
-						isHit = true;
+						isEnemyHit = true;
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_ENEMYS) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						isHit = true;
+						isAttackHit = true;
 					}
 				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {

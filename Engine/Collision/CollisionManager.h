@@ -36,7 +36,8 @@ public://メンバ関数
 	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, Matrix4* worldPos = nullptr);
 
 
-	bool GetIsHit() { return isHit; }
+	bool GetIsEnemyHit() { return isEnemyHit; }
+	bool GetIsAttackHit() { return isAttackHit; }
 	Matrix4 GetWorldPos() { return WorldPos; }
 
 private:
@@ -48,6 +49,7 @@ private:
 	//コライダーのリスト
 	std::forward_list<BaseCollider*> colliders;
 
-	bool isHit = false;
+	bool isEnemyHit = false;
+	bool isAttackHit = false;
 	Matrix4 WorldPos;
 };

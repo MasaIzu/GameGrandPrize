@@ -84,6 +84,8 @@ public:
 	Vector3 GetSwordCollisionCube1()const { return posSwordColCube1; }
 	Vector3 GetSwordCollisionCube2()const { return posSwordColCube2; }
 
+	Matrix4 GetFIshParentWorldPos() { return fishParent.pos.matWorld_; }
+
 private:
 	//フェーズごとの更新処理
 	void IdleUpdate();

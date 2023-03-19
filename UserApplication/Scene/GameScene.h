@@ -26,13 +26,13 @@
 #include <CollisionManager.h>
 
 /// <summary>
-/// ƒQ[ƒ€ƒV[ƒ“
+/// ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³
 /// </summary>
 class GameScene : public BaseScene {
 
-public: // ƒƒ“ƒoŠÖ”
+public: // ãƒ¡ãƒ³ãƒé–¢æ•°
 	/// <summary>
-	/// ƒRƒ“ƒXƒgƒNƒ‰ƒ^
+	/// ã‚³ãƒ³ã‚¹ãƒˆã‚¯ãƒ©ã‚¿
 	/// </summary>
 	GameScene();
 
@@ -40,70 +40,64 @@ public:
 
 
 	/// <summary>
-	/// ƒfƒXƒgƒ‰ƒNƒ^
+	/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	/// </summary>
 	~GameScene();
 
 	/// <summary>
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	/// </summary>
 	void Initialize() override;
 
 	/// <summary>
-	/// –ˆƒtƒŒ[ƒ€ˆ—
+	/// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‡¦ç†
 	/// </summary>
 	void Update() override;
 
 	/// <summary>
-	/// •`‰æ
+	/// æç”»
 	/// </summary>
 	void Draw() override;
 
-	// I—¹ˆ—
+	// çµ‚äº†å‡¦ç†
 	void Finalize() override;
 
 
-private: // ƒƒ“ƒo•Ï”
+private: // ãƒ¡ãƒ³ãƒå¤‰æ•°
 	WinApp* winApp_ = nullptr;
 	DirectXCore* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 
 
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³
 	ViewProjection viewProjection_;
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
-	//ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒ³ãƒ‰ãƒ«
 	uint32_t textureHandle_ = 0;
-	// 3Dƒ‚ƒfƒ‹
+	// 3Dãƒ¢ãƒ‡ãƒ«
 	std::unique_ptr<Model> model_;
 
 	std::unique_ptr<Player> player;
 	std::unique_ptr<GameCamera> gameCamera;
 
-	//“–‚½‚è”»’è
+	//å½“ãŸã‚Šåˆ¤å®š
 	CollisionManager* collisionManager = nullptr;
 
-	//ƒ{ƒbƒNƒX“–‚½‚è”»’è
+	//ãƒœãƒƒã‚¯ã‚¹å½“ãŸã‚Šåˆ¤å®š
 	std::unique_ptr <BoxCollision> boxCollision;
 
-	//ƒV[ƒ“ƒ}ƒl[ƒWƒƒ[
+	//ã‚·ãƒ¼ãƒ³ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼
 	SceneManager* sceneManager_ = nullptr;
 
-	//Fbxƒ‚ƒfƒ‹
+	//Fbxãƒ¢ãƒ‡ãƒ«
 	//std::unique_ptr<FbxModel> fbxmodel;
 
 	Boss boss;
-	//ƒfƒoƒbƒO‚É‚æ‚é¶¬—p
+	//ãƒ‡ãƒãƒƒã‚°ã«ã‚ˆã‚‹ç”Ÿæˆç”¨
 	float newFishPosY = 0;
 
 	bool isHit = false;
 
-	std::unique_ptr< ParticleManager> ParticleMan;
 
-
-	// 3Dƒ‚ƒfƒ‹
-	std::unique_ptr<Model> stageModel_;
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
-	WorldTransform stageWorldTransform_;
 };

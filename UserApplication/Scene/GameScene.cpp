@@ -89,13 +89,14 @@ void GameScene::Update() {
 
 	if (collisionManager->GetIsHit()) {
 		isHit = true;
+		player->SetEnemyPos(collisionManager->GetWorldPos());
 	}
 
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
 		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
 			player->GetWorldPosition(), player->GetRadius())) {
 
-			isHit = true;
+			//isHit = true;
 		}
 	}
 
@@ -123,7 +124,7 @@ void GameScene::Update() {
 	//	//追加
 	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 	//}
-	player->SetIsHit(isHit);
+
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
@@ -178,6 +179,7 @@ void GameScene::Draw() {
 	Model::PreDraw(commandList);
 
 	//model_->Draw(worldTransform_, viewProjection_);
+
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 

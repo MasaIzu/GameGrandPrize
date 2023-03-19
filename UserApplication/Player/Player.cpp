@@ -11,48 +11,76 @@ Player::Player()
 
 Player::~Player()
 {
+	delete easing_;
 }
 
 void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
-	//NULLƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN
+	//NULLãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯
 	assert(model);
 	playerModel_ = model;
 	oldPlayerModel_.reset(Model::CreateFromOBJ("UFO", true));
 
-	//ƒVƒ“ƒOƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	input_ = Input::GetInstance();
 
 	Window_Width = WindowWidth;
 	Window_Height = WindowHeight;
 
-	// ƒRƒŠƒWƒ‡ƒ“ƒ}ƒl[ƒWƒƒ‚É’Ç‰Á
+	easing_ = new Easing();
+
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒãƒãƒ¼ã‚¸ãƒ£ã«è¿½åŠ 
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
 
 	playerAvoidance = 6.0f;
 
+	for (int i = 0; i < SphereCount; i++) {
+		// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒãƒãƒ¼ã‚¸ãƒ£ã«è¿½åŠ 
+		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+	}
+
 	//worldTransform_.translation_ = { 0,0,-100 };
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
+	playerAttackTransform_.Initialize();
 
 	collider->Update(worldTransform_.matWorld_);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
 
+	worldTransform_.TransferMatrix();
+	oldWorldTransform_.TransferMatrix();
+	playerAttackTransform_.TransferMatrix();
+}
+
+
+void Player::Update(const ViewProjection& viewProjection) {
+
+	Move();
+
+	Attack();
+
+	if (isHit) {
+		SetKnockBackCount();
+	}
+
+	KnockBackUpdata();
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 
-	ParticleMan = std::make_unique<ParticleManager>();
-
-	ParticleMan->Initialize();
 }
 
 void Player::Move() {
 
-	Vector3 playerMovement = { 0,0,0 };
+	PlayerMoveMent = { 0,0,0 };
 	Avoidance = { 0,0,0 };
 	isPushLeft = false;
 	isPushRight = false;
@@ -68,41 +96,28 @@ void Player::Move() {
 		collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	}
 
-	Matrix4 cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
+	cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
 
 	Vector3 moveRot = cameraLook;
 
-	Vector3 move={0,0,0};
 
-	if (input_->PushKey(DIK_W)) {
-		playerMovement.z = -playerSpeed;
-		//cameraLook *= playerSpeed;
-
-		move += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
-		playerMovement.x = playerSpeed;
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		move -= moveRot * playerSpeed;
-		isPushLeft = true;
-	}
-	if (input_->PushKey(DIK_S)) {
-		playerMovement.z = playerSpeed;
-		//cameraLook *= playerSpeed;
 
-		move -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
-		playerMovement.x = -playerSpeed;
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		move += moveRot * playerSpeed;
+
 		isPushRight = true;
 	}
+
+	worldTransform_.translation_ += PlayerMoveMent;
 
 	if (spaceInput == false) {
 		if (input_->TriggerKey(DIK_SPACE)) {
@@ -127,13 +142,9 @@ void Player::Move() {
 		}
 	}
 
+	worldTransform_.SetRot({ 0,-MyMath::GetAngle(angle),0 });
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
-
-	playerMovement = MyMath::MatVector(CameraRot, playerMovement);
-	playerMovement.y = 0;
-	playerMovement.normalize();
-	playerMovement *= playerSpeed;
 
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
 	Avoidance.y = 0;
@@ -154,29 +165,81 @@ void Player::Move() {
 		worldTransform_.translation_ += move;
 	}
 
-	worldTransform_.matWorld_ *= CameraRot;
+	if (input_->MouseInputing(2)) {
+		oldWorldTransform_.translation_ = worldTransform_.look;
+	}
+
+
 }
 
+void Player::Attack() {
 
-void Player::Update(const ViewProjection& viewProjection) {
+	Vector3 moveRot = cameraLook;
 
-	Move();
-
-	if (input_->MouseInputTrigger(0)) {
-		Attack(Vector3(0,0,0),Vector3(5,5,5));
+	if (input_->MouseInputing(0)) {
+		//å®Ÿè¡Œå‰ã«ã‚«ã‚¦ãƒ³ãƒˆå€¤ã‚’å–å¾—
+		//è¨ˆæ¸¬é–‹å§‹æ™‚é–“ã®åˆæœŸåŒ–
+		isAttack = true;
+		startCount = 0;
+		nowCount = 0;
+		timeRate = 0;
+		startIndex = 1;
 	}
 
-	worldTransform_.TransferMatrix();
-	oldWorldTransform_.TransferMatrix();
+	if (isAttack == true) {
+		if (nowCount < maxTime * 4) {
+			nowCount++;
+		}
+		else {
+			isAttack = false;
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+			}
+		}
 
-	collider->Update(worldTransform_.matWorld_);
 
-	if (isHit)
-	{
-		Collision();
+
+		position = splinePosition(points, startIndex, timeRate);
+
+		playerAttackTransform_.translation_ = position;
+
+		float sphereX = position.x - GetWorldPosition().x;
+		float sphereY = position.y - GetWorldPosition().y;
+		float sphereZ = position.z - GetWorldPosition().z;
+
+
+		for (int i = 0; i < SphereCount; i++) {
+			colliderPos[i] = GetWorldPosition() + sphere * i;
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+			playerAttackTransformaaaa_[i].TransferMatrix();
+		}
+
 	}
 
-	ParticleMan->Update();
+}
+
+void Player::SetKnockBackCount()
+{
+	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) - MyMath::GetWorldTransform(EnemyPos);
+	KnockBack.normalize();
+	KnockBack.y = 0;
+	KnockBack = KnockBack * KnockBackDistance;
+
+	moveTime = 0;
+	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) + KnockBack;
+}
+
+void Player::KnockBackUpdata()
+{
+	if (moveTime < MaxMoveTime) {
+		moveTime++;
+		KnockBack += PlayerMoveMent;
+		worldTransform_.translation_ = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+	}
+
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -188,44 +251,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 		oldPlayerModel_->SetAlpha(alpha);
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
-
-}
-
-void Player::ParticleDraw(ViewProjection viewProjection_)
-{
-	ParticleMan->Draw(viewProjection_);
-}
-
-void Player::Attack(Vector3 start, Vector3 Finish) {
-
-	if (makeColliders == false) {
-		float sphereX = Finish.x - start.x;
-		float sphereY = Finish.y - start.y;
-		float sphereZ = Finish.z - start.z;
-
-		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
-
-
+	if (isAttack) {
 		for (int i = 0; i < SphereCount; i++) {
-			// ƒRƒŠƒWƒ‡ƒ“ƒ}ƒl[ƒWƒƒ‚É’Ç‰Á
-			AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
-			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-
-			colliderPos[i] = start + sphere * i;
-
-			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
-
-			AttackCollider[i]->Update(worldSpherePos[i]);
-			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ALLIES);
+			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
 		}
 	}
-	else {
-		for (int i = 0; i < SphereCount; i++) {
-			
-			AttackCollider[i]->Update(worldSpherePos[i]);
-		}
-	}
-
 }
 
 
@@ -251,9 +281,9 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 
 Vector3 Player::GetWorldPosition() {
 
-	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñˆÚ“®¬•ª‚ğæ“¾(ƒ[ƒ‹ƒhÀ•W)
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ç§»å‹•æˆåˆ†ã‚’å–å¾—(ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™)
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
@@ -261,26 +291,4 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-void Player::Collision()
-{
-	//ƒXƒy[ƒXƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç
-	for (int i = 0; i < 50; i++)
-	{
-		//Á‚¦‚é‚Ü‚Å‚ÌŠÔ
-		const float rnd_life = 380.0f;
-		//Å’áŒÀ‚Ìƒ‰ƒCƒt
-		const float constlife = 10;
-		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f +constlife;
-
-		//XYZ‚ÌL‚ª‚é‹——£
-		const float rnd_pos = 30.0f;
-		//Y•ûŒü‚É‚ÍÅ’áŒÀ‚Ì”ò‚Ô‹——£
-		const float constPosY = 15;
-		Vector3 pos{};
-		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;
-		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//’Ç‰Á
-		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.1, 0.1, {0,1,1,1}, {0,1,1,0});
-	}
-}
+<

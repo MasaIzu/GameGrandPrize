@@ -2,6 +2,7 @@
 #include <windef.h>
 #include "WinApp.h"
 #include "MyMath.h"
+#include"ImGuiManager.h"
 
 
 GameCamera::GameCamera(int window_width, int window_height)
@@ -38,6 +39,8 @@ GameCamera::GameCamera(int window_width, int window_height)
 	EnemyWorld_.Initialize();
 	EnemyWorld_.translation_ = Vector3(0, 0, 0);
 	EnemyWorld_.TransferMatrix();
+
+	cameraPos = { 5,5,5 };
 }
 
 GameCamera::~GameCamera()
@@ -216,6 +219,31 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		vTargetEye = shiftVec;
 	}
 
+	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
+
+	//‹——£
+	Vector3 dVec = vTargetEye - cameraPos;
+
+	dVec *= cameraDelay;
+
+	cameraPos += dVec * cameraSpeed_;
+
+	float distance = sqrt((vTargetEye.x - playerPos_.x) *(vTargetEye.x - playerPos_.x)
+		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
+		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
+
+	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
+		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
+		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
+
+	if (distance2 < 24.0f) {
+		float longX = vTargetEye.x - playerPos_.x;
+		float longY = vTargetEye.y - playerPos_.y;
+		float longZ = vTargetEye.z - playerPos_.z;
+	}
+
+	ImGui::Text("distance2 : %f", distance2);
+
 	if (isHit == true) {
 		isHit = false;
 		isShake = true;
@@ -266,4 +294,16 @@ Vector3 GameCamera::calculateLookAtPosition(Vector3 target, Vector3 camera) {
 	Vector3 direction = target - camera;
 	direction.norm();
 	return camera + direction;
+}
+
+void GameCamera::CameraAngle(float x, float z)
+{
+	angle = atan2(x, z);
+
+	if(angle < 0 ){
+		angle = angle + 2 * MyMath::PI;
+	}
+
+	angle = floor(angle * 360 / (2 * MyMath::PI));
+
 }

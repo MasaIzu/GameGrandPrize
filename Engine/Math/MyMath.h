@@ -49,4 +49,6 @@ namespace MyMath {
 	Matrix4 Matrix4Orthographic(
 		float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ);
 
+	float GetAngle(float angle);
+
 };

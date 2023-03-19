@@ -52,6 +52,11 @@ void WorldTransform::TransferMatrix() {
 	matWorld_ *= matScale;//ワールド行列にスケーリングを反映
 	matWorld_ *= matRot;//ワールド行列に回転を反映
 	matWorld_ *= matTrans;//ワールド行列に平行移動を反映
+	
+	look = GetLook(matRot, Vector3(-1,0,0));
+	lookBack = GetLook(matRot, Vector3(1, 0, 0));
+	lookRight = GetLook(matRot, Vector3(0, 0, 1));
+	lookLeft = GetLook(matRot, Vector3(0, 0, -1));
 
 	//親オブジェクトがあれば
 	if (parent_) {
@@ -95,5 +100,13 @@ void WorldTransform::MoveQuater(const Quaternion& move)
 Quaternion& WorldTransform::GetQuaternion()
 {
 	return quaternion;
+}
+
+Vector3 WorldTransform::GetLook(Matrix4 matRot,Vector3 at)
+{
+	Vector3 Pos = MyMath::GetWorldTransform(matWorld_);
+	Vector3 look_ = MyMath::MatVector(matRot, at);
+
+	return Pos + look_;
 }
 

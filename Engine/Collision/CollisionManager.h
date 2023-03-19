@@ -37,6 +37,7 @@ public://ƒƒ“ƒoŠÖ”
 
 
 	bool GetIsHit() { return isHit; }
+	Matrix4 GetWorldPos() { return WorldPos; }
 
 private:
 	CollisionManager() = default;
@@ -48,5 +49,5 @@ private:
 	std::forward_list<BaseCollider*> colliders;
 
 	bool isHit = false;
-
+	Matrix4 WorldPos;
 };

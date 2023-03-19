@@ -30,7 +30,10 @@ struct WorldTransform {
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
 	//その物体の向いている方向
-	Vector3 look = { 0,0,1 };
+	Vector3 look = { 0,0,0 };
+	Vector3 lookBack = { 0,0,0 };
+	Vector3 lookRight = { 0,0,0 };
+	Vector3 lookLeft = { 0,0,0 };
 	// 親となるワールド変換へのポインタ
 	const WorldTransform* parent_ = nullptr;
 
@@ -61,5 +64,5 @@ struct WorldTransform {
 	
 	Quaternion& GetQuaternion();
 	
-
+	Vector3 GetLook(Matrix4 matRot,Vector3 at);
 };

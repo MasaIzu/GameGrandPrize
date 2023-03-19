@@ -75,6 +75,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 		SetKnockBackCount();
 		Collision();
 	}
+	if (isAttackHit)
+	{
+		AttackCollision();
+	}
 	KnockBackUpdate();
 
 	ParticleMan->Update();
@@ -202,6 +206,7 @@ void Player::Attack() {
 		nowCount = 0;
 		timeRate = 0;
 		startIndex = 1;
+		AttackCollision();
 	}
 
 	if (isAttack == true) {
@@ -374,6 +379,30 @@ void Player::Collision()
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
 		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.1, 0.1, { 0,1,1,1 }, { 0,1,1,0 });
+	}
+}
+
+void Player::AttackCollision()
+{
+	//スペースキーを押していたら
+	for (int i = 0; i < 10; i++)
+	{
+		//消えるまでの時間
+		const float rnd_life = 50.0f;
+		//最低限のライフ
+		const float constlife = 10;
+		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + constlife;
+
+		//XYZの広がる距離
+		const float rnd_pos = 200.0f;
+		//Y方向には最低限の飛ぶ距離
+		const float constPosY = 15;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->InAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
 	}
 }
 

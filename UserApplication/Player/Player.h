@@ -66,6 +66,12 @@ private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
 
 	void Collision();
+	
+
+	/// <summary>
+	/// 攻撃が当たった時のプレイヤーの処理
+	/// </summary>
+	void AttackCollision();
 
 private:
 

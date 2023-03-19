@@ -90,7 +90,7 @@ private:
 	Matrix4 worldSpherePos[SphereCount];
 	bool makeColliders = false;
 
-	Vector3 move;
+	Vector3 AvoidanceMove;
 
 	WorldTransform playerAttackTransformaaaa_[SphereCount];
 

@@ -130,7 +130,7 @@ void Player::Move() {
 		isPushRight = true;
 	}
 
-	worldTransform_.translation_ += PlayerMoveMent;
+	//worldTransform_.translation_ += PlayerMoveMent;
 
 	if (spaceInput == false) {
 		if (input_->TriggerKey(DIK_SPACE)) {
@@ -165,18 +165,22 @@ void Player::Move() {
 	Avoidance *= playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
-	worldTransform_.translation_ += Avoidance;
-	move += Avoidance;
+	//worldTransform_.translation_ += Avoidance;
+	AvoidanceMove += Avoidance;
+
+	Vector3 allMove = PlayerMoveMent + AvoidanceMove;
+
+	AvoidanceMove = {0,0,0};
 
 	float AR;
 	float BR;
 
-	AR = pow((worldTransform_.translation_.x + move.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + move.z) - 0, 2);
+	AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
 	BR = pow((50 - worldTransform_.scale_.x * 2), 2);
 
 	if (AR <= BR)
 	{
-		worldTransform_.translation_ += move;
+		worldTransform_.translation_ += allMove;
 	}
 
 	if (input_->MouseInputing(2)) {
@@ -289,7 +293,18 @@ void Player::KnockBackUpdate()
 	if (moveTime < MaxMoveTime) {
 		moveTime++;
 		KnockBack += PlayerMoveMent;
-		worldTransform_.translation_ = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+		Vector3 KnockBackMove= easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+
+		float AR;
+		float BR;
+
+		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
+		BR = pow((50 - worldTransform_.scale_.x * 2), 2);
+
+		if (AR <= BR)
+		{
+			worldTransform_.translation_ = KnockBackMove;
+		}
 	}
 
 }

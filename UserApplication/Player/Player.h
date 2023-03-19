@@ -53,11 +53,14 @@ public:
 	bool GetSpaceInput() { return spaceInput; }
 
 	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
+	void SetIsAttackHit(bool isHit_) { isAttackHit = isHit_; }
 	void SetCameraRot(Matrix4 camera) { CameraRot = camera; }
 	void SetCameraRot(Vector3 camera) { Rot = camera; }
 	void SetCameraLook(Vector3 camera) { cameraLook = camera; }
 	void SetAngle(float angle_) { angle = angle_; }
 	void SetEnemyPos(Matrix4 enemyPos) { EnemyPos = enemyPos; }
+
+	void SetParticlePos(Matrix4 ParticlePos_) { ParticlePos = ParticlePos_; }
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
@@ -73,7 +76,7 @@ private:
 	WorldTransform playerAttackTransform_;
 
 	bool isEnemyHit = false;
-
+	bool isAttackHit = false;
 	//インプット
 	Input* input_ = nullptr;
 
@@ -102,6 +105,8 @@ private:
 	Vector3 PlayerMoveMent;
 	Vector3 cameraLook;
 
+	Matrix4 ParticlePos;
+
 	int timer = 0;
 	float alpha = 0.0f;
 
@@ -124,7 +129,7 @@ private:
 	float angle = 0.0f;
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
-	float KnockBackDistance = 10.0f;
+	float KnockBackDistance = 20.0f;
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ

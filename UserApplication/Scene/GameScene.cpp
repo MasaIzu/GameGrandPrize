@@ -86,13 +86,11 @@ void GameScene::Update() {
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}*/
+	isAttackHit = false;
 
 	if (collisionManager->GetIsEnemyHit()) {
 		isEnemyHit = true;
-		player->SetEnemyPos(collisionManager->GetWorldPos());
-	}
-	if (collisionManager->GetIsAttackHit()) {
-		isAttackHit = true;
+		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 	}
 
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
@@ -100,9 +98,15 @@ void GameScene::Update() {
 			player->GetWorldPosition(), player->GetRadius())) {
 
 			isEnemyHit = true;
-			player->SetEnemyPos(boss.GetFIshParentWorldPos());
+			player->SetEnemyPos(boss.GetSwordWorldPos());
 		}
 	}
+
+	if (collisionManager->GetIsAttackHit()) {
+		isAttackHit = true;
+		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
+	}
+
 
 
 	boss.Update(player->GetWorldPosition());
@@ -123,13 +127,14 @@ void GameScene::Update() {
 	//}
 
 	player->SetIsEnemyHit(isEnemyHit);
+	player->SetIsAttackHit(isAttackHit);
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
 
 
-	gameCamera->SetIsHit(isEnemyHit);
+	gameCamera->SetIsHit(isAttackHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});

@@ -38,7 +38,8 @@ public://ƒƒ“ƒoŠÖ”
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
 	bool GetIsAttackHit() { return isAttackHit; }
-	Matrix4 GetWorldPos() { return WorldPos; }
+	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
+	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
 private:
 	CollisionManager() = default;
@@ -51,5 +52,6 @@ private:
 
 	bool isEnemyHit = false;
 	bool isAttackHit = false;
-	Matrix4 WorldPos;
+	Matrix4 EnemyWorldPos;
+	Matrix4 HitWorldPos;
 };

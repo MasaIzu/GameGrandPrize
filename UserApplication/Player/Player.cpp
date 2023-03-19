@@ -206,7 +206,6 @@ void Player::Attack() {
 		nowCount = 0;
 		timeRate = 0;
 		startIndex = 1;
-		AttackCollision();
 	}
 
 	if (isAttack == true) {

@@ -15,12 +15,12 @@ Player::~Player()
 }
 
 void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
-	//NULLƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN
+	//NULLãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯
 	assert(model);
 	playerModel_ = model;
 	oldPlayerModel_.reset(Model::CreateFromOBJ("UFO", true));
 
-	//ƒVƒ“ƒOƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽæ“¾‚·‚é
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	input_ = Input::GetInstance();
 
 	Window_Width = WindowWidth;
@@ -28,21 +28,21 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	easing_ = new Easing();
 
-	// ƒRƒŠƒWƒ‡ƒ“ƒ}ƒl[ƒWƒƒ‚É’Ç‰Á
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒžãƒãƒ¼ã‚¸ãƒ£ã«è¿½åŠ 
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
 
 	playerAvoidance = 6.0f;
 
 	for (int i = 0; i < SphereCount; i++) {
-		// ƒRƒŠƒWƒ‡ƒ“ƒ}ƒl[ƒWƒƒ‚É’Ç‰Á
+		// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒžãƒãƒ¼ã‚¸ãƒ£ã«è¿½åŠ 
 		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 	}
 
 	//worldTransform_.translation_ = { 0,0,-100 };
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 	oldWorldTransform_.Initialize();
 	playerAttackTransform_.Initialize();
@@ -75,9 +75,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
-	playerAttackTransform_.TransferMatrix();
 
-	collider->Update(worldTransform_.matWorld_);
 }
 
 void Player::Move() {
@@ -103,26 +101,19 @@ void Player::Move() {
 	Vector3 moveRot = cameraLook;
 
 
-
-	if (input_->PushKey(DIK_W)) {
-		PlayerMoveMent += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		PlayerMoveMent -= moveRot * playerSpeed;
-		isPushLeft = true;
-	}
-	if (input_->PushKey(DIK_S)) {
-		PlayerMoveMent -= cameraLook * playerSpeed;
+
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		PlayerMoveMent += moveRot * playerSpeed;
+
 		isPushRight = true;
 	}
 
@@ -161,7 +152,18 @@ void Player::Move() {
 	Avoidance *= playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
-	worldTransform_.translation_ += Avoidance;
+	move += Avoidance;
+
+	float AR;
+	float BR;
+
+	AR = pow((worldTransform_.translation_.x + move.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + move.z) - 0, 2);
+	BR = pow((50 - worldTransform_.scale_.x * 2), 2);
+
+	if (AR <= BR)
+	{
+		worldTransform_.translation_ += move;
+	}
 
 	if (input_->MouseInputing(2)) {
 		oldWorldTransform_.translation_ = worldTransform_.look;
@@ -175,8 +177,8 @@ void Player::Attack() {
 	Vector3 moveRot = cameraLook;
 
 	if (input_->MouseInputing(0)) {
-		//ŽÀs‘O‚ÉƒJƒEƒ“ƒg’l‚ðŽæ“¾
-		//Œv‘ªŠJŽnŽžŠÔ‚Ì‰Šú‰»
+		//å®Ÿè¡Œå‰ã«ã‚«ã‚¦ãƒ³ãƒˆå€¤ã‚’å–å¾—
+		//è¨ˆæ¸¬é–‹å§‹æ™‚é–“ã®åˆæœŸåŒ–
 		isAttack = true;
 		startCount = 0;
 		nowCount = 0;
@@ -195,44 +197,7 @@ void Player::Attack() {
 			}
 		}
 
-		//•âŠÔ‚ÅŽg‚¤ƒf[ƒ^
-		//start ¨ end ‚ð’m‚ç‚ñ•b‚ÅŠ®—¹‚³‚¹‚é
-		Vector3 p0(worldTransform_.lookRight);									//ƒXƒ^[ƒg’n“_
-		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//§Œä“_‚»‚Ì1
-		Vector3 p2(worldTransform_.look);										//§Œä“_‚»‚Ì2
-		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//§Œä“_‚»‚Ì3
-		Vector3 p4(worldTransform_.lookLeft);									//ƒS[ƒ‹’n“_
 
-		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
-		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
-		p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
-		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
-		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
-
-
-		points = { p0,p0,p1,p2,p3,p4,p4 };
-
-		// —Ž‰º
-		// ƒXƒ^[ƒg’n“_        Fstart
-		// ƒGƒ“ƒh’n“_        @Fend
-		// Œo‰ßŽžŠÔ            FelapsedTime [s]
-		// ˆÚ“®Š®—¹‚Ì—¦(Œo‰ßŽžŠÔ/‘S‘ÌŽžŠÔ) : timeRate (%)
-		elapsedTime = nowCount - startCount;
-		timeRate = elapsedTime / maxTime;
-
-		if (timeRate >= 1.0f)
-		{
-			if (startIndex < points.size() - 3)
-			{
-				startIndex += 1.0f;
-				timeRate -= 1.0f;
-				startCount = nowCount;
-			}
-			else
-			{
-				timeRate = 1.0f;
-			}
-		}
 
 		position = splinePosition(points, startIndex, timeRate);
 
@@ -242,7 +207,6 @@ void Player::Attack() {
 		float sphereY = position.y - GetWorldPosition().y;
 		float sphereZ = position.z - GetWorldPosition().z;
 
-		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
 
 		for (int i = 0; i < SphereCount; i++) {
 			colliderPos[i] = GetWorldPosition() + sphere * i;
@@ -317,9 +281,9 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 
 Vector3 Player::GetWorldPosition() {
 
-	//ƒ[ƒ‹ƒhÀ•W‚ð“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñˆÚ“®¬•ª‚ðŽæ“¾(ƒ[ƒ‹ƒhÀ•W)
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ç§»å‹•æˆåˆ†ã‚’å–å¾—(ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™)
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
@@ -327,24 +291,4 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
-{
-	// •âŠ®‚·‚×‚«“_‚Ì”
-	size_t n = points.size() - 2;
-
-	if (startIndex > n)return points[n]; // Pn‚Ì’l‚ð•Ô‚·
-	if (startIndex < 1)return points[1]; // P1‚Ì’l‚ð•Ô‚·
-
-	// p0`p3‚Ì§Œä“_‚ðŽæ“¾‚·‚é@¦@p1`p2‚ð•âŠ®‚·‚é
-	Vector3 p0 = points[startIndex - 1];
-	Vector3 p1 = points[startIndex];
-	Vector3 p2 = points[startIndex + 1];
-	Vector3 p3 = points[startIndex + 2];
-
-	// Catmull - Rom‚ÌŽ®‚É‚æ‚é•âŠÔ
-	Vector3 position = 0.5 * (2 * p1 + (-p0 + p2) * t
-		+ (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t
-		+ (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
-
-	return position;
-}
+<

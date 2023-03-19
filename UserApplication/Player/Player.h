@@ -10,8 +10,7 @@
 #include "BaseCollider.h"
 
 #include "Vector4.h"
-#include <SphereCollider.h>
-#include <Easing.h>
+
 
 class Player {
 
@@ -20,17 +19,17 @@ public:
 	~Player();
 
 	/// <summary>
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	/// <summary>
 	void Initialize(Model* model, float WindowWidth, float WindowHeight);
 
 	/// <summary>
-	/// XV
+	/// æ›´æ–°
 	/// <summary>
 	void Move();
 
 	/// <summary>
-	/// XV
+	/// æ›´æ–°
 	/// <summary>
 	void Update(const ViewProjection& viewProjection);
 
@@ -38,11 +37,11 @@ public:
 	void KnockBackUpdata();
 
 	/// <summary>
-	/// •`‰æ
+	/// æç”»
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void Attack();
+
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -60,20 +59,24 @@ public:
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
 
+	void SetIsHit(bool isHit) { this->isHit = isHit; }
+
+	void Collision();
+
 private:
 
 	Easing* easing_;
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
 	WorldTransform oldWorldTransform_;
 	WorldTransform playerAttackTransform_;
 
 	bool isHit = false;
 
-	//ƒCƒ“ƒvƒbƒg
+	//ã‚¤ãƒ³ãƒ—ãƒƒãƒˆ
 	Input* input_ = nullptr;
 
-	// ƒRƒ‰ƒCƒ_[
+	// ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 	BaseCollider* collider = nullptr;
 
 	static const int SphereCount = 20;
@@ -86,7 +89,7 @@ private:
 
 	WorldTransform playerAttackTransformaaaa_[SphereCount];
 
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model* playerModel_ = nullptr;
 	std::unique_ptr<Model> oldPlayerModel_;
 
@@ -104,7 +107,7 @@ private:
 	int MaxMoveTime = 60;
 
 	float x = 0;
-	float radius = 2.0f;//“–‚½‚è”»’è”¼Œa
+	float radius = 2.0f;//å½“ãŸã‚Šåˆ¤å®šåŠå¾„
 	float Window_Width;
 	float Window_Height;
 	float playerSpeed = 0.01f;
@@ -116,36 +119,4 @@ private:
 	bool isPushBack = false;
 	bool spaceInput = false;
 
-	float angle = 0.0f;
-	Matrix4 cameraLookmat;
-	Vector3 KnockBack;
-	float KnockBackDistance = 10.0f;
-	///UŒ‚‚Ég‚¤•Ï”
-
-	//ŠÔŒvZ‚É•K—v‚Èƒf[ƒ^
-	int startCount = 0;
-	int nowCount = 0;
-	int elapsedCount_ = 0;
-
-	int elapsedTime = 0;
-
-	//•âŠÔ‚Åg‚¤ƒf[ƒ^
-	//start ¨ end ‚ğ5•b‚ÅŠ®—¹‚³‚¹‚é
-	Vector3 p0;			//ƒXƒ^[ƒg’n“_
-	Vector3 p1;	//§Œä“_‚»‚Ì1
-	Vector3 p2;	//§Œä“_‚»‚Ì2
-	Vector3 p3;		//ƒS[ƒ‹’n“_
-
-	std::vector<Vector3>points;
-
-	float maxTime = 0.1f * 60;				//‘S‘ÌŠÔ[s]
-	float timeRate;						//‰½“ŠÔ‚ªi‚ñ‚¾‚©
-	//‹…‚ÌˆÊ’u
-	Vector3 position;
-	size_t startIndex = 1;
-
-	bool isAttack = false;
-
-	float attackDistanceX = 4.0f;
-	float attackDistanceZ = 10.0f;
 };

@@ -68,6 +68,16 @@ void GameScene::Initialize() {
 
 	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
 	ParticleMan->SetTextureHandle(tex);
+
+	stageWorldTransform_.Initialize();
+
+	stageModel_.reset(Model::CreateFromOBJ("stage", true));
+
+	stageWorldTransform_.scale_ = { 52,50,52 };
+
+	stageWorldTransform_.translation_ = Vector3(0, -2.1f, 0);
+
+	stageWorldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
@@ -101,22 +111,6 @@ void GameScene::Update() {
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-
-	//スペースキーを押していたら
-	for (int i = 0; i < 5; i++)
-	{
-		const float rnd_life = 290.0f;
-		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + 10;
-
-		//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-		const float rnd_pos = 30.0f;
-		Vector3 pos{};
-		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 200;
-		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//追加
-		ParticleMan->OutAdd(life, { 0,50,0 }, pos, 1, 1, { 1,0.75,0.5,0 }, { 1,1,1,1 });
-	}
 	////スペースキーを押していたら
 	//for (int i = 0; i < 50; i++)
 	//{
@@ -131,8 +125,6 @@ void GameScene::Update() {
 	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 	//}
 
-	//player->SetIsHit(isHit);
-	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
@@ -189,6 +181,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_);
 
 
+	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	model_->Draw(boss.swordTransform, viewProjection_);
 
@@ -207,7 +200,8 @@ void GameScene::Draw() {
 
 	ParticleManager::PreDraw(commandList);
 
-	ParticleMan->Draw(viewProjection_);
+	//ParticleMan->Draw(viewProjection_);
+	player->ParticleDraw(viewProjection_);
 
 	ParticleManager::PostDraw();
 

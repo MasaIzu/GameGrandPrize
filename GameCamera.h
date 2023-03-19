@@ -126,4 +126,15 @@ private:
 	int shakeTime = 0;
 
 	float angle = 0.0f;
+
+	//遅延カメラ
+	// カメラの現在の位置
+	Vector3 cameraPos;
+
+	// カメラの速度
+	float cameraSpeed_ = 3;
+
+	// カメラが追跡する際の遅延量
+	float cameraDelay = 0.1f;
+
 };

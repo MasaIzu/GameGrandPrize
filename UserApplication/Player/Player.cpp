@@ -11,6 +11,7 @@ Player::Player()
 
 Player::~Player()
 {
+	delete easing_;
 }
 
 void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
@@ -24,6 +25,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	Window_Width = WindowWidth;
 	Window_Height = WindowHeight;
+
+	easing_ = new Easing();
 
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
@@ -64,6 +67,11 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Attack();
 
+	if (isHit) {
+		SetKnockBackCount();
+	}
+
+	KnockBackUpdata();
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -74,7 +82,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 void Player::Move() {
 
-	Vector3 playerMovement = { 0,0,0 };
+	PlayerMoveMent = { 0,0,0 };
 	Avoidance = { 0,0,0 };
 	isPushLeft = false;
 	isPushRight = false;
@@ -97,34 +105,28 @@ void Player::Move() {
 
 
 	if (input_->PushKey(DIK_W)) {
-		playerMovement.z = -playerSpeed;
-		//cameraLook *= playerSpeed;
-
-		worldTransform_.translation_ += cameraLook * playerSpeed;
+		PlayerMoveMent += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
-		playerMovement.x = playerSpeed;
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		worldTransform_.translation_ -= moveRot * playerSpeed;
+		PlayerMoveMent -= moveRot * playerSpeed;
 		isPushLeft = true;
 	}
 	if (input_->PushKey(DIK_S)) {
-		playerMovement.z = playerSpeed;
-		//cameraLook *= playerSpeed;
-
-		worldTransform_.translation_ -= cameraLook * playerSpeed;
+		PlayerMoveMent -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
-		playerMovement.x = -playerSpeed;
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-		worldTransform_.translation_ += moveRot * playerSpeed;
+		PlayerMoveMent += moveRot * playerSpeed;
 		isPushRight = true;
 	}
+
+	worldTransform_.translation_ += PlayerMoveMent;
 
 	if (spaceInput == false) {
 		if (input_->TriggerKey(DIK_SPACE)) {
@@ -152,11 +154,6 @@ void Player::Move() {
 	worldTransform_.SetRot({ 0,-MyMath::GetAngle(angle),0 });
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
-
-	playerMovement = MyMath::MatVector(CameraRot, playerMovement);
-	playerMovement.y = 0;
-	playerMovement.normalize();
-	playerMovement *= playerSpeed;
 
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
 	Avoidance.y = 0;
@@ -200,11 +197,11 @@ void Player::Attack() {
 
 		//補間で使うデータ
 		//start → end を知らん秒で完了させる
-		Vector3 p0(worldTransform_.lookRight);			//スタート地点
+		Vector3 p0(worldTransform_.lookRight);									//スタート地点
 		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
 		Vector3 p2(worldTransform_.look);										//制御点その2
 		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
-		Vector3 p4(worldTransform_.lookLeft);		//ゴール地点
+		Vector3 p4(worldTransform_.lookLeft);									//ゴール地点
 
 		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
 		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
@@ -212,16 +209,12 @@ void Player::Attack() {
 		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
 		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
 
-		//p0 = p0 * attackDistance;
-		//p1 = p1 * attackDistance;
-		//p2 = p2 * attackDistance;
-		//p3 = p3 * attackDistance;
 
 		points = { p0,p0,p1,p2,p3,p4,p4 };
 
 		// 落下
 		// スタート地点        ：start
-		// エンド地点        ：end
+		// エンド地点        　：end
 		// 経過時間            ：elapsedTime [s]
 		// 移動完了の率(経過時間/全体時間) : timeRate (%)
 		elapsedTime = nowCount - startCount;
@@ -260,6 +253,27 @@ void Player::Attack() {
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
 
+	}
+
+}
+
+void Player::SetKnockBackCount()
+{
+	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) - MyMath::GetWorldTransform(EnemyPos);
+	KnockBack.normalize();
+	KnockBack.y = 0;
+	KnockBack = KnockBack * KnockBackDistance;
+
+	moveTime = 0;
+	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) + KnockBack;
+}
+
+void Player::KnockBackUpdata()
+{
+	if (moveTime < MaxMoveTime) {
+		moveTime++;
+		KnockBack += PlayerMoveMent;
+		worldTransform_.translation_ = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 	}
 
 }

@@ -25,6 +25,7 @@ public:
 
 	inline unsigned short GetAttribute() { return attribute; }
 
+	inline Matrix4 GetWorldPos() { return worldPos_; }
 
 	/// <summary>
 	/// 当たり判定属性をセット
@@ -55,5 +56,8 @@ protected:
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;
 	// 当たり判定属性
 	unsigned short attribute = 0b1111111111111111;
+
+	//位置
+	Matrix4 worldPos_;
 };
 

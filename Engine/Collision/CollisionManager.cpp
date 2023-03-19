@@ -36,6 +36,7 @@ void CollisionManager::CheckAllCollisions()
 				Vector4 inter;
 				if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						WorldPos = colB->GetWorldPos();
 						isHit = true;
 					}
 				}

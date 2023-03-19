@@ -38,6 +38,8 @@ GameCamera::GameCamera(int window_width, int window_height)
 	EnemyWorld_.Initialize();
 	EnemyWorld_.translation_ = Vector3(0, 0, 0);
 	EnemyWorld_.TransferMatrix();
+
+	cameraPos = { 5,5,5 };
 }
 
 GameCamera::~GameCamera()
@@ -218,6 +220,12 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
 
+	//‹——£
+	/*Vector3 dVec = vTargetEye - cameraPos;
+
+	dVec *= cameraDelay;
+
+	cameraPos += dVec * cameraSpeed_;*/
 
 	if (isHit == true) {
 		isHit = false;
@@ -227,7 +235,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	}
 
 	if (isShake == true) {
-		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
+		//vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
 	}
 }
 

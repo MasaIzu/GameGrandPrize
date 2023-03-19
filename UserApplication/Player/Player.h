@@ -8,9 +8,10 @@
 #include "Sprite.h"
 #include <list>
 #include "BaseCollider.h"
-
+#include <SphereCollider.h>
 #include "Vector4.h"
-
+#include <Easing.h>
+#include"ParticleManager.h"
 
 class Player {
 
@@ -33,15 +34,17 @@ public:
 	/// <summary>
 	void Update(const ViewProjection& viewProjection);
 
+	void Attack();
+
 	void SetKnockBackCount();
-	void KnockBackUpdata();
+	void KnockBackUpdate();
 
 	/// <summary>
 	/// 描画
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-
+	void ParticleDraw(ViewProjection viewProjection_);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -58,8 +61,6 @@ public:
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
-
-	void SetIsHit(bool isHit) { this->isHit = isHit; }
 
 	void Collision();
 
@@ -86,6 +87,7 @@ private:
 	Matrix4 worldSpherePos[SphereCount];
 	bool makeColliders = false;
 
+	Vector3 move;
 
 	WorldTransform playerAttackTransformaaaa_[SphereCount];
 
@@ -119,4 +121,38 @@ private:
 	bool isPushBack = false;
 	bool spaceInput = false;
 
+	float angle = 0.0f;
+	Matrix4 cameraLookmat;
+	Vector3 KnockBack;
+	float KnockBackDistance = 10.0f;
+	///攻撃に使う変数
+
+	//時間計算に必要なデータ
+	int startCount = 0;
+	int nowCount = 0;
+	int elapsedCount_ = 0;
+
+	int elapsedTime = 0;
+
+	//補間で使うデータ
+	//start → end を5秒で完了させる
+	Vector3 p0;			//スタート地点
+	Vector3 p1;	//制御点その1
+	Vector3 p2;	//制御点その2
+	Vector3 p3;		//ゴール地点
+
+	std::vector<Vector3>points;
+
+	float maxTime = 0.1f * 60;				//全体時間[s]
+	float timeRate;						//何％時間が進んだか
+	//球の位置
+	Vector3 position;
+	size_t startIndex = 1;
+
+	bool isAttack = false;
+
+	float attackDistanceX = 4.0f;
+	float attackDistanceZ = 10.0f;
+
+	std::unique_ptr<ParticleManager> ParticleMan;
 };

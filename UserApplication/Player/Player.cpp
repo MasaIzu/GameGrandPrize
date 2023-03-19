@@ -58,6 +58,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 	playerAttackTransform_.TransferMatrix();
+
+	ParticleMan = std::make_unique<ParticleManager>();
+
+	ParticleMan->Initialize();
 }
 
 
@@ -69,13 +73,17 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	if (isHit) {
 		SetKnockBackCount();
+		Collision();
 	}
+	KnockBackUpdate();
 
-	KnockBackUpdata();
+	ParticleMan->Update();
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
+	playerAttackTransform_.TransferMatrix();
 
+	collider->Update(worldTransform_.matWorld_);
 }
 
 void Player::Move() {
@@ -100,20 +108,25 @@ void Player::Move() {
 
 	Vector3 moveRot = cameraLook;
 
-
+	if (input_->PushKey(DIK_W)) {
+		PlayerMoveMent += cameraLook * playerSpeed;
 	}
 	if (input_->PushKey(DIK_A)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-
+		PlayerMoveMent -= moveRot * playerSpeed;
+		isPushLeft = true;
+	}
+	if (input_->PushKey(DIK_S)) {
+		PlayerMoveMent -= cameraLook * playerSpeed;
 		isPushBack = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
 		moveRot.y = 0;
 		moveRot.norm();
-
+		PlayerMoveMent += moveRot * playerSpeed;
 		isPushRight = true;
 	}
 
@@ -152,6 +165,7 @@ void Player::Move() {
 	Avoidance *= playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
+	worldTransform_.translation_ += Avoidance;
 	move += Avoidance;
 
 	float AR;
@@ -197,7 +211,44 @@ void Player::Attack() {
 			}
 		}
 
+		//補間で使うデータ
+		//start → end を知らん秒で完了させる
+		Vector3 p0(worldTransform_.lookRight);									//スタート地点
+		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
+		Vector3 p2(worldTransform_.look);										//制御点その2
+		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
+		Vector3 p4(worldTransform_.lookLeft);									//ゴール地点
 
+		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
+		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
+		p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
+		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
+		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
+
+
+		points = { p0,p0,p1,p2,p3,p4,p4 };
+
+		// 落下
+		// スタート地点        ：start
+		// エンド地点        　：end
+		// 経過時間            ：elapsedTime [s]
+		// 移動完了の率(経過時間/全体時間) : timeRate (%)
+		elapsedTime = nowCount - startCount;
+		timeRate = elapsedTime / maxTime;
+
+		if (timeRate >= 1.0f)
+		{
+			if (startIndex < points.size() - 3)
+			{
+				startIndex += 1.0f;
+				timeRate -= 1.0f;
+				startCount = nowCount;
+			}
+			else
+			{
+				timeRate = 1.0f;
+			}
+		}
 
 		position = splinePosition(points, startIndex, timeRate);
 
@@ -207,6 +258,7 @@ void Player::Attack() {
 		float sphereY = position.y - GetWorldPosition().y;
 		float sphereZ = position.z - GetWorldPosition().z;
 
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
 
 		for (int i = 0; i < SphereCount; i++) {
 			colliderPos[i] = GetWorldPosition() + sphere * i;
@@ -232,7 +284,7 @@ void Player::SetKnockBackCount()
 	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) + KnockBack;
 }
 
-void Player::KnockBackUpdata()
+void Player::KnockBackUpdate()
 {
 	if (moveTime < MaxMoveTime) {
 		moveTime++;
@@ -258,6 +310,13 @@ void Player::Draw(ViewProjection viewProjection_) {
 	}
 }
 
+void Player::ParticleDraw(ViewProjection viewProjection_)
+{
+
+	ParticleMan->Draw(viewProjection_);
+
+}
+
 
 Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 
@@ -279,6 +338,30 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 	return result;
 }
 
+void Player::Collision()
+{
+	//スペースキーを押していたら
+	for (int i = 0; i < 50; i++)
+	{
+		//消えるまでの時間
+		const float rnd_life = 380.0f;
+		//最低限のライフ
+		const float constlife = 10;
+		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + constlife;
+
+		//XYZの広がる距離
+		const float rnd_pos = 30.0f;
+		//Y方向には最低限の飛ぶ距離
+		const float constPosY = 15;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.1, 0.1, { 0,1,1,1 }, { 0,1,1,0 });
+	}
+}
+
 Vector3 Player::GetWorldPosition() {
 
 	//ワールド座標を入れる変数
@@ -291,4 +374,24 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-<
+Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
+{
+	// 補完すべき点の数
+	size_t n = points.size() - 2;
+
+	if (startIndex > n)return points[n]; // Pnの値を返す
+	if (startIndex < 1)return points[1]; // P1の値を返す
+
+	// p0～p3の制御点を取得する　※　p1～p2を補完する
+	Vector3 p0 = points[startIndex - 1];
+	Vector3 p1 = points[startIndex];
+	Vector3 p2 = points[startIndex + 1];
+	Vector3 p3 = points[startIndex + 2];
+
+	// Catmull - Romの式による補間
+	Vector3 position = 0.5 * (2 * p1 + (-p0 + p2) * t
+		+ (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t
+		+ (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
+
+	return position;
+}

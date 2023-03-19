@@ -99,5 +99,11 @@ private: // メンバ変数
 
 	bool isHit = false;
 
+	std::unique_ptr< ParticleManager> ParticleMan;
 
+
+	// 3Dモデル
+	std::unique_ptr<Model> stageModel_;
+	//ワールド変換データ
+	WorldTransform stageWorldTransform_;
 };

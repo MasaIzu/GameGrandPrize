@@ -96,17 +96,10 @@ void GameScene::Update() {
 		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
 			player->GetWorldPosition(), player->GetRadius())) {
 
-			//isHit = true;
+			isHit = true;
 		}
 	}
 
-
-	ImGui::Begin("Phase");
-
-	ImGui::Text("ParticleListSize:%d", ParticleMan->GetParticlesListSize());
-
-
-	ImGui::End();
 
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
@@ -125,6 +118,8 @@ void GameScene::Update() {
 	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
 	//}
 
+	player->SetIsHit(isHit);
+	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 	player->Update(viewProjection_);
@@ -158,7 +153,7 @@ void GameScene::Update() {
 	viewProjection_.eye = gameCamera->GetEye();
 	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
 	viewProjection_.UpdateMatrix();
-	ParticleMan->Update();
+	//ParticleMan->Update();
 
 
 }

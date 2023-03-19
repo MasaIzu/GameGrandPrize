@@ -236,7 +236,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
 		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
 
-	if (distance2 < 23.5f) {
+	if (distance2 < 24.0f) {
 		float longX = vTargetEye.x - playerPos_.x;
 		float longY = vTargetEye.y - playerPos_.y;
 		float longZ = vTargetEye.z - playerPos_.z;
@@ -252,7 +252,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	}
 
 	if (isShake == true) {
-		//vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
+		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
 	}
 }
 

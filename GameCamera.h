@@ -35,7 +35,7 @@ private:
 
 public://ゲッターセッター
 
-	Vector3 GetEye() { return cameraPos; }
+	Vector3 GetEye() { return vTargetEye; }
 	Vector3 GetUp() { return vUp; }
 	Vector3 GetTarget() { return target; }
 	Matrix4 GetCameraRot() { return this->CameraRot; }

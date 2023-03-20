@@ -164,7 +164,6 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
-
 }
 
 void GameScene::Draw() {

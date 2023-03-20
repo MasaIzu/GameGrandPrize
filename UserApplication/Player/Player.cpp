@@ -83,6 +83,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ParticleMan->Update();
 
+	//worldTransform_.translation_ = { 5,0,20 };
+
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 	playerAttackTransform_.TransferMatrix();
@@ -180,7 +182,7 @@ void Player::Move() {
 	float BR;
 
 	AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
-	BR = pow((50 - worldTransform_.scale_.x * 2), 2);
+	BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
 
 	if (AR <= BR)
 	{
@@ -303,7 +305,7 @@ void Player::KnockBackUpdate()
 		float BR;
 
 		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
-		BR = pow((50 - worldTransform_.scale_.x * 2), 2);
+		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
 
 		if (AR <= BR)
 		{

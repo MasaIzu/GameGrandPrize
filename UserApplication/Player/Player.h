@@ -165,5 +165,7 @@ private:
 	float attackDistanceX = 4.0f;
 	float attackDistanceZ = 10.0f;
 
+	const int satgeSize = 200;
+
 	std::unique_ptr<ParticleManager> ParticleMan;
 };

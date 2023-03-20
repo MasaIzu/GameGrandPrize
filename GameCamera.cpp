@@ -77,6 +77,8 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 
 void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
+	oldCameraPos = vTargetEye;
+
 	if (spaceInput == true) {
 		cameraTime = 0;
 	}
@@ -219,7 +221,18 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		vTargetEye = shiftVec;
 	}
 
+	if (input_->PushKey(DIK_UP)) {
+		cameraDis += 0.1f;
+	}
+	if (input_->PushKey(DIK_DOWN)) {
+		cameraDis -= 0.1f;
+	}
+
 	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
+
+	Vector3 olpos = vTargetEye - oldCameraPos;
+
+	//cameraPos += olpos;
 
 	//‹——£
 	Vector3 dVec = vTargetEye - cameraPos;
@@ -232,17 +245,22 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
 		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
 
+
+	Vector3 player_camera = playerPos_ - vTargetEye;
+
+	//cameraPos.normalize();
+
+	//cameraPos = cameraPos * cameraDis;
+
+
 	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
 		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
 		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
 
-	if (distance2 < 24.0f) {
-		float longX = vTargetEye.x - playerPos_.x;
-		float longY = vTargetEye.y - playerPos_.y;
-		float longZ = vTargetEye.z - playerPos_.z;
-	}
-
-	//ImGui::Text("distance2 : %f", distance2);
+	//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
+	//ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
+	ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
+	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
 
 	if (isHit == true) {
 		isHit = false;

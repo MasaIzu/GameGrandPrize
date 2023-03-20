@@ -134,7 +134,7 @@ void GameScene::Update() {
 	player->Update(viewProjection_);
 
 
-	gameCamera->SetIsHit(isAttackHit);
+	gameCamera->SetIsHit(isEnemyHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});

@@ -37,6 +37,9 @@ struct WorldTransform {
 	// 親となるワールド変換へのポインタ
 	const WorldTransform* parent_ = nullptr;
 
+	//回転がオイラー角による回転か
+	bool isEuler = false;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>

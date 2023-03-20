@@ -71,6 +71,7 @@ void WorldTransform::TransferMatrix() {
 
 void WorldTransform::SetRot(const Vector3& rot)
 {
+	isEuler = true;
 	rotation_ = rot;
 
 	quaternion.SeTEuler(rotation_);

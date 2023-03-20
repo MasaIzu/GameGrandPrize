@@ -18,6 +18,9 @@ void Boss::Initialize()
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
 
+
+
+
 	if (!fishes.empty()) {
 		fishes.clear();
 	}
@@ -54,6 +57,34 @@ void Boss::Update(const Vector3& targetPos)
 {
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
+
+
+	//毎フレームの最初に魚を向かせる
+	Vector3 parentPos = fishParent.pos.translation_;
+	Vector3 direction = parentPos+ targetPos;
+	Vector3 frontVec{ 0.0f,0.0f,1.0f };
+	Vector3 crossFrontToDir = frontVec.cross(direction);
+	direction.normalize();
+	frontVec.normalize();
+	
+	float dirTheta = acos(frontVec.dot(direction));
+	crossFrontToDir.normalize();
+	Quaternion directionQ{ crossFrontToDir,dirTheta};
+	Vector3 axis =directionQ.GetEulerAngles();
+	//Quaternion axisQ = { axis.x,axis.y,axis.z,0 };
+//	axis = directionQ.multiply(axisQ.GetAxis());
+
+	static int a = 0;
+	a++;
+
+	ImGui::Text("directionAngle:%f,%f,%f",axis.x, axis.y, axis.z);
+	ImGui::Text("radian:%f",dirTheta);
+	ImGui::Text("degree:%f",dirTheta * 180.0f / PI);
+
+	//fishParent.pos.SetRot(axis);
+	fishParent.pos.SetQuater(directionQ);
+
+	
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -153,6 +184,8 @@ void Boss::Draw(ViewProjection viewProMat)
 		fishBodyModel->Draw(fishes[i].pos, viewProMat);
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
+
+	swordModel->Draw(fishParent.pos, viewProMat);
 
 }
 

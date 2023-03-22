@@ -21,6 +21,9 @@ public:
 	//更新
 	virtual void Update();
 
+	//ポストエフェクト
+	virtual void PostEffectDraw()=0;
+
 	//描画
 	virtual void Draw() = 0;
 

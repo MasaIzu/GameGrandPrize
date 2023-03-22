@@ -24,6 +24,8 @@ public: // ƒƒ“ƒoŠÖ”
 	/// </summary>
 	void Update() override;
 
+	void PostEffectDraw() override;
+
 	/// <summary>
 	/// •`‰æ
 	/// </summary>

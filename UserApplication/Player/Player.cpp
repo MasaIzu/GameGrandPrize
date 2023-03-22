@@ -362,13 +362,13 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 void Player::Collision()
 {
 	//スペースキーを押していたら
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		//消えるまでの時間
-		const float rnd_life = 380.0f;
+		const float rnd_life = 70.0f;
 		//最低限のライフ
 		const float constlife = 10;
-		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + constlife;
+		float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
 		//XYZの広がる距離
 		const float rnd_pos = 30.0f;
@@ -376,10 +376,10 @@ void Player::Collision()
 		const float constPosY = 15;
 		Vector3 pos{};
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 50;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.1, 0.1, { 0,1,1,1 }, { 0,1,1,0 });
+		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
 	}
 }
 

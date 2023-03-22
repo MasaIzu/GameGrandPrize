@@ -24,6 +24,11 @@ void MainGame::Update()
 	Framework::Update();
 }
 
+void MainGame::PostEffectDraw()
+{
+	sceneManager_->PostEffectDraw();
+}
+
 void MainGame::Draw()
 {
 	// ƒQ[ƒ€ƒV[ƒ“‚Ì•`‰æ

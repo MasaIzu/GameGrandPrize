@@ -15,6 +15,8 @@ public:
 	//XV
 	virtual void Update() = 0;
 
+	virtual void PostEffectDraw()=0;
+
 	//•`‰æ
 	virtual void Draw() = 0;
 

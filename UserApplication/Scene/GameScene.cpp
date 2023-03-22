@@ -7,6 +7,7 @@
 #include"ImGuiManager.h"
 #include <CollisionAttribute.h>
 #include "Collision.h"
+#include"PostEffect.h"
 
 GameScene::GameScene() {}
 
@@ -112,19 +113,19 @@ void GameScene::Update() {
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-	////スペースキーを押していたら
-	//for (int i = 0; i < 50; i++)
-	//{
+	//スペースキーを押していたら
+	for (int i = 0; i < 50; i++)
+	{
 
-	//	//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-	//	const float rnd_pos = 10.0f;
-	//	Vector3 pos{};
-	//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-	//	pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-	//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-	//	//追加
-	//	ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
-	//}
+		//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
+		const float rnd_pos = 10.0f;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
+	}
 
 	player->SetIsEnemyHit(isEnemyHit);
 	player->SetIsAttackHit(isAttackHit);
@@ -166,6 +167,21 @@ void GameScene::Update() {
 
 }
 
+void GameScene::PostEffectDraw()
+{
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	PostEffect::PreDrawScene(commandList);
+
+	ParticleManager::PreDraw(commandList);
+
+	player->ParticleDraw(viewProjection_);
+
+	ParticleManager::PostDraw();
+
+	PostEffect::PostDrawScene();
+}
+
 void GameScene::Draw() {
 
 	// コマンドリストの取得
@@ -201,13 +217,12 @@ void GameScene::Draw() {
 
 	FbxModel::PostDraw();
 
-	ParticleManager::PreDraw(commandList);
 
-	//ParticleMan->Draw(viewProjection_);
-	player->ParticleDraw(viewProjection_);
+#pragma endregion
 
-	ParticleManager::PostDraw();
+#pragma region ポストエフェクトの描画
 
+	PostEffect::Draw(commandList);
 
 #pragma endregion
 

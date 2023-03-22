@@ -61,30 +61,30 @@ void Boss::Update(const Vector3& targetPos)
 
 	//毎フレームの最初に魚を向かせる
 	Vector3 parentPos = fishParent.pos.translation_;
-	Vector3 direction = parentPos+ targetPos;
-	Vector3 frontVec{ 0.0f,0.0f,1.0f };
-	Vector3 crossFrontToDir = frontVec.cross(direction);
-	direction.normalize();
-	frontVec.normalize();
-	
-	float dirTheta = acos(frontVec.dot(direction));
-	crossFrontToDir.normalize();
-	Quaternion directionQ{ crossFrontToDir,dirTheta};
-	Vector3 axis =directionQ.GetEulerAngles();
-	//Quaternion axisQ = { axis.x,axis.y,axis.z,0 };
-//	axis = directionQ.multiply(axisQ.GetAxis());
+	Vector3 up{ 0.0f,1.0f,0.0f };
+	Vector3 vecX, vecY, vecZ;
+	vecZ = targetPos - parentPos;
+	vecZ.normalize();
+	vecX = up.cross(vecZ);
+	vecX.normalize();
+	vecY = vecZ.cross(vecX);
+	vecY.normalize();
+	Matrix4 dirMat{
+		vecX.x,vecX.y,vecX.z,0,
+		vecY.x,vecY.y,vecY.z,0,
+		vecZ.x,vecZ.y,vecZ.z,0,
+		0,0,0,1
+	};
+
+	fishParent.pos.SetMatRot(dirMat);
+
 
 	static int a = 0;
 	a++;
 
-	ImGui::Text("directionAngle:%f,%f,%f",axis.x, axis.y, axis.z);
-	ImGui::Text("radian:%f",dirTheta);
-	ImGui::Text("degree:%f",dirTheta * 180.0f / PI);
 
-	//fishParent.pos.SetRot(axis);
-	fishParent.pos.SetQuater(directionQ);
 
-	
+
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -337,7 +337,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			swordTransform.SetRot({ 0,0,0 });
 
 		}//攻撃開始の瞬間
-		else if (bossSwordPhase == BossSwordPhase::Move){
+		else if (bossSwordPhase == BossSwordPhase::Move) {
 			bossSwordPhase = BossSwordPhase::Attack;
 			nextPhaseInterval = swordAtkTime;
 			easeSwordPos.Start(swordAtkTime);
@@ -353,7 +353,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			bossSwordPhase = BossSwordPhase::Cooltime_Destroy;
 			nextPhaseInterval = moveDelay;
 		}
-		else if(bossSwordPhase == BossSwordPhase::Cooltime_Destroy){
+		else if (bossSwordPhase == BossSwordPhase::Cooltime_Destroy) {
 			//親子関係を戻す
 			for (int i = 0; i < fishes.size(); i++) {
 				if (fishes[i].pos.parent_ == nullptr) {
@@ -485,7 +485,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 		//崩壊モーション
 		else if (bossSwordPhase == BossSwordPhase::Destroy) {
 
-		//毎フレーム1匹ずつ動かす
+			//毎フレーム1匹ずつ動かす
 			int fishIndex = swordBreakTime - nextPhaseInterval;
 			if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
 			ImGui::Text("fishIndex:%d", fishIndex);
@@ -530,7 +530,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			swordTransform.scale_ = swordScale;
 
 		}
-	
+
 		//タイマー制御
 		nextPhaseInterval--;
 

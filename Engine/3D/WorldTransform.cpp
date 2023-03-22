@@ -38,13 +38,18 @@ void WorldTransform::Map() {
 
 void WorldTransform::TransferMatrix() {
 
-	Matrix4 matScale, matRot, matTrans;
+	Matrix4 matScale, matTrans;
 
 	//スケール、回転、平行移動行列の計算
 	matScale = MyMath::Scale(scale_);
-	matRot = MyMath::Initialize();
-	//matRot *= MyMath::Rotation(rotation_, 6);
-	matRot = quaternion.Rotate();
+	
+	//オイラー角で回転しているなら回転用のマトリックスを初期化
+	if (isEuler) {
+		matRot = MyMath::Initialize();
+		//matRot *= MyMath::Rotation(rotation_, 6);
+		matRot = quaternion.Rotate();
+	}
+
 	matTrans = MyMath::Translation(translation_);
 
 	//ワールド行列の合成
@@ -75,6 +80,13 @@ void WorldTransform::SetRot(const Vector3& rot)
 	rotation_ = rot;
 
 	quaternion.SeTEuler(rotation_);
+}
+
+void WorldTransform::SetMatRot(const Matrix4& mat)
+{
+	//オイラー角の回転フラグをfalseに
+	isEuler = false;
+	matRot = mat;
 }
 
 void WorldTransform::MoveRot(const Vector3& move)

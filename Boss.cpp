@@ -58,46 +58,21 @@ void Boss::Update(const Vector3& targetPos)
 	//第1形態の魚群の更新
 	ImGui::Begin("sword");
 
-
-	//毎フレームの最初に魚を向かせる
-	Vector3 parentPos = fishParent.pos.translation_;
-	Vector3 up{ 0.0f,1.0f,0.0f };
-	Vector3 vecX, vecY, vecZ;
-	vecZ = targetPos - parentPos;
-	vecZ.normalize();
-	vecX = up.cross(vecZ);
-	vecX.normalize();
-	vecY = vecZ.cross(vecX);
-	vecY.normalize();
-	Matrix4 dirMat{
-		vecX.x,vecX.y,vecX.z,0,
-		vecY.x,vecY.y,vecY.z,0,
-		vecZ.x,vecZ.y,vecZ.z,0,
-		0,0,0,1
-	};
-
-	fishParent.pos.SetMatRot(dirMat);
-
-
-	static int a = 0;
-	a++;
-
-
-
-
+	//狙う敵の座標更新
+	this->targetPos = targetPos;
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
-		IdleUpdate();
+		UpdateIdle();
 		break;
 	case BossFirstPhase::Atk_Sword:
-		AtkSwordUpdate(targetPos);
+		UpdateAtkSword();
 		break;
 	case BossFirstPhase::Atk_Rush:
-		AtkRushUpdate(targetPos);
+		UpdateAtkRush();
 		break;
 	case BossFirstPhase::BeginMotion:
-		BeginMotionUpdate();
+		UpdateBeginMotion();
 		break;
 	default:
 		break;
@@ -189,9 +164,10 @@ void Boss::Draw(ViewProjection viewProMat)
 
 }
 
-void Boss::IdleUpdate()
+void Boss::UpdateIdle()
 {
 	//魚群の中心(真ん中)の座標更新
+	FishDirectionUpdate();
 	fishParent.pos.TransferMatrix();
 
 	//魚1匹ずつの更新
@@ -255,12 +231,9 @@ void Boss::IdleUpdate()
 	//攻撃のクールタイムを減らす
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
-		int random = 0;
-
-
 
 		//50%で突進、残りで剣撃
-		if (static_cast<int>(Random(0.0f, 100.0f)) % 100 > 100) {
+		if (IsPercent(50)) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
@@ -273,7 +246,6 @@ void Boss::IdleUpdate()
 			//フェーズを移行
 			phase1 = BossFirstPhase::BeginMotion;
 			bossSwordPhase = BossSwordPhase::Start;
-			//ほんとは↑のフェーズは予備行動に移行だけどまだ完成しなさそうなのでいったん攻撃開始に即移る
 
 			//魚群の乱回転のためのランダムなベクトルを作成
 			for (int i = 0; i < fishes.size(); i++) {
@@ -290,7 +262,7 @@ void Boss::IdleUpdate()
 	}
 }
 
-void Boss::AtkSwordUpdate(const Vector3& targetPos)
+void Boss::UpdateAtkSword()
 {
 	//行動時間のフレームまとめ
 	const int swordCreateTime = 120;	//剣の生成時間
@@ -298,7 +270,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 	const int swordAtkTime = 150;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 	const int moveDelay = 60;			//補間のためのディレイ
-	float distancePtoSword = 90.0f;
+	float distancePtoSword = 90.0f;		//標的と剣の距離(スカラー)
 
 	ImGui::Text("SwordColCube1 : %f,%f,%f", posSwordColCube1.x, posSwordColCube1.y, posSwordColCube1.z);
 	ImGui::Text("SwordColCube2 : %f,%f,%f", posSwordColCube2.x, posSwordColCube2.y, posSwordColCube2.z);
@@ -312,9 +284,12 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 			swordTransform.scale_ = { 0,0,0 };
 			easeSwordScale.Start(swordCreateTime);
 			//剣の座標
-			swordPos.x = fishParent.pos.translation_.x + 30;
-			swordPos.y = fishParent.pos.translation_.y - 30;
-			swordPos.z = fishParent.pos.translation_.z;
+			swordPos.x = -30;
+			swordPos.y = -30;
+			//剣の座標を親のmatrixと掛け算
+			Matrix4 mat;
+			swordPos = mat.transform(swordPos, fishParent.pos.matWorld_);
+
 			//swordPos.x = fishParent.pos.translation_.x;
 			beforeScale = { 0.5f,0.5f,0.5f };
 			afterScale = { 0,0,0 };
@@ -565,7 +540,7 @@ void Boss::AtkSwordUpdate(const Vector3& targetPos)
 
 }
 
-void Boss::AtkRushUpdate(const Vector3& targetPos)
+void Boss::UpdateAtkRush()
 {
 	const int rushMaxTime = 60;		//突進攻撃の始点から終点までかかる時間
 	const int rushCoolTime = 30;	//次の突進攻撃までのクールタイム
@@ -645,6 +620,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 				for (int i = 0; i < fishes.size(); i++) {
 					fishes[i].pos.parent_ = &fishParent.pos;
 				}
+
 			}
 		}
 		else {
@@ -672,7 +648,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 	for (int i = 0; i < fishes.size(); i++) {
 		//��ԍŏ��̋��̋������n�܂�Ƃ��ɋ��ƕW�I�̋������狛�̔z�񏇔Ԃ�ύX����
 		if (easePFishToSword[0].GetTimeRate() == 0) {
-			SortFishMin(targetPos);
+			SortFishMin();
 		}
 
 
@@ -689,7 +665,7 @@ void Boss::AtkRushUpdate(const Vector3& targetPos)
 
 }
 
-void Boss::BeginMotionUpdate()
+void Boss::UpdateBeginMotion()
 {
 	//魚群の中心(真ん中)の座標更新
 	fishParent.pos.TransferMatrix();
@@ -786,7 +762,7 @@ void Boss::SwordColCubeUpdate()
 	posSwordColCube2 += swordTransform.translation_;*/
 }
 
-void Boss::SortFishMin(const Vector3& targetPos)
+void Boss::SortFishMin()
 {
 	Vector3 vecFishToTarget;
 	//�傫���𒲂ׂ�
@@ -812,6 +788,28 @@ void Boss::SortFishMin(const Vector3& targetPos)
 			}
 		}
 	}
+}
+
+void Boss::FishDirectionUpdate()
+{
+	//毎フレームの最初に魚を向かせる
+	Vector3 parentPos = fishParent.pos.translation_;
+	Vector3 up{ 0.0f,1.0f,0.0f };
+	Vector3 vecX, vecY, vecZ;
+	vecZ = targetPos - parentPos;
+	vecZ.normalize();
+	vecX = up.cross(vecZ);
+	vecX.normalize();
+	vecY = vecZ.cross(vecX);
+	vecY.normalize();
+	Matrix4 dirMat{
+		vecX.x,vecX.y,vecX.z,0,
+		vecY.x,vecY.y,vecY.z,0,
+		vecZ.x,vecZ.y,vecZ.z,0,
+		0,0,0,1
+	};
+
+	fishParent.pos.SetMatRot(dirMat);
 }
 
 
@@ -875,6 +873,11 @@ float LerpConbertInback(float t)
 float LerpConbertOut(float t)
 {
 	return 1 - pow(1 - t, 5);
+}
+
+bool IsPercent(float param)
+{
+	return Random(0.0f, 100.0f) < param;
 }
 
 

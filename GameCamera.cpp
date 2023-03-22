@@ -242,7 +242,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		float longZ = vTargetEye.z - playerPos_.z;
 	}
 
-	ImGui::Text("distance2 : %f", distance2);
+//	ImGui::Text("distance2 : %f", distance2);
 
 	if (isHit == true) {
 		isHit = false;

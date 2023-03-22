@@ -64,7 +64,7 @@ public:
 	void Draw(ViewProjection viewProMat);
 
 	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 10;	//次の攻撃までのクールタイム
+	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
 	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
 
 
@@ -88,20 +88,24 @@ public:
 
 private:
 	//フェーズごとの更新処理
-	void IdleUpdate();
+	void UpdateIdle();
 
-	void AtkSwordUpdate(const Vector3& targetPos);
+	void UpdateAtkSword();
 
-	void AtkRushUpdate(const Vector3& targetPos);
+	void UpdateAtkRush();
 
-	void BeginMotionUpdate();
+	void UpdateBeginMotion();
 
 	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 
 	void SwordColCubeUpdate();
 
-	void SortFishMin(const Vector3& targetPos);
+	void SortFishMin();
 	
+	void FishDirectionUpdate();
+	
+	Vector3 targetPos;
+
 	BossSwordPhase bossSwordPhase;
 
 	WorldTransform Transform;
@@ -183,3 +187,9 @@ float LerpConbertInback(float t);
 
 float LerpConbertOut(float t);
 
+/// <summary>
+/// 引数％の確率でtrueを返す関数
+/// </summary>
+/// <param name="param"></param>
+/// <returns>引数の確率でtrue</returns>
+bool IsPercent(float param = 100.0f);

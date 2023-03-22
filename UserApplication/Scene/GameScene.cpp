@@ -9,7 +9,6 @@
 #include "Collision.h"
 
 GameScene::GameScene() {}
-
 GameScene::~GameScene() {
 	model_.reset();
 }
@@ -142,11 +141,8 @@ void GameScene::Update() {
 	isEnemyHit = gameCamera->GetIsHit();
 
 	//	viewProjection_.eye = gameCamera->GetEye();
-	ImGui::Begin("Camera");
-	ImGui::SliderFloat("PosX", &viewProjection_.eye.x, -100.0f, 200.0f);
-	ImGui::SliderFloat("PosY", &viewProjection_.eye.y, -100.0f, 100.0f);
-	ImGui::SliderFloat("PosZ", &viewProjection_.eye.z, -100.0f, 200.0f);
-	ImGui::End();
+
+
 
 	Vector3 pWith(1, 1, 1);
 	Vector3 eWith(0.6f, 9, 1);

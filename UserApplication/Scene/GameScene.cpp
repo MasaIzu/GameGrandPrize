@@ -181,7 +181,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_);
 
 
-	stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	model_->Draw(boss.swordTransform, viewProjection_);
 

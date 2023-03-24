@@ -184,6 +184,8 @@ void Boss::UpdateIdle()
 		Vector3 pos;
 
 		pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+		pos.x = 100;
+		pos.z = 100;
 
 		Vector3 rotaVec;
 		Vector3 vec = { 0, 1, 0 };
@@ -233,7 +235,7 @@ void Boss::UpdateIdle()
 	if (nextPhaseInterval == 0) {
 
 		//50%で突進、残りで剣撃
-		if (IsPercent(50)) {
+		if (IsPercent(0)) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
@@ -429,17 +431,45 @@ void Boss::UpdateAtkSword()
 
 			ImGui::Text("now attack!");
 
+			Vector3 beforePos, afterPos;
+
+			//攻撃前と攻撃後ベクトルの基準となる軸
+			Vector3 axis(targetPos);
+		
+
+			Vector3 vecBossToTarget = fishParent.pos.translation_ - targetPos;
+			vecBossToTarget = { 1,1,1 };
+		
+			ImGui::Text("vecBoss2Target:%f,%f,%f", vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z);
+			axis = vecBossToTarget.cross({ 1,0,0 });
+			axis.normalize();
+			ImGui::Text("axis:%f,%f,%f", axis.x, axis.y, axis.z);
+			//回転軸のクォータニオン作成
+			Quaternion axisQ = { axis,PI / 3 };
+			Quaternion posQ = (vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z, 0);
+			beforePos =  axisQ.multiply(posQ.GetAxis());
+			axisQ = { axis, -PI / 3 };
+			afterPos = axisQ.multiply(posQ.GetAxis());
+
+			//beforePos.normalize();
+			beforePos *= distancePtoSword;
+			//afterPos.normalize();
+			afterPos *= distancePtoSword;
+
+
+			ImGui::Text("before:%f,%f,%f", beforePos.x, beforePos.y, beforePos.z);
+			ImGui::Text("after:%f,%f,%f", afterPos.x, afterPos.y, afterPos.z);
+
 			Vector3 rotaVec;
 			rotaVec.x = sin(PI / 3.0f);
 			rotaVec.z = cos(PI / 3.0f);
 			rotaVec.normalize();
 			rotaVec *= distancePtoSword;
 
-			//標的の座標と掛け算
-			Vector3 beforePos, afterPos;
-			beforePos = targetPos + rotaVec;
+			
+			/*beforePos = targetPos + rotaVec;
 			afterPos = beforePos;
-			afterPos.x = -afterPos.x;
+			afterPos.x = -afterPos.x;*/
 			//afterPos.z = -afterPos.z;
 
 			//イージング更新

@@ -18,6 +18,10 @@ void TitleScene::Update()
 	}
 }
 
+void TitleScene::PostEffectDraw()
+{
+}
+
 void TitleScene::Draw()
 {
 	sprite_->Draw({640,360},{1,1,1,1});

@@ -54,6 +54,8 @@ public:
 	/// </summary>
 	void Update() override;
 
+	void PostEffectDraw() override;
+
 	/// <summary>
 	/// 描画
 	/// </summary>

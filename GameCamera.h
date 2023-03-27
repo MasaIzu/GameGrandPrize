@@ -35,7 +35,7 @@ private:
 
 public://ゲッターセッター
 
-	Vector3 GetEye() { return vTargetEye; }
+	Vector3 GetEye();
 	Vector3 GetUp() { return vUp; }
 	Vector3 GetTarget() { return target; }
 	Matrix4 GetCameraRot() { return this->CameraRot; }
@@ -104,7 +104,9 @@ private:
 
 	float angleAroundPlayer; // プレイヤーの周りを回転する角度
 	Matrix4 CameraRot;
-	float playerCameraDistance = 5.0f;
+
+
+	float playerCameraDistance = 5.5f;
 
 	int cameraTime = 0;
 	int MaxCameraTime = 0;
@@ -137,4 +139,16 @@ private:
 	// カメラが追跡する際の遅延量
 	float cameraDelay = 0.1f;
 
+	float cameraDis = 30.2f;
+
+	Vector3 oldCameraPos;
+
+	Vector3 LatePlayerPos = { 0,0,0 };
+	float playerCameraDelay = 0.1f;
+	float playerCameraSpeed_ = 3;
+
+
+	Vector3 CameraTarget;
+	float TargetCameraDelay = 0.05f;
+	float TargetCameraSpeed_ = 1.0;
 };

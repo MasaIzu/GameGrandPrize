@@ -14,6 +14,8 @@ public: // ƒƒ“ƒoŠÖ”
 	void Finalize() override;
 	// XV
 	void Update() override;
+	//PostEffectDraw
+	void PostEffectDraw() override; 
 	// •`‰æ
 	void Draw() override;
 

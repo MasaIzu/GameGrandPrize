@@ -29,6 +29,11 @@ void SceneManager::Update()
 	scene_->Update();
 }
 
+void SceneManager::PostEffectDraw()
+{
+	scene_->PostEffectDraw();
+}
+
 void SceneManager::Draw()
 {
 	scene_->Draw();

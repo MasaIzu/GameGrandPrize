@@ -235,13 +235,17 @@ void Boss::UpdateIdle()
 	if (nextPhaseInterval == 0) {
 
 		//50%で突進、残りで剣撃
-		if (IsPercent(50)) {
+		//if (IsPercent(50)) {
+		if(moveFlag == 0){
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
 			phase1 = BossFirstPhase::Atk_Rush;
+
+			moveFlag = 1;
 		}
 		else {
+		moveFlag = 0;
 
 			//0になったらクールタイムを攻撃開始モーションの時間に設定
 			nextPhaseInterval = beginAttackDelay;
@@ -268,8 +272,8 @@ void Boss::UpdateAtkSword()
 {
 	//行動時間のフレームまとめ
 	const int swordCreateTime = 120;	//剣の生成時間
-	const int swordMoveTime = 45;		//剣の移動時間
-	const int swordAtkTime = 150;		//剣の攻撃時間
+	const int swordMoveTime = 120;		//剣の移動時間
+	const int swordAtkTime = 300;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 	const int moveDelay = 60;			//補間のためのディレイ
 	float distancePtoSword = 90.0f;		//標的と剣の距離(スカラー)
@@ -287,7 +291,7 @@ void Boss::UpdateAtkSword()
 			easeSwordScale.Start(swordCreateTime);
 			//剣の座標
 			swordPos.x = -30;
-			swordPos.y = -30;
+			swordPos.z = 30;
 			//剣の座標を親のmatrixと掛け算
 			Matrix4 mat;
 			swordPos = mat.transform(swordPos, fishParent.pos.matWorld_);
@@ -311,7 +315,7 @@ void Boss::UpdateAtkSword()
 			nextPhaseInterval = swordMoveTime;
 			easeSwordPos.Start(swordMoveTime);
 			swordTransform.translation_ = swordPos;
-			swordTransform.SetRot({ 0,0,0 });
+	//		swordTransform.SetRot({ 0,0,0 });
 
 		}//攻撃開始の瞬間
 		else if (bossSwordPhase == BossSwordPhase::Move) {
@@ -399,6 +403,7 @@ void Boss::UpdateAtkSword()
 
 			swordTransform.scale_ = swordScale;
 			swordTransform.translation_ = swordPos;
+			swordTransform.SetMatRot( CreateMatRot(fishParent.pos.translation_, targetPos));
 		}
 		//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
 		else if (bossSwordPhase == BossSwordPhase::Move) {
@@ -437,7 +442,19 @@ void Boss::UpdateAtkSword()
 			/*swordTransform.rotation_.z = easeSwordMove.GetTimeRate() * -(PI / 2.0f);
 			swordTransform.rotation_.x = easeSwordMove.GetTimeRate() * -(PI / 2.0f);*/
 
+			//魚親座標と標的のなす角
+			float angleTargetoFish;
+			angleTargetoFish = acos(targetPos.dot(fishParent.pos.translation_) / (targetPos.length() * fishParent.pos.translation_.length()));
+
+			ImGui::Text("nasukaku:%f", angleTargetoFish / PI * 180);
+			swordRotAngle = easeSwordPos.GetTimeRate() *(/* - (PI / 2.0f) +*/ angleTargetoFish);
+			ImGui::Text("rotAngle:%f", swordRotAngle / PI * 180);
+
+			Matrix4 fishMatRot = CreateMatRot(fishParent.pos.translation_, targetPos);
+
 			Vector3 rot = { easeSwordPos.GetTimeRate() * -(PI / 2.0f),0,easeSwordPos.GetTimeRate() * -(PI / 2.0f) };
+		rot =fishMatRot.transform( { PI / 2, 0, PI / 2 },fishMatRot);
+			//rot = swordTransform.matWorld_.transform( rot, CreateMatRot(fishParent.pos.translation_, targetPos));
 			swordTransform.SetRot(rot);
 
 			swordTransform.translation_ = pos;
@@ -516,10 +533,15 @@ void Boss::UpdateAtkSword()
 			ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
 
 			//ワールド行列から回転を借りてくる
-			rot = swordTransform.rotation_;
+			rot= swordTransform.rotation_;
 			//回転
-			rot.x = -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
-			swordTransform.SetRot(rot);
+			rot.x = swordRotAngle - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
+			//剣の回転にボスの向きの回転行列を掛ける
+		/*	rot = swordTransform.matWorld_.transform(rot, CreateMatRot(fishParent.pos.translation_,targetPos));
+			rot.x += -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
+
+
+			swordTransform.SetRot(rot);*/
 			swordTransform.translation_ = pos;
 		}
 		//崩壊モーション
@@ -943,6 +965,28 @@ float LerpConbertOut(float t)
 bool IsPercent(float param)
 {
 	return Random(0.0f, 100.0f) < param;
+}
+
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target)
+{
+	Vector3 matRotX, matRotY, matRotZ;
+	Vector3 up{ 0,1,0 };
+
+	matRotZ = target - pos;
+	matRotZ.normalize();
+	matRotX = up.cross(matRotZ);
+	matRotX.normalize();
+	matRotY = matRotZ.cross(matRotX);
+	matRotY.normalize();
+
+	Matrix4 matRot{
+				matRotX.x,matRotX.y,matRotX.z,0,
+				matRotY.x,matRotY.y,matRotY.z,0,
+				matRotZ.x,matRotZ.y,matRotZ.z,0,
+				0,0,0,1
+	};
+
+	return matRot;
 }
 
 

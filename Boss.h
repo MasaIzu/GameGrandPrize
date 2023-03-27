@@ -112,6 +112,7 @@ private:
 	Vector3 swordPos = {0,0,0 };
 	EasingData easeSwordPos;
 	EasingData easeSwordScale;
+	float swordRotAngle = 0;
 
 	const int moveFishMax = 120;
 
@@ -144,7 +145,7 @@ private:
 
 	Vector3 angleVec{ 0,0,0 };
 
-
+	int moveFlag = 0;
 };
 
 /// <summary>
@@ -193,3 +194,5 @@ float LerpConbertOut(float t);
 /// <param name="param"></param>
 /// <returns>à¯êîÇÃämó¶Ç≈true</returns>
 bool IsPercent(float param = 100.0f);
+
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

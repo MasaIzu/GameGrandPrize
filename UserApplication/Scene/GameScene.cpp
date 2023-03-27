@@ -183,8 +183,7 @@ void GameScene::Draw() {
 
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
-	model_->Draw(boss.swordTransform, viewProjection_);
-
+	
 	boss.Draw(viewProjection_);
 
 	player->Draw(viewProjection_);

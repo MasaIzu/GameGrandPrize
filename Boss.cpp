@@ -235,7 +235,7 @@ void Boss::UpdateIdle()
 	if (nextPhaseInterval == 0) {
 
 		//50%で突進、残りで剣撃
-		if (IsPercent(0)) {
+		if (IsPercent(50)) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
@@ -410,9 +410,26 @@ void Boss::UpdateAtkSword()
 			rotaVec.normalize();
 			rotaVec *= distancePtoSword;
 
+			Vector3 matRotX, matRotY, matRotZ;
+			Vector3 up{ 0,1,0 };
+			matRotZ = fishParent.pos.translation_ - targetPos;
+			matRotZ.normalize();
+			matRotX = up.cross(matRotZ);
+			matRotX.normalize();
+			matRotY = matRotZ.cross(matRotX);
+			matRotY.normalize();
+
+			Matrix4 matRot{
+				matRotX.x,matRotX.y,matRotX.z,0,
+				matRotY.x,matRotY.y,matRotY.z,0,
+				matRotZ.x,matRotZ.y,matRotZ.z,0,
+				0,0,0,1
+			};
+
+
 			//標的の座標と掛け算
 			Vector3 aftetVec;
-			aftetVec = targetPos + rotaVec;
+			aftetVec = matRot.transform(rotaVec, matRot) + targetPos;
 
 			easeSwordPos.Update();
 			Vector3 pos;
@@ -460,17 +477,35 @@ void Boss::UpdateAtkSword()
 			ImGui::Text("before:%f,%f,%f", beforePos.x, beforePos.y, beforePos.z);
 			ImGui::Text("after:%f,%f,%f", afterPos.x, afterPos.y, afterPos.z);
 
-			Vector3 rotaVec;
+			Vector3 rotaVec,rotaVecAfter;
 			rotaVec.x = sin(PI / 3.0f);
 			rotaVec.z = cos(PI / 3.0f);
 			rotaVec.normalize();
 			rotaVec *= distancePtoSword;
+			rotaVecAfter.x = -sin(PI / 3.0f);
+			rotaVecAfter.x = -cos(PI / 3.0f);
+			rotaVecAfter.normalize();
+			rotaVecAfter *= distancePtoSword;
 
+			Vector3 matRotX, matRotY, matRotZ;
+			Vector3 up{ 0,1,0 };
+			matRotZ = fishParent.pos.translation_ - targetPos;
+			matRotZ.normalize();
+			matRotX = up.cross(matRotZ);
+			matRotX.normalize();
+			matRotY = matRotZ.cross(matRotX);
+			matRotY.normalize();
+
+			Matrix4 matRot{
+				matRotX.x,matRotX.y,matRotX.z,0,
+				matRotY.x,matRotY.y,matRotY.z,0,
+				matRotZ.x,matRotZ.y,matRotZ.z,0,
+				0,0,0,1
+			};
+
+			beforePos = matRot.transform(rotaVec,matRot) + targetPos;
+			afterPos = matRot.transform(rotaVecAfter, matRot) + targetPos;
 			
-			/*beforePos = targetPos + rotaVec;
-			afterPos = beforePos;
-			afterPos.x = -afterPos.x;*/
-			//afterPos.z = -afterPos.z;
 
 			//イージング更新
 			easeSwordPos.Update();

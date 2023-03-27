@@ -4,15 +4,20 @@
 #include <assert.h>
 #include "affin.h"
 
+class TouchableObject;
+
 
 class Ground {
 
 public:
 
+	Ground();
+	~Ground();
+
 	/// <summary>
 	/// ‰Šú‰»
 	/// <summary>
-	void Initialize(Model* model);
+	void Initialize();
 
 	/// <summary>
 	/// XV
@@ -30,5 +35,8 @@ private:
 	WorldTransform worldTransform_;
 	//ƒ‚ƒfƒ‹
 	std::unique_ptr<Model> model_ = nullptr;
+
+	Model* modelGround = nullptr;
+	TouchableObject* objGround = nullptr;
 
 };

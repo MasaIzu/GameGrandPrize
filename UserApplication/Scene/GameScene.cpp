@@ -196,7 +196,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_);
 
 
-	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	
 	boss.Draw(viewProjection_);

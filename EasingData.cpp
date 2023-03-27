@@ -4,6 +4,9 @@
 
 void EasingData::Update()
 {
+
+
+
 	if (!isActive) {
 		//アクティブじゃないなら何もしない
 		return;

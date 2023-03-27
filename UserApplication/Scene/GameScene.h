@@ -24,6 +24,16 @@
 #include "GameCamera.h"
 #include"Boss.h"
 #include <CollisionManager.h>
+#include"MiniFish.h"
+
+enum class GamePhase {
+	GameTutorial,	//チュートリアル
+	GameMovie1,		//ムービー1(チュートリアル→ボス戦への遷移)
+	GameBoss1,		//ボス戦第一形態
+	GameMovie2,		//ムービー2(ボスの形態変化)
+	GameBoss2,		//ボス戦第二形態
+	GameMovie3,		//ムービー3(ボスが死ぬとき)
+};
 
 /// <summary>
 /// ゲームシーン
@@ -104,6 +114,11 @@ private: // メンバ変数
 
 	std::unique_ptr< ParticleManager> ParticleMan;
 
+	//小魚(チュートリアル用)
+	MiniFish minifishes[10];
+
+	float stageRadius = 50;
+	Vector3 stagePos{0,0,0};
 
 	// 3Dモデル
 	std::unique_ptr<Model> stageModel_;

@@ -51,6 +51,13 @@ void GameScene::Initialize() {
 		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
+	for (int i = 0; i < 10; i++) {
+		Vector3 pos;
+		pos = { Random(-stageRadius,  stageRadius), 0, Random(-stageRadius,  stageRadius)  };
+		pos += stagePos;
+		minifishes[i].Initialize(pos);
+	}
+
 	boss.fishParent.pos.translation_ = { 0,0,100 };
 	boss.Update({ 0,0,0 });
 
@@ -82,11 +89,23 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	if(ImGui::Button("break")) {
+		static int a = 0;
+		a++;
+	}
 	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}*/
 	isAttackHit = false;
+
+	//小魚の更新
+	for (int i = 0; i < 10; i++) {
+		minifishes[i].Update(stagePos, stageRadius);
+	}
+
+
+
 
 	if (collisionManager->GetIsEnemyHit()) {
 		isEnemyHit = true;
@@ -198,6 +217,11 @@ void GameScene::Draw() {
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
+	for (int i = 0; i < 10; i++) {
+		//minifishes[i].Draw(viewProjection_);
+		boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+		boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+	}
 	
 	boss.Draw(viewProjection_);
 

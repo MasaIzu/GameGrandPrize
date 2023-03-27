@@ -15,7 +15,7 @@ public:
 	void Start(float animationFrame);
 
 	//イージングが起こっているかどうか(進行割合が0より大きく1より小さい時)
-	bool GetActive() { return (timeRate < 1.0f && timeRate > 0); }
+	bool GetActive() { return (isActive && timeRate > 0.0f); }
 
 	float GetTimeRate()const { return timeRate; }
 

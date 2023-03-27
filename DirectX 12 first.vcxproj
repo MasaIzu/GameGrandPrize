@@ -325,6 +325,7 @@
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="PostEffect.h" />
+    <ClInclude Include="recovery.h" />
     <ClInclude Include="UserApplication\Enemy\Enemy.h" />
     <ClInclude Include="Engine\Framework\Framework.h" />
     <ClInclude Include="Engine\GameFunction\Input.h" />
@@ -375,6 +376,7 @@
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="recovery.cpp" />
     <ClCompile Include="UserApplication\Enemy\Enemy.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
     <ClCompile Include="Engine\GameFunction\Input.cpp" />

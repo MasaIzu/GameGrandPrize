@@ -62,6 +62,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	ParticleMan = std::make_unique<ParticleManager>();
 
 	ParticleMan->Initialize();
+
+	recovery = std::make_unique<Recovery>();
+
+	recovery->Initialize();
 }
 
 
@@ -90,6 +94,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
+
+	recovery->Update();
 }
 
 void Player::Move() {
@@ -329,13 +335,20 @@ void Player::Draw(ViewProjection viewProjection_) {
 			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
 		}
 	}
+
+	recovery->Draw(viewProjection_);
 }
 
 void Player::ParticleDraw(ViewProjection viewProjection_)
 {
-
 	ParticleMan->Draw(viewProjection_);
 
+	recovery->particleDraw(viewProjection_);
+}
+
+void Player::PostEffectDraw(ViewProjection viewProjection_)
+{
+	recovery->PostEffectDraw(viewProjection_);
 }
 
 
@@ -379,7 +392,7 @@ void Player::Collision()
 		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
+		ParticleMan->Add(ParticleManager::Type::Out,life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
 	}
 }
 
@@ -403,7 +416,7 @@ void Player::AttackCollision()
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->InAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
+		ParticleMan->Add(ParticleManager::Type::In,life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
 	}
 }
 

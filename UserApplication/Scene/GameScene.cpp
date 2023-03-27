@@ -64,11 +64,6 @@ void GameScene::Initialize() {
 
 
 	model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
-	ParticleMan = std::make_unique<ParticleManager>();
-	ParticleMan->Initialize();
-
-	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
-	ParticleMan->SetTextureHandle(tex);
 
 	stageWorldTransform_.Initialize();
 
@@ -112,20 +107,6 @@ void GameScene::Update() {
 
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
-
-	//スペースキーを押していたら
-	for (int i = 0; i < 50; i++)
-	{
-
-		//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-		const float rnd_pos = 10.0f;
-		Vector3 pos{};
-		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//追加
-		ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
-	}
 
 	player->SetIsEnemyHit(isEnemyHit);
 	player->SetIsAttackHit(isAttackHit);
@@ -179,6 +160,13 @@ void GameScene::PostEffectDraw()
 
 	ParticleManager::PostDraw();
 
+	Model::PreDraw(commandList);
+
+	player->PostEffectDraw(viewProjection_);
+
+	Model::PostDraw();
+
+
 	PostEffect::PostDrawScene();
 }
 
@@ -207,6 +195,8 @@ void GameScene::Draw() {
 	boss.Draw(viewProjection_);
 
 	player->Draw(viewProjection_);
+
+	
 
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();

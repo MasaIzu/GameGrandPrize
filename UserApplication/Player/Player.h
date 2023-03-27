@@ -12,6 +12,7 @@
 #include "Vector4.h"
 #include <Easing.h>
 #include"ParticleManager.h"
+#include"recovery.h"
 
 class Player {
 
@@ -45,6 +46,8 @@ public:
 	void Draw(ViewProjection viewProjection_);
 
 	void ParticleDraw(ViewProjection viewProjection_);
+
+	void PostEffectDraw(ViewProjection viewProjection_);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -168,4 +171,6 @@ private:
 	const int satgeSize = 200;
 
 	std::unique_ptr<ParticleManager> ParticleMan;
+
+	std::unique_ptr<Recovery> recovery;
 };

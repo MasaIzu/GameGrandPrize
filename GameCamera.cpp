@@ -15,7 +15,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	winWidth = window_width;
 	winHeight = window_height;
 
-	// ‰æ–ÊƒTƒCƒY‚É‘Î‚·‚é‘Š‘Î“I‚ÈƒXƒP[ƒ‹‚É’²®
+	// ç”»é¢ã‚µã‚¤ã‚ºã«å¯¾ã™ã‚‹ç›¸å¯¾çš„ãªã‚¹ã‚±ãƒ¼ãƒ«ã«èª¿æ•´
 	scaleX_ = 1.0f / (float)window_width;
 	scaleY_ = 1.0f / (float)window_height;
 
@@ -28,7 +28,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	oldMousePos = mousePos;
 	mousePos = input_->GetMousePos();
 
-	// ’Ç‰Á‰ñ“]•ª‚Ì‰ñ“]s—ñ‚ğ¶¬
+	// è¿½åŠ å›è»¢åˆ†ã®å›è»¢è¡Œåˆ—ã‚’ç”Ÿæˆ
 	Matrix4 matRotNew;
 	matRotNew.rotateX(-angleX);
 	matRotNew.rotateY(-angleY);
@@ -73,6 +73,18 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 		}*/
 		PlaySceneCamera(viewProjection_);
 	}
+	else {
+		ImGui::Begin("camera");
+		ImGui::SliderFloat("eye:x",&vTargetEye.x,-100.0f,100.0f);
+		ImGui::SliderFloat("eye:y",&vTargetEye.y,-100.0f,700.0f);
+		ImGui::SliderFloat("eye:z",&vTargetEye.z,-100.0f,100.0f);
+
+		ImGui::SliderFloat("target:x", &target.x, -100.0f, 100.0f);
+		ImGui::SliderFloat("target:y", &target.y, -100.0f, 100.0f);
+		ImGui::SliderFloat("target:z", &target.z, -100.0f, 100.0f);
+
+		ImGui::End();
+	}
 }
 
 void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
@@ -93,44 +105,44 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		isShake = false;
 	}
 
-	//ƒJƒƒ‰‚Ì‰ñ“]ƒxƒNƒgƒ‹
+	//ã‚«ãƒ¡ãƒ©ã®å›è»¢ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 rotat = { 0, 0, 0 };
-	//ƒJƒƒ‰‚ÌˆÚ“®‚Ì‘¬‚³
+	//ã‚«ãƒ¡ãƒ©ã®ç§»å‹•ã®é€Ÿã•
 	const float cameraSpeed = 0.0005f;
 
 	Vector2 windowWH = Vector2(winWidth / 2, winHeight / 2);
 	POINT mousePosition;
-	//ƒ}ƒEƒXÀ•W(ƒXƒNƒŠ[ƒ“À•W)‚ğæ“¾‚·‚é
+	//ãƒã‚¦ã‚¹åº§æ¨™(ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™)ã‚’å–å¾—ã™ã‚‹
 	GetCursorPos(&mousePosition);
 
-	//ƒNƒ‰ƒCƒAƒ“ƒgƒGƒŠƒAÀ•W‚É•ÏŠ·‚·‚é
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¨ãƒªã‚¢åº§æ¨™ã«å¤‰æ›ã™ã‚‹
 	HWND hwnd = WinApp::GetInstance()->Gethwnd();
 	ScreenToClient(hwnd, &mousePosition);
 
 	int xPos_absolute, yPos_absolute;
 
-	int xPos = windowWH.x;  //ˆÚ“®‚³‚¹‚½‚¢‚˜À•WiƒEƒBƒ“ƒhƒE“à‚Ì‘Š‘ÎÀ•Wj
-	int yPos = windowWH.y; //ˆÚ“®‚³‚¹‚½‚¢‚™À•WiƒEƒBƒ“ƒhƒE“à‚Ì‘Š‘ÎÀ•Wj
+	int xPos = windowWH.x;  //ç§»å‹•ã•ã›ãŸã„ï½˜åº§æ¨™ï¼ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã®ç›¸å¯¾åº§æ¨™ï¼‰
+	int yPos = windowWH.y; //ç§»å‹•ã•ã›ãŸã„ï½™åº§æ¨™ï¼ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã®ç›¸å¯¾åº§æ¨™ï¼‰
 
 	WINDOWINFO windowInfo;
-	//ƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ğæ“¾
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã‚’å–å¾—
 	windowInfo.cbSize = sizeof(WINDOWINFO);
 	GetWindowInfo(hwnd, &windowInfo);
 
-	//ƒ}ƒEƒX‚ÌˆÚ“®æ‚Ìâ‘ÎÀ•Wiƒ‚ƒjƒ^[¶ã‚©‚ç‚ÌÀ•Wj
-	xPos_absolute = xPos + windowInfo.rcWindow.left + 8;//‚È‚ñ‚©‚¸‚ê‚Ä‚é‚©‚ç’¼‚·
-	yPos_absolute = yPos + windowInfo.rcWindow.top + 31; //ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹ƒo[‚Ì•ªi31pxj‚ğƒvƒ‰ƒX
-	SetCursorPos(xPos_absolute, yPos_absolute);//ˆÚ“®‚³‚¹‚é
+	//ãƒã‚¦ã‚¹ã®ç§»å‹•å…ˆã®çµ¶å¯¾åº§æ¨™ï¼ˆãƒ¢ãƒ‹ã‚¿ãƒ¼å·¦ä¸Šã‹ã‚‰ã®åº§æ¨™ï¼‰
+	xPos_absolute = xPos + windowInfo.rcWindow.left + 8;//ãªã‚“ã‹ãšã‚Œã¦ã‚‹ã‹ã‚‰ç›´ã™
+	yPos_absolute = yPos + windowInfo.rcWindow.top + 31; //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®åˆ†ï¼ˆ31pxï¼‰ã‚’ãƒ—ãƒ©ã‚¹
+	SetCursorPos(xPos_absolute, yPos_absolute);//ç§»å‹•ã•ã›ã‚‹
 
-	//ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ğæ“¾
+	//ãƒã‚¦ã‚¹ã®ç§»å‹•é‡ã‚’å–å¾—
 	MouseMove = Vector2(0, 0);
-	MouseMove = (Vector2(mousePosition.y, mousePosition.x) - Vector2(windowWH.y, windowWH.x));//À•W²‚Å‰ñ“]‚µ‚Ä‚¢‚éŠÖŒW‚Å‚±‚¤‚È‚é(X‚ÆY‚ª“ü‚ê‘Ö‚¦)
+	MouseMove = (Vector2(mousePosition.y, mousePosition.x) - Vector2(windowWH.y, windowWH.x));//åº§æ¨™è»¸ã§å›è»¢ã—ã¦ã„ã‚‹é–¢ä¿‚ã§ã“ã†ãªã‚‹(Xã¨YãŒå…¥ã‚Œæ›¿ãˆ)
 
 	if (input_->PushKey(DIK_LSHIFT) == 0) {
 		mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
 	}
 
-	//ƒJƒƒ‰§ŒÀ
+	//ã‚«ãƒ¡ãƒ©åˆ¶é™
 	if (mouseMoved.x < -0.80f) {
 		mouseMoved.x = -0.80f;
 	}
@@ -151,9 +163,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 
 
-	//ƒ[ƒ‹ƒh‘O•ûƒxƒNƒgƒ‹
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å‰æ–¹ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 forward(0, 0, playerCameraDistance);
-	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ğ”½‰f
+	//ãƒ¬ãƒ¼ãƒ«ã‚«ãƒ¡ãƒ©ã®å›è»¢ã‚’åæ˜ 
 	forward = MyMath::MatVector(CameraRot, forward);
 
 	target = easing_->InOutVec3(target, playerPos_, cameraTime, MaxCameraTime);
@@ -163,7 +175,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	if (input_->PushKey(DIK_LSHIFT)) {
 
-		//if (input_->TriggerKey(DIK_F)) {	//ƒJƒƒ‰‚Ìƒ‚[ƒhØ‚è‘Ö‚¦
+		//if (input_->TriggerKey(DIK_F)) {	//ã‚«ãƒ¡ãƒ©ã®ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ
 		//	if (cameraMode_ == 0) {
 		//		cameraMode_ = 1;
 		//	}
@@ -175,22 +187,22 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		//	}
 		//}
 
-		//ƒJƒƒ‰‚Ì’‹“_i‰¼j
+		//ã‚«ãƒ¡ãƒ©ã®æ³¨è¦–ç‚¹ï¼ˆä»®ï¼‰
 		target = EnemyPos_;
 
-		//ƒJƒƒ‰‚ÌˆÊ’u
+		//ã‚«ãƒ¡ãƒ©ã®ä½ç½®
 		Vector3 eyeVec = playerPos_ - EnemyPos_;
 
 		Vector3 eyePos = eyeVec;
 
 		float mag = 1.0f;
-		float eyeLen = std::sqrt(eyePos.x * eyePos.x + eyePos.y * eyePos.y + eyePos.z * eyePos.z);	//ƒxƒNƒgƒ‹‚Ì’·‚³
+		float eyeLen = std::sqrt(eyePos.x * eyePos.x + eyePos.y * eyePos.y + eyePos.z * eyePos.z);	//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•
 
-		if (eyeLen > 1.0f) {	//‚à‚µ·•ª‚ÌƒxƒNƒgƒ‹‚ª’PˆÊƒxƒNƒgƒ‹‚æ‚è‘å‚«‚©‚Á‚½‚ç
-			mag = 1.0f / eyeLen; //ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ1‚É‚·‚é
+		if (eyeLen > 1.0f) {	//ã‚‚ã—å·®åˆ†ã®ãƒ™ã‚¯ãƒˆãƒ«ãŒå˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã‚ˆã‚Šå¤§ãã‹ã£ãŸã‚‰
+			mag = 1.0f / eyeLen; //ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’1ã«ã™ã‚‹
 		};
 
-		eyePos.x *= mag;	//mag‚ğ‚©‚¯‚é‚Æ³‹K‰»‚³‚ê‚é
+		eyePos.x *= mag;	//magã‚’ã‹ã‘ã‚‹ã¨æ­£è¦åŒ–ã•ã‚Œã‚‹
 		eyePos.y *= mag;
 		eyePos.z *= mag;
 
@@ -210,13 +222,13 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		cameraHeight_ = easing_->InOut(3, 6, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
 
 		Vector3 primalyCamera =
-		{ playerPos_.x + eyePos.x * cameraDistance_,//©‹@‚©‚çˆø‚¢‚½ˆÊ’u‚ÉƒJƒƒ‰‚ğƒZƒbƒg
+		{ playerPos_.x + eyePos.x * cameraDistance_,//è‡ªæ©Ÿã‹ã‚‰å¼•ã„ãŸä½ç½®ã«ã‚«ãƒ¡ãƒ©ã‚’ã‚»ãƒƒãƒˆ
 		cameraHeight_,
 		playerPos_.z + eyePos.z * cameraDistance_ };
 
-		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//ƒJƒƒ‰‚ğ‚¸‚ç‚·Û‚Ég‚í‚ê‚é
+		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//ã‚«ãƒ¡ãƒ©ã‚’ãšã‚‰ã™éš›ã«ä½¿ã‚ã‚Œã‚‹
 
-		float shiftLen = 0.0f;	//‚¸‚ç‚·—Ê
+		float shiftLen = 0.0f;	//ãšã‚‰ã™é‡
 		Vector3 shiftVec = { primalyCamera.x + sinf(eyeVecAngle + PI / 2) * shiftLen,primalyCamera.y,primalyCamera.z + cosf(eyeVecAngle + PI / 2) * shiftLen };
 
 		rot = MyMath::MatVector(viewProjection_->matView, rot);
@@ -234,8 +246,8 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
 
 
-	//’x‰„ƒJƒƒ‰
-	//‹——£
+	//é…å»¶ã‚«ãƒ¡ãƒ©
+	//è·é›¢
 	Vector3 dVec = vTargetEye - cameraPos;
 	dVec *= cameraDelay;
 	cameraPos += dVec * cameraSpeed_;
@@ -243,11 +255,18 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	player_camera.normalize();
 	cameraPos = playerPos_ + (player_camera * cameraDis);
 
-	//cameraPos = easing_->InOutVec3(cameraPos, vTargetEye, cameraTime, MaxCameraTime);
+
+	float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
+		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
+		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
+
+	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
+		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
+		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
+
 
 	ImGui::Text("vTargetEye : %f", cameraDis);
 	//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
-
 
 	if (isHit == true) {
 		isHit = false;
@@ -270,19 +289,19 @@ void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)
 }
 
 void GameCamera::MultiplyMatrix(Matrix4& matrix) {
-	// —İÏ‚Ì‰ñ“]s—ñ‚ğ‡¬
+	// ç´¯ç©ã®å›è»¢è¡Œåˆ—ã‚’åˆæˆ
 	matRot = matrix * matRot;
 
-	// ’‹“_‚©‚ç‹“_‚Ö‚ÌƒxƒNƒgƒ‹‚ÆAã•ûŒüƒxƒNƒgƒ‹
+	// æ³¨è¦–ç‚¹ã‹ã‚‰è¦–ç‚¹ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã¨ã€ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 	vTargetEye = { 0.0f, 0.0f, -distance_ };
 	vUp = { 0.0f, 1.0f, 0.0f };
 
-	// ƒxƒNƒgƒ‹‚ğ‰ñ“]
+	// ãƒ™ã‚¯ãƒˆãƒ«ã‚’å›è»¢
 	vTargetEye = MyMath::MatVector(matRot, vTargetEye);
 
 }
 
-// ƒJƒƒ‰‚ÌˆÊ’u‚ğŒvZ‚·‚éŠÖ”
+// ã‚«ãƒ¡ãƒ©ã®ä½ç½®ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 Vector3 GameCamera::calculateCameraPosition(ViewProjection* viewProjection_, float distance, float angle) {
 	/*float horizontalDistance = distance * cos(angle);
 	float verticalDistance = distance * sin(angle);
@@ -305,7 +324,7 @@ void GameCamera::CameraAngle(float x, float z)
 {
 	angle = atan2(x, z);
 
-	if(angle < 0 ){
+	if (angle < 0) {
 		angle = angle + 2 * MyMath::PI;
 	}
 

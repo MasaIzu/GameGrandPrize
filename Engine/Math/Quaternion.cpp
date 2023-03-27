@@ -197,10 +197,10 @@ Matrix4 Quaternion::Rotate()
 
 
 	Matrix4 result = {
-		1.0f - yy - zz,xy + wz,xz - wy,0.0f,
-		xy - wz, 1.0f - xx - zz,yz + wx,0.0f,
-		xz + wy, yz - wx,1.0f - xx - yy,0.0f,
-		0.0f,0.0f,0.0f,1.0f
+		1.0f - yy - zz,        xy + wz,       xz - wy, 0.0f,
+		       xy - wz, 1.0f - xx - zz,       yz + wx,0.0f,
+		       xz + wy,        yz - wx,1.0f - xx - yy,0.0f,
+	  	          0.0f,           0.0f,          0.0f,1.0f
 	};
 
 	return result;

@@ -37,6 +37,11 @@ struct WorldTransform {
 	// 親となるワールド変換へのポインタ
 	const WorldTransform* parent_ = nullptr;
 
+	Matrix4 matRot;
+
+	//回転がオイラー角による回転か
+	bool isEuler = false;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -55,6 +60,8 @@ struct WorldTransform {
 	void TransferMatrix();
 
 	void SetRot(const Vector3& rot);
+
+	void SetMatRot(const Matrix4& mat);
 
 	void MoveRot(const Vector3& move);
 

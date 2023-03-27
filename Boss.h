@@ -88,26 +88,31 @@ public:
 
 private:
 	//フェーズごとの更新処理
-	void IdleUpdate();
+	void UpdateIdle();
 
-	void AtkSwordUpdate(const Vector3& targetPos);
+	void UpdateAtkSword();
 
-	void AtkRushUpdate(const Vector3& targetPos);
+	void UpdateAtkRush();
 
-	void BeginMotionUpdate();
+	void UpdateBeginMotion();
 
 	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
 
 	void SwordColCubeUpdate();
 
-	void SortFishMin(const Vector3& targetPos);
+	void SortFishMin();
 	
+	void FishDirectionUpdate();
+	
+	Vector3 targetPos;
+
 	BossSwordPhase bossSwordPhase;
 
 	WorldTransform Transform;
 	Vector3 swordPos = {0,0,0 };
 	EasingData easeSwordPos;
 	EasingData easeSwordScale;
+	float swordRotAngle = 0;
 
 	const int moveFishMax = 120;
 
@@ -138,6 +143,9 @@ private:
 
 	EasingData easeParentPos;
 
+	Vector3 angleVec{ 0,0,0 };
+
+	int moveFlag = 0;
 };
 
 /// <summary>
@@ -180,3 +188,11 @@ float LerpConbertInback(float t);
 
 float LerpConbertOut(float t);
 
+/// <summary>
+/// 引数％の確率でtrueを返す関数
+/// </summary>
+/// <param name="param"></param>
+/// <returns>引数の確率でtrue</returns>
+bool IsPercent(float param = 100.0f);
+
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

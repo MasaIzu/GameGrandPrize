@@ -17,7 +17,13 @@ private:
 	Vector3 positions[4];
 
 	EasingData easeMove;
-	
+	float spdPerSec = 120.0f;
+	float moveRad = 0;
+
+	int spdResetInterval = 2;
+	int speedResetCount = 0;
+	Vector3 move;
+	float spdtemp = 1.0f;
 
 public:
 	void Initialize(const Vector3& pos);
@@ -25,6 +31,8 @@ public:
 	void Update(const Vector3& stagePos,float stageRadius);
 
 	void Draw(ViewProjection viewPro);
+
+	void SetMovePos(const Vector3& stagePos, float stageRadius);
 
 	Vector3 GetPosition()const { return world.translation_; }
 

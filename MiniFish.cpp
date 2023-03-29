@@ -18,43 +18,18 @@ void MiniFish::Initialize(const Vector3& pos)
 static int count = 0;
 void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 {
-	float spdPerSec = 120.0f;
+
 	//イージング更新
 	easeMove.Update();
 
+	Vector3 vecStageToPos = world.translation_ - stagePos;
 
-	//イージングが半分
-	if (!easeMove.GetActive()) {
-		//3点をランダムに決定、始点は前回の終点
-		positions[0] = positions[3];
+	////イージングが終わっている
+	//if (!easeMove.GetActive() || vecStageToPos.length() >= stageRadius) {
+	//	SetMovePos(stagePos, stageRadius);
+	//}
 
-		
 
-		for (int i = 1; i < 4; i++) {
-
-			//ベジエ曲線のため速度を分割
-			float spd = spdPerSec / 4.0f;
-
-			//ステージの外に行かないための座標設定
-			//	ImGui::Text("not active...");
-				float rad = Random(0, 360);
-				positions[i].x = sin(rad * PI / 180) * spd;
-				positions[i].z = cos(rad * PI / 180) * spd;
-				positions[i].y = stagePos.y;
-				positions[i] += positions[i - 1];
-				Vector3 vecPosToStage = stagePos - positions[i];
-				if (stageRadius < vecPosToStage.length()) {
-					//ステージ中心から移動座標への距離がステージの半径よりおおきいならもう一回for文回す
-					i--;
-				}
-			
-		}
-
-		//イージング開始
-		easeMove.Start(60);
-	}
-
-	
 
 
 	ImGui::Text("timeRate:%f", easeMove.GetTimeRate());
@@ -67,13 +42,47 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 
 	}
 
+
+	if (speedResetCount == 0) {
+		moveRad += Random(-15, 15);
+
+		move.x = sin(moveRad * PI / 180.0f) * spdtemp;
+		move.z = cos(moveRad * PI / 180.0f) * spdtemp;
+
+		speedResetCount = spdResetInterval;
+	}
+
 	Vector3 pos;
+
+	//pos = world.translation_;
+	Vector3 nextPos = world.translation_ + move;
+	if (nextPos.length() >= stageRadius) {
+	/*	if (fabs(nextPos.x) > fabs(nextPos.z)) {
+			move.x = -move.x;
+		}
+		else {
+			move.z = -move.z;
+		}*/
+		//move = -move;
+		moveRad += 180;
+		spdtemp = Random(0.5f, 2.0f);
+		move.x = sin(moveRad * PI / 180.0f) * spdtemp;
+		move.z = cos(moveRad * PI / 180.0f) * spdtemp;
+		speedResetCount = spdResetInterval;
+
+	}
+
+	if (moveRad > 360) {
+		moveRad -= 360;
+	}
+
 	pos = LerpBezireCubic(positions[0], positions[1], positions[2], positions[3], easeMove.GetTimeRate());
 	//現在の座標と次に代入される座標から正面を向く回転行列を作成
-	Matrix4 matRot = CreateMatRot(world.translation_, pos);
+	Matrix4 matRot = CreateMatRot(world.translation_, world.translation_ + move);
 	world.SetMatRot(matRot);
-	world.translation_ = pos;
+	world.translation_ += move;
 	world.TransferMatrix();
+	speedResetCount--;
 
 }
 
@@ -81,4 +90,40 @@ void MiniFish::Draw(ViewProjection viewPro)
 {
 	//bodyModel->Draw(world, viewPro);
 	//eyeModel->Draw(world, viewPro);
+}
+
+void MiniFish::SetMovePos(const Vector3& stagePos, float stageRadius)
+{
+	//プレイヤーが最後にいた場所を始点とする
+	positions[0] = world.translation_;
+
+	for (int i = 1; i < 4; i++) {
+
+		//ベジエ曲線のため速度を分割
+		float spd = spdPerSec / 4.0f;
+
+		//ステージの外に行かないための座標設定
+		//	ImGui::Text("not active...");
+
+
+		//iが1の時のみ(制御点1つめ)前回のradから前後90の物にする
+		if (i == 1) {
+			moveRad += Random(-90, 90);
+		}
+		else {
+			moveRad = Random(0, 360);
+		}
+
+		positions[i].x = sin(moveRad * PI / 180) * spd;
+		positions[i].z = cos(moveRad * PI / 180) * spd;
+		positions[i].y = stagePos.y;
+		positions[i] += positions[i - 1];
+		Vector3 vecPosToStage = stagePos - positions[i];
+		if (stageRadius < vecPosToStage.length()) {
+			//ステージ中心から移動座標への距離がステージの半径よりおおきいならもう一回for文回す
+			i--;
+		}
+	}
+	//イージング開始
+	easeMove.Start(120);
 }

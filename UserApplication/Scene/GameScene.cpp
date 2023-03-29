@@ -53,7 +53,7 @@ void GameScene::Initialize() {
 
 	for (int i = 0; i < 10; i++) {
 		Vector3 pos;
-		pos = { Random(-stageRadius,  stageRadius), 0, Random(-stageRadius,  stageRadius)  };
+		pos = { Random(-stageRadius,  stageRadius)/2, 0, Random(-stageRadius,  stageRadius)/2  };
 		pos += stagePos;
 		minifishes[i].Initialize(pos);
 	}

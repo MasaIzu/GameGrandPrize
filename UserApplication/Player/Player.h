@@ -49,6 +49,8 @@ public:
 
 	void PostEffectDraw(ViewProjection viewProjection_);
 
+	void Collision(int damage);
+
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	float GetRadius() { return radius; }
@@ -67,8 +69,6 @@ public:
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
-
-	void Collision();
 	
 
 	/// <summary>
@@ -139,6 +139,7 @@ private:
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
 	float KnockBackDistance = 20.0f;
+	bool isKnockBack=false;
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ
@@ -173,4 +174,8 @@ private:
 	std::unique_ptr<ParticleManager> ParticleMan;
 
 	std::unique_ptr<Recovery> recovery;
+
+	const int maxHP = 100;
+
+	int HP=maxHP;
 };

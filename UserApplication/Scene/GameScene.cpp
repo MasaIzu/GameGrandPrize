@@ -82,24 +82,28 @@ void GameScene::Update() {
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}*/
-	isAttackHit = false;
 
+	//自機とボスの当たり判定
 	if (collisionManager->GetIsEnemyHit()) {
-		isEnemyHit = true;
+		gameCamera->Collision();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(10);
 	}
-
+	
+	//剣と自機の当たり判定
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
 		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
 			player->GetWorldPosition(), player->GetRadius())) {
 
-			isEnemyHit = true;
+			gameCamera->Collision();
+			player->Collision(1);
 			player->SetEnemyPos(boss.GetSwordWorldPos());
 		}
 	}
 
 	if (collisionManager->GetIsAttackHit()) {
 		isAttackHit = true;
+		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 	}
 
@@ -108,7 +112,7 @@ void GameScene::Update() {
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-	player->SetIsEnemyHit(isEnemyHit);
+	//player->SetIsEnemyHit(isEnemyHit);
 	player->SetIsAttackHit(isAttackHit);
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
@@ -116,13 +120,11 @@ void GameScene::Update() {
 	player->Update(viewProjection_);
 
 
-	gameCamera->SetIsHit(isEnemyHit);
+	//gameCamera->SetIsHit(isEnemyHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
-	isEnemyHit = gameCamera->GetIsHit();
-
 	//	viewProjection_.eye = gameCamera->GetEye();
 	ImGui::Begin("Camera");
 	ImGui::SliderFloat("PosX", &viewProjection_.eye.x, -100.0f, 200.0f);
@@ -156,13 +158,13 @@ void GameScene::PostEffectDraw()
 
 	ParticleManager::PreDraw(commandList);
 
-	player->ParticleDraw(viewProjection_);
+	//player->ParticleDraw(viewProjection_);
 
 	ParticleManager::PostDraw();
 
 	Model::PreDraw(commandList);
 
-	player->PostEffectDraw(viewProjection_);
+	//player->PostEffectDraw(viewProjection_);
 
 	Model::PostDraw();
 
@@ -182,11 +184,18 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
+	ParticleManager::PreDraw(commandList);
+
+	player->ParticleDraw(viewProjection_);
+
+	ParticleManager::PostDraw();
+
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
+	player->PostEffectDraw(viewProjection_);
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
@@ -198,8 +207,13 @@ void GameScene::Draw() {
 
 	
 
+
+	
+
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
+
+
 
 	FbxModel::PreDraw(commandList);
 

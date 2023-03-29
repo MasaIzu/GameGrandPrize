@@ -420,7 +420,7 @@ void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
 	//全画面のクリア
 	commandList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 	//深度バッファのクリア
-	//commandList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)

@@ -268,12 +268,12 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::Text("vTargetEye : %f", cameraDis);
 	//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
 
-	if (isHit == true) {
-		isHit = false;
-		isShake = true;
-		shakeTime = 10;
+	//if (isHit == true) {
+	//	isHit = false;
+	//	isShake = true;
+	//	shakeTime = 10;
 
-	}
+	//}
 
 	if (isShake == true) {
 		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);

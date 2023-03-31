@@ -14,31 +14,38 @@ public:/// <summary>
 	/// </summary>
 	void Update();
 
-	void PostEffectDraw(ViewProjection view);
-
-	void particleDraw(ViewProjection view);
-
 	/// <summary>
 	/// •`‰æ
 	/// </summary>
 	void Draw(ViewProjection view);
+
+	void Collision();
+
+	Vector3 GetWorldPosition();
+
+	Vector3 GetScale() { return pointWorldTransform_.scale_; }
+
+	bool GetActive(){return isActive;}
 private:
-	std::unique_ptr<ParticleManager> ParticleMan;
 
-	std::unique_ptr<Model> pointModel;
+	std::unique_ptr<Model> pointModel_;
 
-	WorldTransform pointWorldTransform;
+	WorldTransform pointWorldTransform_;
+
+	std::unique_ptr<Model> model_;
+
+	WorldTransform worldTransform_[20];
 
 	uint32_t tex1;
 
 	uint32_t tex2;
 
-	const float scale = 3.0f;
+	const float scale = 3;
 
-	const int intervalFlame=10;
+	const float MaxIntervalFlame = 6000;
 
-	int flame;
+	float IntervalFlame = 0;
 
-	const float maxVartex = 32;
+	bool isActive = true;
 };
 

@@ -28,7 +28,6 @@ public: // サブクラス
 		XMFLOAT3 diffuse;  // ディフューズ係数
 		float pad2;        // パディング
 		XMFLOAT3 specular; // スペキュラー係数
-		float alpha;       // アルファ
 	};
 
 public: // 静的メンバ関数

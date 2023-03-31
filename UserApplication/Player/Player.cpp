@@ -100,8 +100,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
-	ImGui::Text("HP:%d",HP);
-	ImGui::Text("moveTime:%d",moveTime);
+	ImGui::Text("HP:%d", HP);
 
 	ImGui::End();
 }
@@ -190,17 +189,37 @@ void Player::Move() {
 
 	Vector3 allMove = PlayerMoveMent + AvoidanceMove;
 
-	AvoidanceMove = {0,0,0};
-
-	float AR;
-	float BR;
-
-	AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
-	BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
-
-	if (AR <= BR)
+	AvoidanceMove = { 0,0,0 };
+	//ステージからでないようにする処理
 	{
-		worldTransform_.translation_ += allMove;
+		float AR;
+		float BR;
+
+		AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
+		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
+
+		if (AR <= BR)
+		{
+			worldTransform_.translation_ += allMove;
+		}
+	}
+	//回復と当たっているかの処理
+	{
+		float AR;
+		float BR;
+
+		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x , 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
+		BR = pow((  worldTransform_.scale_.x- recovery->GetScale().x), 2);
+
+		if (AR <= BR&&recovery->GetActive())
+		{
+			HP += 50;
+			if (HP>maxHP)
+			{
+				HP = maxHP;
+			}
+			recovery->Collision();
+		}
 	}
 
 	if (input_->MouseInputing(2)) {
@@ -315,7 +334,7 @@ void Player::KnockBackUpdate()
 	if (moveTime < MaxMoveTime) {
 		moveTime++;
 		KnockBack += PlayerMoveMent;
-		Vector3 KnockBackMove= easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+		Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 
 		float AR;
 		float BR;
@@ -341,7 +360,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 		playerModel_->Draw(worldTransform_, viewProjection_);
 	}
 	if (timer > 0) {
-		oldPlayerModel_->SetAlpha(alpha);
+		oldWorldTransform_.alpha = alpha;
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (isAttack) {
@@ -351,18 +370,6 @@ void Player::Draw(ViewProjection viewProjection_) {
 	}
 
 	recovery->Draw(viewProjection_);
-}
-
-void Player::ParticleDraw(ViewProjection viewProjection_)
-{
-	ParticleMan->Draw(viewProjection_);
-
-	recovery->particleDraw(viewProjection_);
-}
-
-void Player::PostEffectDraw(ViewProjection viewProjection_)
-{
-	recovery->PostEffectDraw(viewProjection_);
 }
 
 
@@ -388,7 +395,7 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 
 void Player::Collision(int damage)
 {
-	if (isKnockBack==false)
+	if (isKnockBack == false)
 	{
 		SetKnockBackCount();
 		//スペースキーを押していたら
@@ -435,7 +442,7 @@ void Player::AttackCollision()
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->Add(ParticleManager::Type::In,life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
+		ParticleMan->Add(ParticleManager::Type::In, life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
 	}
 }
 

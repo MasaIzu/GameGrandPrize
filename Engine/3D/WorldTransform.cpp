@@ -66,6 +66,8 @@ void WorldTransform::TransferMatrix() {
 	//定数バッファへのデータ転送
 	constMap->matWorld = matWorld_;
 
+	constMap->alpha = alpha;
+
 }
 
 

@@ -53,7 +53,7 @@ void GameScene::Initialize() {
 
 	for (int i = 0; i < 10; i++) {
 		Vector3 pos;
-		pos = { Random(-stageRadius,  stageRadius)/2, 0, Random(-stageRadius,  stageRadius)/2  };
+		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
 		minifishes[i].Initialize(pos);
 	}
@@ -87,13 +87,15 @@ void GameScene::Initialize() {
 		gayserPos[i].x = sin(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 	}
+	gayserParticle = std::make_unique<ParticleManager>();
 
-	gayserParticle.Initialize();
+	gayserParticle->Initialize();
 }
 
 void GameScene::Update() {
 
-	if(ImGui::Button("break")) {
+
+	if (ImGui::Button("break")) {
 		static int a = 0;
 		a++;
 	}
@@ -102,7 +104,83 @@ void GameScene::Update() {
 		for (int i = 0; i < 10; i++) {
 			minifishes[i].LeaveGayser(gayserPos[i / 2]);
 		}
+		//煙の処理
+		{
+			gayserFlame++;
+			if (gayserFlame <= gayserMaxFlame)
+			{
+					for (int i = 0; i < 10; i++)
+					{
 
+						//XYZの広がる距離
+						const float rnd_pos = 30.0f;
+						//Y方向には最低限の飛ぶ距離
+						const float constPosY = 15;
+						Vector3 pos{};
+						pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						pos.y = 20;
+						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						//追加
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0],{ gayserPos[0].x, gayserPos[0] .y+pos.y, gayserPos[0].z}, gayserPos[0] + pos, 1.0, 1.0, {0,0,0,1}, {0,0,0,1});
+					}
+					for (int i = 0; i < 10; i++)
+					{
+
+						//XYZの広がる距離
+						const float rnd_pos = 30.0f;
+						//Y方向には最低限の飛ぶ距離
+						const float constPosY = 15;
+						Vector3 pos{};
+						pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						pos.y = 20;
+						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						//追加
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+					}
+					for (int i = 0; i < 10; i++)
+					{
+
+						//XYZの広がる距離
+						const float rnd_pos = 30.0f;
+						//Y方向には最低限の飛ぶ距離
+						const float constPosY = 15;
+						Vector3 pos{};
+						pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						pos.y = 20;
+						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						//追加
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+					}
+					for (int i = 0; i < 10; i++)
+					{
+
+						//XYZの広がる距離
+						const float rnd_pos = 30.0f;
+						//Y方向には最低限の飛ぶ距離
+						const float constPosY = 15;
+						Vector3 pos{};
+						pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						pos.y = 20;
+						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						//追加
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+					}
+					for (int i = 0; i < 10; i++)
+					{
+
+						//XYZの広がる距離
+						const float rnd_pos = 30.0f;
+						//Y方向には最低限の飛ぶ距離
+						const float constPosY = 15;
+						Vector3 pos{};
+						pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						pos.y = 20;
+						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+						//追加
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+					}
+			}
+		}
 
 	}
 
@@ -129,7 +207,7 @@ void GameScene::Update() {
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 		player->Collision(10);
 	}
-	
+
 	//剣と自機の当たり判定
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
 		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
@@ -176,6 +254,8 @@ void GameScene::Update() {
 	//全ての衝突をチェック
 	collisionManager->CheckAllCollisions();
 
+	gayserParticle->Update();
+
 
 	//カメラは最後にアプデ
 	viewProjection_.target = gameCamera->GetTarget();
@@ -219,6 +299,8 @@ void GameScene::Draw() {
 
 	player->ParticleDraw(viewProjection_);
 
+	gayserParticle->Draw(viewProjection_);
+
 	ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理
@@ -226,7 +308,7 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-	stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	stageModel_->Draw(stageWorldTransform_, viewProjection_);
 
 	//チュートリアルと最初のムービーでだけ小魚を描画
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
@@ -237,7 +319,7 @@ void GameScene::Draw() {
 			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
 		}
 	}
-	
+
 	//ボス出現ムービーとボス変身ムービーの間で描画
 	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
@@ -246,7 +328,7 @@ void GameScene::Draw() {
 
 	player->Draw(viewProjection_);
 
-	
+
 
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();

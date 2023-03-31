@@ -117,7 +117,10 @@ private: // メンバ変数
 	//小魚関係(チュートリアル用)
 	MiniFish minifishes[10];
 	int deadMinFishCount = 0;	//倒された小魚のカウント
-	ParticleManager gayserParticle;
+	std::unique_ptr<ParticleManager> gayserParticle;
+
+	const float gayserMaxFlame = 240;
+	float gayserFlame=0;
 
 
 	//ステージ関係

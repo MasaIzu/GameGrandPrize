@@ -438,45 +438,6 @@ void ParticleManager::Update()
 			it->color.w = (it->endColor.w - it->startColor.w) * f;
 			it->color.w += it->startColor.w;
 			break;
-		case Type::Geyser:
-
-			if (it->numFrame/2>it->frame)
-			{
-				f = (float)it->frame / it->numFrame/2;
-				Vector3 controlPosition = { it->startPosition.x,it->controlPosition.y,it->startPosition .z};
-				//速度による移動
-				Vector3 p1 = it->startPosition * (1.0f - easeInQuint(f)) + controlPosition * easeInQuint(f);
-				Vector3 p2 = controlPosition * (1.0f - easeInQuint(f)) + it->controlPosition * easeInQuint(f);
-
-				it->position = p1 * (1.0f - easeInQuint(f)) + p2 * easeInQuint(f);
-			}
-			else
-			{
-				f = (float)it->frame / it->numFrame;
-				Vector3 controlPosition = {it->controlPosition.x,it->endPosition.y,it->controlPosition.z };
-				//速度による移動
-				Vector3 p1 = it->controlPosition * (1.0f - easeOutQuint(f)) + controlPosition * easeOutQuint(f);
-				Vector3 p2 = controlPosition * (1.0f - easeOutQuint(f)) + it->endPosition * easeOutQuint(f);
-
-				it->position = p1 * (1.0f - easeOutQuint(f)) + p2 * easeOutQuint(f);
-			}
-			//スケールの線形補間
-			it->scale = (it->endScale - it->startScale) * f;
-			it->scale += it->startScale;
-
-			//赤の線形補間
-			it->color.x = (it->endColor.x - it->startColor.x) * f;
-			it->color.x += it->startColor.x;
-			//青の線形補間
-			it->color.y = (it->endColor.y - it->startColor.y) * f;
-			it->color.y += it->startColor.y;
-			//緑の線形補間
-			it->color.z = (it->endColor.z - it->startColor.z) * f;
-			it->color.z += it->startColor.z;
-			//緑の線形補間
-			it->color.w = (it->endColor.w - it->startColor.w) * f;
-			it->color.w += it->startColor.w;
-			break;
 		}
 			//頂点バッファへデータ転送
 			VertexPos* vertMap = nullptr;

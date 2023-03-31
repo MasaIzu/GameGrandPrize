@@ -51,7 +51,6 @@ public: // サブクラス
 		Normal,
 		Out,
 		In,
-		Geyser
 	};
 
 	//パーティクル一粒

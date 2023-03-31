@@ -400,6 +400,9 @@
     <ClInclude Include="MiniFish.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="recovery.h">
+      <Filter>ユーザーヘッダー ファイル\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -551,6 +554,9 @@
     </ClCompile>
     <ClCompile Include="MiniFish.cpp">
       <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="recovery.cpp">
+      <Filter>ユーザーソース ファイル\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

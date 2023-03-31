@@ -46,37 +46,17 @@ public: // サブクラス
 		Matrix4 matBillboard;//ビルボード行列
 	};
 
-	//パーティクル一粒
-	struct InParticle
+	enum class Type
 	{
-		//座標
-		Vector3 position = {};
-
-		Vector3 startPosition;
-
-		Vector3 endPosition;
-		// 現在フレーム
-		int frame = 0;
-		//終了フレーム
-		int numFrame = 0;
-		
-		float scale = 1.0f;
-
-		float startScale = 1.0f;
-
-		float endScale = 0.0f;
-
-		Vector4 color = {};
-
-		Vector4 startColor = {};
-
-		Vector4 endColor = {};
-
+		Normal,
+		Out,
+		In,
 	};
 
 	//パーティクル一粒
-	struct OutParticle
+	struct Particle
 	{
+		Type type;
 		//座標
 		Vector3 position = {};
 
@@ -135,11 +115,9 @@ private: // 静的メンバ変数
 	// パイプラインステートオブジェクト
 	static ComPtr<ID3D12PipelineState> pipelinestate;
 	// 頂点バッファ
-	static ComPtr<ID3D12Resource> vertBuff;
+	ComPtr<ID3D12Resource> vertBuff;
 	// 頂点バッファビュー
-	static D3D12_VERTEX_BUFFER_VIEW vbView;
-	//ビルボード行列
-	static Matrix4 matBillboard;
+	D3D12_VERTEX_BUFFER_VIEW vbView;
 
 private:// 静的メンバ関数
 
@@ -149,7 +127,7 @@ private:// 静的メンバ関数
 	/// <returns>成否</returns>
 	static void InitializeGraphicsPipeline();
 
-	static void InitializeVerticeBuff();
+	void InitializeVerticeBuff();
 
 public: // メンバ関数
 	void Initialize();
@@ -165,19 +143,7 @@ public: // メンバ関数
 
 	void SetTextureHandle(uint32_t textureHandle);
 
-	size_t GetParticlesListSize() {return outParticles.size() ; }
-
-	/// <summary>
-	/// イージングパーティクル（in）
-	/// </summary>
-	/// <param name="life">寿命(イージングなんでスピードにも関係する)</param>
-	/// <param name="startPosition">初期座標</param>
-	/// <param name="endPosition">最終座標</param>
-	/// <param name="startScale">初期サイズ</param>
-	/// <param name="endScale">最終サイズ</param>
-	/// <param name="startColor">初期色</param>
-	/// <param name="endColor">最終色</param>
-	void InAdd(int life, Vector3 startPosition, Vector3 endPosition,float startScale,float endScale,Vector4 startColor,Vector4 endColor);
+	size_t GetParticlesListSize() {return Particles.size() ; }
 
 	/// <summary>
 	/// イージングパーティクル（out)
@@ -189,7 +155,7 @@ public: // メンバ関数
 	/// <param name="endScale">最終サイズ</param>
 	/// <param name="startColor">初期色</param>
 	/// <param name="endColor">最終色</param>
-	void OutAdd(int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor);
+	void Add(Type type, int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor);
 
 private: // メンバ変数
 	ComPtr<ID3D12Resource> constBuff; // 定数バッファ
@@ -205,11 +171,9 @@ private: // メンバ変数
 	Matrix4 matWorld;
 	//// 親オブジェクト
 	//ParticleManager* parent = nullptr;
-	//パーティクル配列
-	std::list<InParticle>inParticles;
 
 	//パーティクル配列
-	std::list<OutParticle>outParticles;
+	std::list<Particle>Particles;
 
 	UINT textureHandle_ = 0;
 };

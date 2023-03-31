@@ -193,12 +193,6 @@ void GameScene::PostEffectDraw()
 
 	PostEffect::PreDrawScene(commandList);
 
-	ParticleManager::PreDraw(commandList);
-
-	//player->ParticleDraw(viewProjection_);
-
-	ParticleManager::PostDraw();
-
 	Model::PreDraw(commandList);
 
 	//player->PostEffectDraw(viewProjection_);
@@ -223,7 +217,7 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	//player->ParticleDraw(viewProjection_);
+	player->ParticleDraw(viewProjection_);
 
 	ParticleManager::PostDraw();
 
@@ -254,9 +248,6 @@ void GameScene::Draw() {
 
 	
 
-
-	
-
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
 
@@ -273,7 +264,7 @@ void GameScene::Draw() {
 
 #pragma region ポストエフェクトの描画
 
-	PostEffect::Draw(commandList);
+	//PostEffect::Draw(commandList);
 
 #pragma endregion
 

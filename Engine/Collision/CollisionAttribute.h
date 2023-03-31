@@ -7,4 +7,4 @@ const unsigned short COLLISION_ATTR_ATTACK = 0b1 << 3;//UŒ‚
 const unsigned short COLLISION_ATTR_NOTATTACK = 0b1 << 4;//UŒ‚”»’è‚È‚µ
 const unsigned short COLLISION_ATTR_INVINCIBLE = 0b1 << 5;//–³“G
 
-const unsigned short COLLISION_ATTR_WEAKENEMYS = 0b1 << 6;//–³“G
+const unsigned short COLLISION_ATTR_WEAKENEMYS = 0b1 << 6;//ŽG‹›“G

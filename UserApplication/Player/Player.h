@@ -45,6 +45,8 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void ParticleDraw(ViewProjection view);
+
 	void Collision(int damage);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);

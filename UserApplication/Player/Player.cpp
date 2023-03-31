@@ -86,6 +86,26 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 	KnockBackUpdate();
 
+	for (int i = 0; i < 1; i++)
+	{
+		//消えるまでの時間
+		const float rnd_life = 70.0f;
+		//最低限のライフ
+		const float constlife = 10;
+		float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+
+		//XYZの広がる距離
+		const float rnd_pos = 30.0f;
+		//Y方向には最低限の飛ぶ距離
+		const float constPosY = 15;
+		Vector3 pos{};
+		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
+		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		//追加
+		ParticleMan->Add(ParticleManager::Type::Geyser, 120, true, { 0,0,0 }, { 25,20,25 }, { 50,0,50 }, 1, 1, { 1,1,1,1 }, { 1,1,1,1.0 });
+	}
+
 	ParticleMan->Update();
 
 	//worldTransform_.translation_ = { 5,0,20 };
@@ -372,6 +392,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 	recovery->Draw(viewProjection_);
 }
 
+void Player::ParticleDraw(ViewProjection view)
+{
+	ParticleMan->Draw(view);
+}
+
 
 Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 
@@ -416,7 +441,7 @@ void Player::Collision(int damage)
 			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, MyMath::GetWorldTransform(worldTransform_.matWorld_), { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z }, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
 		}
 		HP -= damage;
 	}
@@ -437,12 +462,12 @@ void Player::AttackCollision()
 		const float rnd_pos = 200.0f;
 		//Y方向には最低限の飛ぶ距離
 		const float constPosY = 15;
-		Vector3 pos{};
+		Vector3 pos;
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->Add(ParticleManager::Type::In, life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
+		ParticleMan->Add(ParticleManager::Type::In, life,false, MyMath::GetWorldTransform(worldTransform_.matWorld_),{ MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z}, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, {1,1,0.95,1}, {1,1,0.95,0});
 	}
 }
 

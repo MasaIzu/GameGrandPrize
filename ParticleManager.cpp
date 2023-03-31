@@ -339,8 +339,19 @@ void ParticleManager::Update()
 		case Type::Normal:
 
 			f = (float)it->frame / it->numFrame;
-			//速度による移動
-			it->position = f * (it->endPosition - it->startPosition) + it->startPosition;
+			if (it->isBezier)
+			{
+				//速度による移動
+				Vector3 p1 = it->startPosition * (1.0f - f) + it->controlPosition * f;
+				Vector3 p2 = it->controlPosition * (1.0f - f) + it->endPosition * f;
+
+				it->position = p1 * (1.0f - f) + p2 * f;
+			}
+			else
+			{
+				//速度による移動
+				it->position = f * (it->endPosition - it->startPosition) + it->startPosition;
+			}
 			//スケールの線形補間
 			it->scale = (it->endScale - it->startScale) * f;
 			it->scale += it->startScale;
@@ -362,8 +373,19 @@ void ParticleManager::Update()
 		case Type::In:
 
 			f = (float)it->frame / it->numFrame;
-			//速度による移動
-			it->position = easeInQuint(f) * (it->endPosition - it->startPosition) + it->startPosition;
+			if (it->isBezier)
+			{
+				//速度による移動
+				Vector3 p1 = it->startPosition * (1.0f - easeInQuint(f)) + it->controlPosition * easeInQuint(f);
+				Vector3 p2 = it->controlPosition * (1.0f - easeInQuint(f)) + it->endPosition * easeInQuint(f);
+
+				it->position = p1 * (1.0f - easeInQuint(f)) + p2 * easeInQuint(f);
+			}
+			else
+			{
+				//速度による移動
+				it->position = easeInQuint(f) * (it->endPosition - it->startPosition) + it->startPosition;
+			}
 			//スケールの線形補間
 			it->scale = (it->endScale - it->startScale) * f;
 			it->scale += it->startScale;
@@ -384,12 +406,60 @@ void ParticleManager::Update()
 			break;
 		case Type::Out:
 
-			f = easeOutQuint((float)it->frame / it->numFrame);
-			//速度による移動
-			Vector3 p1 = it->startPosition * (1.0f - f) + it->controlPosition * f;
-			Vector3 p2 = it->controlPosition * (1.0f - f) + it->endPosition * f;
+			f = (float)it->frame / it->numFrame;
 
-			it->position = p1 * (1.0f - f) + p2 * f;
+			if (it->isBezier)
+			{
+				//速度による移動
+				Vector3 p1 = it->startPosition * (1.0f - easeOutQuint(f)) + it->controlPosition * easeOutQuint(f);
+				Vector3 p2 = it->controlPosition * (1.0f - easeOutQuint(f)) + it->endPosition * easeOutQuint(f);
+
+				it->position = p1 * (1.0f - easeOutQuint(f)) + p2 * easeOutQuint(f);
+			}
+			else
+			{
+				//速度による移動
+				it->position = easeOutQuint(f) * (it->endPosition - it->startPosition) + it->startPosition;
+			}
+			//スケールの線形補間
+			it->scale = (it->endScale - it->startScale) * f;
+			it->scale += it->startScale;
+
+			//赤の線形補間
+			it->color.x = (it->endColor.x - it->startColor.x) * f;
+			it->color.x += it->startColor.x;
+			//青の線形補間
+			it->color.y = (it->endColor.y - it->startColor.y) * f;
+			it->color.y += it->startColor.y;
+			//緑の線形補間
+			it->color.z = (it->endColor.z - it->startColor.z) * f;
+			it->color.z += it->startColor.z;
+			//緑の線形補間
+			it->color.w = (it->endColor.w - it->startColor.w) * f;
+			it->color.w += it->startColor.w;
+			break;
+		case Type::Geyser:
+
+			if (it->numFrame/2>it->frame)
+			{
+				f = (float)it->frame / it->numFrame/2;
+				Vector3 controlPosition = { it->startPosition.x,it->controlPosition.y,it->startPosition .z};
+				//速度による移動
+				Vector3 p1 = it->startPosition * (1.0f - easeInQuint(f)) + controlPosition * easeInQuint(f);
+				Vector3 p2 = controlPosition * (1.0f - easeInQuint(f)) + it->controlPosition * easeInQuint(f);
+
+				it->position = p1 * (1.0f - easeInQuint(f)) + p2 * easeInQuint(f);
+			}
+			else
+			{
+				f = (float)it->frame / it->numFrame;
+				Vector3 controlPosition = {it->controlPosition.x,it->endPosition.y,it->controlPosition.z };
+				//速度による移動
+				Vector3 p1 = it->controlPosition * (1.0f - easeOutQuint(f)) + controlPosition * easeOutQuint(f);
+				Vector3 p2 = controlPosition * (1.0f - easeOutQuint(f)) + it->endPosition * easeOutQuint(f);
+
+				it->position = p1 * (1.0f - easeOutQuint(f)) + p2 * easeOutQuint(f);
+			}
 			//スケールの線形補間
 			it->scale = (it->endScale - it->startScale) * f;
 			it->scale += it->startScale;
@@ -408,23 +478,23 @@ void ParticleManager::Update()
 			it->color.w += it->startColor.w;
 			break;
 		}
-		//頂点バッファへデータ転送
-		VertexPos* vertMap = nullptr;
-		result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-		if (SUCCEEDED(result))
-		{
-			//パーティクルの情報を1つずつ反映
-			for (std::list<Particle>::iterator it = Particles.begin(); it != Particles.end(); it++)
+			//頂点バッファへデータ転送
+			VertexPos* vertMap = nullptr;
+			result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+			if (SUCCEEDED(result))
 			{
-				//座標
-				vertMap->pos = it->position;
-				vertMap->scale = it->scale;
-				vertMap->color = it->color;
-				//次の頂点へ
-				vertMap++;
+				//パーティクルの情報を1つずつ反映
+				for (std::list<Particle>::iterator it = Particles.begin(); it != Particles.end(); it++)
+				{
+					//座標
+					vertMap->pos = it->position;
+					vertMap->scale = it->scale;
+					vertMap->color = it->color;
+					//次の頂点へ
+					vertMap++;
+				}
+				vertBuff->Unmap(0, nullptr);
 			}
-			vertBuff->Unmap(0, nullptr);
-		}
 	}
 }
 
@@ -458,7 +528,7 @@ void ParticleManager::Update()
 		cmdList->DrawInstanced(Particles.size(), 1, 0, 0);
 	}
 
-	void ParticleManager::Add(Type type, int life, Vector3 startPosition, Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor)
+	void ParticleManager::Add(Type type, int life, bool isBezier, Vector3 startPosition, Vector3 controlPosition,Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor)
 	{
 		//リストに要素を追加
 		Particles.emplace_front();
@@ -466,9 +536,10 @@ void ParticleManager::Update()
 		Particle& p = Particles.front();
 		//値のセットt
 		p.type = type;
+		p.isBezier = isBezier;
 		p.startPosition = startPosition;
 		p.endPosition = endPosition;
-		p.controlPosition = { endPosition.x,startPosition.y,endPosition.z };
+		p.controlPosition =controlPosition;
 		p.numFrame = life;
 		p.startScale = startScale;
 		p.endScale = endScale;

@@ -66,7 +66,7 @@ void Material::Update() {
 	constMap_->ambient = ambient_;
 	constMap_->diffuse = diffuse_;
 	constMap_->specular = specular_;
-	constMap_->alpha = alpha_;
+	//constMap_->alpha = alpha_;
 
 }
 

@@ -93,6 +93,7 @@ void GameScene::Initialize() {
 		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 	}
 
+	gayserParticle.Initialize();
 }
 
 void GameScene::Update() {
@@ -106,6 +107,8 @@ void GameScene::Update() {
 		for (int i = 0; i < 10; i++) {
 			minifishes[i].LeaveGayser(gayserPos[i / 2]);
 		}
+
+
 	}
 
 	/*if (input_->TriggerKey(DIK_SPACE))

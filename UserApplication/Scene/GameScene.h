@@ -119,6 +119,8 @@ private: // メンバ変数
 	//小魚関係(チュートリアル用)
 	MiniFish minifishes[10];
 	int deadMinFishCount = 0;	//倒された小魚のカウント
+	ParticleManager gayserParticle;
+
 
 	//ステージ関係
 	float stageRadius = 50;	//ステージの半径

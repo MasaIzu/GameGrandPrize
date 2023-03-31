@@ -9,6 +9,7 @@
 #include "Collision.h"
 #include"PostEffect.h"
 
+
 GameScene::GameScene() {}
 GameScene::~GameScene() {
 	model_.reset();
@@ -78,6 +79,19 @@ void GameScene::Initialize() {
 	stageWorldTransform_.translation_ = Vector3(0, -2.1f, 0);
 
 	stageWorldTransform_.TransferMatrix();
+
+
+	//groundModel = std::make_unique<Model>();
+
+	////地面の描画
+	ground.Initialize();
+
+	for (int  i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateGround();
+	}
+
+
 }
 
 void GameScene::Update() {
@@ -196,7 +210,11 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_);
 
 
-	stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	
+	ground.Draw(viewProjection_);
+
+	
 
 	
 	boss.Draw(viewProjection_);
@@ -231,4 +249,41 @@ void GameScene::Draw() {
 void GameScene::Finalize()
 {
 }
+
+//void GameScene::CreateGround()
+//{
+//	//ground newGround;
+//	//
+//	//for (int i = 0; i < 10; i++) {
+//	//	 modeltable[i].reset(Model::CreateFromOBJ("Ground", true));
+//	//}
+//	//
+//	//
+//	//Vector3 SCALE = { 1,1,1 };
+//	//newGround.pos.Initialize();
+//
+//	//
+//
+//	//for (int i = 0; i < objects.size(); i++)
+//	//{
+//	//	for (int j = 0; j < objects.size(); j++)
+//	//	{
+//
+//	//		float x = (j - objects.size() / 2) * SCALE.x;
+//	//		float y = 0;
+//	//		float z = (i - objects.size() / 2) * SCALE.z;
+//
+//	//		int modelIndex = rand() % 10;
+//	//		//newGround = Model::Create(modeltable[i]);
+//
+//	//		newGround.pos.translation_ = { x,y,z };
+//	//		newGround.pos.scale_ = SCALE;
+//	//		
+//
+//
+//	//		objects.push_back(newGround);
+//
+//	//	}
+//	//}
+//}
 

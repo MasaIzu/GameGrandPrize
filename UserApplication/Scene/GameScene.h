@@ -24,6 +24,18 @@
 #include "GameCamera.h"
 #include"Boss.h"
 #include <CollisionManager.h>
+#include "UserApplication/Ground/Ground.h"
+
+#include <objbase.h>
+
+
+class TouchableObject;
+
+//struct ground
+//{
+//	WorldTransform pos;
+//
+//};
 
 /// <summary>
 /// ゲームシーン
@@ -63,6 +75,9 @@ public:
 
 	// 終了処理
 	void Finalize() override;
+
+	//void CreateGround();
+
 
 
 private: // メンバ変数
@@ -109,4 +124,14 @@ private: // メンバ変数
 	std::unique_ptr<Model> stageModel_;
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
+
+	////地面作成
+	std::unique_ptr<Model>groundModel = nullptr;
+	std::vector<ground> objects;
+
+	static const int groundMaxCount = 10;
+
+	std::unique_ptr<Model> modeltable[groundMaxCount];
+
+	Ground ground;
 };

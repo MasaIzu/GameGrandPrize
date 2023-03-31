@@ -1,6 +1,19 @@
 #include "MiniFish.h"
 #include"ImGuiManager.h"
 
+void MiniFish::LeaveGayser(Vector3 gayserPos)
+{
+	//移動のイージング開始
+	easeMove.Start(60);
+	//ベジエ曲線補間用の座標4つを設定
+	positions[0] = world.translation_;
+	positions[1] = { Random(-10.0f,10.0f),15.0f,Random(-10.0f,10.0f) };
+	positions[2] = positions[1];
+	positions[3] = gayserPos;
+	positions[1] += positions[0];
+	positions[2] += positions[3];
+}
+
 void MiniFish::Initialize(const Vector3& pos)
 {
 	//ワールド変換の初期化
@@ -76,11 +89,19 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 		moveRad -= 360;
 	}
 
-	pos = LerpBezireCubic(positions[0], positions[1], positions[2], positions[3], easeMove.GetTimeRate());
-	//現在の座標と次に代入される座標から正面を向く回転行列を作成
-	Matrix4 matRot = CreateMatRot(world.translation_, world.translation_ + move);
-	world.SetMatRot(matRot);
-	world.translation_ += move;
+	Matrix4 matRot;
+
+	if (easeMove.GetActive()) {
+		pos = LerpBezireCubic(positions[0], positions[1], positions[2], positions[3], easeMove.GetTimeRate());
+		matRot = CreateMatRot(world.translation_, pos);
+		world.translation_ = pos;
+	}
+	else {
+		matRot = CreateMatRot(world.translation_, world.translation_ + move);
+		world.translation_ += move;
+		world.SetMatRot(matRot);
+	}
+
 	world.TransferMatrix();
 	speedResetCount--;
 

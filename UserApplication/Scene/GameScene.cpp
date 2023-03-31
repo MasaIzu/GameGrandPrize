@@ -85,6 +85,14 @@ void GameScene::Initialize() {
 	stageWorldTransform_.translation_ = Vector3(0, -2.1f, 0);
 
 	stageWorldTransform_.TransferMatrix();
+
+	//間欠泉の座標設定
+	for (int i = 0; i < 5; i++) {
+		float gayserPosRad = 360.0f / 5.0f * i;
+		gayserPos[i].x = sin(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
+		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
+	}
+
 }
 
 void GameScene::Update() {
@@ -99,11 +107,16 @@ void GameScene::Update() {
 	}*/
 	isAttackHit = false;
 
-	//小魚の更新
-	for (int i = 0; i < 10; i++) {
-		minifishes[i].Update(stagePos, stageRadius);
-	}
 
+	//チュートリアルと最初のムービーでだけ小魚を動かす
+	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
+
+		//小魚の更新
+		for (int i = 0; i < 10; i++) {
+			minifishes[i].Update(stagePos, stageRadius);
+		}
+
+	}
 
 
 
@@ -217,13 +230,21 @@ void GameScene::Draw() {
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
-	for (int i = 0; i < 10; i++) {
-		//minifishes[i].Draw(viewProjection_);
-		boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
-		boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+	//チュートリアルと最初のムービーでだけ小魚を描画
+	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
+
+		for (int i = 0; i < 10; i++) {
+			//minifishes[i].Draw(viewProjection_);
+			boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+		}
 	}
 	
-	boss.Draw(viewProjection_);
+	//ボス出現ムービーとボス変身ムービーの間で描画
+	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
+
+		boss.Draw(viewProjection_);
+	}
 
 	player->Draw(viewProjection_);
 

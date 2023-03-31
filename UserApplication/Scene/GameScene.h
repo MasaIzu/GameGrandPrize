@@ -114,14 +114,21 @@ private: // メンバ変数
 
 	std::unique_ptr< ParticleManager> ParticleMan;
 
-	//小魚(チュートリアル用)
-	MiniFish minifishes[10];
+	GamePhase gamePhase = GamePhase::GameTutorial;
 
-	float stageRadius = 50;
-	Vector3 stagePos{0,0,0};
+	//小魚関係(チュートリアル用)
+	MiniFish minifishes[10];
+	int deadMinFishCount = 0;	//倒された小魚のカウント
+
+	//ステージ関係
+	float stageRadius = 50;	//ステージの半径
+	Vector3 stagePos{ 0,0,0 };//ステージの中心座標
+
+	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
 
 	// 3Dモデル
 	std::unique_ptr<Model> stageModel_;
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
+
 };

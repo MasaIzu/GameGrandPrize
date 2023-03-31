@@ -25,10 +25,16 @@ private:
 	Vector3 move;
 	float spdtemp = 1.0f;
 
+	/// <summary>
+	/// 間欠泉に戻る更新(チュートリアル終了の合図)
+	/// </summary>
+	void LeaveGayser(Vector3 gayserPos);
+
 public:
 	void Initialize(const Vector3& pos);
 
 	void Update(const Vector3& stagePos,float stageRadius);
+
 
 	void Draw(ViewProjection viewPro);
 

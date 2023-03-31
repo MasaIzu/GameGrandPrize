@@ -5,6 +5,9 @@
 #include"Boss.h"
 #include"ViewProjection.h"
 
+#include"BaseCollider.h"
+#include <SphereCollider.h>
+
 class MiniFish
 {
 private:
@@ -24,6 +27,9 @@ private:
 	int speedResetCount = 0;
 	Vector3 move;
 	float spdtemp = 1.0f;
+
+	float fishRadius = 3;
+	BaseCollider* FishCollider;
 
 public:
 	void Initialize(const Vector3& pos);

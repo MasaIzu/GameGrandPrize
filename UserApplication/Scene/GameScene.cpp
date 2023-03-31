@@ -223,7 +223,7 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	player->ParticleDraw(viewProjection_);
+	//player->ParticleDraw(viewProjection_);
 
 	ParticleManager::PostDraw();
 
@@ -231,8 +231,6 @@ void GameScene::Draw() {
 	Model::PreDraw(commandList);
 
 	//model_->Draw(worldTransform_, viewProjection_);
-
-	player->PostEffectDraw(viewProjection_);
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 

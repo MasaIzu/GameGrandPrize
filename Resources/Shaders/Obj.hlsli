@@ -1,5 +1,6 @@
 cbuffer WorldTransform : register(b0) {
 	matrix world; // ワールド行列
+	float m_alpha;	// アルファ
 };
 
 cbuffer ViewProjection : register(b1) {
@@ -12,7 +13,6 @@ cbuffer Material : register(b2) {
 	float3 m_ambient  : packoffset(c0); // アンビエント係数
 	float3 m_diffuse  : packoffset(c1); // ディフューズ係数
 	float3 m_specular : packoffset(c2); // スペキュラー係数
-	float m_alpha : packoffset(c2.w);	// アルファ
 }
 
 // 平行光源の数

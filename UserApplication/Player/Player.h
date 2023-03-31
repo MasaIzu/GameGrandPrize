@@ -45,10 +45,6 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void ParticleDraw(ViewProjection viewProjection_);
-
-	void PostEffectDraw(ViewProjection viewProjection_);
-
 	void Collision(int damage);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
@@ -177,5 +173,5 @@ private:
 
 	const int maxHP = 100;
 
-	int HP=maxHP;
+	int HP=100;
 };

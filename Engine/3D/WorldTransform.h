@@ -9,6 +9,7 @@
 // 定数バッファ用データ構造体
 struct ConstBufferDataWorldTransform {
 	Matrix4 matWorld;           // ローカル → ワールド変換行列
+	float alpha=1;       // アルファ
 };
 
 /// <summary>
@@ -29,6 +30,8 @@ struct WorldTransform {
 	Quaternion quaternion = { 0,0,0,0 };
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
+	//アルファ値
+	float alpha=1;
 	//その物体の向いている方向
 	Vector3 look = { 0,0,0 };
 	Vector3 lookBack = { 0,0,0 };

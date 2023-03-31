@@ -14,8 +14,8 @@ private:
 	std::unique_ptr<Model> bodyModel = nullptr;
 	std::unique_ptr<Model> eyeModel = nullptr;
 
-	WorldTransform world;	//ワールド変換
-	float direction;	//向き
+	WorldTransform world;	//ﾆ陳渉ーﾆ停ｹﾆ檀窶｢ﾃ焦ﾂｷ
+	float direction;	//ﾅ津ｼ窶堋ｫ
 
 	Vector3 positions[4];
 
@@ -28,13 +28,22 @@ private:
 	Vector3 move;
 	float spdtemp = 1.0f;
 
+
 	float fishRadius = 3;
 	BaseCollider* FishCollider;
 
+
 public:
+
+	/// <summary>
+/// ﾅﾃ版停｡ﾂ静ｲ窶堙俄禿溪堙ｩﾂ更ﾂ新(ﾆ蛋ﾆ停ｦﾂーﾆ暖ﾆ椎ﾆ但ﾆ停ｹﾂ終窶板ｹ窶堙個坂｡ﾂ図)
+/// </summary>
+	void LeaveGayser(Vector3 gayserPos);
+
 	void Initialize(const Vector3& pos);
 
 	void Update(const Vector3& stagePos,float stageRadius);
+
 
 	void Draw(ViewProjection viewPro);
 

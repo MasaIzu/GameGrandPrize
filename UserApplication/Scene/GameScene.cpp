@@ -101,6 +101,13 @@ void GameScene::Update() {
 		static int a = 0;
 		a++;
 	}
+
+	if (ImGui::Button("leave gayser")) {
+		for (int i = 0; i < 10; i++) {
+			minifishes[i].LeaveGayser(gayserPos[i / 2]);
+		}
+	}
+
 	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");

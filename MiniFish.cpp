@@ -99,9 +99,9 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 	else {
 		matRot = CreateMatRot(world.translation_, world.translation_ + move);
 		world.translation_ += move;
-		world.SetMatRot(matRot);
-	}
 
+	}
+	world.SetMatRot(matRot);
 	world.TransferMatrix();
 	speedResetCount--;
 

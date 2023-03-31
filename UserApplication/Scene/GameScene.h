@@ -110,9 +110,7 @@ private: // メンバ変数
 	float newFishPosY = 0;
 
 	bool isEnemyHit = false;
-	bool isAttackHit = false;
-
-	std::unique_ptr< ParticleManager> ParticleMan;
+	bool isAttackHit = false; 
 
 	GamePhase gamePhase = GamePhase::GameTutorial;
 

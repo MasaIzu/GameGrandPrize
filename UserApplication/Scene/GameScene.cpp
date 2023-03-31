@@ -70,11 +70,6 @@ void GameScene::Initialize() {
 
 
 	model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
-	ParticleMan = std::make_unique<ParticleManager>();
-	ParticleMan->Initialize();
-
-	UINT tex = TextureManager::GetInstance()->Load("effect1.png");
-	ParticleMan->SetTextureHandle(tex);
 
 	stageWorldTransform_.Initialize();
 
@@ -115,7 +110,6 @@ void GameScene::Update() {
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}*/
-	isAttackHit = false;
 
 
 	//チュートリアルと最初のムービーでだけ小魚を動かす
@@ -131,21 +125,25 @@ void GameScene::Update() {
 
 
 	if (collisionManager->GetIsEnemyHit()) {
-		isEnemyHit = true;
+		gameCamera->Collision();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(10);
 	}
-
+	
+	//剣と自機の当たり判定
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
 		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
 			player->GetWorldPosition(), player->GetRadius())) {
 
-			isEnemyHit = true;
+			gameCamera->Collision();
+			player->Collision(1);
 			player->SetEnemyPos(boss.GetSwordWorldPos());
 		}
 	}
 
 	if (collisionManager->GetIsAttackHit()) {
 		isAttackHit = true;
+		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 	}
 
@@ -154,21 +152,7 @@ void GameScene::Update() {
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-	//スペースキーを押していたら
-	for (int i = 0; i < 50; i++)
-	{
-
-		//X,Y,Z全て[-5.0,+5.0f]でランダムに分布
-		const float rnd_pos = 10.0f;
-		Vector3 pos{};
-		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//追加
-		ParticleMan->InAdd(60, pos, {0,0,0}, 1.0f, 1.0f, { 1,1,0,0.5 }, { 1,1,1,1 });
-	}
-
-	player->SetIsEnemyHit(isEnemyHit);
+	//player->SetIsEnemyHit(isEnemyHit);
 	player->SetIsAttackHit(isAttackHit);
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
@@ -176,13 +160,11 @@ void GameScene::Update() {
 	player->Update(viewProjection_);
 
 
-	gameCamera->SetIsHit(isEnemyHit);
+	//gameCamera->SetIsHit(isEnemyHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});
 	gameCamera->Update(&viewProjection_);
-	isEnemyHit = gameCamera->GetIsHit();
-
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
@@ -213,9 +195,16 @@ void GameScene::PostEffectDraw()
 
 	ParticleManager::PreDraw(commandList);
 
-	player->ParticleDraw(viewProjection_);
+	//player->ParticleDraw(viewProjection_);
 
 	ParticleManager::PostDraw();
+
+	Model::PreDraw(commandList);
+
+	//player->PostEffectDraw(viewProjection_);
+
+	Model::PostDraw();
+
 
 	PostEffect::PostDrawScene();
 }
@@ -232,11 +221,18 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
+	ParticleManager::PreDraw(commandList);
+
+	player->ParticleDraw(viewProjection_);
+
+	ParticleManager::PostDraw();
+
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
+	player->PostEffectDraw(viewProjection_);
 
 	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
@@ -258,8 +254,15 @@ void GameScene::Draw() {
 
 	player->Draw(viewProjection_);
 
+	
+
+
+	
+
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
+
+
 
 	FbxModel::PreDraw(commandList);
 

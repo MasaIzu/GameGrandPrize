@@ -33,11 +33,11 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PostEffect::rootSignature;
 
 const float PostEffect::clearColor[4] = {0,0,0,0};
 
-void PostEffect::Initialize(ID3D12Device* device)
+void PostEffect::Initialize(DirectXCore* dxCore)
 {
 	HRESULT result;
 
-	device_ = device;
+	device_ = dxCore->GetDevice();
 
 	D3D12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
@@ -113,43 +113,47 @@ void PostEffect::Initialize(ID3D12Device* device)
 	//デスクリプタヒープにRTVを作成
 	device_->CreateRenderTargetView(texBuff.Get(), nullptr, descHeapRTV->GetCPUDescriptorHandleForHeapStart());
 
-	//深度バッファ
-	CD3DX12_RESOURCE_DESC depthResDesc =
-		CD3DX12_RESOURCE_DESC::Tex2D(
-			DXGI_FORMAT_D32_FLOAT,
-			WinApp::window_width,
-			WinApp::window_height,
-			1, 0,
-			1, 0,
-			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	////深度バッファ
+	//CD3DX12_RESOURCE_DESC depthResDesc =
+	//	CD3DX12_RESOURCE_DESC::Tex2D(
+	//		DXGI_FORMAT_D32_FLOAT,
+	//		WinApp::window_width,
+	//		WinApp::window_height,
+	//		1, 0,
+	//		1, 0,
+	//		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 
-	CD3DX12_HEAP_PROPERTIES HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	//CD3DX12_HEAP_PROPERTIES HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-	CD3DX12_CLEAR_VALUE CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
+	//CD3DX12_CLEAR_VALUE CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
 
-	result = device_->CreateCommittedResource(
-		&HEAP_PROPERTIES,
-		D3D12_HEAP_FLAG_NONE,
-		&depthResDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&CLEAR_VALUE,
-		IID_PPV_ARGS(&depthBuff));
-	assert(SUCCEEDED(result));
+	//result = device_->CreateCommittedResource(
+	//	&HEAP_PROPERTIES,
+	//	D3D12_HEAP_FLAG_NONE,
+	//	&depthResDesc,
+	//	D3D12_RESOURCE_STATE_DEPTH_WRITE,
+	//	&CLEAR_VALUE,
+	//	IID_PPV_ARGS(&depthBuff));
+	//assert(SUCCEEDED(result));
 
-	//DSV用のデスクリプタヒープ設定
-	D3D12_DESCRIPTOR_HEAP_DESC DescHeapDesc{};
-	DescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	DescHeapDesc.NumDescriptors = 1;
-	//DSV用デスクリプタヒープの作成
-	result = device_->CreateDescriptorHeap(&DescHeapDesc, IID_PPV_ARGS(&descHeapDSV));
-	assert(SUCCEEDED(result));
+	////DSV用のデスクリプタヒープ設定
+	//D3D12_DESCRIPTOR_HEAP_DESC DescHeapDesc{};
+	//DescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	//DescHeapDesc.NumDescriptors = 1;
+	////DSV用デスクリプタヒープの作成
+	//result = device_->CreateDescriptorHeap(&DescHeapDesc, IID_PPV_ARGS(&descHeapDSV));
+	//assert(SUCCEEDED(result));
 
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	device_->CreateDepthStencilView(depthBuff.Get(),
-		&dsvDesc,
-		descHeapDSV->GetCPUDescriptorHandleForHeapStart());
+	//D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	//dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	//dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	//device_->CreateDepthStencilView(depthBuff.Get(),
+	//	&dsvDesc,
+	//	descHeapDSV->GetCPUDescriptorHandleForHeapStart());
+
+	descHeapDSV = dxCore->GetdsvHeap();
+
+	depthBuff = dxCore->GetbackBuffers();
 
 
 	/*Sprite::Initialize();

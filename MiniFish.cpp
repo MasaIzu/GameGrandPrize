@@ -1,5 +1,7 @@
 #include "MiniFish.h"
 #include"ImGuiManager.h"
+#include <CollisionManager.h>
+#include <CollisionAttribute.h>
 
 void MiniFish::LeaveGayser(Vector3 gayserPos)
 {
@@ -22,6 +24,13 @@ void MiniFish::Initialize(const Vector3& pos)
 	positions[3] = pos;
 	world.translation_ = pos;
 	world.TransferMatrix();
+
+
+	// コリジョンマネージャに追加
+	FishCollider = new SphereCollider(Vector4(0, fishRadius, 0, 0), fishRadius);
+	CollisionManager::GetInstance()->AddCollider(FishCollider);
+	FishCollider->SetAttribute(COLLISION_ATTR_WEAKENEMYS);
+	
 
 	//魚のモデル初期化
 	//bodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -104,6 +113,11 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 	world.SetMatRot(matRot);
 	world.TransferMatrix();
 	speedResetCount--;
+
+	
+	
+	FishCollider->Update(world.matWorld_);
+	
 
 }
 

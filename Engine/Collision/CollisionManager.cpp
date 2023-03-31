@@ -47,6 +47,12 @@ void CollisionManager::CheckAllCollisions()
 						isAttackHit = true;
 					}
 				}
+				else if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						EnemyWorldPos = colB->GetWorldPos();
+						isEnemyHit = true;
+					}
+				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 					//isHit = true;
 				}

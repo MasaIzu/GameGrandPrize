@@ -89,7 +89,7 @@ void GameScene::Initialize() {
 	gayserParticle->Initialize();
 
 	for (int i = 0; i < boss.fishMaxCount; i++) {
-		boss.CreateFish(gayserPos[ i %5]);
+		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
 	}
 
 	boss.fishParent.pos.translation_ = { 0,0,100 };

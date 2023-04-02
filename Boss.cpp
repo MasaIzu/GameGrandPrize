@@ -85,9 +85,9 @@ void Boss::Update(const Vector3& targetPos)
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void Boss::CreateFish(Vector3 spawnPos)
+void Boss::CreateFish(float posY)
 {
-	float posY = Random(-fishParent.radius, fishParent.radius);
+	//float posY = Random(-fishParent.radius, fishParent.radius);
 
 	//y座標が親の半径を超えないようにする
 	if (fabs(posY) > fishParent.radius) {
@@ -179,10 +179,10 @@ void Boss::UpdateIdle()
 		Vector3 pos;
 		easeFishPos[i].Update();
 
-		if (easeFishPos[i].GetActive()) {
+		/*if (easeFishPos[i].GetActive()) {
 			pos = LerpBezireQuadratic();
 		}
-		else {
+		else {*/
 
 		//魚のラジアン(球の周回軌道)を加算
 		fishes[i].radian += fishes[i].spd;
@@ -235,7 +235,7 @@ void Boss::UpdateIdle()
 			}*/
 		FishLookFront(fishes[i].pos.translation_, pos, i);
 
-		}
+		//g}
 
 	
 		fishes[i].pos.translation_ = pos;

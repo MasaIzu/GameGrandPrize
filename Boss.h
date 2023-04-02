@@ -59,7 +59,7 @@ public:
 
 	void Update(const Vector3& targetPos);
 
-	void CreateFish(float posY = 0);
+	void CreateFish(Vector3 spawnPos);
 
 	void Draw(ViewProjection viewProMat);
 
@@ -116,7 +116,7 @@ private:
 
 	const int moveFishMax = 120;
 
-	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
+	EasingData easeFishPos[fishMaxCount];	//魚の移動用イージングタイマー
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
 	Vector3 parentBeforePos, parentAfterPos;
 	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];

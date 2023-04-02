@@ -47,9 +47,7 @@ void GameScene::Initialize() {
 
 	boss.Initialize();
 
-	for (int i = 0; i < boss.fishMaxCount; i++) {
-		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
-	}
+	
 
 	for (int i = 0; i < 10; i++) {
 		Vector3 pos;
@@ -58,8 +56,7 @@ void GameScene::Initialize() {
 		minifishes[i].Initialize(pos);
 	}
 
-	boss.fishParent.pos.translation_ = { 0,0,100 };
-	boss.Update({ 0,0,0 });
+	
 
 	player = std::make_unique<Player>();
 	player->Initialize(model_.get(), 1280, 720);
@@ -90,6 +87,13 @@ void GameScene::Initialize() {
 	gayserParticle = std::make_unique<ParticleManager>();
 
 	gayserParticle->Initialize();
+
+	for (int i = 0; i < boss.fishMaxCount; i++) {
+		boss.CreateFish(gayserPos[ i %5]);
+	}
+
+	boss.fishParent.pos.translation_ = { 0,0,100 };
+	boss.Update({ 0,0,0 });
 }
 
 void GameScene::Update() {

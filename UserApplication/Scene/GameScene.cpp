@@ -93,8 +93,80 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	gayserFlame++;
+	if (static_cast<int>(gayserFlame)%10==0)
+	{
+		for (int i = 0; i < 2; i++)
+		{
 
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = 20;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+		}
+		for (int i = 0; i < 2; i++)
+		{
 
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = 20;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+		}
+		for (int i = 0; i < 2; i++)
+		{
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = 20;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+		}
+		for (int i = 0; i < 2; i++)
+		{
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = 20;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+		}
+		for (int i = 0; i < 2; i++)
+		{
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = 20;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+		}
+	}
 	if (ImGui::Button("break")) {
 		static int a = 0;
 		a++;
@@ -106,10 +178,10 @@ void GameScene::Update() {
 		}
 		//煙の処理
 		{
-			gayserFlame++;
+			//gayserFlame++;
 			if (gayserFlame <= gayserMaxFlame)
 			{
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 
 						//XYZの広がる距離
@@ -123,7 +195,7 @@ void GameScene::Update() {
 						//追加
 						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0],{ gayserPos[0].x, gayserPos[0] .y+pos.y, gayserPos[0].z}, gayserPos[0] + pos, 1.0, 1.0, {0,0,0,1}, {0,0,0,1});
 					}
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 
 						//XYZの広がる距離
@@ -137,7 +209,7 @@ void GameScene::Update() {
 						//追加
 						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
 					}
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 
 						//XYZの広がる距離
@@ -151,7 +223,7 @@ void GameScene::Update() {
 						//追加
 						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
 					}
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 
 						//XYZの広がる距離
@@ -165,7 +237,7 @@ void GameScene::Update() {
 						//追加
 						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
 					}
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 
 						//XYZの広がる距離
@@ -297,7 +369,7 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	player->ParticleDraw(viewProjection_);
+	//player->ParticleDraw(viewProjection_);
 
 	gayserParticle->Draw(viewProjection_);
 
@@ -323,10 +395,10 @@ void GameScene::Draw() {
 	//ボス出現ムービーとボス変身ムービーの間で描画
 	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
-		boss.Draw(viewProjection_);
+		//boss.Draw(viewProjection_);
 	}
 
-	player->Draw(viewProjection_);
+	//player->Draw(viewProjection_);
 
 
 

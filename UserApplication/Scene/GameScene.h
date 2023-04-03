@@ -131,6 +131,9 @@ private: // メンバ変数
 
 	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
 
+
+	bool isAttackHitToWakeEnemy[10];
+
 	// 3Dモデル
 	std::unique_ptr<Model> stageModel_;
 	//ワールド変換データ

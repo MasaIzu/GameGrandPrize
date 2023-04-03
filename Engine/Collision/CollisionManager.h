@@ -38,7 +38,7 @@ public://ƒƒ“ƒoŠÖ”
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
 	bool GetIsAttackHit() { return isAttackHit; }
-	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
+	bool GetIsWakeEnemyAttackHit(int x) { return isWakeEnemyAttackHit[x]; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
 	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
@@ -53,7 +53,7 @@ private:
 
 	bool isEnemyHit = false;
 	bool isAttackHit = false;
-	bool isWakeEnemyAttackHit = false;
+	bool isWakeEnemyAttackHit[10];
 	Matrix4 EnemyWorldPos;
 	Matrix4 HitWorldPos;
 };

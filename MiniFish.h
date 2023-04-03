@@ -40,7 +40,7 @@ public:
 /// </summary>
 	void LeaveGayser(Vector3 gayserPos);
 
-	void Initialize(const Vector3& pos);
+	void Initialize(const Vector3& pos, const unsigned short fishNumber);
 
 	void Update(const Vector3& stagePos,float stageRadius);
 

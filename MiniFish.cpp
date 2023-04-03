@@ -16,7 +16,7 @@ void MiniFish::LeaveGayser(Vector3 gayserPos)
 	positions[2] += positions[3];
 }
 
-void MiniFish::Initialize(const Vector3& pos)
+void MiniFish::Initialize(const Vector3& pos, const unsigned short fishNumber)
 {
 	//ワールド変換の初期化
 	world.Initialize();
@@ -24,6 +24,14 @@ void MiniFish::Initialize(const Vector3& pos)
 	positions[3] = pos;
 	world.translation_ = pos;
 	world.TransferMatrix();
+
+	// コリジョンマネージャに追加
+	FishCollider = new SphereCollider(Vector4(0, fishRadius, 0, 0), fishRadius);
+	CollisionManager::GetInstance()->AddCollider(FishCollider);
+
+	FishCollider->Update(world.matWorld_);
+	FishCollider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS);
+	FishCollider->SetAttribute(fishNumber); 
 
 	//魚のモデル初期化
 	//bodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -106,6 +114,9 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 	world.SetMatRot(matRot);
 	world.TransferMatrix();
 	speedResetCount--;
+
+
+	FishCollider->Update(world.matWorld_);
 
 }
 

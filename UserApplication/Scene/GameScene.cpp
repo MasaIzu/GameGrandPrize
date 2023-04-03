@@ -94,7 +94,7 @@ void GameScene::Initialize() {
 		Vector3 pos;
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
-		minifishes[i].Initialize(pos);
+		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
 	boss.Update({ 0,0,0 });
@@ -102,6 +102,17 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	gayserFlame++;
+
+	for (int i = 0; i < 10; i++) {
+		//isAttackHitToWakeEnemy[i] = false;
+		if (isAttackHitToWakeEnemy[i] == false) {
+			isAttackHitToWakeEnemy[i] = collisionManager->GetIsWakeEnemyAttackHit(i);
+		}
+		
+	}
+
+
+
 	if (static_cast<int>(gayserFlame)%10==0)
 	{
 		for (int i = 0; i < 2; i++)
@@ -414,8 +425,11 @@ void GameScene::Draw() {
 
 		for (int i = 0; i < 10; i++) {
 			//minifishes[i].Draw(viewProjection_);
-			boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
-			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+			if (isAttackHitToWakeEnemy[i] == false) {
+				boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+				boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+			}
+			
 		}
 	}
 

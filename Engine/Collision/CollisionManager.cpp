@@ -17,6 +17,10 @@ void CollisionManager::CheckAllCollisions()
 	isEnemyHit = false;
 	isAttackHit = false;
 
+	for (int i = 0; i < 10; i++) {
+		isWakeEnemyAttackHit[i] = false;
+	}
+
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
 
@@ -47,18 +51,34 @@ void CollisionManager::CheckAllCollisions()
 						isAttackHit = true;
 					}
 				}
-				else if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+
+				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS) {
+					
+					for (int i = 0; i < 10; i++) {
+						
+						if (colB->attribute == COLLISION_ATTR_WEAKENEMYS + i) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+								HitWorldPos = colA->GetWorldPos();
+								isWakeEnemyAttackHit[i] = true;
+							}
+						}
+
+					}
+
+				}
+
+				/*else if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_WEAKENEMYS1) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colB->GetWorldPos();
 						isEnemyHit = true;
 					}
 				}
-				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_WEAKENEMYS1) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						HitWorldPos = colA->GetWorldPos();
 						isWakeEnemyAttackHit = true;
 					}
-				}
+				}*/
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 					//isHit = true;
 				}

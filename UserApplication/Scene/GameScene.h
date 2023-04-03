@@ -122,6 +122,8 @@ private: // メンバ変数
 	const float gayserMaxFlame = 240;
 	float gayserFlame=0;
 
+	int fishSpawnInterval = 0;
+	int fishSpawnCount = 0;
 
 	//ステージ関係
 	float stageRadius = 50;	//ステージの半径

@@ -56,10 +56,15 @@ void Boss::Initialize()
 void Boss::Update(const Vector3& targetPos)
 {
 	//第1形態の魚群の更新
-	ImGui::Begin("sword");
+	//ImGui::Begin("sword");
 
 	//狙う敵の座標更新
 	this->targetPos = targetPos;
+
+	//魚が一匹も存在していないなら処理を終わる
+	if (fishes.empty()) {
+		return;
+	}
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -80,13 +85,14 @@ void Boss::Update(const Vector3& targetPos)
 	}
 
 
-	ImGui::End();
+//	ImGui::End();
 
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void Boss::CreateFish(float posY)
+void Boss::CreateFish(Vector3 spawnPos)
 {
+	float posY = Random(-fishParent.radius, fishParent.radius);
 	//y座標が親の半径を超えないようにする
 	if (fabs(posY) > fishParent.radius) {
 		if (posY > 0)posY = fishParent.radius;
@@ -133,6 +139,16 @@ void Boss::CreateFish(float posY)
 
 	pos += newFish.displacement;
 
+	newFish.afterPos = pos;
+	newFish.afterPos = newFish.pos.matWorld_.transform(newFish.afterPos, fishParent.pos.matWorld_);
+	newFish.beforePos = spawnPos;
+	Vector3 randParam;
+	randParam = {Random(-5, 5), Random(-5, 5), Random(-5, 5)};
+	newFish.controll1 = newFish.beforePos + randParam;
+	randParam = { Random(-5, 5), 30.0f, Random(-5, 5) };
+	newFish.controll2 = newFish.afterPos + randParam;
+	newFish.easeMove.Start(45);
+
 	newFish.pos.translation_ = pos;
 	newFish.pos.TransferMatrix();
 	//配列にい列
@@ -155,6 +171,10 @@ void Boss::Draw(ViewProjection viewProMat)
 
 	}
 
+	if (fishes.empty()) {
+		return;
+	}
+
 	for (int i = 0; i < fishes.size(); i++) {
 		fishBodyModel->Draw(fishes[i].pos, viewProMat);
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
@@ -171,58 +191,82 @@ void Boss::UpdateIdle()
 	fishParent.pos.TransferMatrix();
 
 	//魚1匹ずつの更新
+
 	for (int i = 0; i < fishes.size(); i++) {
 
-		//魚のラジアン(球の周回軌道)を加算
-		fishes[i].radian += fishes[i].spd;
-		if (fishes[i].radian > 360.0f) {
-			fishes[i].radian -= 360.0f;
-			fishes[i].spd = Random(0.0f, randSpdParam);
-		}
-
-		//座標を計算
 		Vector3 pos;
+		fishes[i].easeMove.Update();
 
-		pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
-		pos.x = 100;
-		pos.z = 100;
+		if (fishes[i].easeMove.GetActive()) {
+			ImGui::Text("fish create active");
+			fishes[i].pos.parent_ = nullptr;
+			pos = LerpBezireCubic(fishes[i].beforePos, fishes[i].controll1, fishes[i].controll2, fishes[i].afterPos, fishes[i].easeMove.GetTimeRate());
+			Matrix4 matrot;
+			matrot = CreateMatRot(fishes[i].pos.translation_, pos);
+			fishes[i].pos.SetMatRot(matrot);
+		}
+		else {
+			ImGui::Text("atk interval:%d",nextPhaseInterval);
+			if (fishes[i].pos.parent_ == nullptr) {
+				fishes[i].pos.parent_ = &fishParent.pos;
+			}
 
-		Vector3 rotaVec;
-		Vector3 vec = { 0, 1, 0 };
-		vec.normalize();
 
-		Quaternion rotaQuaternion = { vec,fishes[i].radian * PI / 180.0f };
-		Quaternion posQ = { pos.x,pos.y,pos.z,0 };
-		rotaVec = rotaQuaternion.multiply(posQ.GetAxis());
+			//魚のラジアン(球の周回軌道)を加算
+			fishes[i].radian += fishes[i].spd;
+			if (fishes[i].radian > 360.0f) {
+				fishes[i].radian -= 360.0f;
+				fishes[i].spd = Random(0.0f, randSpdParam);
+			}
 
-		rotaVec *= fishes[i].radius;
+			//座標を計算
 
-		//	pos.y = fishParent.radius - fishes[i].radius;
-		pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
-		pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 
-		pos.x = rotaVec.x;
-		pos.z = rotaVec.z;
-		//pos = rotaVec;
+			pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+			pos.x = 100;
+			pos.z = 100;
 
-		float plus = Random(-1.0f, 1.0f);
-		float num = 1;
-		if (plus < 0) {
-			num = -1;
+			Vector3 rotaVec;
+			Vector3 vec = { 0, 1, 0 };
+			vec.normalize();
+
+			Quaternion rotaQuaternion = { vec,fishes[i].radian * PI / 180.0f };
+			Quaternion posQ = { pos.x,pos.y,pos.z,0 };
+			rotaVec = rotaQuaternion.multiply(posQ.GetAxis());
+
+			rotaVec *= fishes[i].radius;
+
+			//	pos.y = fishParent.radius - fishes[i].radius;
+			pos.x = sin(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+			pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
+
+			pos.x = rotaVec.x;
+			pos.z = rotaVec.z;
+			//pos = rotaVec;
+
+			float plus = Random(-1.0f, 1.0f);
+			float num = 1;
+			if (plus < 0) {
+				num = -1;
+			}
+
+			//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+
+			pos += fishes[i].displacement;
+
+			//回転用の移動ベクトルを作成
+			Vector3 dirvec = pos - fishes[i].pos.translation_;
+			dirvec.normalize();
+			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
+
+			/*	Matrix4 dirMat{
+
+				}*/
+
+				//攻撃のクールタイムを減らす
+	
 		}
 
-		//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
-
-		pos += fishes[i].displacement;
-
-		//回転用の移動ベクトルを作成
-		Vector3 dirvec = pos - fishes[i].pos.translation_;
-		dirvec.normalize();
-		//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
-
-		/*	Matrix4 dirMat{
-
-			}*/
 		FishLookFront(fishes[i].pos.translation_, pos, i);
 		fishes[i].pos.translation_ = pos;
 
@@ -230,8 +274,10 @@ void Boss::UpdateIdle()
 		fishes[i].pos.TransferMatrix();
 	}
 
-	//攻撃のクールタイムを減らす
-	nextPhaseInterval--;
+	if (!fishes[fishes.size() - 1].easeMove.GetActive() && !fishes[0].easeMove.GetActive()) {
+		nextPhaseInterval--;
+	}
+
 	if (nextPhaseInterval == 0) {
 
 		//50%で突進、残りで剣撃

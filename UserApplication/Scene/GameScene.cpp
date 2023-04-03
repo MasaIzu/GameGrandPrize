@@ -45,21 +45,7 @@ void GameScene::Initialize() {
 
 	boxCollision = std::make_unique<BoxCollision>();
 
-	boss.Initialize();
-
-	for (int i = 0; i < boss.fishMaxCount; i++) {
-		boss.CreateFish(Random(-boss.fishParent.radius, boss.fishParent.radius));
-	}
-
-	for (int i = 0; i < 10; i++) {
-		Vector3 pos;
-		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
-		pos += stagePos;
-		minifishes[i].Initialize(pos);
-	}
-
-	boss.fishParent.pos.translation_ = { 0,0,100 };
-	boss.Update({ 0,0,0 });
+	
 
 	player = std::make_unique<Player>();
 	player->Initialize(model_.get(), 1280, 720);
@@ -90,6 +76,25 @@ void GameScene::Initialize() {
 	gayserParticle = std::make_unique<ParticleManager>();
 
 	gayserParticle->Initialize();
+
+	boss.Initialize();
+
+
+	boss.fishParent.pos.translation_ = { 0,0,100 };
+	boss.fishParent.pos.TransferMatrix();
+
+	/*for (int i = 0; i < boss.fishMaxCount; i++) {
+		boss.CreateFish(gayserPos[i % 5]);
+	}*/
+
+	for (int i = 0; i < 10; i++) {
+		Vector3 pos;
+		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
+		pos += stagePos;
+		minifishes[i].Initialize(pos);
+	}
+
+	boss.Update({ 0,0,0 });
 }
 
 void GameScene::Update() {
@@ -176,6 +181,10 @@ void GameScene::Update() {
 		for (int i = 0; i < 10; i++) {
 			minifishes[i].LeaveGayser(gayserPos[i / 2]);
 		}
+
+		//ボスのスポーン開始
+		fishSpawnCount = 20;
+
 		//煙の処理
 		{
 			//gayserFlame++;
@@ -254,6 +263,16 @@ void GameScene::Update() {
 			}
 		}
 
+	}
+
+	fishSpawnInterval--;
+
+	if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
+		fishSpawnCount--;
+		fishSpawnInterval = 5;
+		for (int i = 0; i < boss.fishMaxCount / 20; i++) {
+			boss.CreateFish(gayserPos[i % 5]);
+		}
 	}
 
 	/*if (input_->TriggerKey(DIK_SPACE))
@@ -393,10 +412,10 @@ void GameScene::Draw() {
 	}
 
 	//ボス出現ムービーとボス変身ムービーの間で描画
-	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
+	//if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
-		//boss.Draw(viewProjection_);
-	}
+		boss.Draw(viewProjection_);
+//	}
 
 	//player->Draw(viewProjection_);
 

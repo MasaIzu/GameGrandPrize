@@ -27,12 +27,12 @@ void Ground::Initialize() {
 	////çsóÒÇÃì]ëó
 	//worldTransform_.TransferMatrix();
 
-	model_ = std::make_unique<Model>();
+	groundModel_ = std::make_unique<Model>();
 
 	//ínñ ÇÃï`âÊ
-	model_.reset(Model::CreateFromOBJ("Ground", true));
+	groundModel_.reset(Model::CreateFromOBJ("Ground", true));
 
-	for (auto newGround : objects)
+	for (auto newGround : groundObjects)
 	{
 		Ground::CreateGround();
 	}
@@ -49,7 +49,7 @@ void Ground::Draw(ViewProjection viewProjection_) {
 
 	for (int i = 0; i < 64; i++)
 	{
-		model_->Draw(objects[i].pos, viewProjection_);
+		groundModel_->Draw(groundObjects[i].pos, viewProjection_);
 
 	}
 }
@@ -83,7 +83,7 @@ void Ground::CreateGround()
 			newGround.pos.TransferMatrix();
 
 
-			objects.push_back(newGround);
+			groundObjects.push_back(newGround);
 
 		}
 	}

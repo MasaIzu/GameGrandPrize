@@ -39,8 +39,8 @@ public:
 
 	static const int MaxCount = 5;
 	//地面作成
-	std::unique_ptr<Model>model_ = nullptr;
-	std::vector<ground> objects;
+	std::unique_ptr<Model>groundModel_ = nullptr;
+	std::vector<ground> groundObjects;
 
 private:
 	//ワールド変換データ

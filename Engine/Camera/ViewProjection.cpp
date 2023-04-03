@@ -80,13 +80,17 @@ void ViewProjection::UpdateMatrix() {
 	//ベクトルを正規化
 	cameraAxisY.normalize();
 
-	//視点座標に-1を掛けた座標
-	Vector3 reverseEyePosition = eyePosition * -1;
-	//カメラの位置からワールド原点へのベクトル(カメラ座標系)
-	float tX = cameraAxisX.dot(reverseEyePosition);
-	float tY = cameraAxisY.dot(reverseEyePosition);
-	float tZ = cameraAxisZ.dot(reverseEyePosition);
-	//一つのベクトルにまとめる
-	Vector3 translation = { tX, tY, tZ };
+	matBillboard = MyMath::MakeIdentity();
+
+	//ビルボード行列
+	matBillboard.m[0][0] = cameraAxisX.x;
+	matBillboard.m[0][1] = cameraAxisX.y;
+	matBillboard.m[0][2] = cameraAxisX.z;
+	matBillboard.m[1][0] = cameraAxisY.x;
+	matBillboard.m[1][1] = cameraAxisY.y;
+	matBillboard.m[1][2] = cameraAxisY.z;
+	matBillboard.m[2][0] = cameraAxisZ.x;
+	matBillboard.m[2][1] = cameraAxisZ.y;
+	matBillboard.m[2][2] = cameraAxisZ.z;
 
 }

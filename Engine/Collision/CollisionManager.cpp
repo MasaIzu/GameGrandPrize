@@ -53,6 +53,12 @@ void CollisionManager::CheckAllCollisions()
 						isEnemyHit = true;
 					}
 				}
+				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						HitWorldPos = colA->GetWorldPos();
+						isWakeEnemyAttackHit = true;
+					}
+				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 					//isHit = true;
 				}

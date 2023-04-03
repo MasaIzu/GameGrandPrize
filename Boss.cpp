@@ -90,7 +90,7 @@ void Boss::Update(const Vector3& targetPos)
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void Boss::CreateFish(float posY)
+void Boss::CreateFish(Vector3 spawnPos)
 {
 
 	float posY = Random(-fishParent.radius, fishParent.radius);

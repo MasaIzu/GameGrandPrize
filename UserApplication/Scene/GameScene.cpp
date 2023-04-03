@@ -319,6 +319,11 @@ void GameScene::Update() {
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 	}
 
+	//雑魚的に当たった時
+	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+		
+	}
+
 
 
 	boss.Update(player->GetWorldPosition());

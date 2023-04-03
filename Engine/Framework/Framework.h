@@ -12,6 +12,7 @@
 
 #include <memory>
 
+
 class Framework {
 public:
 	//virtualメンバ関数
@@ -47,14 +48,15 @@ public:
 protected:
 
 	//シングルトン
-	WinApp* winApp_ = nullptr;
-	DirectXCore* directXCore_ = nullptr;
-	Input* input_ = nullptr;
-	SceneManager* sceneManager_;
-	TextureManager* TextureManager_ = nullptr;
+	SceneManager* sceneManager_ = nullptr;
 
 
 	//シングルトン以外
+	WinApp* winApp_ = nullptr;
+	DirectXCore* directXCore_ = nullptr;
+	Input* input_ = nullptr;
+	TextureManager* TextureManager_ = nullptr;
+
 	std::unique_ptr<ImGuiManager> imGui;
 	std::unique_ptr <FPS> fps;
 	std::unique_ptr <AbstractSceneFactory> sceneFactory_;

@@ -17,9 +17,12 @@ class Input
 
 public: // メンバ関数
 
-	static Input* GetInstance();
+	Input();
+	~Input();
+	
+
 	// 初期化
-	void Initialize();
+	void Initialize(WinApp* winApp_);
 
 	// 更新
 	void Update();
@@ -53,14 +56,8 @@ public: // メンバ関数
 	void Destroy();
 
 private:
-	Input() = default;
-	~Input();
-	Input(const Input&) = delete;
-	const Input& operator=(const Input&) = delete;
 
 private:// 静的メンバ変数
-
-	static Input* Input_;
 
 private:
 	// DirectInputのインスタンス

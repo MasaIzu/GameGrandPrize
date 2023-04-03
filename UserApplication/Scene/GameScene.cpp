@@ -330,10 +330,10 @@ void GameScene::Update() {
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 	}
 
-	//雑魚的に当たった時
-	if (collisionManager->GetIsWakeEnemyAttackHit()) {
-		
-	}
+	////雑魚的に当たった時
+	//if (collisionManager->GetIsWakeEnemyAttackHit()) {
+	//	
+	//}
 
 
 
@@ -439,7 +439,7 @@ void GameScene::Draw() {
 		boss.Draw(viewProjection_);
 //	}
 
-	//player->Draw(viewProjection_);
+	player->Draw(viewProjection_);
 
 
 

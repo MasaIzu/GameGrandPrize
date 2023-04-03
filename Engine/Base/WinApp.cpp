@@ -3,8 +3,6 @@
 #include<imgui_impl_win32.h>
 
 
-WinApp* WinApp::WinApp_ = nullptr;
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -27,18 +25,17 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-WinApp* WinApp::GetInstance() {
-	if (WinApp_ == nullptr)
-	{
-		WinApp_ = new WinApp();
-	}
+WinApp::WinApp()
+{
+}
 
-	return WinApp_;
+WinApp::~WinApp()
+{
 }
 
 void WinApp::Destroy()
 {
-	delete WinApp_;
+	
 }
 
 void WinApp::MakeWindow(std::wstring title) {

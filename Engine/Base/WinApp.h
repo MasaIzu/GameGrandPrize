@@ -12,15 +12,16 @@ public:
 
 public: // 静的メンバ関数
 
-	// シングルトンインスタンスの取得
-	static WinApp* GetInstance();
-
 	/// <summary>
 	/// ウィンドウプロシージャ
 	/// </summary>
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 public://メンバ関数
+
+	WinApp();
+	~WinApp();
+
 	void MakeWindow(std::wstring title);
 	bool ProcessMessage();
 	void DeleteGameWindow();
@@ -34,17 +35,18 @@ public://GetterSetter
 
 	HWND Gethwnd() { return hwnd; }
 
+	int GetWindowWidth() { return window_width; }
+	int GetWindowHeight() { return window_height; }
+
+
 private://メンバ変数
-	WinApp() = default;
-	~WinApp() = default;
-	WinApp(const WinApp&) = delete;
-	const WinApp& operator=(const WinApp&) = delete;
+	
 
 	WNDCLASSEX w{};
 	HWND hwnd;
 
 private:
-	static WinApp* WinApp_;
+
 
 };
 

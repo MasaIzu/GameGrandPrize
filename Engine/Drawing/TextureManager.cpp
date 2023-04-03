@@ -3,24 +3,25 @@
 #include <cassert>
 
 using namespace DirectX;
-TextureManager* TextureManager::TextureManager_ = nullptr;
+
+
+TextureManager::TextureManager()
+{
+}
+
+TextureManager::~TextureManager()
+{
+}
 
 uint32_t TextureManager::Load(const std::string& fileName) {
-	return TextureManager::GetInstance()->LoadInternal(fileName);
+
+	return LoadInternal(fileName);
 }
 
-TextureManager* TextureManager::GetInstance() {
-	if (TextureManager_ == nullptr)
-	{
-		TextureManager_ = new TextureManager();
-	}
-
-	return TextureManager_;
-}
 
 void TextureManager::Delete()
 {
-	delete TextureManager_;
+	
 }
 
 void TextureManager::Initialize(ID3D12Device* device, std::string directoryPath) {

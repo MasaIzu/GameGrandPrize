@@ -9,6 +9,7 @@
 #include <string>
 #include <wrl.h>
 #include<memory>
+#include "DirectXCore.h"
 
 /// <summary>
 /// スプライト
@@ -35,7 +36,7 @@ public: // サブクラス
 public: // 静的メンバ関数
 
 	// 静的初期化
-	static void StaticInitialize(ID3D12Device* device,const std::wstring& directoryPath = L"Resources/");
+	static void StaticInitialize(DirectXCore* directXCore, TextureManager* TextureManager_ ,const std::wstring& directoryPath = L"Resources/");
 
 	// 描画前処理
 	static void PreDraw(ID3D12GraphicsCommandList* cmdList, int blendMode = 1);
@@ -51,7 +52,7 @@ private: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
 	// デバイス
-	static ID3D12Device* Device_;
+	static DirectXCore* DirectXCore_;
 	// デスクリプタサイズ
 	static UINT DescriptorHandleSize_;
 	// コマンドリスト
@@ -144,6 +145,8 @@ private: // メンバ変数
 	Vector2 texBase_ = { 0, 0 };
 	Vector2 texSize_ = { 100.0f, 100.0f };
 	D3D12_RESOURCE_DESC resourceDesc_;
+
+	static TextureManager* textureManager_;
 
 private: // メンバ関数
 	/// <summary>

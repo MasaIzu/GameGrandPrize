@@ -9,20 +9,17 @@
 
 using namespace Microsoft::WRL;
 
-DirectXCore* DirectXCore::DirectXCore_ = nullptr;
-
-DirectXCore* DirectXCore::GetInstance() {
-	if (DirectXCore_ == nullptr)
-	{
-		DirectXCore_ = new DirectXCore();
-	}
-
-	return DirectXCore_;
-}
 
 void DirectXCore::Destroy(){
 
-	delete DirectXCore_;
+}
+
+DirectXCore::DirectXCore()
+{
+}
+
+DirectXCore::~DirectXCore()
+{
 }
 
 void DirectXCore::DirectXCoreInitialize(HWND hwnd, int window_width, int window_height) {

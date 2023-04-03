@@ -16,15 +16,9 @@
 #include <dinputd.h>
 #include <memory>
 
-Input* Input::Input_ = nullptr;
 
-Input* Input::GetInstance() {
-	if (Input_ == nullptr)
-	{
-		Input_ = new Input();
-	}
-
-	return Input_;
+Input::Input()
+{
 }
 
 Input::~Input() {
@@ -35,12 +29,12 @@ Input::~Input() {
 
 void Input::Destroy()
 {
-	delete Input_;
+	
 }
 
-void Input::Initialize()
+void Input::Initialize(WinApp* winApp_)
 {
-	WinApp* winApp = WinApp::GetInstance();
+	WinApp* winApp = winApp_;
 
 	hwnd_ = winApp->Gethwnd();
 	HRESULT result = S_FALSE;

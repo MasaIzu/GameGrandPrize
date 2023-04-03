@@ -14,6 +14,10 @@ public:
 	// デスクリプターの数
 	static const size_t kNumDescriptors = 256;
 
+	TextureManager();
+	~TextureManager();
+	
+
 	/// <summary>
 	/// テクスチャ
 	/// </summary>
@@ -33,13 +37,8 @@ public:
 	/// </summary>
 	/// <param name="fileName">ファイル名</param>
 	/// <returns>テクスチャハンドル</returns>
-	static uint32_t Load(const std::string& fileName);
+	uint32_t Load(const std::string& fileName);
 
-	/// <summary>
-	/// シングルトンインスタンスの取得
-	/// </summary>
-	/// <returns>シングルトンインスタンス</returns>
-	static TextureManager* GetInstance();
 
 	/// <summary>
 	/// デストラクタ
@@ -75,13 +74,9 @@ public:
 		ID3D12GraphicsCommandList* commandList, UINT rootParamIndex, uint32_t textureHandle);
 
 private:
-	static TextureManager* TextureManager_;
 
 private:
-	TextureManager() = default;
-	~TextureManager() = default;
-	TextureManager(const TextureManager&) = delete;
-	TextureManager& operator=(const TextureManager&) = delete;
+
 
 	// デバイス
 	ID3D12Device* device_;

@@ -351,9 +351,9 @@ Vector3 Quaternion::multiply(const Vector3& vec)
 	resultQ = *this * VectorQ;
 	resultQ *= conjuateQ;
 
+	Vector3 VecResult(resultQ.x, resultQ.y, resultQ.z);
 
-
-	return { resultQ.x,resultQ.y,resultQ.z };
+	return VecResult;
 }
 
 const Quaternion operator+(const Quaternion& q1, const Quaternion& q2)

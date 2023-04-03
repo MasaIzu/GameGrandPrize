@@ -14,23 +14,26 @@ using namespace Microsoft::WRL;
 /// <summary>
 /// 静的メンバ変数の実体
 /// </summary>
-ID3D12Device* Sprite::Device_ = nullptr;
+DirectXCore* Sprite::DirectXCore_ = nullptr;
 UINT Sprite::DescriptorHandleSize_;
 ID3D12GraphicsCommandList* Sprite::CommandList_ = nullptr;
 ComPtr<ID3D12RootSignature> Sprite::RootSignature_;
 std::array<ComPtr<ID3D12PipelineState>, 6> Sprite::PipelineStates_;
 Matrix4 Sprite::Matrix4Projection_;
 
-void Sprite::StaticInitialize(
-	ID3D12Device* device,const std::wstring& directoryPath) {
-	// nullptrチェック
-	assert(device);
+TextureManager* Sprite::textureManager_;
 
-	Device_ = device;
+void Sprite::StaticInitialize(
+	DirectXCore* directXCore_, TextureManager* TextureManager_,const std::wstring& directoryPath) {
+	// nullptrチェック
+	assert(directXCore_);
+
+	DirectXCore_ = directXCore_;
+
+	textureManager_ = TextureManager_;
 
 	// デスクリプタサイズを取得
-	DescriptorHandleSize_ =
-		Device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	DescriptorHandleSize_ = DirectXCore_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob;    // 頂点シェーダオブジェクト
@@ -148,7 +151,7 @@ void Sprite::StaticInitialize(
 		&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootSigBlob, &errorBlob);
 	assert(SUCCEEDED(result));
 	// ルートシグネチャの生成
-	result = Device_->CreateRootSignature(
+	result = DirectXCore_->GetDevice()->CreateRootSignature(
 		0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(),
 		IID_PPV_ARGS(&RootSignature_));
 	assert(SUCCEEDED(result));
@@ -162,7 +165,7 @@ void Sprite::StaticInitialize(
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
 
 	// グラフィックスパイプラインの生成
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[0]));
 	assert(SUCCEEDED(result));
 
@@ -176,7 +179,7 @@ void Sprite::StaticInitialize(
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[1]));
 	assert(SUCCEEDED(result));
 
@@ -185,7 +188,7 @@ void Sprite::StaticInitialize(
 	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blenddesc.DestBlend = D3D12_BLEND_ONE;
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[2]));
 	assert(SUCCEEDED(result));
 
@@ -194,7 +197,7 @@ void Sprite::StaticInitialize(
 	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blenddesc.DestBlend = D3D12_BLEND_ONE;
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[3]));
 	assert(SUCCEEDED(result));
 
@@ -203,7 +206,7 @@ void Sprite::StaticInitialize(
 	blenddesc.SrcBlend = D3D12_BLEND_ZERO;
 	blenddesc.DestBlend = D3D12_BLEND_SRC_COLOR;
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[4]));
 	assert(SUCCEEDED(result));
 
@@ -212,7 +215,7 @@ void Sprite::StaticInitialize(
 	blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
 	blenddesc.DestBlend = D3D12_BLEND_ONE;
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
-	result = Device_->CreateGraphicsPipelineState(
+	result = DirectXCore_->GetDevice()->CreateGraphicsPipelineState(
 		&gpipeline, IID_PPV_ARGS(&PipelineStates_[5]));
 	assert(SUCCEEDED(result));
 
@@ -247,7 +250,7 @@ std::unique_ptr<Sprite> Sprite::Create(uint32_t textureHandle) {
 	{
 		// テクスチャ情報取得
 		const D3D12_RESOURCE_DESC& resDesc =
-			TextureManager::GetInstance()->GetResoureDesc(textureHandle);
+			textureManager_->GetResoureDesc(textureHandle);
 		// スプライトのサイズをテクスチャのサイズに設定
 		size = { (float)resDesc.Width, (float)resDesc.Height };
 	}
@@ -282,11 +285,11 @@ Sprite::Sprite(
 
 bool Sprite::Initialize() {
 	// nullptrチェック
-	assert(Device_);
+	assert(DirectXCore_);
 
 	HRESULT result = S_FALSE;
 
-	resourceDesc_ = TextureManager::GetInstance()->GetResoureDesc(textureHandle_);
+	resourceDesc_ = textureManager_->GetResoureDesc(textureHandle_);
 
 	{
 		// ヒーププロパティ
@@ -296,7 +299,7 @@ bool Sprite::Initialize() {
 			CD3DX12_RESOURCE_DESC::Buffer(sizeof(VertexPosUv) * kVertNum);
 
 		// 頂点バッファ生成
-		result = Device_->CreateCommittedResource(
+		result = DirectXCore_->GetDevice()->CreateCommittedResource(
 			&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr, IID_PPV_ARGS(&vertBuff_));
 		assert(SUCCEEDED(result));
@@ -322,7 +325,7 @@ bool Sprite::Initialize() {
 			CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff);
 
 		// 定数バッファの生成
-		result = Device_->CreateCommittedResource(
+		result = DirectXCore_->GetDevice()->CreateCommittedResource(
 			&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr, IID_PPV_ARGS(&constBuff_));
 		assert(SUCCEEDED(result));
@@ -337,7 +340,7 @@ bool Sprite::Initialize() {
 
 void Sprite::SetTextureHandle(uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
-	resourceDesc_ = TextureManager::GetInstance()->GetResoureDesc(textureHandle_);
+	resourceDesc_ = textureManager_->GetResoureDesc(textureHandle_);
 }
 
 void Sprite::SetRotation(float rotation) {
@@ -412,7 +415,7 @@ void Sprite::Draw(Vector2 Position, Vector4 Color, int blendMode) {
 
 
 	// コマンドリストをセット
-	CommandList_ = DirectXCore::GetInstance()->GetCommandList();
+	CommandList_ = DirectXCore_->GetCommandList();
 
 	// パイプラインステートの設定
 	CommandList_->SetPipelineState(PipelineStates_[blendMode].Get());
@@ -427,7 +430,7 @@ void Sprite::Draw(Vector2 Position, Vector4 Color, int blendMode) {
 	// 定数バッファビューをセット
 	CommandList_->SetGraphicsRootConstantBufferView(0, constBuff_->GetGPUVirtualAddress());
 	// シェーダリソースビューをセット
-	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(CommandList_, 1, textureHandle_);
+	textureManager_->SetGraphicsRootDescriptorTable(CommandList_, 1, textureHandle_);
 	// 描画コマンド
 	CommandList_->DrawInstanced(4, 1, 0, 0);
 }

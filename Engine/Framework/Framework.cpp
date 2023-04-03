@@ -8,29 +8,29 @@ void Framework::Initialize()
 {
 
 	// ゲームウィンドウの作成
-	winApp_ = WinApp::GetInstance();
+	winApp_ = new WinApp();
 	winApp_->MakeWindow(L"Maverick");
 
 	// DirectX初期化処理
-	directXCore_ = DirectXCore::GetInstance();
-	directXCore_->DirectXCoreInitialize(winApp_->Gethwnd(), winApp_->window_width, winApp_->window_height);
+	directXCore_ = new DirectXCore();
+	directXCore_->DirectXCoreInitialize(winApp_->Gethwnd(), winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
 
 #pragma region 汎用機能初期化
 	// 入力の初期化
-	input_ = Input::GetInstance();
-	input_->Initialize();
+	input_ = new Input();
+	input_->Initialize(winApp_);
 
 
 	// テクスチャマネージャの初期化
-	TextureManager_ = TextureManager::GetInstance();
+	TextureManager_ = new TextureManager();
 	TextureManager_->Initialize(directXCore_->GetDevice());
-	TextureManager::Load("white1x1.png");
+	TextureManager_->Load("white1x1.png");
 
 	// FBX関連静的初期化
 	FbxLoader::GetInstance()->Initialize(directXCore_->GetDevice());
 
 	// スプライト静的初期化
-	Sprite::StaticInitialize(directXCore_->GetDevice());
+	Sprite::StaticInitialize(directXCore_);
 
 
 	// 3Dモデル静的初期化
@@ -43,9 +43,9 @@ void Framework::Initialize()
 
 	fps = std::make_unique<FPS>();
 
-	ParticleManager::StaticInitialize(DirectXCore::GetInstance()->GetDevice());
+	ParticleManager::StaticInitialize(directXCore_->GetDevice());
 
-	PostEffect::Initialize(DirectXCore::GetInstance());
+	PostEffect::Initialize(directXCore_);
 
 #pragma endregion
 
@@ -92,16 +92,15 @@ void Framework::Finalize()
 	imGui->Finalize();
 	sceneFactory_.reset();
 
-	TextureManager_->Delete();
+	delete TextureManager_;
 
-	input_->Destroy();
+	delete input_;
 
-	directXCore_->Destroy();
+	delete directXCore_;
 
 	// ゲームウィンドウの破棄
 	winApp_->DeleteGameWindow();
-	winApp_->Destroy();
-
+	delete winApp_;
 
 }
 

@@ -180,19 +180,26 @@ void GameScene::Update() {
 		a++;
 	}
 
-	if (ImGui::Button("leave gayser")) {
-		for (int i = 0; i < 10; i++) {
-			minifishes[i].LeaveGayser(gayserPos[i / 2]);
-		}
+	//ランダムな小魚が自機の攻撃に当たったことにする
+	if (ImGui::Button("col minifish to pAtk")) {
+		int randNum = Random(0, 9);
+		minifishes[randNum].OnCollision();
+	}
 
-		//ボスのスポーン開始
-		fishSpawnCount = 20;
+	//生きている小魚の数が5匹以下になったら魚が逃げ出す
+	if (!isTutorialEnd) {
+		if (GetMiniFishAlive() < 5) {
+			isTutorialEnd = true;
+			for (int i = 0; i < 10; i++) {
+				minifishes[i].LeaveGayser(gayserPos[i / 2]);
+			}
 
-		//煙の処理
-		{
-			//gayserFlame++;
-			if (gayserFlame <= gayserMaxFlame)
+
+			//煙の処理
 			{
+				//gayserFlame++;
+				if (gayserFlame <= gayserMaxFlame)
+				{
 					for (int i = 0; i < 1; i++)
 					{
 
@@ -205,7 +212,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0],{ gayserPos[0].x, gayserPos[0] .y+pos.y, gayserPos[0].z}, gayserPos[0] + pos, 1.0, 1.0, {0,0,0,1}, {0,0,0,1});
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
 					}
 					for (int i = 0; i < 1; i++)
 					{
@@ -263,18 +270,57 @@ void GameScene::Update() {
 						//追加
 						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
 					}
+				}
 			}
+
+		}
+	}
+
+	//チュートリアルと最初のムービーでだけ小魚を動かす
+	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
+
+		//小魚の更新
+
+		for (int i = 0; i < 10; i++) {
+			minifishes[i].Update(stagePos, stageRadius);
 		}
 
 	}
 
+	CheckAllFishLeave();
+	if (isTutorialEnd) {
+		ImGui::Text("tutorial end!");
+	}
+
+	if (isAllFishLeave) {
+		ImGui::Text("all fishes leave!");
+	}
+
+	//チュートリアルが終了かつ、魚が間欠泉に逃げ終わっているなら
+	if (!isStartBossBattle) {
+		if (isTutorialEnd && isAllFishLeave) {
+			//ボスの生成を開始
+			fishSpawnCount = 20;
+			isStartBossBattle = true;
+			//小魚を全員殺す
+			for (int i = 0; i < 10; i++) {
+				minifishes[i].OnCollision();
+			}
+		}
+	}
+
 	fishSpawnInterval--;
 
-	if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
-		fishSpawnCount--;
-		fishSpawnInterval = 5;
-		for (int i = 0; i < boss.fishMaxCount / 20; i++) {
-			boss.CreateFish(gayserPos[i % 5]);
+	
+
+	if (isStartBossBattle) {
+		ImGui::Text("boss battle start!");
+		if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
+			fishSpawnCount--;
+			fishSpawnInterval = 5;
+			for (int i = 0; i < boss.fishMaxCount / 20; i++) {
+				boss.CreateFish(gayserPos[i % 5]);
+			}
 		}
 	}
 
@@ -284,15 +330,7 @@ void GameScene::Update() {
 	}*/
 
 
-	//チュートリアルと最初のムービーでだけ小魚を動かす
-	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
-
-		//小魚の更新
-		for (int i = 0; i < 10; i++) {
-			minifishes[i].Update(stagePos, stageRadius);
-		}
-
-	}
+	
 
 
 
@@ -414,8 +452,10 @@ void GameScene::Draw() {
 
 		for (int i = 0; i < 10; i++) {
 			//minifishes[i].Draw(viewProjection_);
-			boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
-			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+			if (minifishes[i].GetAlive()) {
+				boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+				boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+			}
 		}
 	}
 
@@ -460,3 +500,24 @@ void GameScene::Finalize()
 {
 }
 
+int GameScene::GetMiniFishAlive() {
+	int count = 0;
+	for (int i = 0; i < 10; i++) {
+		
+		if (minifishes[i].GetAlive()) {
+			count++;
+		}
+	}
+	return count;
+}
+
+void GameScene::CheckAllFishLeave() {
+	for (int i = 0; i < 10; i++) {
+	//	minifishes[i].easeMove.Update();
+		if (minifishes[i].easeMove.GetActive()) {
+			isAllFishLeave = false;
+			return;
+		}
+	}
+	isAllFishLeave = true;
+}

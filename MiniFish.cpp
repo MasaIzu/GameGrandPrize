@@ -6,7 +6,8 @@
 void MiniFish::LeaveGayser(Vector3 gayserPos)
 {
 	//移動のイージング開始
-	easeMove.Start(60);
+	easeMove.Start(120);
+	easeMove.Update();
 	//ベジエ曲線補間用の座標4つを設定
 	positions[0] = world.translation_;
 	positions[1] = { Random(-10.0f,10.0f),15.0f,Random(-10.0f,10.0f) };
@@ -24,6 +25,8 @@ void MiniFish::Initialize(const Vector3& pos)
 	positions[3] = pos;
 	world.translation_ = pos;
 	world.TransferMatrix();
+
+	isAlive = true;
 
 	//魚のモデル初期化
 	//bodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -49,13 +52,13 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 
 	ImGui::Text("timeRate:%f", easeMove.GetTimeRate());
 
-	if (easeMove.GetActive()) {
-		ImGui::Text("active!");
-		for (int i = 0; i < 4; i++) {
-			ImGui::Text("pos[%d]:%f,%f,%f", i, positions[i].x, positions[i].y, positions[i].z);
-		}
+	//if (easeMove.GetActive()) {
+	//	ImGui::Text("active!");
+	//	for (int i = 0; i < 4; i++) {
+	//		ImGui::Text("pos[%d]:%f,%f,%f", i, positions[i].x, positions[i].y, positions[i].z);
+	//	}
 
-	}
+	//}
 
 
 	if (speedResetCount == 0) {
@@ -149,4 +152,9 @@ void MiniFish::SetMovePos(const Vector3& stagePos, float stageRadius)
 	}
 	//イージング開始
 	easeMove.Start(120);
+}
+
+void MiniFish::OnCollision()
+{
+	isAlive = false;
 }

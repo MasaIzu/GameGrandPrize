@@ -77,6 +77,7 @@ void GameScene::Initialize() {
 
 	gayserParticle->Initialize();
 
+	gayserParticle->SetTextureHandle(TextureManager::Load("effect2.png"));
 
 	boss.Initialize();
 
@@ -104,6 +105,9 @@ void GameScene::Update() {
 	gayserFlame++;
 	if (static_cast<int>(gayserFlame)%10==0)
 	{
+		float size = 3.0f;
+		Vector4 startColor = {0,0,0,1};
+		Vector4 endColor = { 0,0,0,0 };
 		for (int i = 0; i < 2; i++)
 		{
 
@@ -116,7 +120,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, size,size,startColor,endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -130,7 +134,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, size,size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -144,7 +148,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, size,size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -158,7 +162,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos,size,size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -172,7 +176,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, size,size, startColor, endColor);
 		}
 	}
 	if (ImGui::Button("break")) {

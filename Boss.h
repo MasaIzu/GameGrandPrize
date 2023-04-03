@@ -65,7 +65,7 @@ public:
 
 	void Update(const Vector3& targetPos);
 
-	void CreateFish(Vector3 spawnPos);
+	void CreateFish(float posY);
 
 	void Draw(ViewProjection viewProMat);
 

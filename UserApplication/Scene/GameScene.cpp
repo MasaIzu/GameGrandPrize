@@ -77,7 +77,10 @@ void GameScene::Initialize() {
 
 	gayserParticle->Initialize();
 
+
 	boss.Initialize();
+
+
 
 
 	boss.fishParent.pos.translation_ = { 0,0,100 };

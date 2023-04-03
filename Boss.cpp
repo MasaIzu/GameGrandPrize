@@ -90,9 +90,11 @@ void Boss::Update(const Vector3& targetPos)
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void Boss::CreateFish(Vector3 spawnPos)
+void Boss::CreateFish(float posY)
 {
+
 	float posY = Random(-fishParent.radius, fishParent.radius);
+
 	//y座標が親の半径を超えないようにする
 	if (fabs(posY) > fishParent.radius) {
 		if (posY > 0)posY = fishParent.radius;
@@ -195,6 +197,7 @@ void Boss::UpdateIdle()
 	for (int i = 0; i < fishes.size(); i++) {
 
 		Vector3 pos;
+
 		fishes[i].easeMove.Update();
 
 		if (fishes[i].easeMove.GetActive()) {
@@ -210,7 +213,6 @@ void Boss::UpdateIdle()
 			if (fishes[i].pos.parent_ == nullptr) {
 				fishes[i].pos.parent_ = &fishParent.pos;
 			}
-
 
 			//魚のラジアン(球の周回軌道)を加算
 			fishes[i].radian += fishes[i].spd;
@@ -259,9 +261,7 @@ void Boss::UpdateIdle()
 			dirvec.normalize();
 			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
 
-			/*	Matrix4 dirMat{
 
-				}*/
 
 				//攻撃のクールタイムを減らす
 	

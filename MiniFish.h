@@ -30,7 +30,7 @@ private:
 
 
 	float fishRadius = 3;
-	BaseCollider* FishCollider;
+	BaseCollider* collider;
 
 	bool isAlive = false;
 
@@ -44,7 +44,7 @@ public:
 	EasingData easeMove;
 	void LeaveGayser(Vector3 gayserPos);
 
-	void Initialize(const Vector3& pos);
+	void Initialize(const Vector3& pos, unsigned short attribute);
 
 	void Update(const Vector3& stagePos,float stageRadius);
 
@@ -56,8 +56,13 @@ public:
 
 	void SetMovePos(const Vector3& stagePos, float stageRadius);
 
+	void SetAttribute(unsigned short attribute);
+
 	Vector3 GetPosition()const { return world.translation_; }
 
 	WorldTransform GetWorldTransform()const { return world; }
+
+
+
 };
 

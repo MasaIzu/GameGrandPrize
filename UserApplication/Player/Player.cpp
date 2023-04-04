@@ -80,6 +80,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//	SetKnockBackCount();
 	//	Collision();
 	//}
+
+	KnockBackUpdate();
+
 	if (isAttackHit)
 	{
 		AttackCollision();

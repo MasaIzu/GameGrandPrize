@@ -95,7 +95,7 @@ void GameScene::Initialize() {
 		Vector3 pos;
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
-		minifishes[i].Initialize(pos);
+		minifishes[i].Initialize(pos, COLLISION_ATTR_ENEMYS + i);
 	}
 
 	boss.Update({ 0,0,0 });
@@ -362,16 +362,23 @@ void GameScene::Update() {
 	}
 
 	//雑魚的に当たった時
-	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {
 		
-	}
+	}*/
 
+	ImGui::Begin("Phase");
+
+	ImGui::Text("minifishesX:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).x);
+	ImGui::Text("minifishesY:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).y);
+	ImGui::Text("minifishesZ:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).z);
+
+	ImGui::End();
 
 
 	boss.Update(player->GetWorldPosition());
 	viewProjection_.UpdateMatrix();
 
-	//player->SetIsEnemyHit(isEnemyHit);
+	player->SetIsEnemyHit(isEnemyHit);
 	player->SetIsAttackHit(isAttackHit);
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
@@ -469,7 +476,7 @@ void GameScene::Draw() {
 		boss.Draw(viewProjection_);
 //	}
 
-	//player->Draw(viewProjection_);
+	player->Draw(viewProjection_);
 
 
 

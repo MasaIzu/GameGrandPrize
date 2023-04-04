@@ -155,7 +155,7 @@ void Player::Move() {
 			spaceInput = true;
 			timer = 20;
 			alpha = 0.3f;
-			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+			//collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 			oldWorldTransform_.translation_ = worldTransform_.translation_;
 
 			if (isPushLeft == true) {

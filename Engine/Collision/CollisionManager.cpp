@@ -35,32 +35,38 @@ void CollisionManager::CheckAllCollisions()
 				Sphere* SphereA = dynamic_cast<Sphere*>(colA);
 				Sphere* SphereB = dynamic_cast<Sphere*>(colB);
 				Vector4 inter;
-				if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) {
+				if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
+					int a = 1;
+
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colB->GetWorldPos();
 						isEnemyHit = true;
 					}
 				}
-				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_ENEMYS) {
+				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
+					int a = 1;
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						HitWorldPos = colA->GetWorldPos();
 						isAttackHit = true;
 					}
 				}
-				else if (colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+
+				else if (colA->attribute == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
+					int a = 1;
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colB->GetWorldPos();
 						isEnemyHit = true;
 					}
 				}
-				else if (colA->attribute == COLLISION_ATTR_ATTACK && colB->attribute == COLLISION_ATTR_WEAKENEMYS) {
+				else if (colA->attribute == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
+					int a = 1;
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						HitWorldPos = colA->GetWorldPos();
-						isWakeEnemyAttackHit = true;
+						isEnemyHit = true;
 					}
 				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-					//isHit = true;
+					//isEnemyHit = true;
 				}
 			}
 			else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&

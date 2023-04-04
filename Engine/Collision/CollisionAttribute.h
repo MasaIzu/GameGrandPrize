@@ -20,3 +20,5 @@ const unsigned short COLLISION_ATTR_WEAKENEMYS8 = 0b10011;//ŽG‹›“G8
 const unsigned short COLLISION_ATTR_WEAKENEMYS9 = 0b10100;//ŽG‹›“G9
 const unsigned short COLLISION_ATTR_WEAKENEMYS10 = 0b10101;//ŽG‹›“G10
 
+const unsigned short COLLISION_ATTR_WEAKENEMYS_DEI = 0b10110;//ŽG‹›“GŽ€–S—p
+

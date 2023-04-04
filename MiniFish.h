@@ -56,8 +56,13 @@ public:
 
 	void SetMovePos(const Vector3& stagePos, float stageRadius);
 
+	void SetAttribute(unsigned short attribute);
+
 	Vector3 GetPosition()const { return world.translation_; }
 
 	WorldTransform GetWorldTransform()const { return world; }
+
+
+
 };
 

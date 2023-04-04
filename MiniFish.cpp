@@ -34,7 +34,7 @@ void MiniFish::Initialize(const Vector3& pos, unsigned short attribute)
 
 	collider->Update(world.matWorld_);
 	collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS);
-	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+	collider->SetAttribute(attribute);
 
 	//魚のモデル初期化
 	//bodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -162,6 +162,11 @@ void MiniFish::SetMovePos(const Vector3& stagePos, float stageRadius)
 	}
 	//イージング開始
 	easeMove.Start(120);
+}
+
+void MiniFish::SetAttribute(unsigned short attribute)
+{
+	collider->SetAttribute(attribute);
 }
 
 void MiniFish::OnCollision()

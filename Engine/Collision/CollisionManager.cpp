@@ -16,6 +16,8 @@ void CollisionManager::CheckAllCollisions()
 {
 	isEnemyHit = false;
 	isAttackHit = false;
+	hitNumber = 0;
+	isWakeEnemyAttackHit = false;
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -39,30 +41,44 @@ void CollisionManager::CheckAllCollisions()
 					int a = 1;
 
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						EnemyWorldPos = colB->GetWorldPos();
-						isEnemyHit = true;
+						//EnemyWorldPos = colA->GetWorldPos();
+						//isEnemyHit = true;
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
 					int a = 1;
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						HitWorldPos = colA->GetWorldPos();
-						isAttackHit = true;
+						//HitWorldPos = colA->GetWorldPos();
+						//isAttackHit = true;
 					}
 				}
 
-				else if (colA->attribute == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
+				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
 					int a = 1;
-					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						EnemyWorldPos = colB->GetWorldPos();
-						isEnemyHit = true;
+
+					for (int i = 0; i < 10; i++) {
+						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ALLIES) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+								//EnemyWorldPos = colA->GetWorldPos();
+								//isEnemyHit = true;
+							}
+						}
 					}
-				}
-				else if (colA->attribute == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
-					int a = 1;
-					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						HitWorldPos = colA->GetWorldPos();
+
+					/*if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						EnemyWorldPos = colA->GetWorldPos();
 						isEnemyHit = true;
+					}*/
+				}
+				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
+					int a = 1;
+					for (int i = 0; i < 10; i++) {
+						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ATTACK) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+								hitNumber = i + 1;
+								isWakeEnemyAttackHit = true;
+							}
+						}
 					}
 				}
 				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {

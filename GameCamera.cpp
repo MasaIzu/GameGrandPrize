@@ -72,6 +72,8 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 			PlaySceneCamera(viewProjection_);
 		}*/
 		PlaySceneCamera(viewProjection_);
+
+		ImGui::Text("isShake : %d", isShake);
 	}
 	else {
 		ImGui::Begin("camera");

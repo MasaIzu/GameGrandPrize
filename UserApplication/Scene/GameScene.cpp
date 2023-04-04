@@ -95,7 +95,7 @@ void GameScene::Initialize() {
 		Vector3 pos;
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
-		minifishes[i].Initialize(pos, COLLISION_ATTR_ENEMYS + i);
+		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
 	boss.Update({ 0,0,0 });
@@ -340,9 +340,14 @@ void GameScene::Update() {
 
 	if (collisionManager->GetIsEnemyHit()) {
 		gameCamera->Collision();
+		Matrix4 a = collisionManager->GetEnemyWorldPos();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 		player->Collision(10);
 	}
+
+	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
+	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
+	ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
 
 	//剣と自機の当たり判定
 	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
@@ -360,6 +365,15 @@ void GameScene::Update() {
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 	}
+
+	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+		playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
+
+		minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+
+		minifishes[playerAttackHitNumber].OnCollision();
+	}
+
 
 	//雑魚的に当たった時
 	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {

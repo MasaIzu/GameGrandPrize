@@ -86,11 +86,14 @@ void GameScene::Initialize() {
 	////地面の描画
 	ground.Initialize();
 
-	for (int  i = 0; i < (ground.MaxCount); i++)
+	for (int i = 0; i < (ground.MaxCount); i++)
 	{
 		ground.CreateGround();
-	}
-
+	};
+	for (int i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateBlock();
+	};
 
 }
 
@@ -250,40 +253,5 @@ void GameScene::Finalize()
 {
 }
 
-//void GameScene::CreateGround()
-//{
-//	//ground newGround;
-//	//
-//	//for (int i = 0; i < 10; i++) {
-//	//	 modeltable[i].reset(Model::CreateFromOBJ("Ground", true));
-//	//}
-//	//
-//	//
-//	//Vector3 SCALE = { 1,1,1 };
-//	//newGround.pos.Initialize();
-//
-//	//
-//
-//	//for (int i = 0; i < objects.size(); i++)
-//	//{
-//	//	for (int j = 0; j < objects.size(); j++)
-//	//	{
-//
-//	//		float x = (j - objects.size() / 2) * SCALE.x;
-//	//		float y = 0;
-//	//		float z = (i - objects.size() / 2) * SCALE.z;
-//
-//	//		int modelIndex = rand() % 10;
-//	//		//newGround = Model::Create(modeltable[i]);
-//
-//	//		newGround.pos.translation_ = { x,y,z };
-//	//		newGround.pos.scale_ = SCALE;
-//	//		
-//
-//
-//	//		objects.push_back(newGround);
-//
-//	//	}
-//	//}
-//}
+
 

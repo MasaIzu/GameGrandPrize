@@ -11,23 +11,61 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix4.h"
+
+// ノード
+struct Node
+{
+	//名前
+	std::string name;
+	//ローカル変形行列
+	Matrix4 transform;
+	//グローバル変形行列
+	Matrix4 globalTransform;
+	//親ノード
+	Node* parent = nullptr;
+	//子ノード
+	std::vector<Node*>childrens;
+
+};
 
 /// <summary>
 /// 形状データ
 /// </summary>
 class Mesh {
 	friend class FbxLoader;
+	friend class FbxModel;
+
+public:
+	// 骨
+	struct Bone
+	{
+		//名前
+		std::string name;
+
+		Matrix4 matrix;
+		Matrix4 animationMatrix;
+		Matrix4 offsetMatirx;
+
+		UINT index;
+
+	};
 
 private: // エイリアス
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 
 public: // サブクラス
+	static const int MAX_BONE_INDICES = 4;
 	// 頂点データ構造体（テクスチャあり）
 	struct VertexPosNormalUv {
 		Vector3 pos;    // xyz座標
 		Vector3 normal; // 法線ベクトル
 		Vector2 uv;     // uv座標
+
+		UINT boneIndex[MAX_BONE_INDICES];
+		float boneWeight[MAX_BONE_INDICES];
+
 	};
 
 public: // メンバ関数
@@ -147,6 +185,10 @@ private: // メンバ変数
 	ComPtr<ID3D12Resource> vertBuff_;
 	// インデックスバッファ
 	ComPtr<ID3D12Resource> indexBuff_;
+
+	//ボーンバッファ
+	ComPtr<ID3D12Resource> BoneBuff_;
+
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
 	// インデックスバッファビュー
@@ -159,4 +201,14 @@ private: // メンバ変数
 	std::unordered_map<unsigned short, std::vector<unsigned short>> smoothData_;
 	// マテリアル
 	Material* material_ = nullptr;
+
+	std::unordered_map<std::string, Bone*> bones;
+
+	std::vector<Bone> vecBones;
+
+	Node* node = nullptr;
+
+
+	// マッピング済みアドレス
+	Bone* constMap = nullptr;
 };

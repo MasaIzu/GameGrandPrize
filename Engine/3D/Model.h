@@ -25,6 +25,13 @@ private:
 public:
 	
 	// 定数バッファ用データ構造体
+	struct ConstBufferData
+	{
+		Vector4 color;	// 色 (RGBA)
+		Matrix4 mat;	// ３Ｄ変換行列
+	};
+
+	// 定数バッファ用データ構造体
 	struct ConstBufferPolygonExplosion
 	{
 		float _Destruction = 0.0f;

@@ -625,12 +625,12 @@ void Model::SetAlpha(float alpha)
 	}
 }
 
-void Model::SetTextureHandle(uint32_t texHandle)
-{
-	for (auto& m : materials_) {
-		m.second->SetTextureHadle(texHandle);
-	}
-}
+//void Model::SetTextureHandle(uint32_t texHandle)
+//{
+//	for (auto& m : materials_) {
+//		m.second->SetTextureHadle(texHandle);
+//	}
+//}
 
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {

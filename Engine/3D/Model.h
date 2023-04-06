@@ -113,7 +113,7 @@ public: // メンバ関数
 	void SetAlpha(float alpha);
 
 	//テクスチャの変更
-	void SetTextureHandle(uint32_t texHandle);
+	//void SetTextureHandle(uint32_t texHandle);
 
 private: // メンバ変数
 

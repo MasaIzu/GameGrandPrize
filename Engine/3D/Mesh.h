@@ -124,7 +124,7 @@ public: // メンバ関数
 	void SetMaterial(Material* material);
 
 
-	void SetLight(float alpha);
+	//void SetLight(float alpha);
 
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
@@ -151,9 +151,9 @@ public: // メンバ関数
 	/// <param name="commandList">命令発行先コマンドリスト</param>
 	/// <param name="rooParameterIndexMaterial">マテリアルのルートパラメータ番号</param>
 	/// <param name="rooParameterIndexTexture">テクスチャのルートパラメータ番号</param>
-	void Draw(
+	/*void Draw(
 		ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-		UINT rooParameterIndexTexture);
+		UINT rooParameterIndexTexture);*/
 
 	/// <summary>
 	/// 描画（テクスチャ差し替え版）

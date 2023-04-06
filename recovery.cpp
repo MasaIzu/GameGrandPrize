@@ -89,7 +89,7 @@ void Recovery::Update()
 		if (IntervalFlame>=MaxIntervalFlame)
 		{
 			isActive = true;
-			pointModel_->SetTextureHandle(tex1);
+			//pointModel_->SetTextureHandle(tex1);
 		}
 	}
 
@@ -118,7 +118,7 @@ void Recovery::Collision()
 {
 	isActive = false;
 	IntervalFlame = 0;
-	pointModel_->SetTextureHandle(tex2);
+	//pointModel_->SetTextureHandle(tex2);
 }
 
 Vector3 Recovery::GetWorldPosition() {

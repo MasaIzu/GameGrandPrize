@@ -91,6 +91,8 @@ FbxModel* FbxLoader::LoadModelFromFile(const string& modelName)
 		}
 	}
 
+	model->SetTextureHandle(textureHandle);
+
 	return model;
 }
 
@@ -280,9 +282,9 @@ void FbxLoader::ParseMeshFaces(FbxModel* model, aiMesh* fbxMesh)
 	for (int i = 0; i < polygonCount; i++) {
 		aiVector3D* uv = (fbxMesh->HasTextureCoords(0)) ? &(fbxMesh->mTextureCoords[0][i]) : &zero3D;
 
-		vertices[i].uv = Vector2(uv->x,-uv->y);
+		vertices[i].uv = Vector2(uv->x, -uv->y);
 	}
-	
+
 	indices.resize(fbxMesh->mNumFaces * 3);
 
 	for (UINT i = 0; i < fbxMesh->mNumFaces; i++) {
@@ -356,7 +358,7 @@ void FbxLoader::GetNodeNum(const aiNode* node, UINT32& num)
 	num++;
 }
 
-std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_,const std::string& modelName)
+std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_, const std::string& modelName)
 {
 	std::vector<uint32_t> textures;
 
@@ -369,6 +371,7 @@ std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, ai
 			std::string filename = ExtractFileName(std::string(str.C_Str()));
 			filename = modelName + '\\' + filename;
 			texture = TextureManager::Load(filename);
+			textureHandle = texture;
 		}
 
 		textures.push_back(texture);

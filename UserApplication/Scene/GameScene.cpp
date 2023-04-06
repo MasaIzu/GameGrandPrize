@@ -55,7 +55,7 @@ void GameScene::Initialize() {
 	gameCamera->Initialize();
 
 
-	model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
+	//model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
 
 	stageWorldTransform_.Initialize();
 

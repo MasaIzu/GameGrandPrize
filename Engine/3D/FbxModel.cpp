@@ -397,31 +397,48 @@ void FbxModel::Draw(
 		sCommandList_->SetGraphicsRootConstantBufferView(4, constBuffSkin_->GetGPUVirtualAddress());
 
 		// 全メッシュを描画
-		meshes_[i]->Draw(sCommandList_, 2, 3, 3);
+		meshes_[i]->Draw(sCommandList_, 2, 3, modelTextureHandle);
 	}
 }
 
-//
-//void FbxModel::Draw(
-//	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
-//	uint32_t textureHadle) {
-//
-//	// ライトの描画
-//	lightGroup->Draw(sCommandList_, 4);
-//
-//	// CBVをセット（ワールド行列）
-//	sCommandList_->SetGraphicsRootConstantBufferView(0, worldTransform.constBuff_->GetGPUVirtualAddress());
-//
-//	// CBVをセット（ビュープロジェクション行列）
-//	sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
-//
-//	// 全メッシュを描画
-//	for (auto& mesh : meshes_) {
-//		mesh->Draw(
-//			sCommandList_, 2, 3,
-//			textureHadle);
-//	}
-//}
+
+void FbxModel::Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection, uint32_t textureHadle) {
+
+	// 全メッシュを描画
+	for (auto& mesh : meshes_) {
+
+		// ライトの描画
+		lightGroup->Draw(sCommandList_, 4);
+
+		// CBVをセット（ワールド行列）
+		sCommandList_->SetGraphicsRootConstantBufferView(0, worldTransform.constBuff_->GetGPUVirtualAddress());
+
+		// CBVをセット（ビュープロジェクション行列）
+		sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
+
+		if (mesh->node) {
+
+			HRESULT result = S_FALSE;
+
+			//定数バッファへデータ転送
+			ConstBufferDataInitialMatrix* constMapSkin = nullptr;
+			result = constBuffNothing_->Map(0, nullptr, (void**)&constMapSkin);
+			constMapSkin->InitialMatrix = mesh->node->globalTransform;
+
+			constBuffNothing_->Unmap(0, nullptr);
+
+
+			sCommandList_->SetGraphicsRootConstantBufferView(5, constBuffNothing_->GetGPUVirtualAddress());
+
+		}
+
+		// CBVをセット（ボーン行列）
+		sCommandList_->SetGraphicsRootConstantBufferView(4, constBuffSkin_->GetGPUVirtualAddress());
+
+
+		mesh->Draw(sCommandList_, 2, 3, textureHadle);
+	}
+}
 
 
 void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {

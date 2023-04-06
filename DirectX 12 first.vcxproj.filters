@@ -156,6 +156,9 @@
     <None Include="Resources\Shaders\PostEffectGlow.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\FBX.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
@@ -216,6 +219,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\PostEffectGlowVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

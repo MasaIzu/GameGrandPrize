@@ -105,7 +105,7 @@ private:
 	// ディレクトリを含んだファイルパスからファイル名を抽出する
 	std::string ExtractFileName(const std::string& path);
 
-	std::vector<uint32_t> LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_,const std::string& modelName);
+	std::vector<uint32_t> LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_, const std::string& modelName);
 
 	const UINT flag =
 		aiProcess_Triangulate | //三角面化
@@ -120,5 +120,7 @@ private:
 		aiProcess_LimitBoneWeights;//各頂点が影響を受けるボーンを4に制限
 
 	const aiScene* mScene;
+
+	uint32_t textureHandle = 0;
 
 };

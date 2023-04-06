@@ -31,7 +31,7 @@ struct WorldTransform {
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
 	//アルファ値
-	float alpha=1;
+	float alpha = 1;
 	//その物体の向いている方向
 	Vector3 look = { 0,0,0 };
 	Vector3 lookBack = { 0,0,0 };

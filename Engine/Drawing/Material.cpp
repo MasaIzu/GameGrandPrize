@@ -38,8 +38,6 @@ void Material::CreateConstantBuffer() {
 	// 定数バッファとのデータリンク
 	result = constBuff_->Map(0, nullptr, (void**)&constMap_);
 	assert(SUCCEEDED(result));
-
-
 }
 
 void Material::LoadTexture(const std::string& directoryPath) {
@@ -58,7 +56,8 @@ void Material::LoadTexture(const std::string& directoryPath) {
 	string filepath = directoryPath + textureFilename_;
 
 	// テクスチャ読み込み
-	textureHandle_ = TextureManager::Load(filepath);
+	modelTextureHandle = TextureManager::Load(filepath);
+	textureHandle_.push_back(modelTextureHandle);
 }
 
 void Material::Update() {
@@ -66,19 +65,16 @@ void Material::Update() {
 	constMap_->ambient = ambient_;
 	constMap_->diffuse = diffuse_;
 	constMap_->specular = specular_;
-	//constMap_->alpha = alpha_;
-
+	constMap_->alpha = alpha_;
 }
 
 void Material::SetGraphicsCommand(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-	UINT rooParameterIndexTexture) {
-
-	Update();
+	UINT rooParameterIndexTexture, size_t index) {
 
 	// SRVをセット
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(
-		commandList, rooParameterIndexTexture, textureHandle_);
+		commandList, rooParameterIndexTexture, textureHandle_[index]);
 
 	// マテリアルの定数バッファをセット
 	commandList->SetGraphicsRootConstantBufferView(
@@ -98,11 +94,6 @@ void Material::SetGraphicsCommand(
 	// マテリアルの定数バッファをセット
 	commandList->SetGraphicsRootConstantBufferView(
 		rooParameterIndexMaterial, constBuff_->GetGPUVirtualAddress());
-}
-
-void Material::SetLight(float alpha)
-{
-	alpha_ = alpha;
 }
 
 void Material::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha)

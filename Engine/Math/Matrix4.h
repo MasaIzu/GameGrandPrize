@@ -1,5 +1,8 @@
 #pragma once
 #include "Vector3.h"
+#include "Vector4.h"
+#include <DirectXMath.h>
+
 
 class Matrix4
 {
@@ -9,12 +12,19 @@ public:
 
 	// コンストラクタ
 	Matrix4();
+
+	//XMMatrixVer
+	Matrix4(const DirectX::XMMATRIX& Matrix4);
+
 	// 成分を指定しての生成
 	Matrix4(
 		float m00, float m01, float m02, float m03,
 		float m10, float m11, float m12, float m13,
 		float m20, float m21, float m22, float m23,
 		float m30, float m31, float m32, float m33);
+
+
+
 
 	// 単位行列を求める
 	Matrix4 identity();
@@ -33,6 +43,14 @@ public:
 	// 座標変換（ベクトルと行列の掛け算をする）
 	Vector3 transform(const Vector3& v, const Matrix4& m);
 
+
+	//
+	Matrix4 MyMatrixToXMMatrix(const Matrix4& Mat);
+
+	Matrix4 MatMul(const Matrix4& Mat);
+
+	Vector4 Vec4MulPs(const Vector4& v4_1, const Vector4& v4_2);
+	Vector4 Vec4AddPs(const Vector4& v4_1, const Vector4& v4_2);
 
 
 	// 代入演算子オーバーロード

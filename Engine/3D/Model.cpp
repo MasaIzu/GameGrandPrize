@@ -219,10 +219,10 @@ Model::~Model() {
 	}
 	meshes_.clear();
 
-	/*for (auto m : materials_) {
+	for (auto m : materials_) {
 		delete m.second;
-	}*/
-	/*materials_.clear();*/
+	}
+	materials_.clear();
 }
 
 void Model::Initialize(const std::string& modelname, bool smoothing) {

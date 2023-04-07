@@ -1,33 +1,23 @@
 #pragma once
 
-#include <DirectXMath.h>
+#include "Vector3.h"
 #include <d3d12.h>
 #include <d3dx12.h>
 #include <string>
 #include <wrl.h>
-#include "Vector3.h"
 
 /// <summary>
 /// マテリアル
 /// </summary>
 class Material {
-private: // エイリアス
-  // Microsoft::WRL::を省略
-	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::を省略
-	using XMFLOAT2 = DirectX::XMFLOAT2;
-	using XMFLOAT3 = DirectX::XMFLOAT3;
-	using XMFLOAT4 = DirectX::XMFLOAT4;
-	using XMMATRIX = DirectX::XMMATRIX;
-
 public: // サブクラス
   // 定数バッファ用データ構造体
 	struct ConstBufferData {
-		XMFLOAT3 ambient;  // アンビエント係数
+		Vector3 ambient;  // アンビエント係数
 		float pad1;        // パディング
-		XMFLOAT3 diffuse;  // ディフューズ係数
+		Vector3 diffuse;  // ディフューズ係数
 		float pad2;        // パディング
-		XMFLOAT3 specular; // スペキュラー係数
+		Vector3 specular; // スペキュラー係数
 		float alpha;       // アルファ
 	};
 
@@ -40,9 +30,9 @@ public: // 静的メンバ関数
 
 public:
 	std::string name_;            // マテリアル名
-	XMFLOAT3 ambient_;            // アンビエント影響度
-	XMFLOAT3 diffuse_;            // ディフューズ影響度
-	XMFLOAT3 specular_;           // スペキュラー影響度
+	Vector3 ambient_;            // アンビエント影響度
+	Vector3 diffuse_;            // ディフューズ影響度
+	Vector3 specular_;           // スペキュラー影響度
 	float alpha_;                 // アルファ
 	std::string textureFilename_; // テクスチャファイル名
 
@@ -71,7 +61,7 @@ public:
 	/// <param name="rooParameterIndexTexture">テクスチャのルートパラメータ番号</param>
 	void SetGraphicsCommand(
 		ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-		UINT rooParameterIndexTexture, size_t index);
+		UINT rooParameterIndexTexture);
 
 	/// <summary>
 	/// グラフィックスコマンドのセット（テクスチャ差し替え版）
@@ -85,23 +75,20 @@ public:
 		UINT rooParameterIndexTexture, uint32_t textureHandle);
 
 	// セットテクスチャハンドル
-	void SetTextureHadle(std::vector<uint32_t>& textureHandles) { textureHandle_ = textureHandles; }
+	void SetTextureHadle(uint32_t& textureHandles) { textureHandle_ = textureHandles; }
 
 	// テクスチャハンドル
-	uint32_t GetTextureHadle(size_t index) { return textureHandle_[index]; }
-
-	// テクスチャハンドル
-	uint32_t GetTextureHadle() { return modelTextureHandle; }
+	uint32_t GetTextureHadle() { return textureHandle_; }
 
 	void SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha);
 
 private:
 	// 定数バッファ
-	ComPtr<ID3D12Resource> constBuff_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff_;
 	// 定数バッファのマップ
-	std::unique_ptr <ConstBufferData> constMap_;
+	ConstBufferData* constMap_ = nullptr;
 	// テクスチャハンドル
-	std::vector<uint32_t> textureHandle_;
+	uint32_t textureHandle_ = 0;
 
 private:
 	// コンストラクタ
@@ -121,8 +108,4 @@ private:
 	/// 定数バッファの生成
 	/// </summary>
 	void CreateConstantBuffer();
-
-
-	uint32_t modelTextureHandle = 0;
-
 };

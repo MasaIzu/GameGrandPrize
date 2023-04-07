@@ -10,6 +10,9 @@
 class FbxAnimation {
 public:
 
+	FbxAnimation();
+	~FbxAnimation();
+
 	void Load(const std::string& failPath);
 
 	aiAnimation* GetAnimation();

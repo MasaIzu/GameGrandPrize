@@ -8,6 +8,16 @@
 const std::string FbxAnimation::baseDirectory = "Resources/";
 const std::string FbxAnimation::defaultTextureFileName = "white1x1.png";
 
+FbxAnimation::FbxAnimation()
+{
+}
+
+FbxAnimation::~FbxAnimation()
+{
+	delete modelAnimation;
+	delete mScene;
+}
+
 void FbxAnimation::Load(const std::string& failPath)
 {
 

@@ -104,9 +104,9 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//Fbxモデル
-	FbxModel* fbxmodel;
-	FbxAnimation* modelAnim;
-	float frem = 0;
+	/*std::unique_ptr<FbxModel> fbxmodel;
+	std::unique_ptr<FbxAnimation> modelAnim;
+	float frem = 0;*/
 
 
 	Boss boss;

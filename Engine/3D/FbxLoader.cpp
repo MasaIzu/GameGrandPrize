@@ -40,6 +40,8 @@ void FbxLoader::Initialize(ID3D12Device* device)
 void FbxLoader::Finalize()
 {
 
+	delete mScene;
+
 }
 
 FbxModel* FbxLoader::LoadModelFromFile(const string& modelName)

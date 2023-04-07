@@ -4,6 +4,9 @@
 #include "WinApp.h"
 #include <DirectXMath.h>
 #include <Vector4.h>
+#include<assimp/scene.h>
+#include "Quaternion.h"
+
 
 //ï÷óòånÇ‹Ç∆Çﬂ
 namespace MyMath {
@@ -14,8 +17,6 @@ namespace MyMath {
 	Matrix4 Scale(const Vector3& scale);
 	Matrix4 Rotation(const Vector3& rotation, int X_1_Y_2_Z_3_XYZ_6);
 	Matrix4 Translation(const Vector3& move);
-
-	//float MyMathToRadian(float x) { return x * (PI / 180); }
 
 	//ÉxÉNÉgÉãÇÃê≥ãKâª(Ç¢Ç¡ÇÿÇÒÇ…Ç‚ÇÈ)
 	Vector3 vector3Normalize(const Vector3& v);
@@ -48,6 +49,15 @@ namespace MyMath {
 
 	Matrix4 Matrix4Orthographic(
 		float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ);
+
+	Matrix4 AssimpMatrix(aiMatrix4x4 mat4);
+
+	Vector3 AssimpVector3(aiVector3D assimpVec3);
+
+	Vector4 AssimpQuaternionVec4(aiQuaternion assimpaiQuaternion);
+	Quaternion AssimpQuaternion(aiQuaternion assimpaiQuaternion);
+
+	Vector4 QuaternionSlerp(aiQuaternion& assimpaiQuaternion, aiQuaternion& assimpaiQuaternion2, float t);
 
 	float GetAngle(float angle);
 

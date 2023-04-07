@@ -20,17 +20,15 @@ class Model {
 private:
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	
+
 
 public:
-	
+
 	// 定数バッファ用データ構造体
-	struct ConstBufferPolygonExplosion
+	struct ConstBufferData
 	{
-		float _Destruction = 0.0f;
-		float _ScaleFactor = 1.0f;
-		float _RotationFactor = 0.0f;
-		float _PositionFactor = 0.0f;
+		Vector4 color;	// 色 (RGBA)
+		Matrix4 mat;	// ３Ｄ変換行列
 	};
 
 private:
@@ -98,18 +96,10 @@ public: // メンバ関数
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices; }
 
-	const ConstBufferPolygonExplosion GetPolygonExplosion() {return *constMap ; }
+	void SetTextureHandle(uint32_t textureHandle) { modelTextureHandle = textureHandle; }
 
-	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) {*constMap=polygonExplosion; }
-
-	//アルファ値変更
-	void SetAlpha(float alpha);
-
-	//テクスチャの変更
-	void SetTextureHandle(uint32_t texHandle);
 
 private: // メンバ変数
-
 	// 名前
 	std::string name_;
 	// メッシュコンテナ
@@ -124,11 +114,7 @@ private: // メンバ変数
 	//頂点インデックス
 	std::vector<unsigned short> indices;
 
-	//定数バッファ
-	ComPtr<ID3D12Resource> constBuff_;
-
-	ConstBufferPolygonExplosion* constMap;
-
+	uint32_t modelTextureHandle = 0;
 
 private: // メンバ関数
 

@@ -260,14 +260,17 @@ void Boss::UpdateIdle()
 			Vector3 dirvec = pos - fishes[i].pos.translation_;
 			dirvec.normalize();
 			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
+			Matrix4 matrot;
+			matrot = CreateMatRot(fishes[i].pos.translation_, pos);
 
+			fishes[i].pos.SetMatRot(matrot);
 
 
 				//攻撃のクールタイムを減らす
 	
 		}
 
-		FishLookFront(fishes[i].pos.translation_, pos, i);
+	
 		fishes[i].pos.translation_ = pos;
 
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;

@@ -307,21 +307,21 @@ void FbxLoader::ParseMaterial(FbxModel* model, aiMesh* fbxMesh, aiMaterial* aima
 
 	aiColor3D ambient(0.3f, 0.3f, 0.3f);
 	aimaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-	material->ambient_ = XMFLOAT3(ambient.r, ambient.g, ambient.b);
+	material->ambient_ = Vector3(ambient.r, ambient.g, ambient.b);
 
 	aiColor3D diffuse(0.0f, 0.0f, 0.0f);
 	aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-	material->diffuse_ = XMFLOAT3(diffuse.r, diffuse.g, diffuse.b);
+	material->diffuse_ = Vector3(diffuse.r, diffuse.g, diffuse.b);
 
 	aiColor3D specular(0.0f, 0.0f, 0.0f);
 	aimaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-	material->specular_ = XMFLOAT3(specular.r, specular.g, specular.b);
+	material->specular_ = Vector3(specular.r, specular.g, specular.b);
 
 	aiString str;
 	aimaterial->Get(AI_MATKEY_NAME, str);
 	material->name_ = str.C_Str();
 
-	std::vector<uint32_t> deffuseMap = LoadMatrixerialTextures(aimaterial, aiTextureType_DIFFUSE, "Diffuse", mScene, model->name_);
+	uint32_t deffuseMap = LoadMatrixerialTextures(aimaterial, aiTextureType_DIFFUSE, "Diffuse", mScene, model->name_);
 
 	material->SetTextureHadle(deffuseMap);
 
@@ -358,9 +358,9 @@ void FbxLoader::GetNodeNum(const aiNode* node, UINT32& num)
 	num++;
 }
 
-std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_, const std::string& modelName)
+uint32_t FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_, const std::string& modelName)
 {
-	std::vector<uint32_t> textures;
+	uint32_t textures;
 
 	for (size_t i = 0; i < cmatrix->GetTextureCount(type); i++)
 	{
@@ -374,7 +374,7 @@ std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, ai
 			textureHandle = texture;
 		}
 
-		textures.push_back(texture);
+		textures = texture;
 	}
 	return textures;
 }

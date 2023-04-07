@@ -33,15 +33,17 @@ void GameScene::Initialize() {
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();
-	//worldTransform_.translation_ = { 0,0,100 };
-	//worldTransform_.rotation_ = { 0,0,0 };
-	//worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
-	//worldTransform_.TransferMatrix();
+	worldTransform_.translation_ = { 0,0,100 };
+	worldTransform_.rotation_ = { 0,0,0 };
+	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
+	worldTransform_.TransferMatrix();
 
-	/*fbxmodel = std::make_unique<FbxModel>();
+	fbxmodel =new FbxModel();
+	fbxmodel = FbxLoader::GetInstance()->LoadModelFromFile("Player");
+	fbxmodel->Initialize();
+	modelAnim = new FbxAnimation();
+	modelAnim->Load("Player");
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("lowpoliHitokunBoss"));
-	fbxmodel->Initialize();*/
 
 	boxCollision = std::make_unique<BoxCollision>();
 
@@ -427,6 +429,16 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
+
+	frem += 0.01f;
+
+	if (input_->PushKey(DIK_P)) {
+		frem = 0;
+	}
+
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation());
+
+
 }
 
 void GameScene::PostEffectDraw()
@@ -501,7 +513,7 @@ void GameScene::Draw() {
 
 	FbxModel::PreDraw(commandList);
 
-	//fbxmodel->Draw(worldTransform_, viewProjection_);
+	fbxmodel->Draw(worldTransform_, viewProjection_);
 
 	FbxModel::PostDraw();
 

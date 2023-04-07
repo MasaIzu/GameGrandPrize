@@ -25,6 +25,7 @@
 #include"Boss.h"
 #include <CollisionManager.h>
 #include"MiniFish.h"
+#include"FbxAnimation.h"
 
 enum class GamePhase {
 	GameTutorial,	//チュートリアル
@@ -103,7 +104,10 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//Fbxモデル
-	//std::unique_ptr<FbxModel> fbxmodel;
+	FbxModel* fbxmodel;
+	FbxAnimation* modelAnim;
+	float frem = 0;
+
 
 	Boss boss;
 	//デバッグによる生成用

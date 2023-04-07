@@ -104,13 +104,17 @@ void Recovery::Update()
 
 void Recovery::Draw(ViewProjection view)
 {
-	pointModel_->Draw(pointWorldTransform_, view);
+	
 	if (isActive==true)
 	{
 		for (int i = 0; i < 20; i++)
 		{
 			model_->Draw(worldTransform_[i], view);
 		}
+		pointModel_->Draw(pointWorldTransform_, view);
+	}
+	else {
+		pointModel_->Draw(pointWorldTransform_, view, tex2);
 	}
 }
 

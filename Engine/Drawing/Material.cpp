@@ -56,8 +56,7 @@ void Material::LoadTexture(const std::string& directoryPath) {
 	string filepath = directoryPath + textureFilename_;
 
 	// テクスチャ読み込み
-	modelTextureHandle = TextureManager::Load(filepath);
-	textureHandle_.push_back(modelTextureHandle);
+	textureHandle_ = TextureManager::Load(filepath);
 }
 
 void Material::Update() {
@@ -70,11 +69,11 @@ void Material::Update() {
 
 void Material::SetGraphicsCommand(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-	UINT rooParameterIndexTexture, size_t index) {
+	UINT rooParameterIndexTexture) {
 
 	// SRVをセット
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(
-		commandList, rooParameterIndexTexture, textureHandle_[index]);
+		commandList, rooParameterIndexTexture, textureHandle_);
 
 	// マテリアルの定数バッファをセット
 	commandList->SetGraphicsRootConstantBufferView(
@@ -84,8 +83,6 @@ void Material::SetGraphicsCommand(
 void Material::SetGraphicsCommand(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
 	UINT rooParameterIndexTexture, uint32_t textureHandle) {
-
-	Update();
 
 	// SRVをセット
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(
@@ -98,8 +95,10 @@ void Material::SetGraphicsCommand(
 
 void Material::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha)
 {
-	ambient_ = XMFLOAT3(ambient.x, ambient.y, ambient.z);
-	diffuse_ = XMFLOAT3(diffuse.x, diffuse.y, diffuse.z);
-	specular_ = XMFLOAT3(specular.x, specular.y, specular.z);
+	ambient_ = ambient;
+	diffuse_ = diffuse;
+	specular_ = specular;
 	alpha_ = alpha;
+
+	Update();
 }

@@ -110,7 +110,9 @@ private: // メンバ変数
 	float newFishPosY = 0;
 
 	bool isEnemyHit = false;
-	bool isAttackHit = false; 
+	bool isAttackHit = false;
+
+	int playerAttackHitNumber = 0;
 
 	GamePhase gamePhase = GamePhase::GameTutorial;
 
@@ -118,9 +120,11 @@ private: // メンバ変数
 	MiniFish minifishes[10];
 	int deadMinFishCount = 0;	//倒された小魚のカウント
 	std::unique_ptr<ParticleManager> gayserParticle;
+	bool isTutorialEnd = false;
+	bool isStartBossBattle = false;
 
 	const float gayserMaxFlame = 240;
-	float gayserFlame=0;
+	float gayserFlame = 0;
 
 	int fishSpawnInterval = 0;
 	int fishSpawnCount = 0;
@@ -131,9 +135,19 @@ private: // メンバ変数
 
 	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
 
+	bool isAllFishLeave = false;
+
 	// 3Dモデル
 	std::unique_ptr<Model> stageModel_;
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
+
+
+private://プライベート関数
+
+	void CheckAllFishLeave();
+
+	//生きている小魚の数を更新
+	int GetMiniFishAlive();
 };

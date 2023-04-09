@@ -146,7 +146,7 @@ private: // メンバ変数
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
-
+	ViewProjection movieCamera;
 
 private://プライベート関数
 

@@ -82,7 +82,8 @@ void GameScene::Initialize() {
 
 	boss.Initialize();
 
-
+	//ムービー用カメラの初期化
+	movieCamera.Initialize();
 
 
 	boss.fishParent.pos.translation_ = { 0,0,100 };

@@ -188,8 +188,6 @@ Model* Model::CreateFromOBJ(const std::string& modelname, bool smoothing) {
 	Model* instance = new Model;
 	instance->Initialize(modelname, smoothing);
 
-
-
 	return instance;
 }
 

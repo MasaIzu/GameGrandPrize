@@ -1,6 +1,4 @@
 #include "Framework.h"
-#include <FbxLoader.h>
-#include "FbxModel.h"
 #include"ParticleManager.h"
 #include"PostEffect.h"
 
@@ -27,7 +25,8 @@ void Framework::Initialize()
 	TextureManager::Load("white1x1.png");
 
 	// FBX関連静的初期化
-	FbxLoader::GetInstance()->Initialize(directXCore_->GetDevice());
+	fbxLoader_ = FbxLoader::GetInstance();
+	fbxLoader_->Initialize(directXCore_->GetDevice());
 
 	// スプライト静的初期化
 	Sprite::StaticInitialize(directXCore_->GetDevice());
@@ -92,6 +91,8 @@ void Framework::Finalize()
 	imGui->Finalize();
 	sceneFactory_.reset();
 
+	fbxLoader_->Finalize();
+
 	TextureManager_->Delete();
 
 	input_->Destroy();
@@ -148,7 +149,16 @@ void Framework::Run()
 		}
 
 	}
+
+	ID3D12DebugDevice* debugInterface;
+
+	if (SUCCEEDED(directXCore_->GetDevice()->QueryInterface(&debugInterface))) {
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugInterface->Release();
+	}
+
 	//ゲームの終了
 	Finalize();
+
 
 }

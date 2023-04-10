@@ -38,10 +38,10 @@ void GameScene::Initialize() {
 	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
-	/*fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("Player"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("Player"));
 	fbxmodel->Initialize();
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("Player");*/
+	modelAnim->Load("Player");
 
 
 	boxCollision = std::make_unique<BoxCollision>();
@@ -429,13 +429,13 @@ void GameScene::Update() {
 	//ParticleMan->Update();
 
 
-	/*frem += 0.01f;
+	frem += 0.01f;
 
 	if (input_->PushKey(DIK_P)) {
 		frem = 0;
 	}
 
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation());*/
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation());
 
 
 }
@@ -512,7 +512,7 @@ void GameScene::Draw() {
 
 	FbxModel::PreDraw(commandList);
 
-	//fbxmodel->Draw(worldTransform_, viewProjection_);
+	fbxmodel->Draw(worldTransform_, viewProjection_);
 
 	FbxModel::PostDraw();
 

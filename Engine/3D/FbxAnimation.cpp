@@ -15,7 +15,6 @@ FbxAnimation::FbxAnimation()
 FbxAnimation::~FbxAnimation()
 {
 	delete modelAnimation;
-	delete mScene;
 }
 
 void FbxAnimation::Load(const std::string& failPath)
@@ -50,6 +49,5 @@ void FbxAnimation::Load(const std::string& failPath)
 
 aiAnimation* FbxAnimation::GetAnimation()
 {
-
 	return modelAnimation;
 }

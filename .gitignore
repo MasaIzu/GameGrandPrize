@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 *.lib
+/Resources/3dGameKyaraMotionFin/3dGameKyaraMotionFin.fbx
+/Resources/3dGameKyaraMotionFin/KyaraTex1.png

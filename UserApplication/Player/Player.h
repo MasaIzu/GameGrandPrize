@@ -50,6 +50,7 @@ public:
 	void Collision(int damage);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
+	WorldTransform GetWorldTorasform(){return worldTransform_; }
 	Vector3 GetWorldPosition();
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }

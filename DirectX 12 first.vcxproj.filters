@@ -409,6 +409,9 @@
     <ClInclude Include="Engine\3D\FbxLoader.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerAttackCollsion.h">
+      <Filter>ユーザーヘッダー ファイル\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -566,6 +569,9 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttackCollsion.cpp">
+      <Filter>ユーザーソース ファイル\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,6 +6,8 @@ class PostEffect
 public:
 
     static void Initialize(DirectXCore* dxCore);
+
+    static void Finalize();
     
     /// <summary>
     /// パイプライン生成

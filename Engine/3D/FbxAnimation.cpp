@@ -14,11 +14,10 @@ FbxAnimation::FbxAnimation()
 
 FbxAnimation::~FbxAnimation()
 {
-	delete modelAnimation;
-	delete mScene;
+	
 }
 
-void FbxAnimation::Load(const std::string& failPath)
+void FbxAnimation::Load(const std::string& failPath,int howMuchAnimation)
 {
 
 	// モデルと同じ名前のフォルダから読み込む
@@ -44,12 +43,13 @@ void FbxAnimation::Load(const std::string& failPath)
 		assert(0);
 	}
 
-	modelAnimation = mScene->mAnimations[0];
+	for (int i = 0; i < howMuchAnimation; i++) {
+		modelAnimation[i] = mScene->mAnimations[i];
+	}
 
 }
 
-aiAnimation* FbxAnimation::GetAnimation()
+aiAnimation* FbxAnimation::GetAnimation(int AnimationNumber)
 {
-
-	return modelAnimation;
+	return modelAnimation[AnimationNumber];
 }

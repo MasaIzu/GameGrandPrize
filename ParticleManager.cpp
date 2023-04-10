@@ -41,6 +41,14 @@ void ParticleManager::StaticInitialize(ID3D12Device* device)
 
 }
 
+void ParticleManager::StaticFinalize()
+{
+
+	rootsignature.Reset();
+	pipelinestate.Reset();
+
+}
+
 void ParticleManager::PreDraw(ID3D12GraphicsCommandList* cmdList)
 {
 	// PreDrawとPostDrawがペアで呼ばれていなければエラー

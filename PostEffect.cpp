@@ -215,6 +215,20 @@ void PostEffect::Initialize(DirectXCore* dxCore)
 	CreatGraphicsPipelineState();
 }
 
+void PostEffect::Finalize()
+{
+
+	vertBuff.Reset();
+	texBuff.Reset();
+	descHeapSRV.Reset();
+	depthBuff.Reset();
+	descHeapRTV.Reset();
+	descHeapDSV.Reset();
+	pipelineState.Reset();
+	rootSignature.Reset();
+
+}
+
 void PostEffect::CreatGraphicsPipelineState()
 {
 	HRESULT result;

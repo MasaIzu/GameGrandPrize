@@ -13,9 +13,9 @@ public:
 	FbxAnimation();
 	~FbxAnimation();
 
-	void Load(const std::string& failPath);
+	void Load(const std::string& failPath,int howMuchAnimation);
 
-	aiAnimation* GetAnimation();
+	aiAnimation* GetAnimation(int AnimationNumber);
 
 public: // 定数
 	// モデル格納ルートパス
@@ -25,7 +25,9 @@ public: // 定数
 
 private:
 
-	aiAnimation* modelAnimation;
+	static const int32_t MaxAnimation = 10;
+
+	aiAnimation* modelAnimation[MaxAnimation];
 	const aiScene* mScene;
 
 };

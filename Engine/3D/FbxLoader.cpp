@@ -13,11 +13,16 @@ using namespace DirectX;
 /// </summary>
 const std::string FbxLoader::baseDirectory = "Resources/";
 const std::string FbxLoader::defaultTextureFileName = "white1x1.png";
+FbxLoader* FbxLoader::fbxLoader_;
 
 FbxLoader* FbxLoader::GetInstance()
 {
-	static FbxLoader instance;
-	return &instance;
+	if (fbxLoader_ == nullptr)
+	{
+		fbxLoader_ = new FbxLoader();
+	}
+
+	return fbxLoader_;
 }
 
 //void FbxLoader::ConvertMatrixFromFbx(DirectX::XMMATRIX* dst, const FbxAMatrix& src) {
@@ -37,11 +42,10 @@ void FbxLoader::Initialize(ID3D12Device* device)
 
 }
 
+
 void FbxLoader::Finalize()
 {
-
-	delete mScene;
-
+	delete fbxLoader_;
 }
 
 FbxModel* FbxLoader::LoadModelFromFile(const string& modelName)

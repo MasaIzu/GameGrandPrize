@@ -37,6 +37,16 @@ void FbxModel::StaticInitialize() {
 	lightGroup.reset(LightGroup::Create());
 }
 
+void FbxModel::StaticFainalize()
+{
+
+	sRootSignature_.Reset();
+	sPipelineState_.Reset();
+
+	constBuffSkin_.Reset();
+	constBuffNothing_.Reset();
+}
+
 void FbxModel::InitializeGraphicsPipeline() {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob;    // 頂点シェーダオブジェクト
@@ -284,6 +294,8 @@ FbxModel::~FbxModel() {
 		delete m.second;
 	}
 	materials_.clear();
+
+	delete defaultMaterial_;
 }
 
 void FbxModel::Initialize() {

@@ -81,6 +81,8 @@ private:
 	// コピー代入演算子を禁止（シングルトンパターン）
 	void operator=(const FbxLoader& obj) = delete;
 
+	static FbxLoader* fbxLoader_;
+
 	/// <summary>
 	/// 再帰的にノード構成を解析
 	/// </summary>

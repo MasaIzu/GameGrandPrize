@@ -126,6 +126,7 @@ private: // メンバ変数
 	std::unique_ptr<ParticleManager> gayserParticle;
 	bool isTutorialEnd = false;
 	bool isStartBossBattle = false;
+	bool isMovie = false;
 
 	const float gayserMaxFlame = 240;
 	float gayserFlame = 0;
@@ -146,7 +147,10 @@ private: // メンバ変数
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
+	ViewProjection movieCamera;
 
+	//現在使っているビュープロ
+	ViewProjection nowViewProjection;
 
 private://プライベート関数
 

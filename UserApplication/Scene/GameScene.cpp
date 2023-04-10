@@ -46,7 +46,7 @@ void GameScene::Initialize() {
 
 	boxCollision = std::make_unique<BoxCollision>();
 
-	
+
 
 	player = std::make_unique<Player>();
 	player->Initialize(model_.get(), 1280, 720);
@@ -82,7 +82,8 @@ void GameScene::Initialize() {
 
 	boss.Initialize();
 
-
+	//ムービー用カメラの初期化
+	movieCamera.Initialize();
 
 
 	boss.fishParent.pos.translation_ = { 0,0,100 };
@@ -104,10 +105,10 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	gayserFlame++;
-	if (static_cast<int>(gayserFlame)%10==0)
+	if (static_cast<int>(gayserFlame) % 10 == 0)
 	{
 		float size = 3.0f;
-		Vector4 startColor = {0,0,0,1};
+		Vector4 startColor = { 0,0,0,1 };
 		Vector4 endColor = { 0,0,0,0 };
 		for (int i = 0; i < 2; i++)
 		{
@@ -121,7 +122,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, size,size,startColor,endColor);
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, size, size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -135,7 +136,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, size,size, startColor, endColor);
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, size, size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -149,7 +150,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, size,size, startColor, endColor);
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, size, size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -163,7 +164,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos,size,size, startColor, endColor);
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, size, size, startColor, endColor);
 		}
 		for (int i = 0; i < 2; i++)
 		{
@@ -177,7 +178,7 @@ void GameScene::Update() {
 			pos.y = 20;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			//追加
-			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, size,size, startColor, endColor);
+			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, size, size, startColor, endColor);
 		}
 	}
 	if (ImGui::Button("break")) {
@@ -195,6 +196,7 @@ void GameScene::Update() {
 	if (!isTutorialEnd) {
 		if (GetMiniFishAlive() < 5) {
 			isTutorialEnd = true;
+			isMovie = true;
 			for (int i = 0; i < 10; i++) {
 				minifishes[i].LeaveGayser(gayserPos[i / 2]);
 			}
@@ -281,6 +283,8 @@ void GameScene::Update() {
 		}
 	}
 
+
+
 	//チュートリアルと最初のムービーでだけ小魚を動かす
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
 
@@ -316,7 +320,7 @@ void GameScene::Update() {
 
 	fishSpawnInterval--;
 
-	
+
 
 	if (isStartBossBattle) {
 		ImGui::Text("boss battle start!");
@@ -329,15 +333,30 @@ void GameScene::Update() {
 		}
 	}
 
+	//小魚スポーンカウントが0でボス戦開始フラグがtrueならムービー終了
+	if (isStartBossBattle && fishSpawnCount == 0) {
+		isMovie = false;
+	}
+
 	/*if (input_->TriggerKey(DIK_SPACE))
 	{
 		sceneManager_->ChangeScene("TITLE");
 	}*/
 
 
-	
+	//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
+	if (isTutorialEnd && !isAllFishLeave) {
+		movieCamera.eye = { 0,75,-50 };
+		movieCamera.target = { 0,0,0 };
+	}
 
+	//ボス生成フェーズになったらカメラをボスに向ける
+	if (isStartBossBattle) {
+		movieCamera.target = boss.fishParent.pos.translation_;
+	}
 
+	//ムービーカメラの更新
+	movieCamera.UpdateMatrix();
 
 	if (collisionManager->GetIsEnemyHit()) {
 		gameCamera->Collision();
@@ -378,7 +397,7 @@ void GameScene::Update() {
 
 	//雑魚的に当たった時
 	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {
-		
+
 	}*/
 
 	ImGui::Begin("Phase");
@@ -401,6 +420,8 @@ void GameScene::Update() {
 	player->Update(viewProjection_);
 
 
+
+
 	//gameCamera->SetIsHit(isEnemyHit);
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
@@ -409,6 +430,12 @@ void GameScene::Update() {
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
+	nowViewProjection = viewProjection_;
+
+	//ムービーフラグがオンならカメラをムービー用に
+	if (isMovie) {
+		nowViewProjection = movieCamera;
+	}
 
 	Vector3 pWith(1, 1, 1);
 	Vector3 eWith(0.6f, 9, 1);
@@ -472,7 +499,7 @@ void GameScene::Draw() {
 
 	//player->ParticleDraw(viewProjection_);
 
-	gayserParticle->Draw(viewProjection_);
+	gayserParticle->Draw(nowViewProjection);
 
 	ParticleManager::PostDraw();
 
@@ -481,7 +508,7 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-	stageModel_->Draw(stageWorldTransform_, viewProjection_);
+	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 	//チュートリアルと最初のムービーでだけ小魚を描画
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
@@ -489,8 +516,8 @@ void GameScene::Draw() {
 		for (int i = 0; i < 10; i++) {
 			//minifishes[i].Draw(viewProjection_);
 			if (minifishes[i].GetAlive()) {
-				boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
-				boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), viewProjection_);
+				boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 			}
 		}
 	}
@@ -498,10 +525,10 @@ void GameScene::Draw() {
 	//ボス出現ムービーとボス変身ムービーの間で描画
 	//if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
-		boss.Draw(viewProjection_);
-//	}
+	boss.Draw(nowViewProjection);
+	//	}
 
-	player->Draw(viewProjection_);
+	player->Draw(nowViewProjection);
 
 
 
@@ -539,7 +566,7 @@ void GameScene::Finalize()
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
-		
+
 		if (minifishes[i].GetAlive()) {
 			count++;
 		}
@@ -549,7 +576,7 @@ int GameScene::GetMiniFishAlive() {
 
 void GameScene::CheckAllFishLeave() {
 	for (int i = 0; i < 10; i++) {
-	//	minifishes[i].easeMove.Update();
+		//	minifishes[i].easeMove.Update();
 		if (minifishes[i].easeMove.GetActive()) {
 			isAllFishLeave = false;
 			return;

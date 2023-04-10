@@ -62,7 +62,7 @@ public:
 	void CreateFish(float posY = 0);
 
 	void Draw(ViewProjection viewProMat);
-
+	//add
 	BossFirstPhase phase1;
 	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
 	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間

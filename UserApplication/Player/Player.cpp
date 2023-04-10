@@ -64,6 +64,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	ParticleMan->Initialize();
 
+	ParticleMan->SetTextureHandle(TextureManager::Load("untiman.png"));
+
 	recovery = std::make_unique<Recovery>();
 
 	recovery->Initialize();
@@ -404,7 +406,7 @@ void Player::Collision(int damage)
 {
 	if (isKnockBack == false)
 	{
-		SetKnockBackCount();
+		//SetKnockBackCount();
 		//スペースキーを押していたら
 		for (int i = 0; i < 4; i++)
 		{

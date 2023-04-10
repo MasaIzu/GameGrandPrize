@@ -14,9 +14,9 @@ void Recovery::Initialize()
 
 	pointWorldTransform_.TransferMatrix();
 
-	tex1 = TextureManager::GetInstance()->Load("recovery/tex1.png");
+	tex1 = TextureManager::GetInstance()->Load("notJinken.png");
 
-	tex2 = TextureManager::GetInstance()->Load("recovery/tex2.png");
+	tex2 = TextureManager::GetInstance()->Load("notJinken.png");
 
 	model_.reset(Model::CreateFromOBJ("recovery", true));
 

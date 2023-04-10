@@ -96,7 +96,7 @@ void GameScene::Initialize() {
 
 	gayserParticle->Initialize();
 
-	gayserParticle->SetTextureHandle(TextureManager::Load("effect2.png"));
+	gayserParticle->SetTextureHandle(TextureManager::Load("beel_idle.png"));
 
 	boss.Initialize();
 
@@ -127,8 +127,8 @@ void GameScene::Update() {
 	if (static_cast<int>(gayserFlame) % 10 == 0)
 	{
 		float size = 3.0f;
-		Vector4 startColor = { 0,0,0,1 };
-		Vector4 endColor = { 0,0,0,0 };
+		Vector4 startColor = { 1,1,1,1 };
+		Vector4 endColor = { 1,1,1,1 };
 		for (int i = 0; i < 2; i++)
 		{
 
@@ -238,7 +238,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 1,1,1,1 }, { 1,1,1,1 });
 					}
 					for (int i = 0; i < 1; i++)
 					{
@@ -252,7 +252,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 1,1,1,1 }, { 1,1,1,1 });
 					}
 					for (int i = 0; i < 1; i++)
 					{
@@ -266,7 +266,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 1,1,1,1 }, { 1,1,1,1 });
 					}
 					for (int i = 0; i < 1; i++)
 					{
@@ -280,7 +280,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 1,1,1,1 }, { 1,1,1,1 });
 					}
 					for (int i = 0; i < 1; i++)
 					{
@@ -294,7 +294,7 @@ void GameScene::Update() {
 						pos.y = 20;
 						pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 						//追加
-						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
+						gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 1,1,1,1 }, { 1,1,1,1 });
 					}
 				}
 			}
@@ -383,6 +383,8 @@ void GameScene::Update() {
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 		player->Collision(10);
 	}
+
+	player->Collision(0);
 
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
@@ -516,7 +518,7 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	//player->ParticleDraw(viewProjection_);
+	player->ParticleDraw(viewProjection_);
 
 	gayserParticle->Draw(nowViewProjection);
 

@@ -36,6 +36,14 @@ public:
 	}
 
 	/// <summary>
+	/// 雑魚敵当たり判定属性をセット
+	/// </summary>
+	/// <param name="attribute">当たり判定属性</param>
+	inline void SetAttributeWakeEnemy(unsigned short attribute) {
+		this->attributeWakeEnemy = attribute;
+	}
+
+	/// <summary>
 	/// 当たり判定属性を追加
 	/// </summary>
 	/// <param name="attribute">当たり判定属性</param>
@@ -56,6 +64,8 @@ protected:
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;
 	// 当たり判定属性
 	unsigned short attribute = 0b1111111111111111;
+	// 雑魚的当たり判定属性
+	unsigned short attributeWakeEnemy = 0b1111111111111111;
 
 	//位置
 	Matrix4 worldPos_;

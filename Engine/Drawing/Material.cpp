@@ -38,8 +38,6 @@ void Material::CreateConstantBuffer() {
 	// 定数バッファとのデータリンク
 	result = constBuff_->Map(0, nullptr, (void**)&constMap_);
 	assert(SUCCEEDED(result));
-
-
 }
 
 void Material::LoadTexture(const std::string& directoryPath) {
@@ -67,14 +65,11 @@ void Material::Update() {
 	constMap_->diffuse = diffuse_;
 	constMap_->specular = specular_;
 	constMap_->alpha = alpha_;
-
 }
 
 void Material::SetGraphicsCommand(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
 	UINT rooParameterIndexTexture) {
-
-	Update();
 
 	// SRVをセット
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(
@@ -89,8 +84,6 @@ void Material::SetGraphicsCommand(
 	ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
 	UINT rooParameterIndexTexture, uint32_t textureHandle) {
 
-	Update();
-
 	// SRVをセット
 	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(
 		commandList, rooParameterIndexTexture, textureHandle);
@@ -100,15 +93,12 @@ void Material::SetGraphicsCommand(
 		rooParameterIndexMaterial, constBuff_->GetGPUVirtualAddress());
 }
 
-void Material::SetLight(float alpha)
-{
-	alpha_ = alpha;
-}
-
 void Material::SetLight(Vector3 ambient, Vector3 diffuse, Vector3 specular, float alpha)
 {
-	ambient_ = XMFLOAT3(ambient.x, ambient.y, ambient.z);
-	diffuse_ = XMFLOAT3(diffuse.x, diffuse.y, diffuse.z);
-	specular_ = XMFLOAT3(specular.x, specular.y, specular.z);
+	ambient_ = ambient;
+	diffuse_ = diffuse;
+	specular_ = specular;
 	alpha_ = alpha;
+
+	Update();
 }

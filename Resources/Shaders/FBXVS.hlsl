@@ -59,7 +59,15 @@ VSOutput main(VSInput input)
 	// ピクセルシェーダーに渡す値
 	VSOutput output;
 	// 行列による座標変換
-	output.svpos = mul(mul(viewproj, world), skinned.pos);
+
+	output.svpos = mul(mul(mul(projection,view), world), skinned.pos);
+
+	//output.svpos = mul(mul(mul(projection, view), world), mul(skinned.pos,initialMatrix));
+
+	//output.svpos = mul(output.svpos, initialMatrix);
+
+	//output.worldpos = worldPos;
+
 	// ワールド法線を次のステージに渡す
 	output.normal = wnormal.xyz;
 	// 入力値をそのまま次のステージに渡す

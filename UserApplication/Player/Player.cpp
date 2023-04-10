@@ -3,6 +3,7 @@
 #include"MyMath.h"
 #include "CollisionManager.h"
 #include <CollisionAttribute.h>
+#include"ImGuiManager.h"
 
 
 Player::Player()
@@ -62,6 +63,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	ParticleMan = std::make_unique<ParticleManager>();
 
 	ParticleMan->Initialize();
+
+	recovery = std::make_unique<Recovery>();
+
+	recovery->Initialize();
 }
 
 
@@ -71,15 +76,17 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	Attack();
 
-	if (isEnemyHit) {
-		SetKnockBackCount();
-		Collision();
-	}
+	//if (isEnemyHit) {
+	//	SetKnockBackCount();
+	//	Collision();
+	//}
+
+	KnockBackUpdate();
+
 	if (isAttackHit)
 	{
 		AttackCollision();
 	}
-	KnockBackUpdate();
 
 	ParticleMan->Update();
 
@@ -90,6 +97,14 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
+
+	recovery->Update();
+
+	ImGui::Begin("player");
+
+	ImGui::Text("HP:%d", HP);
+
+	ImGui::End();
 }
 
 void Player::Move() {
@@ -176,17 +191,37 @@ void Player::Move() {
 
 	Vector3 allMove = PlayerMoveMent + AvoidanceMove;
 
-	AvoidanceMove = {0,0,0};
-
-	float AR;
-	float BR;
-
-	AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
-	BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
-
-	if (AR <= BR)
+	AvoidanceMove = { 0,0,0 };
+	//ステージからでないようにする処理
 	{
-		worldTransform_.translation_ += allMove;
+		float AR;
+		float BR;
+
+		AR = pow((worldTransform_.translation_.x + allMove.x) - 0, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - 0, 2);
+		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
+
+		if (AR <= BR)
+		{
+			worldTransform_.translation_ += allMove;
+		}
+	}
+	//回復と当たっているかの処理
+	{
+		float AR;
+		float BR;
+
+		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x , 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
+		BR = pow((  worldTransform_.scale_.x- recovery->GetScale().x), 2);
+
+		if (AR <= BR&&recovery->GetActive())
+		{
+			HP += 50;
+			if (HP>maxHP)
+			{
+				HP = maxHP;
+			}
+			recovery->Collision();
+		}
 	}
 
 	if (input_->MouseInputing(2)) {
@@ -292,6 +327,8 @@ void Player::SetKnockBackCount()
 
 	moveTime = 0;
 	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) + KnockBack;
+
+	isKnockBack = true;
 }
 
 void Player::KnockBackUpdate()
@@ -299,7 +336,7 @@ void Player::KnockBackUpdate()
 	if (moveTime < MaxMoveTime) {
 		moveTime++;
 		KnockBack += PlayerMoveMent;
-		Vector3 KnockBackMove= easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+		Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 
 		float AR;
 		float BR;
@@ -312,6 +349,10 @@ void Player::KnockBackUpdate()
 			worldTransform_.translation_ = KnockBackMove;
 		}
 	}
+	else
+	{
+		isKnockBack = false;
+	}
 
 }
 
@@ -321,7 +362,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 		playerModel_->Draw(worldTransform_, viewProjection_);
 	}
 	if (timer > 0) {
-		oldPlayerModel_->SetAlpha(alpha);
+		oldWorldTransform_.alpha = alpha;
 		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (isAttack) {
@@ -329,13 +370,13 @@ void Player::Draw(ViewProjection viewProjection_) {
 			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
 		}
 	}
+
+	recovery->Draw(viewProjection_);
 }
 
-void Player::ParticleDraw(ViewProjection viewProjection_)
+void Player::ParticleDraw(ViewProjection view)
 {
-
-	ParticleMan->Draw(viewProjection_);
-
+	ParticleMan->Draw(view);
 }
 
 
@@ -359,27 +400,32 @@ Vector3 Player::bVelocity(Vector3 velocity, WorldTransform& worldTransform) {
 	return result;
 }
 
-void Player::Collision()
+void Player::Collision(int damage)
 {
-	//スペースキーを押していたら
-	for (int i = 0; i < 4; i++)
+	if (isKnockBack == false)
 	{
-		//消えるまでの時間
-		const float rnd_life = 70.0f;
-		//最低限のライフ
-		const float constlife = 10;
-		float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+		SetKnockBackCount();
+		//スペースキーを押していたら
+		for (int i = 0; i < 4; i++)
+		{
+			//消えるまでの時間
+			const float rnd_life = 70.0f;
+			//最低限のライフ
+			const float constlife = 10;
+			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
-		//XYZの広がる距離
-		const float rnd_pos = 30.0f;
-		//Y方向には最低限の飛ぶ距離
-		const float constPosY = 15;
-		Vector3 pos{};
-		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
-		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		//追加
-		ParticleMan->OutAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//追加
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, MyMath::GetWorldTransform(worldTransform_.matWorld_), { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z }, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
+		}
+		HP -= damage;
 	}
 }
 
@@ -398,12 +444,12 @@ void Player::AttackCollision()
 		const float rnd_pos = 200.0f;
 		//Y方向には最低限の飛ぶ距離
 		const float constPosY = 15;
-		Vector3 pos{};
+		Vector3 pos;
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->InAdd(life, MyMath::GetWorldTransform(worldTransform_.matWorld_), MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
+		ParticleMan->Add(ParticleManager::Type::In, life,false, MyMath::GetWorldTransform(worldTransform_.matWorld_),{ MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z}, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, {1,1,0.95,1}, {1,1,0.95,0});
 	}
 }
 

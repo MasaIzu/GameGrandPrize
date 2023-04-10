@@ -45,7 +45,7 @@ void Framework::Initialize()
 
 	ParticleManager::StaticInitialize(DirectXCore::GetInstance()->GetDevice());
 
-	PostEffect::Initialize(DirectXCore::GetInstance()->GetDevice());
+	PostEffect::Initialize(DirectXCore::GetInstance());
 
 #pragma endregion
 
@@ -92,15 +92,15 @@ void Framework::Finalize()
 	imGui->Finalize();
 	sceneFactory_.reset();
 
-	//TextureManager_->Delete();
+	TextureManager_->Delete();
 
 	input_->Destroy();
 
-	//directXCore_->Destroy();
+	directXCore_->Destroy();
 
 	// ゲームウィンドウの破棄
 	winApp_->DeleteGameWindow();
-	//winApp_->Destroy();
+	winApp_->Destroy();
 
 
 }

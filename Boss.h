@@ -14,6 +14,12 @@ struct fish {
 	float spd;	//移動速度
 	Vector3 displacement;	//親座標からの微妙なずれ
 	Vector3 randomVec;
+
+	Vector3 beforePos;
+	Vector3 controll1;
+	Vector3 controll2;
+	Vector3 afterPos;
+	EasingData easeMove;
 };
 
 enum class BossFirstPhase {
@@ -59,7 +65,7 @@ public:
 
 	void Update(const Vector3& targetPos);
 
-	void CreateFish(float posY = 0);
+	void CreateFish(Vector3 spawnPos);
 
 	void Draw(ViewProjection viewProMat);
 
@@ -116,7 +122,7 @@ private:
 
 	const int moveFishMax = 120;
 
-	EasingData easePFishToSword[120];	//魚の移動用イージングタイマー
+	EasingData easePFishToSword[fishMaxCount];	//魚の移動用イージングタイマー
 	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
 	Vector3 parentBeforePos, parentAfterPos;
 	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];

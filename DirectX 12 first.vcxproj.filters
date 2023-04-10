@@ -127,12 +127,6 @@
     <Filter Include="ユーザーヘッダー ファイル\Skydome">
       <UniqueIdentifier>{9cbfaac7-0ca9-439d-8308-4e966b74e7e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ソース ファイル\FBX">
-      <UniqueIdentifier>{3e6217d3-eca6-43a6-b189-2b965ae37a56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\ヘッダー\FBX">
-      <UniqueIdentifier>{93f4c701-600a-488e-8e14-90678053b895}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Obj.hlsli">
@@ -160,6 +154,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\PostEffectGlow.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\FBX.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -222,6 +219,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\PostEffectGlowVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -373,11 +376,8 @@
     <ClInclude Include="Engine\Math\Quaternion.h">
       <Filter>Engine\ヘッダー\Math</Filter>
     </ClInclude>
-    <ClInclude Include="FbxModel.h">
+    <ClInclude Include="Engine\3D\FbxModel.h">
       <Filter>Engine\ヘッダー\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="FbxLoader.h">
-      <Filter>Engine\ヘッダー\FBX</Filter>
     </ClInclude>
     <ClInclude Include="Boss.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
@@ -396,6 +396,18 @@
     </ClInclude>
     <ClInclude Include="PostEffect.h">
       <Filter>Engine\ヘッダー\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniFish.h">
+      <Filter>ユーザーヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="recovery.h">
+      <Filter>ユーザーヘッダー ファイル\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FbxAnimation.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FbxLoader.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -522,11 +534,8 @@
     <ClCompile Include="Engine\Math\Quaternion.cpp">
       <Filter>Engine\ソース ファイル\Math</Filter>
     </ClCompile>
-    <ClCompile Include="FbxModel.cpp">
+    <ClCompile Include="Engine\3D\FbxModel.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="FbxLoader.cpp">
-      <Filter>Engine\ソース ファイル\FBX</Filter>
     </ClCompile>
     <ClCompile Include="Boss.cpp">
       <Filter>ユーザーソース ファイル</Filter>
@@ -545,6 +554,18 @@
     </ClCompile>
     <ClCompile Include="PostEffect.cpp">
       <Filter>Engine\ソース ファイル\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="recovery.cpp">
+      <Filter>ユーザーソース ファイル\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FbxAnimation.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FbxLoader.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

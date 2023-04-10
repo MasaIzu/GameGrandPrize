@@ -24,6 +24,7 @@
 #include "GameCamera.h"
 #include"Boss.h"
 #include <CollisionManager.h>
+
 #include "UserApplication/Ground/Ground.h"
 
 #include <objbase.h>
@@ -36,6 +37,19 @@ class TouchableObject;
 //	WorldTransform pos;
 //
 //};
+
+#include"MiniFish.h"
+#include"FbxAnimation.h"
+
+enum class GamePhase {
+	GameTutorial,	//チュートリアル
+	GameMovie1,		//ムービー1(チュートリアル→ボス戦への遷移)
+	GameBoss1,		//ボス戦第一形態
+	GameMovie2,		//ムービー2(ボスの形態変化)
+	GameBoss2,		//ボス戦第二形態
+	GameMovie3,		//ムービー3(ボスが死ぬとき)
+};
+
 
 /// <summary>
 /// ゲームシーン
@@ -108,7 +122,10 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//Fbxモデル
-	//std::unique_ptr<FbxModel> fbxmodel;
+	/*std::unique_ptr<FbxModel> fbxmodel;
+	std::unique_ptr<FbxAnimation> modelAnim;
+	float frem = 0;*/
+
 
 	Boss boss;
 	//デバッグによる生成用
@@ -117,13 +134,37 @@ private: // メンバ変数
 	bool isEnemyHit = false;
 	bool isAttackHit = false;
 
-	std::unique_ptr< ParticleManager> ParticleMan;
+	int playerAttackHitNumber = 0;
 
+	GamePhase gamePhase = GamePhase::GameTutorial;
+
+	//小魚関係(チュートリアル用)
+	MiniFish minifishes[10];
+	int deadMinFishCount = 0;	//倒された小魚のカウント
+	std::unique_ptr<ParticleManager> gayserParticle;
+	bool isTutorialEnd = false;
+	bool isStartBossBattle = false;
+	bool isMovie = false;
+
+	const float gayserMaxFlame = 240;
+	float gayserFlame = 0;
+
+	int fishSpawnInterval = 0;
+	int fishSpawnCount = 0;
+
+	//ステージ関係
+	float stageRadius = 50;	//ステージの半径
+	Vector3 stagePos{ 0,0,0 };//ステージの中心座標
+
+	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
+
+	bool isAllFishLeave = false;
 
 	// 3Dモデル
 	std::unique_ptr<Model> stageModel_;
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
+
 
 	////地面作成
 	std::unique_ptr<Model>groundModel = nullptr;
@@ -134,4 +175,17 @@ private: // メンバ変数
 	std::unique_ptr<Model> modeltable[groundMaxCount];
 
 	Ground ground;
+
+	ViewProjection movieCamera;
+
+	//現在使っているビュープロ
+	ViewProjection nowViewProjection;
+
+private://プライベート関数
+
+	void CheckAllFishLeave();
+
+	//生きている小魚の数を更新
+	int GetMiniFishAlive();
+
 };

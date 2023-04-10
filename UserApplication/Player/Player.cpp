@@ -465,6 +465,11 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
+void Player::SetPosition(Vector3 pos)
+{
+	worldTransform_.translation_ = pos;
+}
+
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
 {
 	// 補完すべき点の数

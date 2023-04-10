@@ -86,7 +86,7 @@ void GameScene::Initialize() {
 	movieCamera.Initialize();
 
 
-	boss.fishParent.pos.translation_ = { 0,0,100 };
+	boss.fishParent.pos.translation_ = { 0,25,100 };
 	boss.fishParent.pos.TransferMatrix();
 
 	/*for (int i = 0; i < boss.fishMaxCount; i++) {
@@ -499,8 +499,11 @@ void GameScene::Draw() {
 
 	//player->ParticleDraw(viewProjection_);
 
-	gayserParticle->Draw(nowViewProjection);
+	if (isMovie) {
 
+		gayserParticle->Draw(nowViewProjection);
+
+	}
 	ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理

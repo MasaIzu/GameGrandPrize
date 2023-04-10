@@ -209,7 +209,7 @@ void Boss::UpdateIdle()
 			fishes[i].pos.SetMatRot(matrot);
 		}
 		else {
-			ImGui::Text("atk interval:%d",nextPhaseInterval);
+		
 			if (fishes[i].pos.parent_ == nullptr) {
 				fishes[i].pos.parent_ = &fishParent.pos;
 			}
@@ -224,7 +224,7 @@ void Boss::UpdateIdle()
 			//座標を計算
 
 
-			pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+		//	pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
 			pos.x = 100;
 			pos.z = 100;
 
@@ -243,6 +243,7 @@ void Boss::UpdateIdle()
 			pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 
 			pos.x = rotaVec.x;
+			//pos.y = rotaVec.y;
 			pos.z = rotaVec.z;
 			//pos = rotaVec;
 
@@ -252,22 +253,18 @@ void Boss::UpdateIdle()
 				num = -1;
 			}
 
-			//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+				//pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
 
 			pos += fishes[i].displacement;
 
-			//回転用の移動ベクトルを作成
-			Vector3 dirvec = pos - fishes[i].pos.translation_;
-			dirvec.normalize();
-			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
 			Matrix4 matrot;
 			matrot = CreateMatRot(fishes[i].pos.translation_, pos);
 
 			fishes[i].pos.SetMatRot(matrot);
 
 
-				//攻撃のクールタイムを減らす
-	
+		//攻撃のクールタイムを減らす
+		
 		}
 
 	
@@ -275,6 +272,10 @@ void Boss::UpdateIdle()
 
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
+
+		
+		ImGui::Text("pos[%d]:%f,%f,%f", i, fishes[i].pos.translation_.x, fishes[i].pos.translation_.y, fishes[i].pos.translation_.z);
+		ImGui::Text("after pos[%d]:%f,%f,%f", i, fishes[i].afterPos.x, fishes[i].afterPos.y, fishes[i].afterPos.z);
 	}
 
 	if (!fishes[fishes.size() - 1].easeMove.GetActive() && !fishes[0].easeMove.GetActive()) {

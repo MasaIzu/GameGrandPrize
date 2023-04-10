@@ -56,10 +56,6 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 	//}
 
 
-
-
-	ImGui::Text("timeRate:%f", easeMove.GetTimeRate());
-
 	//if (easeMove.GetActive()) {
 	//	ImGui::Text("active!");
 	//	for (int i = 0; i < 4; i++) {

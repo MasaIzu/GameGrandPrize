@@ -18,7 +18,7 @@ struct block
 	WorldTransform pos;//worldÀ•W
 
 };
-
+//add
 
 class Ground {
 

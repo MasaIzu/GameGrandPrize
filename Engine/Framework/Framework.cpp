@@ -88,8 +88,17 @@ void Framework::Finalize()
 	// Šeí‰ğ•ú
 	sceneManager_->Finalize();
 
+	PostEffect::Finalize();
+
+	ParticleManager::StaticFinalize();
+
 	imGui->Finalize();
 	sceneFactory_.reset();
+
+	FbxModel::StaticFainalize();
+	Model::StaticFinalize();
+
+	Sprite::StaticFinalize();
 
 	fbxLoader_->Finalize();
 
@@ -148,13 +157,6 @@ void Framework::Run()
 			break;
 		}
 
-	}
-
-	ID3D12DebugDevice* debugInterface;
-
-	if (SUCCEEDED(directXCore_->GetDevice()->QueryInterface(&debugInterface))) {
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-		debugInterface->Release();
 	}
 
 	//ƒQ[ƒ€‚ÌI—¹

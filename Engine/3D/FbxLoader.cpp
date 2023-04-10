@@ -42,6 +42,7 @@ void FbxLoader::Initialize(ID3D12Device* device)
 
 }
 
+
 void FbxLoader::Finalize()
 {
 	delete fbxLoader_;

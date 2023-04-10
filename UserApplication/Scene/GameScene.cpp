@@ -11,7 +11,7 @@
 
 GameScene::GameScene() {}
 GameScene::~GameScene() {
-	model_.reset();
+	
 }
 
 void GameScene::Initialize() {
@@ -38,10 +38,10 @@ void GameScene::Initialize() {
 	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("Player"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dRowPori"));
 	fbxmodel->Initialize();
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("Player");
+	modelAnim->Load("3dRowPori",3);
 
 
 	boxCollision = std::make_unique<BoxCollision>();
@@ -435,7 +435,7 @@ void GameScene::Update() {
 		frem = 0;
 	}
 
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation());
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(2));
 
 
 }

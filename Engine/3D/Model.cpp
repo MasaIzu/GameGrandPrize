@@ -31,6 +31,14 @@ void Model::StaticInitialize() {
 	lightGroup.reset(LightGroup::Create());
 }
 
+void Model::StaticFinalize()
+{
+
+	sRootSignature_.Reset();
+	sPipelineState_.Reset();
+
+}
+
 void Model::InitializeGraphicsPipeline() {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob;    // 頂点シェーダオブジェクト

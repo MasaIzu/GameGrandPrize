@@ -222,6 +222,17 @@ void Sprite::StaticInitialize(
 			0.0f, (float)WinApp::window_width, (float)WinApp::window_height, 0.0f, 0.0f, 1.0f);
 }
 
+void Sprite::StaticFinalize()
+{
+
+	RootSignature_.Reset();
+
+	for (int i = 0; i < PipelineStates_.size(); i++) {
+		PipelineStates_[i].Reset();
+	}
+
+}
+
 void Sprite::PreDraw(ID3D12GraphicsCommandList* commandList, int blendMode) {
 
 	// コマンドリストをセット

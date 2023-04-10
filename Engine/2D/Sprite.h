@@ -37,6 +37,9 @@ public: // 静的メンバ関数
 	// 静的初期化
 	static void StaticInitialize(ID3D12Device* device,const std::wstring& directoryPath = L"Resources/");
 
+	// 静的終了処理
+	static void StaticFinalize();
+
 	// 描画前処理
 	static void PreDraw(ID3D12GraphicsCommandList* cmdList, int blendMode = 1);
 

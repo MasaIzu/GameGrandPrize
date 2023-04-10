@@ -64,7 +64,7 @@ void Ground::Draw(ViewProjection viewProjection_) {
 
 	}
 
-	for (int  i = 0; i < 42; i++)
+	for (int  i = 0; i < 66; i++)
 	{
 		blockModel_->Draw(blockObjects[i].pos, viewProjection_);
 	}
@@ -108,32 +108,38 @@ void Ground::CreateGround()
 
 void Ground::CreateBlock()
 {
-	 Vector3 SCALE= { XtZ,20,XtZ };
+	 //Vector3 SCALE= { XtZ,20,XtZ };
 	//z
 	for (int i = 0; i < MaxCount; i++)
 	{ //x
 		for (int j = 0; j < MaxCount; j++)
 		{
+			Vector3 SCALE = 
+			{ 
+				Random(40.0f, 60.0f)*1.5f ,
+				Random(40.0f, 60.0f) ,
+				Random(40.0f, 60.0f) *1.5f
+			};
 			Vector3 POS = 
 			{
-				(j * SCALE.x) + (SCALE.x * j) - SCALE.x * (MaxCount),
+				(j * SCALE.x) + (SCALE.x * j) - SCALE.x * (MaxCount)  ,
 				SCALE.y,
-				(i * SCALE.z) + (SCALE.z * i) - SCALE.z * (MaxCount)
+				(i * SCALE.z) + (SCALE.z * i) - SCALE.z * (MaxCount)  
 			};
 			int select = Random(1, 3);
-			if (i == 0 || j == 0 || i == MaxCount || j == MaxCount)
+			if (i == 0 || j == 0 || i == MaxCount-1  || j == MaxCount-1 )
 			{
 				if (select == 1)
 				{
-					CreateBlockV1(POS);
+					CreateBlockV1(POS,SCALE);
 				}
 				else if (select == 2)
 				{
-					CreateBlockV2(POS);
+					CreateBlockV2(POS, SCALE);
 				}
 				else
 				{
-					CreateBlockV3(POS);
+					CreateBlockV3(POS, SCALE);
 				}
 
 			}
@@ -142,45 +148,38 @@ void Ground::CreateBlock()
 	}
 }
 
-void Ground::CreateBlockV1(Vector3 pos)
+void Ground::CreateBlockV1(Vector3 pos,Vector3 sc)
 {
 	
 	newblock.pos.Initialize();
 	newblock.pos.translation_ = pos;
 
-	newblock.pos.scale_.x = Random(40.0f, 60.0f);
-	newblock.pos.scale_.y = Random(40.0f, 60.0f);
-	newblock.pos.scale_.z = Random(40.0f, 60.0f);
-
+	newblock.pos.scale_ = sc;
 
 	newblock.pos.TransferMatrix();
 
 	blockObjects.push_back(newblock);
 }
 
-void Ground::CreateBlockV2(Vector3 pos)
+void Ground::CreateBlockV2(Vector3 pos, Vector3 sc)
 {
 	block newblockV2;
 	newblockV2.pos.Initialize();
 	newblockV2.pos.translation_ = pos;
 
-	newblockV2.pos.scale_.x = Random(40.0f, 60.0f);
-	newblockV2.pos.scale_.y = Random(40.0f, 60.0f);
-	newblockV2.pos.scale_.z = Random(40.0f, 60.0f);
+	newblockV2.pos.scale_ = sc;
 
 	newblockV2.pos.TransferMatrix();
 	blockObjects.push_back(newblockV2);
 }
 
-void Ground::CreateBlockV3(Vector3 pos)
+void Ground::CreateBlockV3(Vector3 pos, Vector3 sc)
 {
 	block newblockV3;
 	newblockV3.pos.Initialize();
 	newblockV3.pos.translation_ = pos;
 
-	newblockV3.pos.scale_.x = Random(4.0f, 60.0f);
-	newblockV3.pos.scale_.y = Random(4.0f, 60.0f);
-	newblockV3.pos.scale_.z = Random(4.0f, 60.0f);
+	newblockV3.pos.scale_ = sc;
 
 	newblockV3.pos.TransferMatrix();
 	blockObjects.push_back(newblockV3);

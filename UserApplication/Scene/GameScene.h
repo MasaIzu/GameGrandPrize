@@ -24,6 +24,20 @@
 #include "GameCamera.h"
 #include"Boss.h"
 #include <CollisionManager.h>
+
+#include "UserApplication/Ground/Ground.h"
+
+#include <objbase.h>
+
+
+class TouchableObject;
+
+//struct ground
+//{
+//	WorldTransform pos;
+//
+//};
+
 #include"MiniFish.h"
 #include"FbxAnimation.h"
 
@@ -35,6 +49,7 @@ enum class GamePhase {
 	GameBoss2,		//ボス戦第二形態
 	GameMovie3,		//ムービー3(ボスが死ぬとき)
 };
+
 
 /// <summary>
 /// ゲームシーン
@@ -74,6 +89,9 @@ public:
 
 	// 終了処理
 	void Finalize() override;
+
+	//void CreateGround();
+
 
 
 private: // メンバ変数
@@ -147,6 +165,17 @@ private: // メンバ変数
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
+
+	////地面作成
+	std::unique_ptr<Model>groundModel = nullptr;
+	std::vector<ground> objects;
+
+	static const int groundMaxCount = 10;
+
+	std::unique_ptr<Model> modeltable[groundMaxCount];
+
+	Ground ground;
+
 	ViewProjection movieCamera;
 
 	//現在使っているビュープロ
@@ -158,4 +187,5 @@ private://プライベート関数
 
 	//生きている小魚の数を更新
 	int GetMiniFishAlive();
+
 };

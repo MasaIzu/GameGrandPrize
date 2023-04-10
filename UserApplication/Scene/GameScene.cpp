@@ -9,6 +9,7 @@
 #include "Collision.h"
 #include"PostEffect.h"
 
+
 GameScene::GameScene() {}
 GameScene::~GameScene() {
 	model_.reset();
@@ -68,6 +69,23 @@ void GameScene::Initialize() {
 
 	stageWorldTransform_.TransferMatrix();
 
+
+
+	//groundModel = std::make_unique<Model>();
+
+	////地面の描画
+	ground.Initialize();
+
+	for (int i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateGround();
+	};
+	for (int i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateBlock();
+	};
+
+
 	//間欠泉の座標設定
 	for (int i = 0; i < 5; i++) {
 		float gayserPosRad = 360.0f / 5.0f * i;
@@ -101,6 +119,7 @@ void GameScene::Initialize() {
 	}
 
 	boss.Update({ 0,0,0 });
+
 }
 
 void GameScene::Update() {
@@ -508,7 +527,14 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+
+
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	
+	ground.Draw(viewProjection_);
+
+	
 
 	//チュートリアルと最初のムービーでだけ小魚を描画
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
@@ -529,6 +555,7 @@ void GameScene::Draw() {
 	//	}
 
 	player->Draw(nowViewProjection);
+
 
 
 
@@ -563,6 +590,10 @@ void GameScene::Finalize()
 {
 }
 
+
+
+
+
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
@@ -584,3 +615,4 @@ void GameScene::CheckAllFishLeave() {
 	}
 	isAllFishLeave = true;
 }
+

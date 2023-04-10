@@ -127,6 +127,10 @@ private: // メンバ変数
 	float frem = 0;*/
 
 
+	std::unique_ptr<Sprite> sprite1_ = nullptr;
+	std::unique_ptr<Sprite> sprite2_ = nullptr;
+
+
 	Boss boss;
 	//デバッグによる生成用
 	float newFishPosY = 0;

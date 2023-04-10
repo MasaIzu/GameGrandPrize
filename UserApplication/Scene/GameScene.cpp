@@ -69,7 +69,9 @@ void GameScene::Initialize() {
 
 	stageWorldTransform_.TransferMatrix();
 
-
+	sprite1_ = Sprite::Create(TextureManager::Load("notJinken.png"));
+	sprite2_ = Sprite::Create(TextureManager::Load("kamerasousakun.png"));
+	sprite2_->SetSize({ 300.0f, 200.0f });
 
 	//groundModel = std::make_unique<Model>();
 
@@ -516,13 +518,6 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
-	ParticleManager::PreDraw(commandList);
-
-	player->ParticleDraw(viewProjection_);
-
-	gayserParticle->Draw(nowViewProjection);
-
-	ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
@@ -559,11 +554,16 @@ void GameScene::Draw() {
 	player->Draw(nowViewProjection);
 
 
-
-
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
 
+	ParticleManager::PreDraw(commandList);
+
+	player->ParticleDraw(viewProjection_);
+
+	gayserParticle->Draw(nowViewProjection);
+
+	ParticleManager::PostDraw();
 
 
 	FbxModel::PreDraw(commandList);
@@ -583,7 +583,8 @@ void GameScene::Draw() {
 
 #pragma region 前景スプライト描画
 
-
+	sprite1_->Draw({ 0,360 }, { 1,1,1,1 });
+	sprite2_->Draw({ 1080,360 }, { 1,1,1,1 });
 
 #pragma endregion
 }

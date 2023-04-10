@@ -72,12 +72,14 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 			PlaySceneCamera(viewProjection_);
 		}*/
 		PlaySceneCamera(viewProjection_);
+
+		ImGui::Text("isShake : %d", isShake);
 	}
 	else {
 		ImGui::Begin("camera");
-		ImGui::SliderFloat("eye:x",&vTargetEye.x,-100.0f,100.0f);
-		ImGui::SliderFloat("eye:y",&vTargetEye.y,-100.0f,700.0f);
-		ImGui::SliderFloat("eye:z",&vTargetEye.z,-100.0f,100.0f);
+		ImGui::SliderFloat("eye:x", &vTargetEye.x, -100.0f, 100.0f);
+		ImGui::SliderFloat("eye:y", &vTargetEye.y, -100.0f, 700.0f);
+		ImGui::SliderFloat("eye:z", &vTargetEye.z, -100.0f, 100.0f);
 
 		ImGui::SliderFloat("target:x", &target.x, -100.0f, 100.0f);
 		ImGui::SliderFloat("target:y", &target.y, -100.0f, 100.0f);
@@ -265,19 +267,25 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
 
 
-	ImGui::Text("vTargetEye : %f", cameraDis);
+	//ImGui::Text("vTargetEye : %f", cameraDis);
 	//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
 
-	if (isHit == true) {
+	/*if (isHit == true) {
 		isHit = false;
 		isShake = true;
 		shakeTime = 10;
 
-	}
+	}*/
 
 	if (isShake == true) {
 		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
 	}
+}
+
+void GameCamera::Collision()
+{
+	isShake = true;
+	shakeTime = 10;
 }
 
 void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)

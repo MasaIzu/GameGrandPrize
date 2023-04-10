@@ -38,6 +38,8 @@ public://ƒƒ“ƒoŠÖ”
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
 	bool GetIsAttackHit() { return isAttackHit; }
+	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
+	int GetHitNumber() { return hitNumber; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
 	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
@@ -52,6 +54,8 @@ private:
 
 	bool isEnemyHit = false;
 	bool isAttackHit = false;
+	int hitNumber = 0;
+	bool isWakeEnemyAttackHit = false;
 	Matrix4 EnemyWorldPos;
 	Matrix4 HitWorldPos;
 };

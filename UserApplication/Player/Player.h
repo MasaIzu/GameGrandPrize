@@ -12,6 +12,7 @@
 #include "Vector4.h"
 #include <Easing.h>
 #include"ParticleManager.h"
+#include"recovery.h"
 
 class Player {
 
@@ -44,7 +45,9 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void ParticleDraw(ViewProjection viewProjection_);
+	void ParticleDraw(ViewProjection view);
+
+	void Collision(int damage);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -64,8 +67,6 @@ public:
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
-
-	void Collision();
 	
 
 	/// <summary>
@@ -89,7 +90,7 @@ private:
 	// コライダー
 	BaseCollider* collider = nullptr;
 
-	static const int SphereCount = 20;
+	static const int SphereCount = 10;
 
 	BaseCollider* AttackCollider[SphereCount];
 	Vector3 colliderPos[SphereCount];
@@ -136,6 +137,7 @@ private:
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
 	float KnockBackDistance = 20.0f;
+	bool isKnockBack=false;
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ
@@ -168,4 +170,10 @@ private:
 	const int satgeSize = 200;
 
 	std::unique_ptr<ParticleManager> ParticleMan;
+
+	std::unique_ptr<Recovery> recovery;
+
+	const int maxHP = 100;
+
+	int HP=100;
 };

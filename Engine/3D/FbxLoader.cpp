@@ -35,19 +35,12 @@ void FbxLoader::Initialize(ID3D12Device* device)
 	// 引数からメンバ変数に代入
 	this->device = device;
 
-	flag |= aiProcess_Triangulate;
-	flag |= aiProcess_PreTransformVertices;
-	flag |= aiProcess_CalcTangentSpace;
-	flag |= aiProcess_GenSmoothNormals;
-	flag |= aiProcess_GenUVCoords;
-	flag |= aiProcess_RemoveRedundantMaterials;
-	flag |= aiProcess_OptimizeMeshes;
-
-	flag |= aiProcess_ConvertToLeftHanded;
 }
 
 void FbxLoader::Finalize()
 {
+
+	delete mScene;
 
 }
 
@@ -79,115 +72,106 @@ FbxModel* FbxLoader::LoadModelFromFile(const string& modelName)
 	// あらかじめ必要数分のメモリを確保することで、アドレスがずれるのを予防
 	model->nodes.reserve(nodeCount);
 
+	model->globalInverseTransform = MyMath::AssimpMatrix(mScene->mRootNode->mTransformation);
+
 
 	// ルートノードから順に解析してモデルに流し込む
 	ParseNodeRecursive(model, mScene->mRootNode);
 	// FBXシーン解放
 	aiReleaseImport(mScene);
 
+	for (size_t i = 0; i < model->nodes.size(); i++)
+	{
+		if (model->nodes[i].parent)
+		{
+			auto itr = std::find_if(model->nodes.begin(), model->nodes.end(), [&](Node& node)
+				{
+					return node.name == model->nodes[i].parent->name;
+				});
+
+			itr->childrens.push_back(&model->nodes[i]);
+		}
+	}
+
+	model->SetTextureHandle(textureHandle);
+
 	return model;
 }
 
-//void FbxLoader::ParseSkin(Model* model, FbxMesh* fbxMesh) {
-//
-//	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
-//
-//	if (fbxSkin == nullptr) {
-//
-//		//各頂点について処理
-//		for (int i = 0; i < model->vertices.size(); i++) {
-//			//最初のボーン(単位行列)の影響を100%にする
-//			model->vertices[i].boneIndex[0] = 0;
-//			model->vertices[i].boneWeight[0] = 1.0f;
-//		}
-//
-//		return;
-//	}
-//
-//	std::vector<Model::Bone>& bones = model->bones;
-//
-//	int clusterCount = fbxSkin->GetClusterCount();
-//	bones.reserve(clusterCount);
-//
-//	for (int i = 0; i < clusterCount; i++) {
-//
-//		FbxCluster* fbxCluster = fbxSkin->GetCluster(i);
-//
-//		const char* boneName = fbxCluster->GetLink()->GetName();
-//
-//		bones.emplace_back(Model::Bone(boneName));
-//		Model::Bone& bone = bones.back();
-//
-//		bone.fbxCluster = fbxCluster;
-//
-//		FbxAMatrix fbxMat;
-//		fbxCluster->GetTransformLinkMatrix(fbxMat);
-//
-//		XMMATRIX initialPose;
-//		ConvertMatrixFromFbx(&initialPose, fbxMat);
-//
-//		bone.invInitialPose = XMMatrixInverse(nullptr, initialPose);
-//
-//	}
-//
-//	struct WeightSet {
-//		UINT index;
-//		float weight;
-//	};
-//
-//	std::vector<std::list<WeightSet>> weightLists(model->vertices.size());
-//
-//	for (int i = 0; i < clusterCount; i++) {
-//
-//		FbxCluster* fbxCluster = fbxSkin->GetCluster(i);
-//
-//		int controlPointIndicesCount = fbxCluster->GetControlPointIndicesCount();
-//
-//		int* controlPointIndices = fbxCluster->GetControlPointIndices();
-//		double* controlPointWeights = fbxCluster->GetControlPointWeights();
-//
-//		for (int j = 0; j < controlPointIndicesCount; j++) {
-//			int vertIndex = controlPointIndices[j];
-//
-//			float weight = (float)controlPointWeights[j];
-//
-//			weightLists[vertIndex].emplace_back(WeightSet{ (UINT)i,weight });
-//		}
-//	}
-//
-//	auto& vertices = model->vertices;
-//
-//	for (int i = 0; i < vertices.size(); i++) {
-//
-//		auto& weightList = weightLists[i];
-//
-//		weightList.sort([](auto const& lhs, auto const& rhs) {
-//
-//			return lhs.weight > rhs.weight;
-//			});
-//
-//		int weightArrayIndex = 0;
-//
-//		for (auto& weightSet : weightList) {
-//
-//			vertices[i].boneIndex[weightArrayIndex] = weightSet.index;
-//			vertices[i].boneWeight[weightArrayIndex] = weightSet.weight;
-//
-//			if (++weightArrayIndex >= FbxModel::MAX_BONE_INDICES) {
-//				float weight = 0.0f;
-//
-//				for (int j = 1; j < Model::MAX_BONE_INDICES; j++) {
-//					weight += vertices[i].boneWeight[j];
-//				}
-//				vertices[i].boneWeight[0] = 1.0f - weight;
-//				break;
-//			}
-//
-//		}
-//
-//	}
-//
-//}
+void FbxLoader::ParseSkin(FbxModel* model, aiMesh* fbxMesh) {
+
+	auto& vertices = model->meshes_.back()->vertices_;
+
+	struct WeightSet {
+		UINT index;
+		float weight;
+	};
+
+	std::vector<std::list<WeightSet>> weightLists(vertices.size());
+
+	if (fbxMesh->mNumBones == 0) {
+		return;
+	}
+
+	for (int i = 0; i < fbxMesh->mNumBones; i++) {
+
+
+		auto& meshBone = fbxMesh->mBones[i];
+
+		//ボーン自体のノードの名前を取得
+		const char* boneName = meshBone->mName.C_Str();
+
+		//新しくボーンを追加し、追加したボーンの参照を得る
+		Mesh::Bone bone;
+
+		bone.name = boneName;
+
+		//FBXから初期姿勢行列を取得する
+
+		//初期姿勢行列の逆行列を得る
+		bone.offsetMatirx = MyMath::AssimpMatrix(meshBone->mOffsetMatrix.Transpose());
+
+
+
+		bone.index = i;
+
+		model->meshes_.back()->vecBones.push_back(bone);
+		//model->meshes_.back()->bones[bone.name] = &model->meshes_.back()->vecBones.back();
+
+		for (int j = 0; j < meshBone->mNumWeights; j++) {
+			int vertIndex = meshBone->mWeights[j].mVertexId;
+
+			float weight = (float)meshBone->mWeights[j].mWeight;
+
+			weightLists[vertIndex].emplace_back(WeightSet{ (UINT)i,weight });
+		}
+	}
+
+	//各頂点について処理
+	for (size_t j = 0; j < vertices.size(); j++)
+	{
+		//頂点のウェイトから最も大きい4つを選択
+		auto& weightList = weightLists[j];
+
+		size_t weightArrayIndex = 0;
+		//降順ソート済みのウェイトリストから
+
+		for (auto& weightSet : weightList)
+		{
+			//頂点データに書き込み
+			vertices[j].boneIndex[weightArrayIndex] = weightSet.index;
+			vertices[j].boneWeight[weightArrayIndex] = weightSet.weight;
+
+			//4つに達したら修了
+			if (++weightArrayIndex >= Mesh::MAX_BONE_INDICES)
+			{
+				break;
+			}
+
+		}
+	}
+
+}
 
 void FbxLoader::ParseNodeRecursive(FbxModel* model, aiNode* fbxNode, Node* parent)
 {
@@ -221,7 +205,10 @@ void FbxLoader::ParseNodeRecursive(FbxModel* model, aiNode* fbxNode, Node* paren
 		if (aimesh) {
 			model->meshes_.emplace_back();
 			model->meshes_.back() = new Mesh();
+
 			model->meshes_.back()->name_ = aimesh->mName.C_Str();
+
+			model->meshes_.back()->node = &node;
 
 			ParseMesh(model, aimesh);
 		}
@@ -243,8 +230,11 @@ void FbxLoader::ParseMesh(FbxModel* model, aiMesh* fbxMesh)
 	// マテリアルの読み取り
 	ParseMaterial(model, fbxMesh, mScene->mMaterials[fbxMesh->mMaterialIndex]);
 
-	//スキニング情報の読み取り
-	//ParseSkin(model, fbxMesh);
+	if (fbxMesh->HasBones()) {
+		//スキニング情報の読み取り
+		ParseSkin(model, fbxMesh);
+	}
+
 
 }
 
@@ -294,9 +284,9 @@ void FbxLoader::ParseMeshFaces(FbxModel* model, aiMesh* fbxMesh)
 	for (int i = 0; i < polygonCount; i++) {
 		aiVector3D* uv = (fbxMesh->HasTextureCoords(0)) ? &(fbxMesh->mTextureCoords[0][i]) : &zero3D;
 
-		vertices[i].uv = Vector2(uv->x,uv->y);
+		vertices[i].uv = Vector2(uv->x, -uv->y);
 	}
-	
+
 	indices.resize(fbxMesh->mNumFaces * 3);
 
 	for (UINT i = 0; i < fbxMesh->mNumFaces; i++) {
@@ -319,24 +309,23 @@ void FbxLoader::ParseMaterial(FbxModel* model, aiMesh* fbxMesh, aiMaterial* aima
 
 	aiColor3D ambient(0.3f, 0.3f, 0.3f);
 	aimaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-	material->ambient_ = XMFLOAT3(ambient.r, ambient.g, ambient.b);
+	material->ambient_ = Vector3(ambient.r, ambient.g, ambient.b);
 
 	aiColor3D diffuse(0.0f, 0.0f, 0.0f);
 	aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-	material->diffuse_ = XMFLOAT3(diffuse.r, diffuse.g, diffuse.b);
+	material->diffuse_ = Vector3(diffuse.r, diffuse.g, diffuse.b);
 
 	aiColor3D specular(0.0f, 0.0f, 0.0f);
 	aimaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-	material->specular_ = XMFLOAT3(specular.r, specular.g, specular.b);
+	material->specular_ = Vector3(specular.r, specular.g, specular.b);
 
 	aiString str;
 	aimaterial->Get(AI_MATKEY_NAME, str);
 	material->name_ = str.C_Str();
 
-	std::vector<uint32_t> deffuseMap = LoadMatrixerialTextures(aimaterial, aiTextureType_DIFFUSE, "Diffuse", mScene, model->name_);
-	uint32_t map = deffuseMap.size();
+	uint32_t deffuseMap = LoadMatrixerialTextures(aimaterial, aiTextureType_DIFFUSE, "Diffuse", mScene, model->name_);
 
-	material->SetTextureHadle(map);
+	material->SetTextureHadle(deffuseMap);
 
 }
 
@@ -371,9 +360,9 @@ void FbxLoader::GetNodeNum(const aiNode* node, UINT32& num)
 	num++;
 }
 
-std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_,const std::string& modelName)
+uint32_t FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, aiTextureType type, std::string typeName, const aiScene* scene_, const std::string& modelName)
 {
-	std::vector<uint32_t> textures;
+	uint32_t textures;
 
 	for (size_t i = 0; i < cmatrix->GetTextureCount(type); i++)
 	{
@@ -384,9 +373,10 @@ std::vector<uint32_t> FbxLoader::LoadMatrixerialTextures(aiMaterial* cmatrix, ai
 			std::string filename = ExtractFileName(std::string(str.C_Str()));
 			filename = modelName + '\\' + filename;
 			texture = TextureManager::Load(filename);
+			textureHandle = texture;
 		}
 
-		textures.push_back(texture);
+		textures = texture;
 	}
 	return textures;
 }

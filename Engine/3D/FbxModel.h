@@ -15,24 +15,6 @@
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 
-// ノード
-struct Node
-{
-	// 名前
-	std::string name;
-	// ローカルスケール
-	DirectX::XMVECTOR scaling = { 1,1,1,0 };
-	// ローカル回転角
-	DirectX::XMVECTOR rotation = { 0,0,0,0 };
-	// ローカル移動
-	DirectX::XMVECTOR translation = { 0,0,0,1 };
-	// ローカル変形行列
-	DirectX::XMMATRIX transform;
-	// グローバル変形行列
-	DirectX::XMMATRIX globalTransform;
-	// 親ノード
-	Node* parent = nullptr;
-};
 
 class FbxModel
 {
@@ -43,19 +25,6 @@ public:
 public://定数
 	static const int MAX_BONE_INDICES = 4;
 
-private: // エイリアス
-	// Microsoft::WRL::を省略
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::を省略
-	using XMFLOAT2 = DirectX::XMFLOAT2;
-	using XMFLOAT3 = DirectX::XMFLOAT3;
-	using XMFLOAT4 = DirectX::XMFLOAT4;
-	using XMMATRIX = DirectX::XMMATRIX;
-	using TexMetadata = DirectX::TexMetadata;
-	using ScratchImage = DirectX::ScratchImage;
-	// std::を省略
-	using string = std::string;
-	template <class T> using vector = std::vector<T>;
 
 public: // サブクラス
 	// 頂点データ構造体
@@ -69,19 +38,6 @@ public: // サブクラス
 		float boneWeight[MAX_BONE_INDICES];
 	};
 
-	//ボーン構造体
-	struct Bone {
-		std::string name;
-
-		DirectX::XMMATRIX invInitialPose;
-
-
-
-		Bone(const std::string& name) {
-			this->name = name;
-		}
-
-	};
 
 private:
 	// Microsoft::WRL::を省略
@@ -96,6 +52,25 @@ public:
 		Vector4 color;	// 色 (RGBA)
 		Matrix4 mat;	// ３Ｄ変換行列
 	};
+
+	//1メッシュに持てるボーンの最大個数
+	static const int MAX_BONES = 128;
+
+	//定数バッファ用データ構造体
+	struct ConstBufferDataSkin {
+		Matrix4 bones[MAX_BONES];
+	};
+
+	//アニメーションがない場合
+	struct ConstBufferDataInitialMatrix {
+		Matrix4 InitialMatrix;
+	};
+
+
+	//定数バッファ(スキン)
+	static Microsoft::WRL::ComPtr<ID3D12Resource> constBuffSkin_;
+	//定数バッファ(アニメーションなし)
+	static Microsoft::WRL::ComPtr<ID3D12Resource> constBuffNothing_;
 
 private:
 	static const std::string kBaseDirectory;
@@ -112,6 +87,7 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 	// ライト
 	static std::unique_ptr<LightGroup> lightGroup;
+
 
 public: // 静的メンバ関数
 	// 静的初期化
@@ -139,25 +115,52 @@ public: // メンバ関数
 	// 初期化
 	void Initialize();
 
+	void FbxUpdate(float frem);
+
+
 	// 描画
 	//void Draw(
 	//	const WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
 	void Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
+	void Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection, uint32_t textureHadle);
+
+
+	void ModelAnimation(float frame, aiAnimation* Animation);
+
+	void ReadNodeHeirarchy(Mesh* mesh, aiAnimation* Animation, FLOAT AnimationTime, Node* pNode, Matrix4& mxIdentity);
+
+	aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string& strNodeName);
+
+	void CalcInterpolatedScaling(Vector3& mxOut, float AnimationTime, const aiNodeAnim* pNodeAnim);
+
+	bool FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim, UINT& nScalingIndex);
+
+	void CalcInterpolatedRotation(Vector4& mxOut, float AnimationTime, const aiNodeAnim* pNodeAnim);
+
+	bool FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim, UINT& nRotationIndex);
+
+	void CalcInterpolatedPosition(Vector3& mxOut, float AnimationTime, const aiNodeAnim* pNodeAnim);
+
+	bool FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim, UINT& nPosIndex);
+
 
 	// メッシュコンテナを取得
 	inline const std::vector<Mesh*>& GetMeshes() { return meshes_; }
 
-	std::vector<Bone>& GetBones() { return bones; }
+	void SetTextureHandle(uint32_t textureHandle) { modelTextureHandle = textureHandle; }
 
 private:
 
+	Matrix4 Test;
+
+
 	// ノード配列
 	std::vector<Node> nodes;
-	
-	std::vector<Bone> bones;
 
+
+	Matrix4 globalInverseTransform;
 
 	// 名前
 	std::string name_;
@@ -168,8 +171,7 @@ private:
 	// デフォルトマテリアル
 	Material* defaultMaterial_ = nullptr;
 
-
-
+	uint32_t modelTextureHandle = 0;
 
 };
 

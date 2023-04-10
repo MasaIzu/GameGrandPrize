@@ -1,10 +1,11 @@
 #pragma once
 #include "Sprite.h"
+#include"DirectXCore.h"
 class PostEffect
 {
 public:
 
-    static void Initialize(ID3D12Device* device);
+    static void Initialize(DirectXCore* dxCore);
     
     /// <summary>
     /// パイプライン生成

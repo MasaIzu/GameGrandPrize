@@ -346,7 +346,7 @@ void GameScene::Update() {
 
 	//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
 	if (isTutorialEnd && !isAllFishLeave) {
-		movieCamera.eye = { 0,75,-50 };
+		movieCamera.eye = { 0,125,-150 };
 		movieCamera.target = { 0,0,0 };
 	}
 

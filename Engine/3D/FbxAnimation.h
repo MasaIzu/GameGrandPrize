@@ -13,7 +13,7 @@ public:
 	FbxAnimation();
 	~FbxAnimation();
 
-	void Load(const std::string& failPath,int howMuchAnimation);
+	void Load(const std::string& failPath);
 
 	aiAnimation* GetAnimation(int AnimationNumber);
 
@@ -25,7 +25,7 @@ public: // íËêî
 
 private:
 
-	static const int32_t MaxAnimation = 10;
+	static const int32_t MaxAnimation = 20;
 
 	aiAnimation* modelAnimation[MaxAnimation];
 	const aiScene* mScene;

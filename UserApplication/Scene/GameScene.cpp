@@ -39,11 +39,6 @@ void GameScene::Initialize() {
 	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dRowPori"));
-	fbxmodel->Initialize();
-	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dRowPori",3);
-
 
 	boxCollision = std::make_unique<BoxCollision>();
 
@@ -475,15 +470,6 @@ void GameScene::Update() {
 	//ParticleMan->Update();
 
 
-	frem += 0.01f;
-
-	if (input_->PushKey(DIK_P)) {
-		frem = 0;
-	}
-
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(2));
-
-
 }
 
 void GameScene::PostEffectDraw()
@@ -566,7 +552,7 @@ void GameScene::Draw() {
 
 	FbxModel::PreDraw(commandList);
 
-	fbxmodel->Draw(worldTransform_, viewProjection_);
+	player->PlayerFbxDraw(nowViewProjection);
 
 	FbxModel::PostDraw();
 

@@ -17,7 +17,7 @@ FbxAnimation::~FbxAnimation()
 	
 }
 
-void FbxAnimation::Load(const std::string& failPath,int howMuchAnimation)
+void FbxAnimation::Load(const std::string& failPath)
 {
 
 	// モデルと同じ名前のフォルダから読み込む
@@ -43,7 +43,7 @@ void FbxAnimation::Load(const std::string& failPath,int howMuchAnimation)
 		assert(0);
 	}
 
-	for (int i = 0; i < howMuchAnimation; i++) {
+	for (int i = 0; i < mScene->mNumAnimations; i++) {
 		modelAnimation[i] = mScene->mAnimations[i];
 	}
 

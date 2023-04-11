@@ -13,6 +13,8 @@
 #include <Easing.h>
 #include"ParticleManager.h"
 #include"recovery.h"
+#include <FbxModel.h>
+#include <FbxAnimation.h>
 
 class Player {
 
@@ -45,6 +47,8 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void PlayerFbxDraw(ViewProjection viewProjection_);
+
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
@@ -75,6 +79,32 @@ private:
 	void AttackCollision();
 
 private:
+
+	enum PlayerMotion {
+
+		soukenCombo1arukeyo,//0
+		soukenCombo1,//1
+		soukenCombo2,//2
+		soukenCombo3,//3
+		kaitenGiri,//4
+		soukenFuriorosi,//5
+		kakuseiMotion,//6
+		taikenKiriage,//7
+		taikenyokogiriSage,//8
+		taikenyokogiriAge,//9
+		sibou,//10
+		TaikiMotion,//11
+		hasirihajimeTOowari,//12
+		taikenTaikiMotion,//13
+
+
+	};
+
+	PlayerMotion playerNowMotion = PlayerMotion::soukenCombo1arukeyo;
+	float MaxFrem = 2.0f;
+	float MinimumFrem = 0.5f;
+	bool isWalk = false;
+	bool isWalking = false;
 
 	Easing* easing_;
 	//ワールド変換データ
@@ -176,4 +206,12 @@ private:
 	const int maxHP = 100;
 
 	int HP=100;
+
+
+	//Fbxモデル
+	std::unique_ptr<FbxModel> fbxmodel;
+	std::unique_ptr<FbxAnimation> modelAnim;
+	float frem = 0;
+
+	float fremX = 1.0f;
 };

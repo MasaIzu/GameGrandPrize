@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 #include <CollisionAttribute.h>
 #include"ImGuiManager.h"
+#include <FbxLoader.h>
 
 
 Player::Player()
@@ -56,6 +57,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
+	worldTransform_.scale_ = { 0.04f,0.04f,0.04f };
+
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 	playerAttackTransform_.TransferMatrix();
@@ -67,6 +70,12 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	recovery = std::make_unique<Recovery>();
 
 	recovery->Initialize();
+
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3DRowPoriMotion"));
+	fbxmodel->Initialize();
+	modelAnim = std::make_unique<FbxAnimation>();
+	modelAnim->Load("3DRowPoriMotion");
+
 }
 
 
@@ -97,10 +106,40 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
-
 	recovery->Update();
 
+
+	if (frem < MaxFrem) {
+		frem += 0.013f;
+	}
+	else {
+		frem = MinimumFrem;
+	}
+
+	if (input_->PushKey(DIK_P)) {
+		frem = fremX;
+	}
+	if (input_->PushKey(DIK_J)) {
+		fremX += 0.1;
+	}
+	if (input_->PushKey(DIK_K)) {
+		fremX += 0.01;
+	}
+	if (input_->PushKey(DIK_N)) {
+		fremX += -0.1;
+	}
+	if (input_->PushKey(DIK_M)) {
+		fremX += -0.01;
+	}
+
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+
+
+
 	ImGui::Begin("player");
+
+	ImGui::Text("fremX:%f", fremX);
+	ImGui::Text("frem:%f", frem);
 
 	ImGui::Text("HP:%d", HP);
 
@@ -115,6 +154,7 @@ void Player::Move() {
 	isPushRight = false;
 	isPushBack = false;
 	spaceInput = false;
+	isWalk = false;
 
 	if (timer > 0) {
 		timer--;
@@ -131,6 +171,7 @@ void Player::Move() {
 
 	if (input_->PushKey(DIK_W)) {
 		PlayerMoveMent += cameraLook * playerSpeed;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_A)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
@@ -138,10 +179,12 @@ void Player::Move() {
 		moveRot.norm();
 		PlayerMoveMent -= moveRot * playerSpeed;
 		isPushLeft = true;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_S)) {
 		PlayerMoveMent -= cameraLook * playerSpeed;
 		isPushBack = true;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
@@ -149,6 +192,7 @@ void Player::Move() {
 		moveRot.norm();
 		PlayerMoveMent += moveRot * playerSpeed;
 		isPushRight = true;
+		isWalk = true;
 	}
 
 	//worldTransform_.translation_ += PlayerMoveMent;
@@ -226,6 +270,29 @@ void Player::Move() {
 
 	if (input_->MouseInputing(2)) {
 		oldWorldTransform_.translation_ = worldTransform_.look;
+	}
+
+	if (isWalk == true) {
+		if (isWalking == false) {
+			isWalking = true;
+			MaxFrem = 1.3f;
+			MinimumFrem = 0.45f;
+			frem = 0;
+			playerNowMotion = PlayerMotion::hasirihajimeTOowari;
+		}
+
+	}
+	else {
+
+		if (isWalking == true) {
+			frem = 1.63f;
+		}
+
+		isWalking = false;
+		
+		MaxFrem = 1.8f;
+		MinimumFrem = 1.8f;
+
 	}
 
 
@@ -373,6 +440,13 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 	recovery->Draw(viewProjection_);
 }
+
+void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
+
+	fbxmodel->Draw(worldTransform_, viewProjection_);
+
+}
+
 
 void Player::ParticleDraw(ViewProjection view)
 {

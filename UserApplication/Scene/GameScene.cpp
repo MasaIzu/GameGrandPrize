@@ -502,9 +502,11 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	//player->ParticleDraw(viewProjection_);
+	player->ParticleDraw(nowViewProjection);
 
-	gayserParticle->Draw(nowViewProjection);
+	if (isMovie) {
+		gayserParticle->Draw(nowViewProjection);
+	}
 
 	ParticleManager::PostDraw();
 
@@ -518,7 +520,7 @@ void GameScene::Draw() {
 
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 	
-	ground.Draw(viewProjection_);
+	ground.Draw(nowViewProjection);
 
 	
 

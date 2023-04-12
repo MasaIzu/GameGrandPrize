@@ -92,6 +92,8 @@ public:
 
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
+	int bossHealth = 20;
+
 private:
 	//フェーズごとの更新処理
 	void UpdateIdle();

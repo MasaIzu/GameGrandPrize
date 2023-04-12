@@ -409,6 +409,7 @@ void GameScene::Update() {
 	}
 
 
+
 	//雑魚的に当たった時
 	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {
 

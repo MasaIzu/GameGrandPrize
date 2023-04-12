@@ -394,10 +394,12 @@ void GameScene::Update() {
 		}
 	}
 
+
 	if (collisionManager->GetIsAttackHit()) {
 		isAttackHit = true;
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
+		boss.Damage(2);
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -407,6 +409,7 @@ void GameScene::Update() {
 
 		minifishes[playerAttackHitNumber].OnCollision();
 	}
+
 
 
 	ImGui::Begin("Phase");
@@ -565,6 +568,7 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 
 
+	boss.DrawHealth();
 
 #pragma endregion
 }

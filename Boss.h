@@ -6,6 +6,7 @@
 #include"EasingData.h"
 #include"ViewProjection.h"
 #include <BaseCollider.h>
+#include"Sprite.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -68,6 +69,11 @@ public:
 	void CreateFish(Vector3 spawnPos);
 
 	void Draw(ViewProjection viewProMat);
+
+	void DrawHealth();
+
+	void Damage(int atk);
+
 	//add
 	BossFirstPhase phase1;
 	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
@@ -93,6 +99,8 @@ public:
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
 	int bossHealth = 20;
+	int nextDamageInterval = 30;
+	int damageTimer = 0;
 
 private:
 	//フェーズごとの更新処理
@@ -112,6 +120,8 @@ private:
 	
 	void FishDirectionUpdate();
 	
+	
+
 	Vector3 targetPos;
 
 	BossSwordPhase bossSwordPhase;
@@ -154,6 +164,9 @@ private:
 	Vector3 angleVec{ 0,0,0 };
 
 	int moveFlag = 0;
+
+	uint32_t healthPicture = 0;
+	std::unique_ptr<Sprite> healthSprite;
 };
 
 /// <summary>

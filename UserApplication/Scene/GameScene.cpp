@@ -463,7 +463,7 @@ void GameScene::Update() {
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.target = boss.fishParent.pos.translation_;
 	viewProjection_.eye = gameCamera->GetEye();
-	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
+	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
@@ -567,7 +567,7 @@ void GameScene::Draw() {
 
 #pragma region 前景スプライト描画
 
-
+	player->DrawHealth();
 	boss.DrawHealth();
 
 #pragma endregion

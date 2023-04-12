@@ -53,6 +53,8 @@ public:
 
 	void Collision(int damage);
 
+	void DrawHealth();
+
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	float GetRadius() { return radius; }
@@ -154,7 +156,7 @@ private:
 	float radius = 2.0f;//当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.01f;
+	float playerSpeed = 0.5f;
 	float playerAvoidance = 0.0f;
 
 
@@ -206,7 +208,7 @@ private:
 	const int maxHP = 100;
 
 	int HP=100;
-
+	std::unique_ptr<Sprite> healthSprite;
 
 	//Fbxモデル
 	std::unique_ptr<FbxModel> fbxmodel;
@@ -214,4 +216,6 @@ private:
 	float frem = 0;
 
 	float fremX = 1.0f;
+
+	Vector3 root;
 };

@@ -41,15 +41,15 @@ void CollisionManager::CheckAllCollisions()
 					int a = 1;
 
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						//EnemyWorldPos = colA->GetWorldPos();
-						//isEnemyHit = true;
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemyHit = true;
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
 					int a = 1;
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						//HitWorldPos = colA->GetWorldPos();
-						//isAttackHit = true;
+						HitWorldPos = colA->GetWorldPos();
+						isAttackHit = true;
 					}
 				}
 
@@ -59,8 +59,8 @@ void CollisionManager::CheckAllCollisions()
 					for (int i = 0; i < 10; i++) {
 						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ALLIES) {
 							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-								//EnemyWorldPos = colA->GetWorldPos();
-								//isEnemyHit = true;
+								EnemyWorldPos = colA->GetWorldPos();
+								isEnemyHit = true;
 							}
 						}
 					}

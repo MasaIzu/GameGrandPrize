@@ -409,11 +409,6 @@ void GameScene::Update() {
 	}
 
 
-	//雑魚的に当たった時
-	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {
-
-	}*/
-
 	ImGui::Begin("Phase");
 
 	ImGui::Text("minifishesX:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).x);

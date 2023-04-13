@@ -434,7 +434,7 @@ void GameScene::Update() {
 
 
 
-	//gameCamera->SetIsHit(isEnemyHit);
+	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});

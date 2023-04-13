@@ -163,6 +163,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::Text("cameraDis : %f", cameraDis);
 	ImGui::Text("Fov : %f", Fov);
 
+	ImGui::Text("target : %f,%f,%f", target.x, target.y, target.z);
+	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
+
 	ImGui::End();
 
 	//カメラ制限
@@ -272,6 +275,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	//遅延カメラ
 	//距離
+	cameraPos += PlayerMoveMent;
 	Vector3 dVec = vTargetEye - cameraPos;
 	dVec *= cameraDelay;
 	cameraPos += dVec * cameraSpeed_;
@@ -280,13 +284,13 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	cameraPos = target + (player_camera * cameraDis);
 
 
-	float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
+	/*float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
 		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
 		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
 
 	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
 		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
-		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
+		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));*/
 
 
 	//ImGui::Text("vTargetEye : %f", cameraDis);
@@ -364,7 +368,5 @@ void GameCamera::CameraAngle(float x, float z)
 
 Vector3 GameCamera::GetEye() {
 
-
 	return cameraPos;
-
 }

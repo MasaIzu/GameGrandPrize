@@ -58,7 +58,7 @@ public://ゲッターセッター
 	void GetEnemyPos(Vector3 EnemyPos) { EnemyPos_ = EnemyPos; }
 	void SetCameraPosition(Vector3 pos) { playerPos_ = pos; }
 	void SetSpaceInput(bool isSpaceInput) { spaceInput = isSpaceInput; }
-
+	void SetPlayerMoveMent(Vector3 playerMoveMent) { PlayerMoveMent = playerMoveMent; }
 private:
 
 	Easing* easing_;
@@ -145,6 +145,7 @@ private:
 	float playerCameraDelay = 0.1f;
 	float playerCameraSpeed_ = 3;
 
+	Vector3 PlayerMoveMent;
 
 	Vector3 CameraTarget;
 	float TargetCameraDelay = 0.05f;

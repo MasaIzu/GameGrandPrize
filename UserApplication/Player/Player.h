@@ -60,6 +60,8 @@ public:
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }
+	Vector3 GetPlayerMoveMent() { return PlayerMoveMent; }
+
 
 	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
 	void SetIsAttackHit(bool isHit_) { isAttackHit = isHit_; }

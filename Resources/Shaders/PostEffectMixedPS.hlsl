@@ -1,34 +1,18 @@
-#include"PostEffectGlow.hlsli"
+#include"PostEffectMixed.hlsli"
 
 
-Texture2D<float4> tex : register(t0);  	// 0番スロットに設定されたテクスチャ
+Texture2D<float4> tex0 : register(t0);  	// 0番スロットに設定されたテクスチャ
+Texture2D<float4> tex1 : register(t1);  	// 0番スロットに設定されたテクスチャ
 SamplerState smp : register(s0);      	// 0番スロットに設定されたサンプラー
 
 float4 main(VSOutput input) : SV_TARGET
 {
+	float4 col = tex1.Sample(smp, input.uv);
+	col += tex0.Sample(smp, input.uv);
 
-	float offsetU = 10/ 1280.0f;
-	float offsetV = 10 / 720.0f;
 
 
-	float4 color = tex.Sample(smp, input.uv + float2(offsetU,0.0f));
-
-	color += tex.Sample(smp, input.uv + float2(-offsetU, 0.0f));
-
-	color += tex.Sample(smp, input.uv + float2(0.0f,offsetV));
-
-	color += tex.Sample(smp, input.uv + float2(0.0f, -offsetV));
-
-	color += tex.Sample(smp, input.uv + float2(offsetU, offsetV));
-	color += tex.Sample(smp, input.uv + float2(-offsetU, offsetV));
-	color += tex.Sample(smp, input.uv + float2(offsetU, -offsetV));
-	color += tex.Sample(smp, input.uv + float2(-offsetU, -offsetV));
-
-	color /= 8.0f;
-
-	color+= tex.Sample(smp, input.uv);
-
-	return float4(color);
+	return col;
 }
 
 //Texture2D<float4> tex : register(t0);  	// 0番スロットに設定されたテクスチャ

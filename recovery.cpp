@@ -78,7 +78,10 @@ void Recovery::Update()
 
 			worldTransform_[i].translation_.y += 0.05;
 
-			worldTransform_[i].alpha -= 0.01;
+			if (worldTransform_[i].alpha>0.1f)
+			{
+				//worldTransform_[i].alpha -= 0.01;
+			}
 
 			worldTransform_[i].TransferMatrix();
 		}

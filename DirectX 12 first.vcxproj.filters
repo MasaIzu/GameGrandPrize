@@ -127,46 +127,58 @@
     <Filter Include="ユーザーヘッダー ファイル\Skydome">
       <UniqueIdentifier>{9cbfaac7-0ca9-439d-8308-4e966b74e7e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\ソース ファイル\PostEffect">
+      <UniqueIdentifier>{612c1759-801c-4802-a343-c6504ba98c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー\Posteffect">
+      <UniqueIdentifier>{336445ad-a737-450e-8ebf-458ac7359294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\3D">
+      <UniqueIdentifier>{2eee57f1-c4fd-4b4a-a806-51b5bfbc954d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\2D">
+      <UniqueIdentifier>{89b3bc5b-ba97-4595-8305-dabf6e2b36e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PostEfeect">
+      <UniqueIdentifier>{20028598-7302-4e08-a91a-277864a1c778}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Obj.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\Primitive.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Shape.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Resources\Shaders\Sprite.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\Terrain.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Resources\Shaders\SpriteShaderHeader.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="test.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Resources\Shaders\Particle.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="Resources\Shaders\Sprite.hlsli">
+      <Filter>Shaders\2D</Filter>
     </None>
-    <None Include="Resources\Shaders\PostEffectGlow.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="Resources\Shaders\Obj.hlsli">
+      <Filter>Shaders\3D</Filter>
+    </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
+      <Filter>Shaders\3D</Filter>
     </None>
     <None Include="Resources\Shaders\FBX.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\2D</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectBlur.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectLuminance.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectMixed.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ObjVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Resources\Shaders\PrimitivePS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -179,9 +191,6 @@
     <FxCompile Include="Resources\Shaders\ShapeVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpritePS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Resources\Shaders\SpriteVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -191,41 +200,59 @@
     <FxCompile Include="Resources\Shaders\TerrainVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpritePixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpriteVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="testPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="testVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\ObjGS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticlePS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\PostEffectGlowPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\PostEffectGlowVS.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="Resources\Shaders\SpritePS.hlsl">
+      <Filter>Shaders\2D</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\2D</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ObjGS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ObjVS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticlePS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleVS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurHVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurPS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurWVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectLuminancePS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectLuminanceVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectMixedPS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectMixedVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -394,9 +421,6 @@
     <ClInclude Include="ParticleManager.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
-    <ClInclude Include="PostEffect.h">
-      <Filter>Engine\ヘッダー\2D</Filter>
-    </ClInclude>
     <ClInclude Include="MiniFish.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
@@ -408,6 +432,21 @@
     </ClInclude>
     <ClInclude Include="Engine\3D\FbxLoader.h">
       <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectBlurH.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectBlurW.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectCommon.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectLuminance.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectMixed.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -552,9 +591,6 @@
     <ClCompile Include="ParticleManager.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
-    <ClCompile Include="PostEffect.cpp">
-      <Filter>Engine\ソース ファイル\2D</Filter>
-    </ClCompile>
     <ClCompile Include="MiniFish.cpp">
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
@@ -566,6 +602,21 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectBlurH.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectBlurW.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectCommon.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectLuminance.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectMixed.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,10 @@
 #include "Framework.h"
 #include"ParticleManager.h"
-#include"PostEffect.h"
+#include"PostEffectCommon.h"
+#include"PostEffectBlurH.h"
+#include"PostEffectBlurW.h"
+#include"PostEffectLuminance.h"
+#include"PostEffectMixed.h"
 
 void Framework::Initialize()
 {
@@ -44,7 +48,15 @@ void Framework::Initialize()
 
 	ParticleManager::StaticInitialize(DirectXCore::GetInstance()->GetDevice());
 
-	PostEffect::Initialize(DirectXCore::GetInstance());
+	PostEffectCommon::StaticInitialize(DirectXCore::GetInstance());
+
+	PostEffectBlurH::Initialize();
+
+	PostEffectBlurW::Initialize();
+
+	PostEffectLuminance::Initialize();
+
+	PostEffectMixed::Initialize();
 
 #pragma endregion
 
@@ -87,8 +99,6 @@ void Framework::Finalize()
 {
 	// ŠeŽí‰ð•ú
 	sceneManager_->Finalize();
-
-	PostEffect::Finalize();
 
 	ParticleManager::StaticFinalize();
 
@@ -134,10 +144,33 @@ void Framework::Run()
 		if (isPlayMyGame()) {
 			break;
 		}
+		PostEffectLuminance::PreDrawScene(directXCore_->GetCommandList());
 
 		PostEffectDraw();
+
+		PostEffectLuminance::PostDrawScene();
+
+		PostEffectBlurW::PreDrawScene(directXCore_->GetCommandList());
+
+		PostEffectLuminance::Draw();
+
+		PostEffectBlurW::PostDrawScene();
+
+		PostEffectBlurH::PreDrawScene(directXCore_->GetCommandList());
+
+		PostEffectBlurW::Draw();
+
+		PostEffectBlurH::PostDrawScene();
+
+		PostEffectMixed::PreDrawScene(directXCore_->GetCommandList());
+
+		PostEffectBlurH::Draw();
+
+		PostEffectMixed::PostDrawScene();
 		// •`‰æŠJŽn
 		directXCore_->PreDraw();
+
+		PostEffectMixed::Draw(PostEffectLuminance::GettextureHandle());
 
 		Draw();
 

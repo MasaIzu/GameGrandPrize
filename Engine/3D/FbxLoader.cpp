@@ -57,6 +57,8 @@ FbxModel* FbxLoader::LoadModelFromFile(const string& modelName)
 	// 連結してフルパスを得る
 	const string fullpath = directoryPath + fileName;
 
+	//aiGetErrorString();
+	
 	mScene = aiImportFile(fullpath.c_str(), flag);
 
 	// ファイル名を指定してFBXファイルを読み込む

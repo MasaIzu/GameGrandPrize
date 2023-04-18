@@ -74,10 +74,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
 	healthSprite->SetAnchorPoint({ 0,0 });
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dRowPoriAllMotion"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dRowPoriAllMotion");
+	modelAnim->Load("3dKyaraFix");
 
 }
 

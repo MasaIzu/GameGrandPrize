@@ -111,15 +111,15 @@ private:
 
 	const UINT flag =
 		aiProcess_Triangulate | //三角面化
-		aiProcess_CalcTangentSpace | //接線ベクトル生成
-		aiProcess_GenSmoothNormals | //スムージングベクトル生成
-		aiProcess_GenUVCoords | //非マッピングを適切なUV座標に変換
-		aiProcess_RemoveRedundantMaterials | //冗長なマテリアルを削除
-		aiProcess_OptimizeMeshes | //メッシュ数を最適化
-		aiProcess_MakeLeftHanded | //ノードを左手座標系に
-		aiProcess_GenBoundingBoxes | //AABBを生成
-		aiProcess_JoinIdenticalVertices |//インデックスを生成
-		aiProcess_LimitBoneWeights;//各頂点が影響を受けるボーンを4に制限
+		//aiProcess_CalcTangentSpace | //接線ベクトル生成
+		//aiProcess_GenSmoothNormals | //スムージングベクトル生成
+		//aiProcess_GenUVCoords | //非マッピングを適切なUV座標に変換
+		//aiProcess_RemoveRedundantMaterials | //冗長なマテリアルを削除
+		//aiProcess_OptimizeMeshes | //メッシュ数を最適化
+		aiProcess_MakeLeftHanded;// | //ノードを左手座標系に
+		//aiProcess_GenBoundingBoxes | //AABBを生成
+		//aiProcess_JoinIdenticalVertices |//インデックスを生成
+		//aiProcess_LimitBoneWeights;//各頂点が影響を受けるボーンを4に制限
 
 	const aiScene* mScene;
 

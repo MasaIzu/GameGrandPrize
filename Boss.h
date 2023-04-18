@@ -15,6 +15,8 @@ struct fish {
 	Vector3 displacement;	//eÀ•W‚©‚ç‚Ì”÷–­‚È‚¸‚ê
 	Vector3 randomVec;
 
+	bool isUpper = false;
+
 	Vector3 beforePos;
 	Vector3 controll1;
 	Vector3 controll2;

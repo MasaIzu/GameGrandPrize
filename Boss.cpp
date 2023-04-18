@@ -7,6 +7,7 @@
 #include "CollisionManager.h"
 #include <SphereCollider.h>
 #include <CollisionAttribute.h>
+#include"Sprite.h"
 
 Boss::~Boss()
 {
@@ -27,6 +28,10 @@ void Boss::Initialize()
 
 	randSpdParam = 3.75f;
 
+	//体力の画像読み込み
+	healthPicture = TextureManager::Load("mario.jpg");
+	healthSprite = Sprite::Create(healthPicture);
+	healthSprite->SetAnchorPoint({ 0,0 });
 	//剣のモデル初期化
 	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
 
@@ -61,8 +66,19 @@ void Boss::Update(const Vector3& targetPos)
 	//狙う敵の座標更新
 	this->targetPos = targetPos;
 
-	//魚が一匹も存在していないなら処理を終わる
-	if (fishes.empty()) {
+	ImGui::Text("health %d", bossHealth);
+
+	//ダメージのタイマーをセット
+	if (damageTimer > 0) {
+		damageTimer--;
+	}
+	else {
+		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+	}
+
+	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
+	if (fishes.empty() || bossHealth <= 0) {
+		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
 
@@ -158,6 +174,11 @@ void Boss::CreateFish(Vector3 spawnPos)
 
 void Boss::Draw(ViewProjection viewProMat)
 {
+	if (bossHealth <= 0) {
+		return;
+	}
+
+
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
 
@@ -182,6 +203,16 @@ void Boss::Draw(ViewProjection viewProMat)
 	}
 
 	swordModel->Draw(fishParent.pos, viewProMat);
+
+}
+
+void Boss::DrawHealth() {
+
+	Vector2 size = { 48.0f * bossHealth,48.0f };
+	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),WinApp::window_height * 8.0f / 10.0f };
+	healthSprite->SetSize(size);
+	healthSprite->Draw(pos, {1,1,1,1});
+
 
 }
 
@@ -948,6 +979,15 @@ void Boss::FishDirectionUpdate()
 	fishParent.pos.SetMatRot(dirMat);
 }
 
+void Boss::Damage(int atk) {
+	if (damageTimer > 0) {
+		return;
+	}
+
+	bossHealth -= atk;
+	damageTimer = nextDamageInterval;
+	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+}
 
 float Random(float num1, float num2)
 {

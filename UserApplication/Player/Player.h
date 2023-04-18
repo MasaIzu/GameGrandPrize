@@ -13,6 +13,8 @@
 #include <Easing.h>
 #include"ParticleManager.h"
 #include"recovery.h"
+#include <FbxModel.h>
+#include <FbxAnimation.h>
 
 class Player {
 
@@ -45,9 +47,13 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void PlayerFbxDraw(ViewProjection viewProjection_);
+
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
+
+	void DrawHealth();
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -55,6 +61,8 @@ public:
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }
+	Vector3 GetPlayerMoveMent() { return PlayerMoveMent; }
+
 
 	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
 	void SetIsAttackHit(bool isHit_) { isAttackHit = isHit_; }
@@ -76,6 +84,32 @@ private:
 	void AttackCollision();
 
 private:
+
+	enum PlayerMotion {
+
+		soukenCombo1arukeyo,//0
+		soukenCombo1,//1
+		soukenCombo2,//2
+		soukenCombo3,//3
+		kaitenGiri,//4
+		soukenFuriorosi,//5
+		kakuseiMotion,//6
+		taikenKiriage,//7
+		taikenyokogiriSage,//8
+		taikenyokogiriAge,//9
+		sibou,//10
+		TaikiMotion,//11
+		hasirihajimeTOowari,//12
+		taikenTaikiMotion,//13
+
+
+	};
+
+	PlayerMotion playerNowMotion = PlayerMotion::soukenCombo1arukeyo;
+	float MaxFrem = 2.0f;
+	float MinimumFrem = 0.5f;
+	bool isWalk = false;
+	bool isWalking = false;
 
 	Easing* easing_;
 	//ワールド変換データ
@@ -125,7 +159,7 @@ private:
 	float radius = 2.0f;//当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.01f;
+	float playerSpeed = 0.5f;
 	float playerAvoidance = 0.0f;
 
 
@@ -177,4 +211,14 @@ private:
 	const int maxHP = 100;
 
 	int HP=100;
+	std::unique_ptr<Sprite> healthSprite;
+
+	//Fbxモデル
+	std::unique_ptr<FbxModel> fbxmodel;
+	std::unique_ptr<FbxAnimation> modelAnim;
+	float frem = 0;
+
+	float fremX = 1.0f;
+
+	Vector3 root;
 };

@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 #include <CollisionAttribute.h>
 #include"ImGuiManager.h"
+#include <FbxLoader.h>
 
 
 Player::Player()
@@ -56,6 +57,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
+	worldTransform_.scale_ = { 0.04f,0.04f,0.04f };
+
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
 	playerAttackTransform_.TransferMatrix();
@@ -65,8 +68,17 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	ParticleMan->Initialize();
 
 	recovery = std::make_unique<Recovery>();
-
 	recovery->Initialize();
+
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dRowPoriAllMotion"));
+	fbxmodel->Initialize();
+	modelAnim = std::make_unique<FbxAnimation>();
+	modelAnim->Load("3dRowPoriAllMotion");
+
 }
 
 
@@ -97,12 +109,42 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 
 	collider->Update(worldTransform_.matWorld_);
-
 	recovery->Update();
+
+
+	if (frem < MaxFrem) {
+		frem += 0.013f;
+	}
+	else {
+		frem = MinimumFrem;
+	}
+
+	if (input_->PushKey(DIK_P)) {
+		frem = fremX;
+	}
+	if (input_->PushKey(DIK_J)) {
+		fremX += 0.1;
+	}
+	if (input_->PushKey(DIK_K)) {
+		fremX += 0.01;
+	}
+	if (input_->PushKey(DIK_N)) {
+		fremX += -0.1;
+	}
+	if (input_->PushKey(DIK_M)) {
+		fremX += -0.01;
+	}
+
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+
+
 
 	ImGui::Begin("player");
 
-	ImGui::Text("HP:%d", HP);
+	ImGui::Text("fremX:%f", fremX);
+	ImGui::Text("frem:%f", frem);
+
+	ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
 
 	ImGui::End();
 }
@@ -115,6 +157,7 @@ void Player::Move() {
 	isPushRight = false;
 	isPushBack = false;
 	spaceInput = false;
+	isWalk = false;
 
 	if (timer > 0) {
 		timer--;
@@ -125,12 +168,37 @@ void Player::Move() {
 		collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	}
 
-	cameraLookmat = MyMath::Rotation(Vector3(0, 90 * (MyMath::PI / 180), 0), 2);
+	cameraLookmat = MyMath::Rotation(Vector3(0, 90, 0), 2);
 
 	Vector3 moveRot = cameraLook;
+	cameraLook.normalize();
+
+	root = (worldTransform_.lookLeft - worldTransform_.translation_);
 
 	if (input_->PushKey(DIK_W)) {
 		PlayerMoveMent += cameraLook * playerSpeed;
+		isWalk = true;
+	}
+	if (input_->PushKey(DIK_A)) {
+		PlayerMoveMent += root.normalize() * playerSpeed;
+		isPushLeft = true;
+		isWalk = true;
+	}
+	if (input_->PushKey(DIK_S)) {
+		PlayerMoveMent -= cameraLook * playerSpeed;
+		isPushBack = true;
+		isWalk = true;
+	}
+	if (input_->PushKey(DIK_D)) {
+		PlayerMoveMent -= root.normalize() * playerSpeed;
+		isPushRight = true;
+		isWalk = true;
+	}
+
+
+	/*if (input_->PushKey(DIK_W)) {
+		PlayerMoveMent += cameraLook * playerSpeed;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_A)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
@@ -138,10 +206,12 @@ void Player::Move() {
 		moveRot.norm();
 		PlayerMoveMent -= moveRot * playerSpeed;
 		isPushLeft = true;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_S)) {
 		PlayerMoveMent -= cameraLook * playerSpeed;
 		isPushBack = true;
+		isWalk = true;
 	}
 	if (input_->PushKey(DIK_D)) {
 		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
@@ -149,7 +219,8 @@ void Player::Move() {
 		moveRot.norm();
 		PlayerMoveMent += moveRot * playerSpeed;
 		isPushRight = true;
-	}
+		isWalk = true;
+	}*/
 
 	//worldTransform_.translation_ += PlayerMoveMent;
 
@@ -210,13 +281,13 @@ void Player::Move() {
 		float AR;
 		float BR;
 
-		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x , 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
-		BR = pow((  worldTransform_.scale_.x- recovery->GetScale().x), 2);
+		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
+		BR = pow((worldTransform_.scale_.x - recovery->GetScale().x), 2);
 
-		if (AR <= BR&&recovery->GetActive())
+		if (AR <= BR && recovery->GetActive())
 		{
 			HP += 50;
-			if (HP>maxHP)
+			if (HP > maxHP)
 			{
 				HP = maxHP;
 			}
@@ -226,6 +297,29 @@ void Player::Move() {
 
 	if (input_->MouseInputing(2)) {
 		oldWorldTransform_.translation_ = worldTransform_.look;
+	}
+
+	if (isWalk == true) {
+		if (isWalking == false) {
+			isWalking = true;
+			MaxFrem = 1.3f;
+			MinimumFrem = 0.45f;
+			frem = 0;
+			playerNowMotion = PlayerMotion::hasirihajimeTOowari;
+		}
+
+	}
+	else {
+
+		if (isWalking == true) {
+			frem = 1.63f;
+		}
+
+		isWalking = false;
+
+		MaxFrem = 1.8f;
+		MinimumFrem = 1.8f;
+
 	}
 
 
@@ -374,6 +468,21 @@ void Player::Draw(ViewProjection viewProjection_) {
 	recovery->Draw(viewProjection_);
 }
 
+void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
+
+	fbxmodel->Draw(worldTransform_, viewProjection_);
+
+}
+
+
+void Player::DrawHealth() {
+
+	Vector2 size = { 48.0f * HP,48.0f };
+	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),50 };
+	healthSprite->SetSize(size);
+	healthSprite->Draw(pos, { 1,1,1,1 });
+}
+
 void Player::ParticleDraw(ViewProjection view)
 {
 	ParticleMan->Draw(view);
@@ -449,7 +558,7 @@ void Player::AttackCollision()
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		//追加
-		ParticleMan->Add(ParticleManager::Type::In, life,false, MyMath::GetWorldTransform(worldTransform_.matWorld_),{ MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z}, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, {1,1,0.95,1}, {1,1,0.95,0});
+		ParticleMan->Add(ParticleManager::Type::In, life, false, MyMath::GetWorldTransform(worldTransform_.matWorld_), { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z }, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
 	}
 }
 

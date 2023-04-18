@@ -51,6 +51,9 @@ public: // 静的メンバ関数
 	// 静的初期化
 	static void StaticInitialize();
 
+	// 静的初期化
+	static void StaticFinalize();
+
 	// グラフィックスパイプラインの初期化
 	static void InitializeGraphicsPipeline();
 

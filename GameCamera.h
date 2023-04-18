@@ -33,7 +33,6 @@ private:
 	Vector3 calculateLookAtPosition(Vector3 target, Vector3 camera);
 
 	void CameraAngle(float x, float z);
-	
 
 public://ゲッターセッター
 
@@ -42,6 +41,7 @@ public://ゲッターセッター
 	Vector3 GetTarget() { return target; }
 	Matrix4 GetCameraRot() { return this->CameraRot; }
 	Vector3 GetCameraRotVec3() { return this->rot; }
+	float GetFovAngle() { return MyMath::GetAngle(Fov); }
 	// カメラの垂直方向の角度を計算する関数
 	float getPitch(ViewProjection* viewProjection_) {
 		return -atan2(playerPos_.y - viewProjection_->eye.y, playerCameraDistance);
@@ -58,7 +58,7 @@ public://ゲッターセッター
 	void GetEnemyPos(Vector3 EnemyPos) { EnemyPos_ = EnemyPos; }
 	void SetCameraPosition(Vector3 pos) { playerPos_ = pos; }
 	void SetSpaceInput(bool isSpaceInput) { spaceInput = isSpaceInput; }
-
+	void SetPlayerMoveMent(Vector3 playerMoveMent) { PlayerMoveMent = playerMoveMent; }
 private:
 
 	Easing* easing_;
@@ -137,7 +137,7 @@ private:
 	// カメラが追跡する際の遅延量
 	float cameraDelay = 0.1f;
 
-	float cameraDis = 30.2f;
+	float cameraDis = 45.0f;
 
 	Vector3 oldCameraPos;
 
@@ -145,8 +145,14 @@ private:
 	float playerCameraDelay = 0.1f;
 	float playerCameraSpeed_ = 3;
 
+	Vector3 PlayerMoveMent;
 
 	Vector3 CameraTarget;
 	float TargetCameraDelay = 0.05f;
 	float TargetCameraSpeed_ = 1.0;
+
+	Vector3 higth = { 0,10,0 };
+
+	float Fov = 45.0f;
+
 };

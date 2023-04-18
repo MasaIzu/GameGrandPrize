@@ -9,9 +9,10 @@
 #include "Collision.h"
 #include"PostEffect.h"
 
+
 GameScene::GameScene() {}
 GameScene::~GameScene() {
-	model_.reset();
+	
 }
 
 void GameScene::Initialize() {
@@ -38,11 +39,6 @@ void GameScene::Initialize() {
 	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
 	worldTransform_.TransferMatrix();
 
-	/*fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("Player"));
-	fbxmodel->Initialize();
-	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("Player");*/
-
 
 	boxCollision = std::make_unique<BoxCollision>();
 
@@ -67,6 +63,23 @@ void GameScene::Initialize() {
 	stageWorldTransform_.translation_ = Vector3(0, -2.1f, 0);
 
 	stageWorldTransform_.TransferMatrix();
+
+
+
+	//groundModel = std::make_unique<Model>();
+
+	////地面の描画
+	ground.Initialize();
+
+	for (int i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateGround();
+	};
+	for (int i = 0; i < (ground.MaxCount); i++)
+	{
+		ground.CreateBlock();
+	};
+
 
 	//間欠泉の座標設定
 	for (int i = 0; i < 5; i++) {
@@ -101,6 +114,7 @@ void GameScene::Initialize() {
 	}
 
 	boss.Update({ 0,0,0 });
+
 }
 
 void GameScene::Update() {
@@ -380,10 +394,12 @@ void GameScene::Update() {
 		}
 	}
 
+
 	if (collisionManager->GetIsAttackHit()) {
 		isAttackHit = true;
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
+		boss.Damage(2);
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -395,10 +411,6 @@ void GameScene::Update() {
 	}
 
 
-	//雑魚的に当たった時
-	/*if (collisionManager->GetIsWakeEnemyAttackHit()) {
-
-	}*/
 
 	ImGui::Begin("Phase");
 
@@ -422,7 +434,7 @@ void GameScene::Update() {
 
 
 
-	//gameCamera->SetIsHit(isEnemyHit);
+	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
 	gameCamera->SetSpaceInput(player->GetSpaceInput());
 	gameCamera->SetCameraPosition(player->GetWorldPosition());
 	//gameCamera->SetCameraPosition({0,0,-100});
@@ -451,18 +463,9 @@ void GameScene::Update() {
 	viewProjection_.target = gameCamera->GetTarget();
 	//viewProjection_.target = boss.fishParent.pos.translation_;
 	viewProjection_.eye = gameCamera->GetEye();
-	//viewProjection_.fovAngleY = viewProjection_.ToRadian(x);
+	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
-
-
-	/*frem += 0.01f;
-
-	if (input_->PushKey(DIK_P)) {
-		frem = 0;
-	}
-
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation());*/
 
 
 }
@@ -497,11 +500,15 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
-	//player->ParticleDraw(viewProjection_);
+	player->ParticleDraw(nowViewProjection);
 
 	if (isMovie) {
 
+
 		gayserParticle->Draw(nowViewProjection);
+
+	}
+
 
 	}
 	ParticleManager::PostDraw();
@@ -511,7 +518,14 @@ void GameScene::Draw() {
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
-	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+
+
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	
+	ground.Draw(nowViewProjection);
+
+	
 
 	//チュートリアルと最初のムービーでだけ小魚を描画
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
@@ -535,6 +549,7 @@ void GameScene::Draw() {
 
 
 
+
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
 
@@ -542,7 +557,7 @@ void GameScene::Draw() {
 
 	FbxModel::PreDraw(commandList);
 
-	//fbxmodel->Draw(worldTransform_, viewProjection_);
+	player->PlayerFbxDraw(nowViewProjection);
 
 	FbxModel::PostDraw();
 
@@ -557,7 +572,8 @@ void GameScene::Draw() {
 
 #pragma region 前景スプライト描画
 
-
+	player->DrawHealth();
+	boss.DrawHealth();
 
 #pragma endregion
 }
@@ -565,6 +581,10 @@ void GameScene::Draw() {
 void GameScene::Finalize()
 {
 }
+
+
+
+
 
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
@@ -587,3 +607,4 @@ void GameScene::CheckAllFishLeave() {
 	}
 	isAllFishLeave = true;
 }
+

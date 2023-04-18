@@ -12,7 +12,7 @@
 
 GameScene::GameScene() {}
 GameScene::~GameScene() {
-	
+
 }
 
 void GameScene::Initialize() {
@@ -510,7 +510,7 @@ void GameScene::Draw() {
 	}
 
 
-	}
+
 	ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理
@@ -522,10 +522,10 @@ void GameScene::Draw() {
 
 
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
-	
+
 	ground.Draw(nowViewProjection);
 
-	
+
 
 	//チュートリアルと最初のムービーでだけ小魚を描画
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {

@@ -743,6 +743,7 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				vecfishTotarget.y = 0;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;

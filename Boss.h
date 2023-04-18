@@ -104,7 +104,12 @@ public:
 	int nextDamageInterval = 30;
 	int damageTimer = 0;
 
+	/// <summary>
+	/// メンバ関数(プライベート)
+	/// </summary>
 private:
+
+
 	//フェーズごとの更新処理
 	void UpdateIdle();
 
@@ -114,34 +119,36 @@ private:
 
 	void UpdateBeginMotion();
 
-	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
-
 	void SwordColCubeUpdate();
 
 	void SortFishMin();
-	
+
 	void FishDirectionUpdate();
-	
-	
 
-	Vector3 targetPos;
+	/// <summary>
+	/// メンバ変数(プライベート)
+	/// </summary>
+private:
 
-	BossSwordPhase bossSwordPhase;
-
-	WorldTransform Transform;
-	Vector3 swordPos = {0,0,0 };
-	EasingData easeSwordPos;
-	EasingData easeSwordScale;
-	float swordRotAngle = 0;
-
-	const int moveFishMax = 120;
-
+	Vector3 targetPos;				//標的(プレイヤー)の座標
+	BossSwordPhase bossSwordPhase;	//剣の行動フェーズ
+	WorldTransform Transform;		//剣のワールド座標
+	Vector3 swordPos = { 0,0,0 };	//剣の座標
+	EasingData easeSwordPos;		//剣の座標イージング用データ
+	EasingData easeSwordScale;		//剣のスケールイージング用データ
+	float swordRotAngle = 0;		//剣の回転角
+	const int moveFishMax = 120;	//魚の最大数
 	EasingData easePFishToSword[fishMaxCount];	//魚の移動用イージングタイマー
-	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 parentBeforePos, parentAfterPos;
-	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
-	Vector3 beforeScale, afterScale;
-	float lenTargetToFishes[fishMaxCount];
+	std::vector<int> choiceFishIndex;			//配列から何番目の魚が選ばれているか(重複対策)
+	Vector3 parentBeforePos;					//親座標の移動前座標(補完用)
+	Vector3 parentAfterPos;						//親座標の移動後座標(補完用)
+	Vector3 fishesBeforePos[fishMaxCount];		//小魚の移動前座標(補完用)
+	Vector3 fishesControllP1[fishMaxCount];		//小魚の移動制御用座標1(補完用)
+	Vector3 fishesControllP2[fishMaxCount];		//小魚の移動制御用座標2(補完用)
+	Vector3 fishesAfterPos[fishMaxCount];		//小魚の移動後座標(補完用)
+	Vector3 beforeScale;						//変化前のスケール
+	Vector3 afterScale;							//変化後のスケール
+	float lenTargetToFishes[fishMaxCount];		//小魚と標的の距離(スカラー)
 
 
 	// コライダー

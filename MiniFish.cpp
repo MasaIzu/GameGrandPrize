@@ -10,7 +10,7 @@ void MiniFish::LeaveGayser(Vector3 gayserPos)
 	easeMove.Update();
 	//ベジエ曲線補間用の座標4つを設定
 	positions[0] = world.translation_;
-	positions[1] = { Random(-10.0f,10.0f),15.0f,Random(-10.0f,10.0f) };
+	positions[1] = { Random(-10.0f,10.0f),45.0f,Random(-10.0f,10.0f) };
 	positions[2] = positions[1];
 	positions[3] = gayserPos;
 	positions[1] += positions[0];
@@ -55,10 +55,6 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 	//	SetMovePos(stagePos, stageRadius);
 	//}
 
-
-
-
-	ImGui::Text("timeRate:%f", easeMove.GetTimeRate());
 
 	//if (easeMove.GetActive()) {
 	//	ImGui::Text("active!");

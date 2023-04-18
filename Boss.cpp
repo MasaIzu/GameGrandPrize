@@ -126,9 +126,7 @@ void Boss::CreateFish(Vector3 spawnPos)
 	//ワールド行列初期化
 	newFish.pos.Initialize();
 	newFish.pos.scale_ = { 0.5f,0.5f,0.5f };
-	//Y座標は引数で
 	newFish.pos.translation_.y = posY;
-	//newFish.pos.rotation_.y = 0.78f;
 	newFish.pos.TransferMatrix();
 
 	//速度をランダムに決定
@@ -148,10 +146,11 @@ void Boss::CreateFish(Vector3 spawnPos)
 	pos.z = cos(PI / 180.0f * newFish.radian) * newFish.radius;
 
 	float plus = Random(-1.0f, 1.0f);
-	float num = 1;
+	newFish.isUpper = false;
 	if (plus < 0) {
-		num = -1;
+		newFish.isUpper = true;
 	}
+	int num = -2 * newFish.isUpper + 1;
 
 	pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * num);
 
@@ -231,6 +230,7 @@ void Boss::UpdateIdle()
 
 		fishes[i].easeMove.Update();
 
+		//魚が特別な移動を行っているときの処理
 		if (fishes[i].easeMove.GetActive()) {
 			ImGui::Text("fish create active");
 			fishes[i].pos.parent_ = nullptr;
@@ -240,7 +240,7 @@ void Boss::UpdateIdle()
 			fishes[i].pos.SetMatRot(matrot);
 		}
 		else {
-			ImGui::Text("atk interval:%d", nextPhaseInterval);
+
 			if (fishes[i].pos.parent_ == nullptr) {
 				fishes[i].pos.parent_ = &fishParent.pos;
 			}
@@ -254,8 +254,9 @@ void Boss::UpdateIdle()
 
 			//座標を計算
 
+			float oldPosY = pos.y;
 
-			pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+			//	pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
 			pos.x = 100;
 			pos.z = 100;
 
@@ -274,23 +275,18 @@ void Boss::UpdateIdle()
 			pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 
 			pos.x = rotaVec.x;
+			//pos.y = rotaVec.y;
 			pos.z = rotaVec.z;
 			//pos = rotaVec;
 
-			float plus = Random(-1.0f, 1.0f);
-			float num = 1;
-			if (plus < 0) {
-				num = -1;
-			}
+			int num = -2 * fishes[i].isUpper + 1;
 
-			//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+			pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * num);
+
+			//pos.y = oldPosY;
 
 			pos += fishes[i].displacement;
 
-			//回転用の移動ベクトルを作成
-			Vector3 dirvec = pos - fishes[i].pos.translation_;
-			dirvec.normalize();
-			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
 			Matrix4 matrot;
 			matrot = CreateMatRot(fishes[i].pos.translation_, pos);
 
@@ -306,6 +302,10 @@ void Boss::UpdateIdle()
 
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
+
+
+		ImGui::Text("pos[%d]:%f,%f,%f", i, fishes[i].pos.translation_.x, fishes[i].pos.translation_.y, fishes[i].pos.translation_.z);
+		ImGui::Text("after pos[%d]:%f,%f,%f", i, fishes[i].afterPos.x, fishes[i].afterPos.y, fishes[i].afterPos.z);
 	}
 
 	if (!fishes[fishes.size() - 1].easeMove.GetActive() && !fishes[0].easeMove.GetActive()) {

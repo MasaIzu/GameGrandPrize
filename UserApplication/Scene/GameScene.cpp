@@ -99,7 +99,7 @@ void GameScene::Initialize() {
 	movieCamera.Initialize();
 
 
-	boss.fishParent.pos.translation_ = { 0,0,100 };
+	boss.fishParent.pos.translation_ = { 0,25,100 };
 	boss.fishParent.pos.TransferMatrix();
 
 	/*for (int i = 0; i < boss.fishMaxCount; i++) {
@@ -360,7 +360,7 @@ void GameScene::Update() {
 
 	//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
 	if (isTutorialEnd && !isAllFishLeave) {
-		movieCamera.eye = { 0,75,-50 };
+		movieCamera.eye = { 0,125,-150 };
 		movieCamera.target = { 0,0,0 };
 	}
 
@@ -503,9 +503,14 @@ void GameScene::Draw() {
 	player->ParticleDraw(nowViewProjection);
 
 	if (isMovie) {
+
+
 		gayserParticle->Draw(nowViewProjection);
+
 	}
 
+
+	}
 	ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理

@@ -555,9 +555,6 @@
     <ClCompile Include="PostEffect.cpp">
       <Filter>Engine\ソース ファイル\2D</Filter>
     </ClCompile>
-    <ClCompile Include="MiniFish.cpp">
-      <Filter>ユーザーソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="recovery.cpp">
       <Filter>ユーザーソース ファイル\Player</Filter>
     </ClCompile>
@@ -566,6 +563,9 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

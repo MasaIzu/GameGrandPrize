@@ -57,6 +57,7 @@ public:
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
+	void SetPosition(Vector3 pos);
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }

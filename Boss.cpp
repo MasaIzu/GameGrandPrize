@@ -887,25 +887,7 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
-void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
-{
-	Vector3 up{ 0,1,0 };
-	Vector3 z = dirVec - pos;
-	z.normalize();
-	Vector3 x = up.cross(z);
-	x.normalize();
-	Vector3 y = z.cross(x);
-	y.normalize();
-	Matrix4 rotaMat{
-		x.x, x.y, x.z,0,
-		y.x, y.y, y.z,0,
-		z.x, z.y, z.z,0,
-		0,0,0,1
-	};
 
-	fishes[fishNum].pos.matWorld_ *= rotaMat;
-
-}
 
 
 void Boss::SwordColCubeUpdate()

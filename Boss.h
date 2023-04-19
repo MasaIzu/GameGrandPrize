@@ -47,82 +47,110 @@ class Boss
 {
 public:
 
+	fish fishParent;			//魚の中心
+	std::vector<fish> fishes;	//魚群配列
+	std::unique_ptr<Model> fishBodyModel = nullptr;	//魚の体モデル
+	std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
+	std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
+	float randSpdParam = 0;							//ランダムで変化する速度の基本値
+	BossFirstPhase phase1;							//ボス第一形態のフェーズ
+	const int attackCooltime = 60 * 3;				//次の攻撃までのクールタイム
+	const int beginAttackDelay = 60 * 1;			//攻撃の予備動作時間
+	int nextPhaseInterval = 0;						//次のフェーズまでの時間
+	const int rushMaxCount = 3;						//突進攻撃(片道)をする回数
+	int rushCount = 0;								//突進攻撃の残り回数
+	WorldTransform swordTransform;					//剣のワールド座標
+	static const int fishMaxCount = 200;			//小魚の最大数
+	int bossHealth = 20;							//ボスのHP
+	int nextDamageInterval = 30;					//次にダメージを受けるまでの時間
+	int damageTimer = 0;							//ボスの無敵時間
+
 	~Boss();
 
-	//魚が形成する球の中心のワールド座標
-	fish fishParent;
-	//魚群
-	std::vector<fish> fishes;
-
-	//剣のモデルデータ
-	std::unique_ptr<Model> swordModel = nullptr;
-
-	//魚のモデルデータ
-	std::unique_ptr<Model> fishBodyModel = nullptr;
-	std::unique_ptr<Model> fishEyeModel = nullptr;
-
-	//ランダムで変化する速度の基本値
-	float randSpdParam = 0;
-
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="targetPos">標的の座標</param>
 	void Update(const Vector3& targetPos);
 
+	/// <summary>
+	/// 小魚の生成
+	/// </summary>
+	/// <param name="spawnPos">生成する座標</param>
 	void CreateFish(Vector3 spawnPos);
 
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="viewProMat">ビュープロジェクション</param>
 	void Draw(ViewProjection viewProMat);
 
+	/// <summary>
+	/// 体力の描画
+	/// </summary>
 	void DrawHealth();
 
+	/// <summary>
+	/// ダメージを受けた時のコールバック関数
+	/// </summary>
+	/// <param name="atk">ダメージ量</param>
 	void Damage(int atk);
 
-	//add
-	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
-	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
-
-
-	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
-	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
-	int nextPhaseInterval = 0;
-	const int rushMaxCount = 3;	//突進攻撃(片道)をする回数
-	int rushCount = 0;	//突進攻撃の残り回数
-
-
+	//魚の数のゲッター
 	int GetFishCount() { return fishes.size(); }
 
-	WorldTransform swordTransform;
-
-	static const int fishMaxCount = 200;
-
+	//当たり判定用座標のゲッター1
 	Vector3 GetSwordCollisionCube1()const { return posSwordColCube1; }
+	//当たり判定用座標のゲッター2
 	Vector3 GetSwordCollisionCube2()const { return posSwordColCube2; }
-
+	//剣の座標のゲッター
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
-	int bossHealth = 20;
-	int nextDamageInterval = 30;
-	int damageTimer = 0;
+
 
 	/// <summary>
 	/// メンバ関数(プライベート)
 	/// </summary>
 private:
 
-
-	//フェーズごとの更新処理
+	/// <summary>
+	/// 非攻撃状態の更新
+	/// </summary>
 	void UpdateIdle();
 
+	/// <summary>
+	/// 剣攻撃の更新
+	/// </summary>
 	void UpdateAtkSword();
 
+	/// <summary>
+	/// 突進攻撃の更新
+	/// </summary>
 	void UpdateAtkRush();
 
+	/// <summary>
+	/// 攻撃前予備動作の更新
+	/// </summary>
 	void UpdateBeginMotion();
 
+	/// <summary>
+	/// 剣の当たり判定の更新
+	/// </summary>
 	void SwordColCubeUpdate();
 
+	/// <summary>
+	/// 魚の配列を小さい順に並べる
+	/// </summary>
 	void SortFishMin();
 
+	/// <summary>
+	/// 魚の向きの更新
+	/// </summary>
 	void FishDirectionUpdate();
 
 	/// <summary>

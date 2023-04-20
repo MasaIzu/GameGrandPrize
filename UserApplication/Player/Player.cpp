@@ -79,6 +79,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix");
 
+
 }
 
 

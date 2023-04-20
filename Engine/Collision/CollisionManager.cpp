@@ -37,7 +37,8 @@ void CollisionManager::CheckAllCollisions()
 				Sphere* SphereA = dynamic_cast<Sphere*>(colA);
 				Sphere* SphereB = dynamic_cast<Sphere*>(colB);
 				Vector4 inter;
-				if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
+				if ((colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) ||
+					(colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES)) {
 					int a = 1;
 
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {

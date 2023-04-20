@@ -44,6 +44,11 @@ void MiniFish::Initialize(const Vector3& pos, unsigned short attribute)
 static int count = 0;
 void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 {
+	//死んでいるなら当たり判定をとらない
+	if (!isAlive) {
+		collider->SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+	}
+
 
 	//イージング更新
 	easeMove.Update();

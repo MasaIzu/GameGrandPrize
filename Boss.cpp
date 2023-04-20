@@ -33,7 +33,7 @@ void Boss::Initialize()
 	healthSprite = Sprite::Create(healthPicture);
 	healthSprite->SetAnchorPoint({ 0,0 });
 	//剣のモデル初期化
-	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
+	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
 
 	//魚のモデル初期化
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -165,7 +165,7 @@ void Boss::CreateFish(Vector3 spawnPos)
 	randParam = { Random(-5, 5), 30.0f, Random(-5, 5) };
 	newFish.controll2 = newFish.afterPos + randParam;
 	newFish.easeMove.Start(45);
-
+	
 	newFish.pos.translation_ = pos;
 	newFish.pos.TransferMatrix();
 	//配列にい列
@@ -352,8 +352,8 @@ void Boss::UpdateAtkSword()
 {
 	//行動時間のフレームまとめ
 	const int swordCreateTime = 120;	//剣の生成時間
-	const int swordMoveTime = 120;		//剣の移動時間
-	const int swordAtkTime = 300;		//剣の攻撃時間
+	const int swordMoveTime = 60;		//剣の移動時間
+	const int swordAtkTime = 120;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 	const int moveDelay = 60;			//補間のためのディレイ
 	float distancePtoSword = 90.0f;		//標的と剣の距離(スカラー)
@@ -540,7 +540,6 @@ void Boss::UpdateAtkSword()
 			swordTransform.translation_ = pos;
 
 		}
-
 		else if (bossSwordPhase == BossSwordPhase::Attack) {
 
 			ImGui::Text("now attack!");
@@ -612,6 +611,15 @@ void Boss::UpdateAtkSword()
 
 			ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
 
+
+			Matrix4 matrot;
+			Vector3 bossPosY0 = fishParent.pos.translation_;
+			//平行に剣を向けるため、Yを同値に
+			bossPosY0.y = targetPos.y;
+			
+
+			matrot = CreateMatRot(bossPosY0, { pos.x,pos.y + 1,pos.z });
+				
 			//ワールド行列から回転を借りてくる
 			rot = swordTransform.rotation_;
 			//回転
@@ -619,9 +627,9 @@ void Boss::UpdateAtkSword()
 			//剣の回転にボスの向きの回転行列を掛ける
 		/*	rot = swordTransform.matWorld_.transform(rot, CreateMatRot(fishParent.pos.translation_,targetPos));
 			rot.x += -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
+			*/
 
-
-			swordTransform.SetRot(rot);*/
+			swordTransform.SetMatRot(matrot);
 			swordTransform.translation_ = pos;
 		}
 		//崩壊モーション
@@ -743,6 +751,7 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				vecfishTotarget.y = 0;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
@@ -886,25 +895,7 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
-void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
-{
-	Vector3 up{ 0,1,0 };
-	Vector3 z = dirVec - pos;
-	z.normalize();
-	Vector3 x = up.cross(z);
-	x.normalize();
-	Vector3 y = z.cross(x);
-	y.normalize();
-	Matrix4 rotaMat{
-		x.x, x.y, x.z,0,
-		y.x, y.y, y.z,0,
-		z.x, z.y, z.z,0,
-		0,0,0,1
-	};
 
-	fishes[fishNum].pos.matWorld_ *= rotaMat;
-
-}
 
 
 void Boss::SwordColCubeUpdate()

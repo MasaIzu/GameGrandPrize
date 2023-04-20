@@ -76,7 +76,7 @@ public:
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
-	
+
 
 	/// <summary>
 	/// 攻撃が当たった時のプレイヤーの処理
@@ -87,29 +87,30 @@ private:
 
 	enum PlayerMotion {
 
-		soukenCombo1arukeyo,//0
-		soukenCombo1,//1
-		soukenCombo2,//2
-		soukenCombo3,//3
-		kaitenGiri,//4
-		soukenFuriorosi,//5
-		kakuseiMotion,//6
-		taikenKiriage,//7
-		taikenyokogiriSage,//8
-		taikenyokogiriAge,//9
-		sibou,//10
-		TaikiMotion,//11
-		hasirihajimeTOowari,//12
-		taikenTaikiMotion,//13
+		soukenCombo1,//0
+		soukenCombo2,//1
+		soukenCombo3,//2
+		aruki,//3
+		taiki,//4
+		//soukenFuriorosi,//5
+		//kakuseiMotion,//6
+		//taikenKiriage,//7
+		//taikenyokogiriSage,//8
+		//taikenyokogiriAge,//9
+		//sibou,//10
+		//TaikiMotion,//11
+		//hasirihajimeTOowari,//12
+		//taikenTaikiMotion,//13
 
 
 	};
 
-	PlayerMotion playerNowMotion = PlayerMotion::soukenCombo1arukeyo;
+	PlayerMotion playerNowMotion = PlayerMotion::aruki;
 	float MaxFrem = 2.0f;
 	float MinimumFrem = 0.5f;
 	bool isWalk = false;
 	bool isWalking = false;
+
 
 	Easing* easing_;
 	//ワールド変換データ
@@ -172,7 +173,7 @@ private:
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
 	float KnockBackDistance = 20.0f;
-	bool isKnockBack=false;
+	bool isKnockBack = false;
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ
@@ -210,7 +211,7 @@ private:
 
 	const int maxHP = 100;
 
-	int HP=100;
+	int HP = 100;
 	std::unique_ptr<Sprite> healthSprite;
 
 	//Fbxモデル
@@ -220,5 +221,14 @@ private:
 
 	float fremX = 1.0f;
 
+	bool taikiFlag = false;
+
 	Vector3 root;
+
+	int attackConbo = 0;
+	bool isPlayMotion = false;
+
+	float receptionTime = 0.0f;
+	bool conboFlag = false;
+
 };

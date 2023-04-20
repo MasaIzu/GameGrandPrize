@@ -40,6 +40,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		// コリジョンマネージャに追加
 		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 	}
 
 	//worldTransform_.translation_ = { 0,0,-100 };
@@ -57,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
-	worldTransform_.scale_ = { 0.04f,0.04f,0.04f };
+	worldTransform_.scale_ = { 0.02f,0.02f,0.02f };
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();

@@ -103,6 +103,10 @@ void Boss::Update(const Vector3& targetPos)
 
 	//	ImGui::End();
 
+	fishParent.pos.translation_ = Vector3(10, 4, 10);
+
+	fishParent.pos.TransferMatrix();
+
 	collider->Update(fishParent.pos.matWorld_);
 }
 

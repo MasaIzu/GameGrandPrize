@@ -181,7 +181,7 @@ private:
 
 	// コライダー
 	BaseCollider* collider = nullptr;
-	float radius = 20.0f;//当たり判定半径
+	float radius = 30.0f;//当たり判定半径
 
 	//当たり判定用の剣の大きさ用変数
 	WorldTransform testTrans;
@@ -189,12 +189,12 @@ private:
 	Vector3 posSwordColCube1;
 	Vector3 posSwordColCube2;
 	//剣のオブジェクトとしての大きさ(当たり判定用)
-	const float swordSizeX1 = -0.3f;
-	const float swordSizeX2 = 0.6f;
-	const float swordSizeY1 = -1.0f;
-	const float swordSizeY2 = 14.6f;
-	const float swordSizeZ1 = -1.0f;
-	const float swordSizeZ2 = 1.0f;
+	const float swordSizeX1 = -0.3f - 0.2f;
+	const float swordSizeX2 = 0.6f  + 0.3f;
+	const float swordSizeY1 = -1.0f - 2.0f;
+	const float swordSizeY2 = 14.6f + 3.0f;
+	const float swordSizeZ1 = -1.0f - 2.0f;
+	const float swordSizeZ2 = 1.0f  + 2.0f;
 
 	EasingData easeParentPos;
 

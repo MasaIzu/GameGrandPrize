@@ -11,7 +11,7 @@
 
 #include <Mesh.h>
 #include "Material.h"
-#include <Light.h>
+#include <LightGroup.h>
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 

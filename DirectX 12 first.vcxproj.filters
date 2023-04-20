@@ -35,9 +35,6 @@
     <Filter Include="Engine\ヘッダー\GameFunction">
       <UniqueIdentifier>{91af1858-b155-4bb7-8b42-62203f67b5a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ヘッダー\Math">
-      <UniqueIdentifier>{4b35cdcd-550b-4d8e-93da-cbcd6bcd7028}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\ヘッダー\Sound">
       <UniqueIdentifier>{99909a45-d91c-4a1e-8187-ab7935ba3c1a}</UniqueIdentifier>
     </Filter>
@@ -141,6 +138,15 @@
     </Filter>
     <Filter Include="Shaders\PostEfeect">
       <UniqueIdentifier>{20028598-7302-4e08-a91a-277864a1c778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ソース ファイル\3D\Light">
+      <UniqueIdentifier>{d6f7e8e0-d897-49f9-be83-0b8cf8666179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー\3D\Light">
+      <UniqueIdentifier>{1bdf704f-3116-4232-a91b-6dac59dc3830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー\Math">
+      <UniqueIdentifier>{4b35cdcd-550b-4d8e-93da-cbcd6bcd7028}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -304,9 +310,6 @@
     <ClInclude Include="Engine\Base\WinApp.h">
       <Filter>Engine\ヘッダー\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\3D\Light.h">
-      <Filter>Engine\ヘッダー\3D</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\3D\Mesh.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
@@ -448,6 +451,21 @@
     <ClInclude Include="Engine\PostEffect\PostEffectMixed.h">
       <Filter>Engine\ヘッダー\Posteffect</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\3D\LightGroup.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\PointLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\SpotLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\DirectionalLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\CircleShadow.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -488,9 +506,6 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\FPS.cpp">
       <Filter>Engine\ソース ファイル\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3D\Light.cpp">
-      <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3D\Mesh.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
@@ -617,6 +632,12 @@
     </ClCompile>
     <ClCompile Include="Engine\PostEffect\PostEffectMixed.cpp">
       <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\DirectionalLight.cpp">
+      <Filter>Engine\ソース ファイル\3D\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\LightGroup.cpp">
+      <Filter>Engine\ソース ファイル\3D\Light</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

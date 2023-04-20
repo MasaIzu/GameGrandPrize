@@ -74,10 +74,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
 	healthSprite->SetAnchorPoint({ 0,0 });
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dRowPoriAllMotion"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dRowPoriAllMotion");
+	modelAnim->Load("3dKyaraFix");
 
 }
 
@@ -117,10 +117,17 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 	else {
 		frem = MinimumFrem;
+		isPlayMotion = false;
+		if (isWalking == false) {
+			if (isAttack == false) {
+				playerNowMotion = PlayerMotion::taiki;
+			}
+		}
 	}
 
 	if (input_->PushKey(DIK_P)) {
 		frem = fremX;
+		playerNowMotion = PlayerMotion::soukenCombo1;
 	}
 	if (input_->PushKey(DIK_J)) {
 		fremX += 0.1;
@@ -146,7 +153,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
 
-	ImGui::End();
+	ImGui::Text("MaxFrem:%f", MaxFrem);
+	ImGui::Text("MiniFrem:%f", MinimumFrem);
+	ImGui::Text("attackConbo:%d", attackConbo);
+
+	ImGui::Text("isPlayMotion:%d", isPlayMotion);
+
+	ImGui::End(); 
 }
 
 void Player::Move() {
@@ -177,22 +190,30 @@ void Player::Move() {
 
 	if (input_->PushKey(DIK_W)) {
 		PlayerMoveMent += cameraLook * playerSpeed;
-		isWalk = true;
+		if (isPlayMotion == false) {
+			isWalk = true;
+		}
 	}
 	if (input_->PushKey(DIK_A)) {
 		PlayerMoveMent += root.normalize() * playerSpeed;
 		isPushLeft = true;
-		isWalk = true;
+		if (isPlayMotion == false) {
+			isWalk = true;
+		}
 	}
 	if (input_->PushKey(DIK_S)) {
 		PlayerMoveMent -= cameraLook * playerSpeed;
 		isPushBack = true;
-		isWalk = true;
+		if (isPlayMotion == false) {
+			isWalk = true;
+		}
 	}
 	if (input_->PushKey(DIK_D)) {
 		PlayerMoveMent -= root.normalize() * playerSpeed;
 		isPushRight = true;
-		isWalk = true;
+		if (isPlayMotion == false) {
+			isWalk = true;
+		}
 	}
 
 
@@ -305,23 +326,30 @@ void Player::Move() {
 			MaxFrem = 1.3f;
 			MinimumFrem = 0.45f;
 			frem = 0;
-			playerNowMotion = PlayerMotion::hasirihajimeTOowari;
+			if (isPlayMotion == false) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
 		}
 
 	}
 	else {
+		if (isPlayMotion == false) {
+			if (isWalking == true) {
+				frem = 1.63f;
+			}
 
-		if (isWalking == true) {
-			frem = 1.63f;
+			isWalking = false;
+
+			MaxFrem = 1.8f;
+			MinimumFrem = 1.8f;
 		}
-
-		isWalking = false;
-
-		MaxFrem = 1.8f;
-		MinimumFrem = 1.8f;
 
 	}
 
+	if (playerNowMotion == PlayerMotion::taiki) {
+		MinimumFrem = 0.0f;
+		MaxFrem = 2.0f;
+	}
 
 }
 
@@ -329,7 +357,13 @@ void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
 
-	if (input_->MouseInputing(0)) {
+	if (conboFlag == true) {
+		receptionTime += 0.013f;
+	}
+
+
+
+	if (input_->MouseInputTrigger(0)) {
 		//実行前にカウント値を取得
 		//計測開始時間の初期化
 		isAttack = true;
@@ -337,6 +371,41 @@ void Player::Attack() {
 		nowCount = 0;
 		timeRate = 0;
 		startIndex = 1;
+
+		/*if (attackConbo < 3) {
+			attackConbo++;
+		}
+		else {
+			attackConbo = 0;
+		}*/
+
+
+		if (isPlayMotion == false) {
+
+			attackConbo = 1;
+			playerNowMotion = PlayerMotion::soukenCombo1;
+			isPlayMotion = true;
+			MinimumFrem = 0.0f;
+			MaxFrem = 2.0f;
+			frem = 0.0f;
+
+			receptionTime = 0.0f;
+			conboFlag = true;
+
+		}
+
+		if (attackConbo == 1) {
+			if (receptionTime > 0.8f && receptionTime < 1.2f) {
+				attackConbo = 2;
+				playerNowMotion = PlayerMotion::soukenCombo2;
+				isPlayMotion = true;
+				MinimumFrem = 0.0f;
+				MaxFrem = 2.0f;
+				frem = 0.0f;
+
+			}
+		}
+
 	}
 
 	if (isAttack == true) {

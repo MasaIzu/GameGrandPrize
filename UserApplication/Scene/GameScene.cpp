@@ -115,6 +115,16 @@ void GameScene::Initialize() {
 
 	boss.Update({ 0,0,0 });
 
+	// 間欠泉の初期化
+	for (int i = 0; i < 5; i++) {
+		gayserModel_[i].reset(Model::CreateFromOBJ("geyser", true));
+		gayserW[i].Initialize();
+		gayserW[i].translation_.x = gayserPos[i].x;
+		gayserW[i].translation_.y = -1.2f;
+		gayserW[i].translation_.z = gayserPos[i].z;
+		gayserW[i].scale_ = { 2,2,2 };
+		gayserW[i].TransferMatrix();
+	}
 }
 
 void GameScene::Update() {
@@ -547,8 +557,10 @@ void GameScene::Draw() {
 
 	player->Draw(nowViewProjection);
 
-
-
+	// 間欠泉の描画
+	for (int i = 0; i < 5; i++) {
+		gayserModel_[i]->Draw(gayserW[i], nowViewProjection);
+	}
 
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();

@@ -193,6 +193,8 @@ void DirectXCore::InitializeDevice() {
 		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 	}
+
+
 #endif
 
 	// ‘Î‰žƒŒƒxƒ‹‚Ì”z—ñ

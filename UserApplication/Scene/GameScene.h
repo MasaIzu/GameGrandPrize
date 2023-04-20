@@ -151,7 +151,11 @@ private: // メンバ変数
 	float stageRadius = 50;	//ステージの半径
 	Vector3 stagePos{ 0,0,0 };//ステージの中心座標
 
+
+	// 間欠泉関連
 	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
+	std::unique_ptr<Model> gayserModel_[5];
+	WorldTransform gayserW[5];
 
 	bool isAllFishLeave = false;
 

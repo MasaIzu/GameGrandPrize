@@ -116,6 +116,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	if (frem < MaxFrem) {
 		frem += 0.013f;
+
 	}
 	else {
 		frem = MinimumFrem;
@@ -125,6 +126,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 				playerNowMotion = PlayerMotion::taiki;
 			}
 		}
+	}
+	if (conboFlag == true) {
+		receptionTime += 0.013f;
 	}
 
 	if (input_->PushKey(DIK_P)) {
@@ -161,7 +165,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
-	ImGui::End(); 
+	ImGui::End();
 }
 
 void Player::Move() {
@@ -190,62 +194,31 @@ void Player::Move() {
 
 	root = (worldTransform_.lookLeft - worldTransform_.translation_);
 
-	if (input_->PushKey(DIK_W)) {
-		PlayerMoveMent += cameraLook * playerSpeed;
-		if (isPlayMotion == false) {
+	if (isPlayMotion == false) {
+		if (input_->PushKey(DIK_W)) {
+			PlayerMoveMent += cameraLook * playerSpeed;
 			isWalk = true;
+			playerNowMotion = PlayerMotion::aruki;
+		}
+		if (input_->PushKey(DIK_A)) {
+			PlayerMoveMent += root.normalize() * playerSpeed;
+			isPushLeft = true;
+			isWalk = true;
+			playerNowMotion = PlayerMotion::aruki;
+		}
+		if (input_->PushKey(DIK_S)) {
+			PlayerMoveMent -= cameraLook * playerSpeed;
+			isPushBack = true;
+			isWalk = true;
+			playerNowMotion = PlayerMotion::aruki;
+		}
+		if (input_->PushKey(DIK_D)) {
+			PlayerMoveMent -= root.normalize() * playerSpeed;
+			isPushRight = true;
+			isWalk = true;
+			playerNowMotion = PlayerMotion::aruki;
 		}
 	}
-	if (input_->PushKey(DIK_A)) {
-		PlayerMoveMent += root.normalize() * playerSpeed;
-		isPushLeft = true;
-		if (isPlayMotion == false) {
-			isWalk = true;
-		}
-	}
-	if (input_->PushKey(DIK_S)) {
-		PlayerMoveMent -= cameraLook * playerSpeed;
-		isPushBack = true;
-		if (isPlayMotion == false) {
-			isWalk = true;
-		}
-	}
-	if (input_->PushKey(DIK_D)) {
-		PlayerMoveMent -= root.normalize() * playerSpeed;
-		isPushRight = true;
-		if (isPlayMotion == false) {
-			isWalk = true;
-		}
-	}
-
-
-	/*if (input_->PushKey(DIK_W)) {
-		PlayerMoveMent += cameraLook * playerSpeed;
-		isWalk = true;
-	}
-	if (input_->PushKey(DIK_A)) {
-		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
-		moveRot.y = 0;
-		moveRot.norm();
-		PlayerMoveMent -= moveRot * playerSpeed;
-		isPushLeft = true;
-		isWalk = true;
-	}
-	if (input_->PushKey(DIK_S)) {
-		PlayerMoveMent -= cameraLook * playerSpeed;
-		isPushBack = true;
-		isWalk = true;
-	}
-	if (input_->PushKey(DIK_D)) {
-		moveRot = MyMath::MatVector(cameraLookmat, moveRot);
-		moveRot.y = 0;
-		moveRot.norm();
-		PlayerMoveMent += moveRot * playerSpeed;
-		isPushRight = true;
-		isWalk = true;
-	}*/
-
-	//worldTransform_.translation_ += PlayerMoveMent;
 
 	if (spaceInput == false) {
 		if (input_->TriggerKey(DIK_SPACE)) {
@@ -325,14 +298,10 @@ void Player::Move() {
 	if (isWalk == true) {
 		if (isWalking == false) {
 			isWalking = true;
-			MaxFrem = 1.3f;
-			MinimumFrem = 0.45f;
 			frem = 0;
-			if (isPlayMotion == false) {
-				playerNowMotion = PlayerMotion::aruki;
-			}
 		}
-
+		MaxFrem = 1.3f;
+		MinimumFrem = 0.45f;
 	}
 	else {
 		if (isPlayMotion == false) {
@@ -358,12 +327,6 @@ void Player::Move() {
 void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
-
-	if (conboFlag == true) {
-		receptionTime += 0.013f;
-	}
-
-
 
 	if (input_->MouseInputTrigger(0)) {
 		//実行前にカウント値を取得
@@ -397,14 +360,14 @@ void Player::Attack() {
 		}
 
 		if (attackConbo == 1) {
-			if (receptionTime > 0.8f && receptionTime < 1.2f) {
+			if (receptionTime > 0.8f && receptionTime < 1.36f) {
 				attackConbo = 2;
 				playerNowMotion = PlayerMotion::soukenCombo2;
 				isPlayMotion = true;
-				MinimumFrem = 0.0f;
-				MaxFrem = 2.0f;
+				MinimumFrem = 1.86f;
+				MaxFrem = 1.88f;
 				frem = 0.0f;
-
+				receptionTime = 0.0f;
 			}
 		}
 

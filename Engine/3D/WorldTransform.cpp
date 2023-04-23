@@ -57,11 +57,11 @@ void WorldTransform::TransferMatrix() {
 	matWorld_ *= matScale;//ワールド行列にスケーリングを反映
 	matWorld_ *= matRot;//ワールド行列に回転を反映
 	matWorld_ *= matTrans;//ワールド行列に平行移動を反映
-	
-	look = GetLook(matRot, Vector3(-1,0,0));
-	lookBack = GetLook(matRot, Vector3(1, 0, 0));
-	lookRight = GetLook(matRot, Vector3(0, 0, 1));
-	lookLeft = GetLook(matRot, Vector3(0, 0, -1));
+
+	look = GetLook(worldLookMatRot, Vector3(-1,0,0));
+	lookBack = GetLook(worldLookMatRot, Vector3(1, 0, 0));
+	lookRight = GetLook(worldLookMatRot, Vector3(0, 0, 1));
+	lookLeft = GetLook(worldLookMatRot, Vector3(0, 0, -1));
 
 	//親オブジェクトがあれば
 	if (parent_) {
@@ -123,5 +123,12 @@ Vector3 WorldTransform::GetLook(Matrix4 matRot,Vector3 at)
 	Vector3 look_ = MyMath::MatVector(matRot, at);
 
 	return Pos + look_;
+}
+
+void WorldTransform::SetLookRot(const Vector3& rot)
+{
+	quaterni.SeTEuler(rot);
+
+	worldLookMatRot = quaterni.Rotate();
 }
 

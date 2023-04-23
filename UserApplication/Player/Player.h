@@ -231,4 +231,5 @@ private:
 	float receptionTime = 0.0f;
 	bool conboFlag = false;
 
+	Vector3 rot;
 };

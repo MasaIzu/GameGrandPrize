@@ -58,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
-	worldTransform_.scale_ = { 0.02f,0.02f,0.02f };
+	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -87,14 +87,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 void Player::Update(const ViewProjection& viewProjection) {
 
 	Move();
-
 	Attack();
-
-	//if (isEnemyHit) {
-	//	SetKnockBackCount();
-	//	Collision();
-	//}
-
 	KnockBackUpdate();
 
 	if (isAttackHit)
@@ -103,8 +96,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	ParticleMan->Update();
-
-	//worldTransform_.translation_ = { 5,0,20 };
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -165,12 +156,17 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
+
+	ImGui::Text("rotX:%f", rot.x);
+	ImGui::Text("rotY:%f", rot.y);
+	ImGui::Text("rotZ:%f", rot.z);
 	ImGui::End();
 }
 
 void Player::Move() {
 
 	PlayerMoveMent = { 0,0,0 };
+	rot = { 0,0,0 };
 	Avoidance = { 0,0,0 };
 	isPushLeft = false;
 	isPushRight = false;
@@ -198,24 +194,28 @@ void Player::Move() {
 		if (input_->PushKey(DIK_W)) {
 			PlayerMoveMent += cameraLook * playerSpeed;
 			isWalk = true;
+			rot += Vector3(0, 0, 0.2f);
 			playerNowMotion = PlayerMotion::aruki;
 		}
 		if (input_->PushKey(DIK_A)) {
 			PlayerMoveMent += root.normalize() * playerSpeed;
 			isPushLeft = true;
 			isWalk = true;
+			rot += Vector3(-0.1f, 0, 0);
 			playerNowMotion = PlayerMotion::aruki;
 		}
 		if (input_->PushKey(DIK_S)) {
 			PlayerMoveMent -= cameraLook * playerSpeed;
 			isPushBack = true;
 			isWalk = true;
+			rot += Vector3(0, 0, -0.2f);
 			playerNowMotion = PlayerMotion::aruki;
 		}
 		if (input_->PushKey(DIK_D)) {
 			PlayerMoveMent -= root.normalize() * playerSpeed;
 			isPushRight = true;
 			isWalk = true;
+			rot += Vector3(0.1f, 0, 0);
 			playerNowMotion = PlayerMotion::aruki;
 		}
 	}
@@ -243,10 +243,16 @@ void Player::Move() {
 		}
 	}
 
-	worldTransform_.SetRot({ 0,-MyMath::GetAngle(angle),0 });
+	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
+
+	Matrix4 roooooot = MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 1);
+	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 3);
+	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 2);
+	worldTransform_.SetMatRot(roooooot);
+
+	worldTransform_.SetLookRot({ 0,-MyMath::GetAngle(angle),0 });
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
-
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
 	Avoidance.y = 0;
 	Avoidance.normalize();

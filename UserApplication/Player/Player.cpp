@@ -68,6 +68,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	ParticleMan->Initialize();
 
+	ParticleMan->SetTextureHandle(TextureManager::Load("effect4.png"));
+
 	recovery = std::make_unique<Recovery>();
 	recovery->Initialize();
 
@@ -93,6 +95,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	if (isAttackHit)
 	{
 		AttackCollision();
+		isAttackHit = false;
 	}
 
 	ParticleMan->Update();
@@ -555,7 +558,7 @@ void Player::Collision(int damage)
 	{
 		SetKnockBackCount();
 		//スペースキーを押していたら
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			//消えるまでの時間
 			const float rnd_life = 70.0f;
@@ -571,8 +574,20 @@ void Player::Collision(int damage)
 			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
 			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+
+			Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+			Vector3 controlPos = { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z };
+
+			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+
+			startPos.y += 10;
+
+			controlPos.y += 10;
+
+			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, MyMath::GetWorldTransform(worldTransform_.matWorld_), { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z }, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.2, 0.2, { 0.5,1,1,0.7 }, { 0.5,1,1,0.3 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 1,1,1,1 }, { 1,1,1,1.0f });
 		}
 		HP -= damage;
 	}
@@ -597,8 +612,20 @@ void Player::AttackCollision()
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+
+		Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+		Vector3 controlPos = { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z };
+
+		Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+
+		startPos.y += 10;
+
+		controlPos.y += 10;
+
+		endPos.y += 10;
 		//追加
-		ParticleMan->Add(ParticleManager::Type::In, life, false, MyMath::GetWorldTransform(worldTransform_.matWorld_), { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z }, MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos, 0.3, 0.1, { 1,1,0.95,1 }, { 1,1,0.95,0 });
+		//ParticleMan->Add(ParticleManager::Type::In, life, false, startPos, controlPos, endPos, 1.0f, 1.0f, { 2,2,2,1 }, { 2,2,2,0 });
 	}
 }
 

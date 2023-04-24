@@ -110,6 +110,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	if (frem < MaxFrem) {
 		frem += 0.013f;
+		if (isPlayMotion) {
+			frem += 0.007;
+		}
 
 	}
 	else {
@@ -122,7 +125,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		}
 	}
 	if (conboFlag == true) {
-		receptionTime += 0.013f;
+		receptionTime += 0.02f;
 	}
 
 	if (input_->PushKey(DIK_P)) {
@@ -142,7 +145,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		fremX += -0.01;
 	}
 
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(0)));
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
 
 
 

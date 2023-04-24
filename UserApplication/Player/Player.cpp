@@ -106,7 +106,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	if (frem < MaxFrem) {
-		frem += 0.013f;
+		frem += 0.02f;
 
 	}
 	else {

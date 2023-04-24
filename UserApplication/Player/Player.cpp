@@ -382,16 +382,18 @@ void Player::Attack() {
 
 	}
 
+
+	if (nowCount < maxTime * 4) {
+		nowCount++;
+	}
+	else {
+		isAttack = false;
+		for (int i = 0; i < SphereCount; i++) {
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+		}
+	}
+
 	if (isAttack == true) {
-		if (nowCount < maxTime * 4) {
-			nowCount++;
-		}
-		else {
-			isAttack = false;
-			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-			}
-		}
 
 		//補間で使うデータ
 		//start → end を知らん秒で完了させる

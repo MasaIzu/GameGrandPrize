@@ -106,7 +106,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	if (frem < MaxFrem) {
-		frem += 0.02f;
+		frem += 0.013f;
+		if (isPlayMotion) {
+			frem += 0.007;
+		}
 
 	}
 	else {
@@ -119,7 +122,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		}
 	}
 	if (conboFlag == true) {
-		receptionTime += 0.013f;
+		receptionTime += 0.02f;
 	}
 
 	if (input_->PushKey(DIK_P)) {

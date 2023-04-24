@@ -4,7 +4,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Mesh.h"
-#include "Light.h"
+#include "LightGroup.h"
 #include <string>
 #include <unordered_map>
 #include <vector>

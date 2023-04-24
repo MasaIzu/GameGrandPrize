@@ -7,7 +7,6 @@
 #include"ImGuiManager.h"
 #include <CollisionAttribute.h>
 #include "Collision.h"
-#include"PostEffect.h"
 
 
 GameScene::GameScene() {}
@@ -484,30 +483,6 @@ void GameScene::PostEffectDraw()
 {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	PostEffect::PreDrawScene(commandList);
-
-	Model::PreDraw(commandList);
-
-	//player->PostEffectDraw(viewProjection_);
-
-	Model::PostDraw();
-
-
-	PostEffect::PostDrawScene();
-}
-
-void GameScene::Draw() {
-
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
-#pragma region 背景スプライト描画
-
-	// 深度バッファクリア
-	dxCommon_->ClearDepthBuffer();
-#pragma endregion
-
-#pragma region 3Dオブジェクト描画
 	ParticleManager::PreDraw(commandList);
 
 	player->ParticleDraw(nowViewProjection);
@@ -572,6 +547,77 @@ void GameScene::Draw() {
 	player->PlayerFbxDraw(nowViewProjection);
 
 	FbxModel::PostDraw();
+}
+
+void GameScene::Draw() {
+
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	//ParticleManager::PreDraw(commandList);
+
+	//player->ParticleDraw(nowViewProjection);
+
+	//if (isMovie) {
+	//	gayserParticle->Draw(nowViewProjection);
+	//}
+
+	//ParticleManager::PostDraw();
+
+	////// 3Dオブジェクト描画前処理
+	//Model::PreDraw(commandList);
+
+	////model_->Draw(worldTransform_, viewProjection_);
+
+	////stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+
+
+	////stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	//
+	//ground.Draw(nowViewProjection);
+
+	//
+
+	////チュートリアルと最初のムービーでだけ小魚を描画
+	//if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
+
+	//	for (int i = 0; i < 10; i++) {
+	//		//minifishes[i].Draw(viewProjection_);
+	//		if (minifishes[i].GetAlive()) {
+	//			boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+	//			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+	//		}
+	//	}
+	//}
+
+	////ボス出現ムービーとボス変身ムービーの間で描画
+	////if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
+
+	//boss.Draw(nowViewProjection);
+	////	}
+
+	//player->Draw(nowViewProjection);
+
+
+
+
+	////3Dオブジェクト描画後処理
+	//Model::PostDraw();
+
+
+
+	//FbxModel::PreDraw(commandList);
+
+	//player->PlayerFbxDraw(nowViewProjection);
+
+	//FbxModel::PostDraw();
 
 
 #pragma endregion

@@ -20,15 +20,12 @@ UINT Model::sDescriptorHandleIncrementSize_ = 0;
 ID3D12GraphicsCommandList* Model::sCommandList_ = nullptr;
 ComPtr<ID3D12RootSignature> Model::sRootSignature_;
 ComPtr<ID3D12PipelineState> Model::sPipelineState_;
-std::unique_ptr<LightGroup> Model::lightGroup;
 
 void Model::StaticInitialize() {
 
 	// パイプライン初期化
 	InitializeGraphicsPipeline();
 
-	// ライト生成
-	lightGroup.reset(LightGroup::Create());
 }
 
 void Model::StaticFinalize()
@@ -141,7 +138,7 @@ void Model::InitializeGraphicsPipeline() {
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
 	gpipeline.NumRenderTargets = 1;                       // 描画対象は1つ
-	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 0～255指定のRGBA
+	gpipeline.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
@@ -262,6 +259,23 @@ void Model::Initialize(const std::string& modelname, bool smoothing) {
 
 	// テクスチャの読み込み
 	LoadTextures();
+
+	lightGroup = std::make_unique<LightGroup>();
+
+	// ライト生成
+	lightGroup->Initialize();
+
+	lightGroup->SetPointLightActive(0, false);
+	lightGroup->SetPointLightActive(1, false);
+	lightGroup->SetPointLightActive(2, false);
+	lightGroup->SetDirLightActive(0, false);
+	lightGroup->SetDirLightActive(1, false);
+	lightGroup->SetDirLightActive(2, false);
+	lightGroup->SetSpotLightActive(0, false);
+	lightGroup->SetSpotLightActive(1, false);
+	lightGroup->SetSpotLightActive(2, false);
+	lightGroup->SetCircleShadowActive(0, false);
+	lightGroup->SetAmbientColor({ 1,1,1 });
 }
 
 void Model::LoadModel(const std::string& modelname, bool smoothing) {
@@ -582,6 +596,8 @@ void Model::LoadTextures() {
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 
+	lightGroup->TransferConstBuffer();
+
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);
 
@@ -600,6 +616,8 @@ void Model::Draw(
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
 	uint32_t textureHadle) {
+
+	lightGroup->TransferConstBuffer();
 
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);

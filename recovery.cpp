@@ -5,6 +5,19 @@ void Recovery::Initialize()
 {
 
 	pointModel_.reset(Model::CreateFromOBJ("recoveryPoint", true));
+	{
+		LightGroup light = pointModel_->GetLigit();
+
+		light.SetDirLightActive(0, true);
+		light.SetDirLightActive(1, false);
+		light.SetDirLightActive(2, false);
+
+		light.SetDirLightColor(0, { 0,5,0 });
+		light.SetDirLightColor(1, { 0,5,0 });
+		light.SetDirLightColor(2, { 0,5,0 });
+
+		pointModel_->SetLight(light);
+	}
 
 	pointWorldTransform_.Initialize();
 
@@ -34,11 +47,24 @@ void Recovery::Initialize()
 
 		worldTransform_[i].translation_.x = x;
 
-		worldTransform_[i].translation_.y = (rand() % 500)/100;
+		worldTransform_[i].translation_.y = (rand() % 500) / 100;
 
 		worldTransform_[i].scale_ = { 0.3,0.3,0.3 };
 
 		worldTransform_[i].alpha = 1 - worldTransform_[i].translation_.y * 0.2;
+	}
+	{
+		LightGroup light = model_->GetLigit();
+
+		light.SetDirLightActive(2, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(0, true);
+
+		light.SetDirLightColor(0, { 0,5,0 });
+		light.SetDirLightColor(1, { 0,5,0 });
+		light.SetDirLightColor(2, { 0,5,0 });
+
+		model_->SetLight(light);
 	}
 }
 
@@ -55,7 +81,7 @@ void Recovery::Update()
 	//	//’Ç‰Á
 	//	ParticleMan->Add(ParticleManager::Type::Normal, 100, { x,0,z }, { x,5,z }, 0.5, 0.5, { 0,1,0,0.5 }, { 0,1,0,0.1 });
 	//}
-	if (isActive==true)
+	if (isActive == true)
 	{
 		for (int i = 0; i < 20; i++)
 		{
@@ -78,7 +104,10 @@ void Recovery::Update()
 
 			worldTransform_[i].translation_.y += 0.05;
 
-			worldTransform_[i].alpha -= 0.01;
+			if (worldTransform_[i].alpha > 0.1f)
+			{
+				//worldTransform_[i].alpha -= 0.01;
+			}
 
 			worldTransform_[i].TransferMatrix();
 		}
@@ -86,9 +115,16 @@ void Recovery::Update()
 	else
 	{
 		IntervalFlame++;
-		if (IntervalFlame>=MaxIntervalFlame)
+		if (IntervalFlame >= MaxIntervalFlame)
 		{
 			isActive = true;
+			LightGroup light = pointModel_->GetLigit();
+
+			light.SetDirLightActive(0, true);
+			light.SetDirLightActive(1, true);
+			light.SetDirLightActive(2, true);
+
+			pointModel_->SetLight(light);
 			//pointModel_->SetTextureHandle(tex1);
 		}
 	}
@@ -104,8 +140,8 @@ void Recovery::Update()
 
 void Recovery::Draw(ViewProjection view)
 {
-	
-	if (isActive==true)
+
+	if (isActive == true)
 	{
 		for (int i = 0; i < 20; i++)
 		{
@@ -121,6 +157,13 @@ void Recovery::Draw(ViewProjection view)
 void Recovery::Collision()
 {
 	isActive = false;
+	LightGroup light = pointModel_->GetLigit();
+
+	light.SetDirLightActive(0, false);
+	light.SetDirLightActive(1, false);
+	light.SetDirLightActive(2, false);
+
+	pointModel_->SetLight(light);
 	IntervalFlame = 0;
 	//pointModel_->SetTextureHandle(tex2);
 }

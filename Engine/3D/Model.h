@@ -4,7 +4,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Mesh.h"
-#include "Light.h"
+#include "LightGroup.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -44,8 +44,6 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> sRootSignature_;
 	// パイプラインステートオブジェクト
 	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-	// ライト
-	static std::unique_ptr<LightGroup> lightGroup;
 
 public: // 静的メンバ関数
 	// 静的初期化
@@ -101,6 +99,10 @@ public: // メンバ関数
 
 	void SetTextureHandle(uint32_t textureHandle) { modelTextureHandle = textureHandle; }
 
+	LightGroup GetLigit() {return *lightGroup.get() ; }
+
+	void SetLight(LightGroup light) { *lightGroup = light; }
+
 
 private: // メンバ変数
 	// 名前
@@ -118,6 +120,9 @@ private: // メンバ変数
 	std::vector<unsigned short> indices;
 
 	uint32_t modelTextureHandle = 0;
+
+	// ライト
+	std::unique_ptr<LightGroup> lightGroup;
 
 private: // メンバ関数
 

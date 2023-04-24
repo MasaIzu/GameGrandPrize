@@ -139,7 +139,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		fremX += -0.01;
 	}
 
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(0)));
 
 
 

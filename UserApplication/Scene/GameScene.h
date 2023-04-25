@@ -18,6 +18,8 @@
 #include<memory>
 #include<vector>
 
+#include "Skydome.h"
+
 #include "BoxCollision.h"
 
 #include "Player.h"
@@ -94,6 +96,7 @@ public:
 
 
 
+
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DirectXCore* dxCommon_ = nullptr;
@@ -164,6 +167,9 @@ private: // メンバ変数
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
+	//天球
+	std::unique_ptr<Model> skyModel = nullptr;
+	std::unique_ptr<Skydome> skydome_;
 
 	////地面作成
 	std::unique_ptr<Model>groundModel = nullptr;

@@ -63,9 +63,12 @@ void GameScene::Initialize() {
 
 	stageWorldTransform_.TransferMatrix();
 
-
+	
+	skyModel.reset(Model::CreateFromOBJ("skydome", true));
 
 	//groundModel = std::make_unique<Model>();
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(skyModel.get());
 
 	////地面の描画
 	ground.Initialize();
@@ -510,6 +513,16 @@ void GameScene::Draw() {
 
 	//player->ParticleDraw(nowViewProjection);
 
+	gayserParticle->Draw(nowViewProjection);
+	
+	ParticleManager::PostDraw();
+
+	//// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+	//skyModel->Draw(worldTransform_,viewProjection_);
+	skydome_->Draw(viewProjection_);
+	//model_->Draw(worldTransform_, viewProjection_);
+
 	//if (isMovie) {
 	//	gayserParticle->Draw(nowViewProjection);
 	//}
@@ -520,6 +533,7 @@ void GameScene::Draw() {
 	//Model::PreDraw(commandList);
 
 	////model_->Draw(worldTransform_, viewProjection_);
+
 
 	////stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 

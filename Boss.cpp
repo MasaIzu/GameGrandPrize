@@ -58,13 +58,15 @@ void Boss::Initialize()
 
 }
 
-void Boss::Update(const Vector3& targetPos)
+void Boss::Update(const Vector3& targetPos,const Vector3 stagePos, float stageRadius)
 {
 	//第1形態の魚群の更新
 	//ImGui::Begin("sword");
 
-	//狙う敵の座標更新
+	//引数からメンバ更新
 	this->targetPos = targetPos;
+	this->stage = stagePos;
+	this->stageRadius = stageRadius;
 
 	ImGui::Text("health %d", bossHealth);
 
@@ -735,8 +737,28 @@ void Boss::UpdateAtkRush()
 		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
 		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
+		Vector3 vecBoss2Stage = pos - stage;
+		//ステージ中央から現在座標のベクトルの大きさがステージの半径よりおおきいならイージングをおわらせる
+		if (vecBoss2Stage.length() >= stageRadius) {
+			easeParentPos.End();
+
+			for (int i = 0; i < fishes.size(); i++) {
+				easePFishToSword[i].End();
+			}
+
+			//ボスの座標を少し後ろにする
+			Vector3 before2After = parentAfterPos - parentBeforePos;
+			before2After.normalize();
+
+			pos -= before2After;
+			parentAfterPos = pos;
+		}
+
+
 		fishParent.pos.translation_ = pos;
 		fishParent.pos.TransferMatrix();
+
+	
 
 	}
 	else {
@@ -749,13 +771,25 @@ void Boss::UpdateAtkRush()
 				rushCount--;
 				nextPhaseInterval = rushCoolTime;
 
-				//���̐e����W�I�܂ł̃x�N�g��
+				//魚からプレイヤーまでのベクトル作成
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
 				vecfishTotarget.y = 0;
 
+
+
+
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
-				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				//魚からプレイヤまでのベクトルが(ステージ半径/2)より小さいなら親の移動後座標をプレイヤから(ステージ半径/2)離れさせる
+				if (vecfishTotarget.length() <= stageRadius / 2.0f) {
+					Vector3 after = vecfishTotarget;
+					after.normalize();
+					after *= (stageRadius / 10.0f * 6);
+					parentAfterPos = parentBeforePos - (vecfishTotarget + after);
+				}
+				else {
+					parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				}
 				parentAfterPos.y = parentBeforePos.y;
 
 				float len = vecfishTotarget.length();
@@ -777,6 +811,10 @@ void Boss::UpdateAtkRush()
 					else {
 						fishesBeforePos[i] = fishesAfterPos[i];
 						fishesAfterPos[i] -= (vecfishTotarget * 2);
+
+						fishesBeforePos[i] = parentBeforePos + fishes[i].pos.translation_;
+						fishesAfterPos[i] = parentAfterPos + fishes[i].pos.translation_;
+
 					}
 
 
@@ -807,20 +845,20 @@ void Boss::UpdateAtkRush()
 
 
 
-	//親座標の移動処理
-	if (easeParentPos.GetActive()) {
-		//突進中は始点と終点でイージング
-		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
-		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = fishesAfterPos[0];
-		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
-		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
-		fishParent.pos.translation_ = pos;
-		fishParent.pos.TransferMatrix();
-	}
+	////親座標の移動処理
+	//if (easeParentPos.GetActive()) {
+	//	//突進中は始点と終点でイージング
+	//	Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
+	//	Vector3 pBeforePos = fishesBeforePos[0];
+	//	Vector3 pAfterPos = fishesAfterPos[0];
+	//	ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+	//	ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+	//	fishParent.pos.translation_ = pos;
+	//	fishParent.pos.TransferMatrix();
+	//}
 
 
-	//���Q�̈ړ�����
+	//魚を近い順に並べる
 	for (int i = 0; i < fishes.size(); i++) {
 		//��ԍŏ��̋��̋������n�܂�Ƃ��ɋ��ƕW�I�̋������狛�̔z�񏇔Ԃ�ύX����
 		if (easePFishToSword[0].GetTimeRate() == 0) {

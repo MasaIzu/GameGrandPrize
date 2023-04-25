@@ -76,7 +76,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="targetPos">標的の座標</param>
-	void Update(const Vector3& targetPos);
+	void Update(const Vector3& targetPos,const Vector3 stagePos,float stageRadius);
 
 	/// <summary>
 	/// 小魚の生成
@@ -204,6 +204,9 @@ private:
 
 	uint32_t healthPicture = 0;
 	std::unique_ptr<Sprite> healthSprite;
+
+	Vector3 stage;
+	float stageRadius;
 };
 
 /// <summary>

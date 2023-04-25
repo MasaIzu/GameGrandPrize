@@ -31,3 +31,8 @@ void EasingData::Start(float animationFrame)
 	maxTime = animationFrame;
 	isActive = true;
 }
+
+void EasingData::End()
+{
+	isActive = false;
+}

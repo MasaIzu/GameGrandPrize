@@ -14,6 +14,11 @@ public:
 	/// <param name="animationFrame">何fでイージングを行うか</param>
 	void Start(float animationFrame);
 
+	/// <summary>
+	/// イージングを強制終了する関数
+	/// </summary>
+	void End();
+
 	//イージングが起こっているかどうか(進行割合が0より大きく1より小さい時)
 	bool GetActive() { return isActive ; }
 

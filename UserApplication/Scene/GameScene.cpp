@@ -401,24 +401,7 @@ void GameScene::Update() {
 
 	//ゲームクリア又はオーバーの時の処理
 
-	if (player->GetHp() <= 0)
-	{
-		Timer();
-		if (isSet)
-		{
-			GameOver();
-		}
-	}
-	
-	if (boss.bossHealth <= 0)
-	{
-		Timer();
-		if (isSet)
-		{
-			GameClear();
-		}
-		
-	}
+	SceneSelect();
 	
 }
 
@@ -583,10 +566,6 @@ void GameScene::Finalize()
 {
 }
 
-
-
-
-
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
@@ -609,6 +588,28 @@ void GameScene::CheckAllFishLeave() {
 	isAllFishLeave = true;
 }
 
+void GameScene::SceneSelect()
+{
+	if (player->GetHp() <= 0)
+	{
+		Timer();
+		if (isSet)
+		{
+			GameOver();
+		}
+	}
+
+	if (boss.bossHealth <= 0)
+	{
+		Timer();
+		if (isSet)
+		{
+			GameClear();
+		}
+
+	}
+
+}
 
 void GameScene::GameOver()
 {

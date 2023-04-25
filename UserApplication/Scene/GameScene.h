@@ -89,6 +89,8 @@ public:
 
 	// 終了処理
 	void Finalize() override;
+	//scene移行の処理
+	void SceneSelect();
 
 	void GameOver();
 

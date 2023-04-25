@@ -34,7 +34,7 @@ void Ground::Initialize() {
 
 	//’n–Ê‚Ì•`‰æ
 	groundModel_.reset(Model::CreateFromOBJ("Ground", true));
-	blockModel_.reset(Model::CreateFromOBJ("Block", true));
+	blockModel_.reset(Model::CreateFromOBJ("BlockV2", true));
 	blockModelV2_.reset(Model::CreateFromOBJ("BlockV2", true));
 	blockModelV3_.reset(Model::CreateFromOBJ("BlockV3", true));
 
@@ -64,7 +64,7 @@ void Ground::Draw(ViewProjection viewProjection_) {
 
 	}
 
-	for (int  i = 0; i < 66; i++)
+	for (int  i = 0; i < 37; i++)
 	{
 		blockModel_->Draw(blockObjects[i].pos, viewProjection_);
 	}
@@ -123,7 +123,7 @@ void Ground::CreateBlock()
 			Vector3 POS = 
 			{
 				(j * SCALE.x) + (SCALE.x * j) - SCALE.x * (MaxCount)  ,
-				SCALE.y,
+				10,
 				(i * SCALE.z) + (SCALE.z * i) - SCALE.z * (MaxCount)  
 			};
 			int select = Random(1, 3);

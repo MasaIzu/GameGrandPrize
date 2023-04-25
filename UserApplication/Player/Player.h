@@ -266,4 +266,6 @@ private:
 	bool isAdmission = true;
 
 	bool isAlive=true;
+
+	int flame = 0;
 };

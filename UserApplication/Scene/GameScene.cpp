@@ -434,12 +434,12 @@ void GameScene::PostEffectDraw()
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	//model_->Draw(worldTransform_, viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_);
 
-	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 
-	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	ground.Draw(nowViewProjection);
 
@@ -458,10 +458,10 @@ void GameScene::PostEffectDraw()
 	}
 
 	//ボス出現ムービーとボス変身ムービーの間で描画
-	//if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
+	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
 	boss.Draw(nowViewProjection);
-	//	}
+		}
 
 	player->Draw(nowViewProjection);
 
@@ -513,14 +513,14 @@ void GameScene::Draw() {
 
 	//player->ParticleDraw(nowViewProjection);
 
-	gayserParticle->Draw(nowViewProjection);
-	
-	ParticleManager::PostDraw();
+	//gayserParticle->Draw(nowViewProjection);
+	//
+	//ParticleManager::PostDraw();
 
 	//// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
+	//Model::PreDraw(commandList);
 	//skyModel->Draw(worldTransform_,viewProjection_);
-	skydome_->Draw(viewProjection_);
+	//skydome_->Draw(viewProjection_);
 	//model_->Draw(worldTransform_, viewProjection_);
 
 	//if (isMovie) {

@@ -90,11 +90,22 @@ public:
 	// 終了処理
 	void Finalize() override;
 
+	void GameOver();
+
+	void GameClear();
+
+	void Timer();
 	//void CreateGround();
 
 
-
-private: // メンバ変数
+	//int TIMER;
+private: 
+	const int MAXTIME = 180;
+	int sceneTime = 0;
+	bool isSet = FALSE;
+	
+	
+	// メンバ変数
 	WinApp* winApp_ = nullptr;
 	DirectXCore* dxCommon_ = nullptr;
 	Input* input_ = nullptr;

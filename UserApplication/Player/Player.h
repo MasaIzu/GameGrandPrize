@@ -62,7 +62,7 @@ public:
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return spaceInput; }
 	Vector3 GetPlayerMoveMent() { return PlayerMoveMent; }
-
+	int GetHp() { return HP; }
 
 	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
 	void SetIsAttackHit(bool isHit_) { isAttackHit = isHit_; }

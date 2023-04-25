@@ -399,7 +399,27 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
+	//ゲームクリア又はオーバーの時の処理
 
+	if (player->GetHp() <= 0)
+	{
+		Timer();
+		if (isSet)
+		{
+			GameOver();
+		}
+	}
+	
+	if (boss.bossHealth <= 0)
+	{
+		Timer();
+		if (isSet)
+		{
+			GameClear();
+		}
+		
+	}
+	
 }
 
 void GameScene::PostEffectDraw()
@@ -589,3 +609,30 @@ void GameScene::CheckAllFishLeave() {
 	isAllFishLeave = true;
 }
 
+
+void GameScene::GameOver()
+{
+
+
+	sceneManager_->ChangeScene("TITLE");
+}
+
+void GameScene::GameClear()
+{
+
+	sceneManager_->ChangeScene("TITLE");
+}
+
+void GameScene::Timer()
+{
+	sceneTime++;
+	if (sceneTime >= MAXTIME)
+	{
+		isSet = TRUE;
+		sceneTime = 0;
+	}
+	else
+	{
+		isSet = FALSE;
+	}
+}

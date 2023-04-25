@@ -21,8 +21,16 @@ private:
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-
 public:
+
+	// 定数バッファ用データ構造体
+	struct ConstBufferPolygonExplosion
+	{
+		float _Destruction = 0.0f;
+		float _ScaleFactor = 1.0f;
+		float _RotationFactor = 0.0f;
+		float _PositionFactor = 0.0f;
+	};
 
 	// 定数バッファ用データ構造体
 	struct ConstBufferData
@@ -103,6 +111,10 @@ public: // メンバ関数
 
 	void SetLight(LightGroup light) { *lightGroup = light; }
 
+	const ConstBufferPolygonExplosion GetPolygonExplosion() { return *constMap; }
+
+	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) { *constMap = polygonExplosion; }
+
 
 private: // メンバ変数
 	// 名前
@@ -123,6 +135,11 @@ private: // メンバ変数
 
 	// ライト
 	std::unique_ptr<LightGroup> lightGroup;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource> constBuff_;
+
+	ConstBufferPolygonExplosion* constMap;
 
 private: // メンバ関数
 

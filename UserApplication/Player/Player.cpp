@@ -58,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-	worldTransform_.translation_ = {0.0f,0.0f,150.0f};
+	worldTransform_.translation_ = { 0.0f,0.0f,150.0f };
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
 
 	worldTransform_.alpha = 0.0;
@@ -89,16 +89,16 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 
 void Player::Update(const ViewProjection& viewProjection) {
-	if (isAdmission==true)
+	if (isAdmission == true)
 	{
 		worldTransform_.alpha += 0.05f;
-		if (worldTransform_.alpha>=1.0f)
+		if (worldTransform_.alpha >= 1.0f)
 		{
 			isAdmission = false;
 		}
 	}
-	
-	if (isAdmission==false&&HP>0)
+
+	if (isAdmission == false && HP > 0)
 	{
 		Move();
 		Attack();
@@ -131,10 +131,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 		}
 	}
 
-	if (HP<=0.0f&&isAlive)
+	if (HP <= 0.0f && isAlive)
 	{
 		worldTransform_.alpha -= 0.05;
-		if (worldTransform_.alpha<=0.0f)
+		if (worldTransform_.alpha <= 0.0f)
 		{
 			isAlive = false;
 		}
@@ -364,50 +364,53 @@ void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
 
-	if (input_->MouseInputTrigger(0)) {
-		//実行前にカウント値を取得
-		//計測開始時間の初期化
-		isAttack = true;
-		startCount = 0;
-		nowCount = 0;
-		timeRate = 0;
-		startIndex = 1;
+	if (spaceInput == false) {
+		if (input_->MouseInputTrigger(0)) {
+			//実行前にカウント値を取得
+			//計測開始時間の初期化
+			isAttack = true;
+			startCount = 0;
+			nowCount = 0;
+			timeRate = 0;
+			startIndex = 1;
 
-		/*if (attackConbo < 3) {
-			attackConbo++;
-		}
-		else {
-			attackConbo = 0;
-		}*/
-
-
-		if (isPlayMotion == false) {
-
-			attackConbo = 1;
-			playerNowMotion = PlayerMotion::soukenCombo1;
-			isPlayMotion = true;
-			MinimumFrem = 0.0f;
-			MaxFrem = 2.0f;
-			frem = 0.0f;
-
-			receptionTime = 0.0f;
-			conboFlag = true;
-
-		}
-
-		if (attackConbo == 1) {
-			if (receptionTime > 0.8f && receptionTime < 1.36f) {
-				attackConbo = 2;
-				playerNowMotion = PlayerMotion::soukenCombo2;
-				isPlayMotion = true;
-				MinimumFrem = 1.86f;
-				MaxFrem = 1.88f;
-				frem = 0.0f;
-				receptionTime = 0.0f;
+			/*if (attackConbo < 3) {
+				attackConbo++;
 			}
-		}
+			else {
+				attackConbo = 0;
+			}*/
 
+
+			if (isPlayMotion == false) {
+
+				attackConbo = 1;
+				playerNowMotion = PlayerMotion::soukenCombo1;
+				isPlayMotion = true;
+				MinimumFrem = 0.0f;
+				MaxFrem = 2.0f;
+				frem = 0.0f;
+
+				receptionTime = 0.0f;
+				conboFlag = true;
+
+			}
+
+			if (attackConbo == 1) {
+				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+					attackConbo = 2;
+					playerNowMotion = PlayerMotion::soukenCombo2;
+					isPlayMotion = true;
+					MinimumFrem = 1.86f;
+					MaxFrem = 1.88f;
+					frem = 0.0f;
+					receptionTime = 0.0f;
+				}
+			}
+
+		}
 	}
+
 
 
 	if (nowCount < maxTime * 4) {
@@ -638,14 +641,14 @@ void Player::DrawHealth() {
 		else {
 			AvoidFontSprite[0]->Draw(AvoidFontpos, { 1,1,1,1 });
 		}
-		
-		if (isAttack){
+
+		if (isAttack) {
 			AttackFontSprite[0]->Draw(AttackFontpos, { 1,1,1,1 });
 		}
 		else if (isAttack == false) {
 			AttackFontSprite[1]->Draw(AttackFontpos, { 1,1,1,1 });
 		}
-		
+
 
 	}
 
@@ -685,7 +688,7 @@ void Player::Collision(int damage)
 		HP -= damage;
 
 		int ParticleNumber = 10;
-		if (HP<=0)
+		if (HP <= 0)
 		{
 			ParticleNumber = 100;
 		}
@@ -719,7 +722,7 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1}, { 0,0,0,1 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
 		}
 		IsHpAlfa = true;
 

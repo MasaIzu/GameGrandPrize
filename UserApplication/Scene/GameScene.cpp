@@ -124,6 +124,19 @@ void GameScene::Initialize() {
 		gayserW[i].scale_ = { 2,2,2 };
 		gayserW[i].TransferMatrix();
 	}
+
+	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+	gameCamera->SetSpaceInput(player->GetSpaceInput());
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	//gameCamera->SetCameraPosition({0,0,-100});
+	gameCamera->InitializeCameraPosition();
+
+	//カメラは最後にアプデ
+	viewProjection_.target = gameCamera->GetTarget();
+	//viewProjection_.target = boss.fishParent.pos.translation_;
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
+	viewProjection_.UpdateMatrix();
 }
 
 void GameScene::Update() {

@@ -16,6 +16,7 @@ public:
 	~GameCamera();
 
 	void Initialize();
+	void InitializeCameraPosition();
 
 	void Update(ViewProjection* viewProjection_);
 

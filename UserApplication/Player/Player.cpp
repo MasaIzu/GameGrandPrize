@@ -58,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-	worldTransform_.translation_ = {0.0f,0.0f,-50.0f};
+	worldTransform_.translation_ = {-100.0f,0.0f,0.0f};
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
 
 	worldTransform_.alpha = 0.0;
@@ -652,7 +652,7 @@ void Player::Collision(int damage)
 		int ParticleNumber = 10;
 		if (HP<=0)
 		{
-			ParticleNumber = 50;
+			ParticleNumber = 100;
 		}
 		//スペースキーを押していたら
 		for (int i = 0; i < ParticleNumber; i++)

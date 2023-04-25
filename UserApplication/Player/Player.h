@@ -157,7 +157,7 @@ private:
 	int MaxMoveTime = 60;
 
 	float x = 0;
-	float radius = 2.0f;//当たり判定半径
+	float radius = 4.0f;//当たり判定半径
 	float Window_Width;
 	float Window_Height;
 	float playerSpeed = 0.5f;
@@ -200,8 +200,8 @@ private:
 
 	bool isAttack = false;
 
-	float attackDistanceX = 4.0f;
-	float attackDistanceZ = 10.0f;
+	float attackDistanceX = 8.0f;
+	float attackDistanceZ = 20.0f;
 
 	const int satgeSize = 200;
 

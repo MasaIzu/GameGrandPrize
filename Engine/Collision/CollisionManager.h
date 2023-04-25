@@ -58,4 +58,7 @@ private:
 	bool isWakeEnemyAttackHit = false;
 	Matrix4 EnemyWorldPos;
 	Matrix4 HitWorldPos;
+
+	bool isPlayerAttacking = false;
+
 };

@@ -50,7 +50,7 @@ GameCamera::~GameCamera()
 
 void GameCamera::Initialize() {
 
-
+	mouseMoved = Vector2(0.15f, 0);
 
 }
 
@@ -158,10 +158,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		Fov += -0.1f;
 	}
 
-
 	ImGui::Begin("camera");
-	ImGui::Text("cameraDis : %f", cameraDis);
-	ImGui::Text("Fov : %f", Fov);
+	ImGui::Text("mouseMovedX : %f", mouseMoved.x);
+	ImGui::Text("mouseMovedY : %f", mouseMoved.y);
 
 	ImGui::Text("target : %f,%f,%f", target.x, target.y, target.z);
 	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
@@ -169,8 +168,8 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::End();
 
 	//カメラ制限
-	if (mouseMoved.x < -0.80f) {
-		mouseMoved.x = -0.80f;
+	if (mouseMoved.x < -0.10f) {
+		mouseMoved.x = -0.10f;
 	}
 	else if (mouseMoved.x > 1.30f) {
 		mouseMoved.x = 1.30f;

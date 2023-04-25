@@ -42,7 +42,7 @@ void Boss::Initialize()
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	radius = 30.0f;
+	radius = 23.0f;
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);

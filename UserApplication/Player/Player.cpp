@@ -34,7 +34,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
 
-	playerAvoidance = 6.0f;
+	playerAvoidance = 15.0f;
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
@@ -176,8 +176,8 @@ void Player::Move() {
 	isPushLeft = false;
 	isPushRight = false;
 	isPushBack = false;
-	spaceInput = false;
 	isWalk = false;
+	isSpace = false;
 
 	if (timer > 0) {
 		timer--;
@@ -195,39 +195,42 @@ void Player::Move() {
 
 	root = (worldTransform_.lookLeft - worldTransform_.translation_);
 
-	if (isPlayMotion == false) {
-		if (input_->PushKey(DIK_W)) {
-			PlayerMoveMent += cameraLook * playerSpeed;
-			isWalk = true;
-			rot += Vector3(0, 0, 0.2f);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_A)) {
-			PlayerMoveMent += root.normalize() * playerSpeed;
-			isPushLeft = true;
-			isWalk = true;
-			rot += Vector3(-0.1f, 0, 0);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_S)) {
-			PlayerMoveMent -= cameraLook * playerSpeed;
-			isPushBack = true;
-			isWalk = true;
-			rot += Vector3(0, 0, -0.2f);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_D)) {
-			PlayerMoveMent -= root.normalize() * playerSpeed;
-			isPushRight = true;
-			isWalk = true;
-			rot += Vector3(0.1f, 0, 0);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-	}
 
 	if (spaceInput == false) {
+
+		if (isPlayMotion == false) {
+			if (input_->PushKey(DIK_W)) {
+				PlayerMoveMent += cameraLook * playerSpeed;
+				isWalk = true;
+				rot += Vector3(0, 0, 0.2f);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_A)) {
+				PlayerMoveMent += root.normalize() * playerSpeed;
+				isPushLeft = true;
+				isWalk = true;
+				rot += Vector3(-0.1f, 0, 0);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_S)) {
+				PlayerMoveMent -= cameraLook * playerSpeed;
+				isPushBack = true;
+				isWalk = true;
+				rot += Vector3(0, 0, -0.2f);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_D)) {
+				PlayerMoveMent -= root.normalize() * playerSpeed;
+				isPushRight = true;
+				isWalk = true;
+				rot += Vector3(0.1f, 0, 0);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+		}
+
 		if (input_->TriggerKey(DIK_SPACE)) {
 			spaceInput = true;
+			isSpace = true;
 			timer = 20;
 			alpha = 0.3f;
 			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
@@ -261,7 +264,7 @@ void Player::Move() {
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
 	Avoidance.y = 0;
 	Avoidance.normalize();
-	Avoidance *= playerAvoidance;
+	Avoidance = Avoidance * playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
 	//worldTransform_.translation_ += Avoidance;
@@ -516,9 +519,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 }
 
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
-
-	fbxmodel->Draw(worldTransform_, viewProjection_);
-
+	if (spaceInput == false) {
+		fbxmodel->Draw(worldTransform_, viewProjection_);
+	}
 }
 
 

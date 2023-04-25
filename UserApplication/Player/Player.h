@@ -60,7 +60,7 @@ public:
 	void SetPosition(Vector3 pos);
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
-	bool GetSpaceInput() { return spaceInput; }
+	bool GetSpaceInput() { return isSpace; }
 	Vector3 GetPlayerMoveMent() { return PlayerMoveMent; }
 
 
@@ -164,7 +164,7 @@ private:
 	float Window_Width;
 	float Window_Height;
 	float playerSpeed = 0.5f;
-	float playerAvoidance = 0.0f;
+	float playerAvoidance = 20.0f;
 
 
 	bool isPushLeft = false;
@@ -242,6 +242,8 @@ private:
 
 	float receptionTime = 0.0f;
 	bool conboFlag = false;
+
+	bool isSpace = false;
 
 	Vector3 rot;
 };

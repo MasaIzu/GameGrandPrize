@@ -23,7 +23,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	float angleX = 0;
 	float angleY = 0;
 
-	MaxCameraTime = 200;
+	MaxCameraTime = 400;
 	cameraTime = MaxCameraTime;
 	oldMousePos = mousePos;
 	mousePos = input_->GetMousePos();

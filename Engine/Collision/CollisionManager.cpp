@@ -16,6 +16,7 @@ void CollisionManager::CheckAllCollisions()
 {
 	isEnemyHit = false;
 	isAttackHit = false;
+	isWakeEnemyHit = false;
 	hitNumber = 0;
 	isWakeEnemyAttackHit = false;
 
@@ -57,7 +58,7 @@ void CollisionManager::CheckAllCollisions()
 						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ALLIES) {
 							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 								EnemyWorldPos = colA->GetWorldPos();
-								isEnemyHit = true;
+								isWakeEnemyHit = true;
 							}
 						}
 					}
@@ -68,6 +69,7 @@ void CollisionManager::CheckAllCollisions()
 						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ATTACK) {
 							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 								hitNumber = i + 1;
+								EnemyWorldPos = colA->GetWorldPos();
 								isWakeEnemyAttackHit = true;
 							}
 						}

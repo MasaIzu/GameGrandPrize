@@ -23,7 +23,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	float angleX = 0;
 	float angleY = 0;
 
-	MaxCameraTime = 200;
+	MaxCameraTime = 400;
 	cameraTime = MaxCameraTime;
 	oldMousePos = mousePos;
 	mousePos = input_->GetMousePos();
@@ -50,7 +50,52 @@ GameCamera::~GameCamera()
 
 void GameCamera::Initialize() {
 
+	//mouseMoved = Vector2(0.15f, 0);
 
+}
+
+void GameCamera::InitializeCameraPosition()
+{
+	Vector2 windowWH = Vector2(winWidth / 2, winHeight / 2);
+
+	//クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->Gethwnd();
+
+	int xPos = windowWH.x;  //移動させたいｘ座標（ウィンドウ内の相対座標）
+	int yPos = windowWH.y; //移動させたいｙ座標（ウィンドウ内の相対座標）
+
+	WINDOWINFO windowInfo;
+	//ウィンドウの位置を取得
+	windowInfo.cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(hwnd, &windowInfo);
+
+	//マウスの移動先の絶対座標（モニター左上からの座標）
+	int xPos_absolute = xPos + windowInfo.rcWindow.left + 8;//なんかずれてるから直す
+	int yPos_absolute = yPos + windowInfo.rcWindow.top + 31; //ウィンドウのタイトルバーの分（31px）をプラス
+	SetCursorPos(xPos_absolute, yPos_absolute);//移動させる
+
+	target = playerPos_ + Vector3(0, 8, 0);
+
+	//ワールド前方ベクトル
+	Vector3 forward(0, 0, playerCameraDistance);
+	//レールカメラの回転を反映
+	forward = MyMath::MatVector(CameraRot, forward);
+
+	forward.normalize();
+
+	//target = pos;
+	vTargetEye = target + (forward * cameraDis);
+
+	cameraPos = vTargetEye;
+
+	//距離
+	//cameraPos += PlayerMoveMent;
+	Vector3 dVec = vTargetEye - cameraPos;
+	dVec *= cameraDelay;
+	cameraPos += dVec * cameraSpeed_;
+	Vector3 player_camera = cameraPos - target;
+	player_camera.normalize();
+	cameraPos = target + (player_camera * cameraDis);
 
 }
 
@@ -144,9 +189,32 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
 	}
 
+
+	if (input_->PushKey(DIK_8) == 0) {
+		cameraDis += 0.1f;
+	}
+	if (input_->PushKey(DIK_9) == 0) {
+		cameraDis += -0.1f;
+	}
+	if (input_->PushKey(DIK_6) == 0) {
+		Fov += 0.1f;
+	}
+	if (input_->PushKey(DIK_7) == 0) {
+		Fov += -0.1f;
+	}
+
+	ImGui::Begin("camera");
+	ImGui::Text("mouseMovedX : %f", mouseMoved.x);
+	ImGui::Text("mouseMovedY : %f", mouseMoved.y);
+
+	ImGui::Text("target : %f,%f,%f", target.x, target.y, target.z);
+	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
+
+	ImGui::End();
+
 	//カメラ制限
-	if (mouseMoved.x < -0.80f) {
-		mouseMoved.x = -0.80f;
+	if (mouseMoved.x < -0.10f) {
+		mouseMoved.x = -0.10f;
 	}
 	else if (mouseMoved.x > 1.30f) {
 		mouseMoved.x = 1.30f;
@@ -165,15 +233,16 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 
 
+	target = easing_->InOutVec3(target, playerPos_ + Vector3(0,8,0), cameraTime, MaxCameraTime);
 	//ワールド前方ベクトル
 	Vector3 forward(0, 0, playerCameraDistance);
 	//レールカメラの回転を反映
 	forward = MyMath::MatVector(CameraRot, forward);
 
-	target = easing_->InOutVec3(target, playerPos_, cameraTime, MaxCameraTime);
+	forward.normalize();
 
 	//target = pos;
-	vTargetEye = target + (forward * playerCameraDistance);
+	vTargetEye = target + (forward * cameraDis);
 
 	if (input_->PushKey(DIK_LSHIFT)) {
 
@@ -250,21 +319,22 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	//遅延カメラ
 	//距離
+	cameraPos += PlayerMoveMent;
 	Vector3 dVec = vTargetEye - cameraPos;
 	dVec *= cameraDelay;
 	cameraPos += dVec * cameraSpeed_;
-	Vector3 player_camera = cameraPos - playerPos_;
+	Vector3 player_camera = cameraPos - target;
 	player_camera.normalize();
-	cameraPos = playerPos_ + (player_camera * cameraDis);
+	cameraPos = target + (player_camera * cameraDis);
 
 
-	float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
+	/*float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
 		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
 		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
 
 	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
 		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
-		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));
+		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));*/
 
 
 	//ImGui::Text("vTargetEye : %f", cameraDis);
@@ -342,10 +412,5 @@ void GameCamera::CameraAngle(float x, float z)
 
 Vector3 GameCamera::GetEye() {
 
-	if (cameraTime < MaxCameraTime - 170) {
-		return vTargetEye;
-	}
-	else {
-		return cameraPos;
-	}
+	return cameraPos;
 }

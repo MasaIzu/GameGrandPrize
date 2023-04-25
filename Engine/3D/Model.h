@@ -4,7 +4,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Mesh.h"
-#include "Light.h"
+#include "LightGroup.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,8 +21,16 @@ private:
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-
 public:
+
+	// 定数バッファ用データ構造体
+	struct ConstBufferPolygonExplosion
+	{
+		float _Destruction = 0.0f;
+		float _ScaleFactor = 1.0f;
+		float _RotationFactor = 0.0f;
+		float _PositionFactor = 0.0f;
+	};
 
 	// 定数バッファ用データ構造体
 	struct ConstBufferData
@@ -44,12 +52,13 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> sRootSignature_;
 	// パイプラインステートオブジェクト
 	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-	// ライト
-	static std::unique_ptr<LightGroup> lightGroup;
 
 public: // 静的メンバ関数
 	// 静的初期化
 	static void StaticInitialize();
+
+	// 静的初期化
+	static void StaticFinalize();
 
 	// グラフィックスパイプラインの初期化
 	static void InitializeGraphicsPipeline();
@@ -98,6 +107,14 @@ public: // メンバ関数
 
 	void SetTextureHandle(uint32_t textureHandle) { modelTextureHandle = textureHandle; }
 
+	LightGroup GetLigit() {return *lightGroup.get() ; }
+
+	void SetLight(LightGroup light) { *lightGroup = light; }
+
+	const ConstBufferPolygonExplosion GetPolygonExplosion() { return *constMap; }
+
+	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) { *constMap = polygonExplosion; }
+
 
 private: // メンバ変数
 	// 名前
@@ -115,6 +132,14 @@ private: // メンバ変数
 	std::vector<unsigned short> indices;
 
 	uint32_t modelTextureHandle = 0;
+
+	// ライト
+	std::unique_ptr<LightGroup> lightGroup;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource> constBuff_;
+
+	ConstBufferPolygonExplosion* constMap;
 
 private: // メンバ関数
 

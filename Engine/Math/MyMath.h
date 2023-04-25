@@ -59,6 +59,7 @@ namespace MyMath {
 
 	Vector4 QuaternionSlerp(aiQuaternion& assimpaiQuaternion, aiQuaternion& assimpaiQuaternion2, float t);
 
+	//“x‚ÌŽž
 	float GetAngle(float angle);
 
 };

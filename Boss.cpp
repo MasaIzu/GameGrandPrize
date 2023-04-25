@@ -7,6 +7,7 @@
 #include "CollisionManager.h"
 #include <SphereCollider.h>
 #include <CollisionAttribute.h>
+#include"Sprite.h"
 
 Boss::~Boss()
 {
@@ -27,8 +28,12 @@ void Boss::Initialize()
 
 	randSpdParam = 3.75f;
 
+	//体力の画像読み込み
+	healthPicture = TextureManager::Load("mario.jpg");
+	healthSprite = Sprite::Create(healthPicture);
+	healthSprite->SetAnchorPoint({ 0,0 });
 	//剣のモデル初期化
-	swordModel.reset(Model::CreateFromOBJ("dammySword", true));
+	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
 
 	//魚のモデル初期化
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
@@ -37,7 +42,7 @@ void Boss::Initialize()
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	radius = 30.0f;
+	radius = 23.0f;
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
@@ -61,8 +66,19 @@ void Boss::Update(const Vector3& targetPos)
 	//狙う敵の座標更新
 	this->targetPos = targetPos;
 
-	//魚が一匹も存在していないなら処理を終わる
-	if (fishes.empty()) {
+	ImGui::Text("health %d", bossHealth);
+
+	//ダメージのタイマーをセット
+	if (damageTimer > 0) {
+		damageTimer--;
+	}
+	else {
+		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+	}
+
+	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
+	if (fishes.empty() || bossHealth <= 0) {
+		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
 
@@ -85,7 +101,7 @@ void Boss::Update(const Vector3& targetPos)
 	}
 
 
-//	ImGui::End();
+	//	ImGui::End();
 
 	collider->Update(fishParent.pos.matWorld_);
 }
@@ -110,9 +126,7 @@ void Boss::CreateFish(Vector3 spawnPos)
 	//ワールド行列初期化
 	newFish.pos.Initialize();
 	newFish.pos.scale_ = { 0.5f,0.5f,0.5f };
-	//Y座標は引数で
 	newFish.pos.translation_.y = posY;
-	//newFish.pos.rotation_.y = 0.78f;
 	newFish.pos.TransferMatrix();
 
 	//速度をランダムに決定
@@ -132,10 +146,11 @@ void Boss::CreateFish(Vector3 spawnPos)
 	pos.z = cos(PI / 180.0f * newFish.radian) * newFish.radius;
 
 	float plus = Random(-1.0f, 1.0f);
-	float num = 1;
+	newFish.isUpper = false;
 	if (plus < 0) {
-		num = -1;
+		newFish.isUpper = true;
 	}
+	int num = -2 * newFish.isUpper + 1;
 
 	pos.y = (sqrt(fishParent.radius * fishParent.radius - newFish.radius * newFish.radius) * num);
 
@@ -145,12 +160,12 @@ void Boss::CreateFish(Vector3 spawnPos)
 	newFish.afterPos = newFish.pos.matWorld_.transform(newFish.afterPos, fishParent.pos.matWorld_);
 	newFish.beforePos = spawnPos;
 	Vector3 randParam;
-	randParam = {Random(-5, 5), Random(-5, 5), Random(-5, 5)};
+	randParam = { Random(-5, 5), Random(-5, 5), Random(-5, 5) };
 	newFish.controll1 = newFish.beforePos + randParam;
 	randParam = { Random(-5, 5), 30.0f, Random(-5, 5) };
 	newFish.controll2 = newFish.afterPos + randParam;
 	newFish.easeMove.Start(45);
-
+	
 	newFish.pos.translation_ = pos;
 	newFish.pos.TransferMatrix();
 	//配列にい列
@@ -159,6 +174,11 @@ void Boss::CreateFish(Vector3 spawnPos)
 
 void Boss::Draw(ViewProjection viewProMat)
 {
+	if (bossHealth <= 0) {
+		return;
+	}
+
+
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
 
@@ -186,6 +206,16 @@ void Boss::Draw(ViewProjection viewProMat)
 
 }
 
+void Boss::DrawHealth() {
+
+	Vector2 size = { 48.0f * bossHealth,48.0f };
+	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),WinApp::window_height * 8.0f / 10.0f };
+	healthSprite->SetSize(size);
+	healthSprite->Draw(pos, {1,1,1,1});
+
+
+}
+
 void Boss::UpdateIdle()
 {
 	//魚群の中心(真ん中)の座標更新
@@ -200,6 +230,7 @@ void Boss::UpdateIdle()
 
 		fishes[i].easeMove.Update();
 
+		//魚が特別な移動を行っているときの処理
 		if (fishes[i].easeMove.GetActive()) {
 			ImGui::Text("fish create active");
 			fishes[i].pos.parent_ = nullptr;
@@ -209,7 +240,7 @@ void Boss::UpdateIdle()
 			fishes[i].pos.SetMatRot(matrot);
 		}
 		else {
-			ImGui::Text("atk interval:%d",nextPhaseInterval);
+
 			if (fishes[i].pos.parent_ == nullptr) {
 				fishes[i].pos.parent_ = &fishParent.pos;
 			}
@@ -223,8 +254,9 @@ void Boss::UpdateIdle()
 
 			//座標を計算
 
+			float oldPosY = pos.y;
 
-			pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
+			//	pos = fishes[i].pos.translation_ - fishes[i].displacement - fishParent.pos.translation_;
 			pos.x = 100;
 			pos.z = 100;
 
@@ -243,38 +275,37 @@ void Boss::UpdateIdle()
 			pos.z = cos(PI / 180.0f * fishes[i].radian) * fishes[i].radius;
 
 			pos.x = rotaVec.x;
+			//pos.y = rotaVec.y;
 			pos.z = rotaVec.z;
 			//pos = rotaVec;
 
-			float plus = Random(-1.0f, 1.0f);
-			float num = 1;
-			if (plus < 0) {
-				num = -1;
-			}
+			int num = -2 * fishes[i].isUpper + 1;
 
-			//	pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) *num);
+			pos.y = (sqrt(fishParent.radius * fishParent.radius - fishes[i].radius * fishes[i].radius) * num);
+
+			//pos.y = oldPosY;
 
 			pos += fishes[i].displacement;
 
-			//回転用の移動ベクトルを作成
-			Vector3 dirvec = pos - fishes[i].pos.translation_;
-			dirvec.normalize();
-			//	Quaternion dirQ = { dirvec.x,dirvec.y,dirvec.z,0 };
 			Matrix4 matrot;
 			matrot = CreateMatRot(fishes[i].pos.translation_, pos);
 
 			fishes[i].pos.SetMatRot(matrot);
 
 
-				//攻撃のクールタイムを減らす
-	
+			//攻撃のクールタイムを減らす
+
 		}
 
-	
+
 		fishes[i].pos.translation_ = pos;
 
 		//fishes[i].pos.rotation_.y =PI / fishes[i].radian * 180.0f;
 		fishes[i].pos.TransferMatrix();
+
+
+		ImGui::Text("pos[%d]:%f,%f,%f", i, fishes[i].pos.translation_.x, fishes[i].pos.translation_.y, fishes[i].pos.translation_.z);
+		ImGui::Text("after pos[%d]:%f,%f,%f", i, fishes[i].afterPos.x, fishes[i].afterPos.y, fishes[i].afterPos.z);
 	}
 
 	if (!fishes[fishes.size() - 1].easeMove.GetActive() && !fishes[0].easeMove.GetActive()) {
@@ -285,7 +316,7 @@ void Boss::UpdateIdle()
 
 		//50%で突進、残りで剣撃
 		//if (IsPercent(50)) {
-		if(moveFlag == 0){
+		if (moveFlag == 0) {
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
@@ -294,7 +325,7 @@ void Boss::UpdateIdle()
 			moveFlag = 1;
 		}
 		else {
-		moveFlag = 0;
+			moveFlag = 0;
 
 			//0になったらクールタイムを攻撃開始モーションの時間に設定
 			nextPhaseInterval = beginAttackDelay;
@@ -321,8 +352,8 @@ void Boss::UpdateAtkSword()
 {
 	//行動時間のフレームまとめ
 	const int swordCreateTime = 120;	//剣の生成時間
-	const int swordMoveTime = 120;		//剣の移動時間
-	const int swordAtkTime = 300;		//剣の攻撃時間
+	const int swordMoveTime = 60;		//剣の移動時間
+	const int swordAtkTime = 120;		//剣の攻撃時間
 	const int swordBreakTime = 120;		//剣の崩壊時間
 	const int moveDelay = 60;			//補間のためのディレイ
 	float distancePtoSword = 90.0f;		//標的と剣の距離(スカラー)
@@ -364,7 +395,7 @@ void Boss::UpdateAtkSword()
 			nextPhaseInterval = swordMoveTime;
 			easeSwordPos.Start(swordMoveTime);
 			swordTransform.translation_ = swordPos;
-	//		swordTransform.SetRot({ 0,0,0 });
+			//		swordTransform.SetRot({ 0,0,0 });
 
 		}//攻撃開始の瞬間
 		else if (bossSwordPhase == BossSwordPhase::Move) {
@@ -452,7 +483,7 @@ void Boss::UpdateAtkSword()
 
 			swordTransform.scale_ = swordScale;
 			swordTransform.translation_ = swordPos;
-			swordTransform.SetMatRot( CreateMatRot(fishParent.pos.translation_, targetPos));
+			swordTransform.SetMatRot(CreateMatRot(fishParent.pos.translation_, targetPos));
 		}
 		//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
 		else if (bossSwordPhase == BossSwordPhase::Move) {
@@ -496,20 +527,19 @@ void Boss::UpdateAtkSword()
 			angleTargetoFish = acos(targetPos.dot(fishParent.pos.translation_) / (targetPos.length() * fishParent.pos.translation_.length()));
 
 			ImGui::Text("nasukaku:%f", angleTargetoFish / PI * 180);
-			swordRotAngle = easeSwordPos.GetTimeRate() *(/* - (PI / 2.0f) +*/ angleTargetoFish);
+			swordRotAngle = easeSwordPos.GetTimeRate() * (/* - (PI / 2.0f) +*/ angleTargetoFish);
 			ImGui::Text("rotAngle:%f", swordRotAngle / PI * 180);
 
 			Matrix4 fishMatRot = CreateMatRot(fishParent.pos.translation_, targetPos);
 
 			Vector3 rot = { easeSwordPos.GetTimeRate() * -(PI / 2.0f),0,easeSwordPos.GetTimeRate() * -(PI / 2.0f) };
-		rot =fishMatRot.transform( { PI / 2, 0, PI / 2 },fishMatRot);
+			rot = fishMatRot.transform({ PI / 2, 0, PI / 2 }, fishMatRot);
 			//rot = swordTransform.matWorld_.transform( rot, CreateMatRot(fishParent.pos.translation_, targetPos));
 			swordTransform.SetRot(rot);
 
 			swordTransform.translation_ = pos;
 
 		}
-
 		else if (bossSwordPhase == BossSwordPhase::Attack) {
 
 			ImGui::Text("now attack!");
@@ -518,11 +548,11 @@ void Boss::UpdateAtkSword()
 
 			//攻撃前と攻撃後ベクトルの基準となる軸
 			Vector3 axis(targetPos);
-		
+
 
 			Vector3 vecBossToTarget = fishParent.pos.translation_ - targetPos;
 			vecBossToTarget = { 1,1,1 };
-		
+
 			ImGui::Text("vecBoss2Target:%f,%f,%f", vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z);
 			axis = vecBossToTarget.cross({ 1,0,0 });
 			axis.normalize();
@@ -530,7 +560,7 @@ void Boss::UpdateAtkSword()
 			//回転軸のクォータニオン作成
 			Quaternion axisQ = { axis,PI / 3 };
 			Quaternion posQ = (vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z, 0);
-			beforePos =  axisQ.multiply(posQ.GetAxis());
+			beforePos = axisQ.multiply(posQ.GetAxis());
 			axisQ = { axis, -PI / 3 };
 			afterPos = axisQ.multiply(posQ.GetAxis());
 
@@ -543,7 +573,7 @@ void Boss::UpdateAtkSword()
 			ImGui::Text("before:%f,%f,%f", beforePos.x, beforePos.y, beforePos.z);
 			ImGui::Text("after:%f,%f,%f", afterPos.x, afterPos.y, afterPos.z);
 
-			Vector3 rotaVec,rotaVecAfter;
+			Vector3 rotaVec, rotaVecAfter;
 			rotaVec.x = sin(PI / 3.0f);
 			rotaVec.z = cos(PI / 3.0f);
 			rotaVec.normalize();
@@ -569,9 +599,9 @@ void Boss::UpdateAtkSword()
 				0,0,0,1
 			};
 
-			beforePos = matRot.transform(rotaVec,matRot) + targetPos;
+			beforePos = matRot.transform(rotaVec, matRot) + targetPos;
 			afterPos = matRot.transform(rotaVecAfter, matRot) + targetPos;
-			
+
 
 			//イージング更新
 			easeSwordPos.Update();
@@ -581,16 +611,25 @@ void Boss::UpdateAtkSword()
 
 			ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
 
+
+			Matrix4 matrot;
+			Vector3 bossPosY0 = fishParent.pos.translation_;
+			//平行に剣を向けるため、Yを同値に
+			bossPosY0.y = targetPos.y;
+			
+
+			matrot = CreateMatRot(bossPosY0, { pos.x,pos.y + 1,pos.z });
+				
 			//ワールド行列から回転を借りてくる
-			rot= swordTransform.rotation_;
+			rot = swordTransform.rotation_;
 			//回転
 			rot.x = swordRotAngle - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
 			//剣の回転にボスの向きの回転行列を掛ける
 		/*	rot = swordTransform.matWorld_.transform(rot, CreateMatRot(fishParent.pos.translation_,targetPos));
 			rot.x += -(PI / 2.0f) - (LerpConbertInback(easeSwordPos.GetTimeRate()) * PI / 3.0f);
+			*/
 
-
-			swordTransform.SetRot(rot);*/
+			swordTransform.SetMatRot(matrot);
 			swordTransform.translation_ = pos;
 		}
 		//崩壊モーション
@@ -712,6 +751,7 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				vecfishTotarget.y = 0;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
@@ -855,25 +895,7 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
-void Boss::FishLookFront(Vector3 pos, Vector3 dirVec, int fishNum)
-{
-	Vector3 up{ 0,1,0 };
-	Vector3 z = dirVec - pos;
-	z.normalize();
-	Vector3 x = up.cross(z);
-	x.normalize();
-	Vector3 y = z.cross(x);
-	y.normalize();
-	Matrix4 rotaMat{
-		x.x, x.y, x.z,0,
-		y.x, y.y, y.z,0,
-		z.x, z.y, z.z,0,
-		0,0,0,1
-	};
 
-	fishes[fishNum].pos.matWorld_ *= rotaMat;
-
-}
 
 
 void Boss::SwordColCubeUpdate()
@@ -948,6 +970,15 @@ void Boss::FishDirectionUpdate()
 	fishParent.pos.SetMatRot(dirMat);
 }
 
+void Boss::Damage(int atk) {
+	if (damageTimer > 0) {
+		return;
+	}
+
+	bossHealth -= atk;
+	damageTimer = nextDamageInterval;
+	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+}
 
 float Random(float num1, float num2)
 {

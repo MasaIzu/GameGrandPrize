@@ -6,6 +6,7 @@
 #include"EasingData.h"
 #include"ViewProjection.h"
 #include <BaseCollider.h>
+#include"Sprite.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -14,6 +15,8 @@ struct fish {
 	float spd;	//移動速度
 	Vector3 displacement;	//親座標からの微妙なずれ
 	Vector3 randomVec;
+
+	bool isUpper = false;
 
 	Vector3 beforePos;
 	Vector3 controll1;
@@ -44,95 +47,141 @@ class Boss
 {
 public:
 
+	fish fishParent;			//魚の中心
+	std::vector<fish> fishes;	//魚群配列
+	std::unique_ptr<Model> fishBodyModel = nullptr;	//魚の体モデル
+	std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
+	std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
+	float randSpdParam = 0;							//ランダムで変化する速度の基本値
+	BossFirstPhase phase1;							//ボス第一形態のフェーズ
+	const int attackCooltime = 60 * 3;				//次の攻撃までのクールタイム
+	const int beginAttackDelay = 60 * 1;			//攻撃の予備動作時間
+	int nextPhaseInterval = 0;						//次のフェーズまでの時間
+	const int rushMaxCount = 3;						//突進攻撃(片道)をする回数
+	int rushCount = 0;								//突進攻撃の残り回数
+	WorldTransform swordTransform;					//剣のワールド座標
+	static const int fishMaxCount = 200;			//小魚の最大数
+	int bossHealth = 20;							//ボスのHP
+	int nextDamageInterval = 30;					//次にダメージを受けるまでの時間
+	int damageTimer = 0;							//ボスの無敵時間
+
 	~Boss();
 
-	//魚が形成する球の中心のワールド座標
-	fish fishParent;
-	//魚群
-	std::vector<fish> fishes;
-
-	//剣のモデルデータ
-	std::unique_ptr<Model> swordModel = nullptr;
-
-	//魚のモデルデータ
-	std::unique_ptr<Model> fishBodyModel = nullptr;
-	std::unique_ptr<Model> fishEyeModel = nullptr;
-
-	//ランダムで変化する速度の基本値
-	float randSpdParam = 0;
-
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="targetPos">標的の座標</param>
 	void Update(const Vector3& targetPos);
 
+	/// <summary>
+	/// 小魚の生成
+	/// </summary>
+	/// <param name="spawnPos">生成する座標</param>
 	void CreateFish(Vector3 spawnPos);
 
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="viewProMat">ビュープロジェクション</param>
 	void Draw(ViewProjection viewProMat);
-	//add
-	BossFirstPhase phase1;
-	const int attackCooltime = 60 * 3;	//次の攻撃までのクールタイム
-	const int beginAttackDelay = 60 * 1;	//攻撃の予備動作時間
 
+	/// <summary>
+	/// 体力の描画
+	/// </summary>
+	void DrawHealth();
 
-	//攻撃のモーション制御タイマー	　　生成　移動  攻撃　  霧散
-	const int atkSwordMotionTime = 120 + 45 + 150 + 120;
-	int nextPhaseInterval = 0;
-	const int rushMaxCount = 3;	//突進攻撃(片道)をする回数
-	int rushCount = 0;	//突進攻撃の残り回数
+	/// <summary>
+	/// ダメージを受けた時のコールバック関数
+	/// </summary>
+	/// <param name="atk">ダメージ量</param>
+	void Damage(int atk);
 
-
+	//魚の数のゲッター
 	int GetFishCount() { return fishes.size(); }
 
-	WorldTransform swordTransform;
-
-	static const int fishMaxCount = 200;
-
+	//当たり判定用座標のゲッター1
 	Vector3 GetSwordCollisionCube1()const { return posSwordColCube1; }
+	//当たり判定用座標のゲッター2
 	Vector3 GetSwordCollisionCube2()const { return posSwordColCube2; }
-
+	//剣の座標のゲッター
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
+
+
+	/// <summary>
+	/// メンバ関数(プライベート)
+	/// </summary>
 private:
-	//フェーズごとの更新処理
+
+	/// <summary>
+	/// 非攻撃状態の更新
+	/// </summary>
 	void UpdateIdle();
 
+	/// <summary>
+	/// 剣攻撃の更新
+	/// </summary>
 	void UpdateAtkSword();
 
+	/// <summary>
+	/// 突進攻撃の更新
+	/// </summary>
 	void UpdateAtkRush();
 
+	/// <summary>
+	/// 攻撃前予備動作の更新
+	/// </summary>
 	void UpdateBeginMotion();
 
-	void FishLookFront(Vector3 pos,Vector3 dirVec,int fishNum);
-
+	/// <summary>
+	/// 剣の当たり判定の更新
+	/// </summary>
 	void SwordColCubeUpdate();
 
+	/// <summary>
+	/// 魚の配列を小さい順に並べる
+	/// </summary>
 	void SortFishMin();
-	
+
+	/// <summary>
+	/// 魚の向きの更新
+	/// </summary>
 	void FishDirectionUpdate();
-	
-	Vector3 targetPos;
 
-	BossSwordPhase bossSwordPhase;
+	/// <summary>
+	/// メンバ変数(プライベート)
+	/// </summary>
+private:
 
-	WorldTransform Transform;
-	Vector3 swordPos = {0,0,0 };
-	EasingData easeSwordPos;
-	EasingData easeSwordScale;
-	float swordRotAngle = 0;
-
-	const int moveFishMax = 120;
-
+	Vector3 targetPos;				//標的(プレイヤー)の座標
+	BossSwordPhase bossSwordPhase;	//剣の行動フェーズ
+	WorldTransform Transform;		//剣のワールド座標
+	Vector3 swordPos = { 0,0,0 };	//剣の座標
+	EasingData easeSwordPos;		//剣の座標イージング用データ
+	EasingData easeSwordScale;		//剣のスケールイージング用データ
+	float swordRotAngle = 0;		//剣の回転角
+	const int moveFishMax = 120;	//魚の最大数
 	EasingData easePFishToSword[fishMaxCount];	//魚の移動用イージングタイマー
-	std::vector<int> choiceFishIndex;	//配列から何番目の魚が選ばれているか(重複対策)
-	Vector3 parentBeforePos, parentAfterPos;
-	Vector3 fishesBeforePos[fishMaxCount], fishesControllP1[fishMaxCount], fishesControllP2[fishMaxCount],fishesAfterPos[fishMaxCount];
-	Vector3 beforeScale, afterScale;
-	float lenTargetToFishes[fishMaxCount];
+	std::vector<int> choiceFishIndex;			//配列から何番目の魚が選ばれているか(重複対策)
+	Vector3 parentBeforePos;					//親座標の移動前座標(補完用)
+	Vector3 parentAfterPos;						//親座標の移動後座標(補完用)
+	Vector3 fishesBeforePos[fishMaxCount];		//小魚の移動前座標(補完用)
+	Vector3 fishesControllP1[fishMaxCount];		//小魚の移動制御用座標1(補完用)
+	Vector3 fishesControllP2[fishMaxCount];		//小魚の移動制御用座標2(補完用)
+	Vector3 fishesAfterPos[fishMaxCount];		//小魚の移動後座標(補完用)
+	Vector3 beforeScale;						//変化前のスケール
+	Vector3 afterScale;							//変化後のスケール
+	float lenTargetToFishes[fishMaxCount];		//小魚と標的の距離(スカラー)
 
 
 	// コライダー
 	BaseCollider* collider = nullptr;
-	float radius = 20.0f;//当たり判定半径
+	float radius = 30.0f;//当たり判定半径
 
 	//当たり判定用の剣の大きさ用変数
 	WorldTransform testTrans;
@@ -140,18 +189,21 @@ private:
 	Vector3 posSwordColCube1;
 	Vector3 posSwordColCube2;
 	//剣のオブジェクトとしての大きさ(当たり判定用)
-	const float swordSizeX1 = -0.3f;
-	const float swordSizeX2 = 0.6f;
-	const float swordSizeY1 = -1.0f;
-	const float swordSizeY2 = 14.6f;
-	const float swordSizeZ1 = -1.0f;
-	const float swordSizeZ2 = 1.0f;
+	const float swordSizeX1 = -0.3f - 0.2f;
+	const float swordSizeX2 = 0.6f  + 0.3f;
+	const float swordSizeY1 = -1.0f - 2.0f;
+	const float swordSizeY2 = 14.6f + 3.0f;
+	const float swordSizeZ1 = -1.0f - 2.0f;
+	const float swordSizeZ2 = 1.0f  + 2.0f;
 
 	EasingData easeParentPos;
 
 	Vector3 angleVec{ 0,0,0 };
 
 	int moveFlag = 0;
+
+	uint32_t healthPicture = 0;
+	std::unique_ptr<Sprite> healthSprite;
 };
 
 /// <summary>

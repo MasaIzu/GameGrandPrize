@@ -20,6 +20,30 @@ DirectXCore* DirectXCore::GetInstance() {
 	return DirectXCore_;
 }
 
+DirectXCore::~DirectXCore() {
+
+	dxgiFactory.Reset();
+	commandList.Reset();
+	commandAllocator.Reset();
+	commandQueue.Reset();
+	swapChain.Reset();
+	backBuffers.clear();
+	depthBuffer.Reset();
+	rtvHeap.Reset();
+	dsvHeap.Reset();
+	fence.Reset();
+
+	ID3D12DebugDevice* debugInterface;
+
+	if (SUCCEEDED(device->QueryInterface(&debugInterface))) {
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugInterface->Release();
+	}
+
+	device.Reset();
+
+}
+
 void DirectXCore::Destroy(){
 
 	delete DirectXCore_;
@@ -169,6 +193,8 @@ void DirectXCore::InitializeDevice() {
 		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 	}
+
+
 #endif
 
 	// ‘Î‰žƒŒƒxƒ‹‚Ì”z—ñ

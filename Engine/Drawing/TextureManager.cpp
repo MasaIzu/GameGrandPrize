@@ -18,6 +18,11 @@ TextureManager* TextureManager::GetInstance() {
 	return TextureManager_;
 }
 
+TextureManager::~TextureManager()
+{
+	descriptorHeap_.Reset();
+}
+
 void TextureManager::Delete()
 {
 	delete TextureManager_;
@@ -77,6 +82,7 @@ void TextureManager::SetGraphicsRootDescriptorTable(
 	commandList->SetGraphicsRootDescriptorTable(rootParamIndex, textures_[textureHandle].gpuDescHandleSRV);
 
 }
+
 
 uint32_t TextureManager::LoadInternal(const std::string& fileName) {
 

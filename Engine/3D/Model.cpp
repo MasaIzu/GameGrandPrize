@@ -20,20 +20,26 @@ UINT Model::sDescriptorHandleIncrementSize_ = 0;
 ID3D12GraphicsCommandList* Model::sCommandList_ = nullptr;
 ComPtr<ID3D12RootSignature> Model::sRootSignature_;
 ComPtr<ID3D12PipelineState> Model::sPipelineState_;
-std::unique_ptr<LightGroup> Model::lightGroup;
 
 void Model::StaticInitialize() {
 
 	// パイプライン初期化
 	InitializeGraphicsPipeline();
 
-	// ライト生成
-	lightGroup.reset(LightGroup::Create());
+}
+
+void Model::StaticFinalize()
+{
+
+	sRootSignature_.Reset();
+	sPipelineState_.Reset();
+
 }
 
 void Model::InitializeGraphicsPipeline() {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob;    // 頂点シェーダオブジェクト
+	ComPtr<ID3DBlob> gsBlob;
 	ComPtr<ID3DBlob> psBlob;    // ピクセルシェーダオブジェクト
 	ComPtr<ID3DBlob> errorBlob; // エラーオブジェクト
 
@@ -46,6 +52,27 @@ void Model::InitializeGraphicsPipeline() {
 		"main", "vs_5_0", // エントリーポイント名、シェーダーモデル指定
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
 		0, &vsBlob, &errorBlob);
+	if (FAILED(result)) {
+		// errorBlobからエラー内容をstring型にコピー
+		std::string errstr;
+		errstr.resize(errorBlob->GetBufferSize());
+
+		std::copy_n(
+			(char*)errorBlob->GetBufferPointer(), errorBlob->GetBufferSize(), errstr.begin());
+		errstr += "\n";
+		// エラー内容を出力ウィンドウに表示
+		OutputDebugStringA(errstr.c_str());
+		exit(1);
+	}
+
+	// 頂点シェーダの読み込みとコンパイル
+	result = D3DCompileFromFile(
+		L"Resources/shaders/ObjGS.hlsl", // シェーダファイル名
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+		"main", "gs_5_0", // エントリーポイント名、シェーダーモデル指定
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+		0, &gsBlob, &errorBlob);
 	if (FAILED(result)) {
 		// errorBlobからエラー内容をstring型にコピー
 		std::string errstr;
@@ -96,6 +123,7 @@ void Model::InitializeGraphicsPipeline() {
 	// グラフィックスパイプラインの流れを設定
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline{};
 	gpipeline.VS = CD3DX12_SHADER_BYTECODE(vsBlob.Get());
+	gpipeline.GS = CD3DX12_SHADER_BYTECODE(gsBlob.Get());
 	gpipeline.PS = CD3DX12_SHADER_BYTECODE(psBlob.Get());
 
 	// サンプルマスク
@@ -133,7 +161,7 @@ void Model::InitializeGraphicsPipeline() {
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
 	gpipeline.NumRenderTargets = 1;                       // 描画対象は1つ
-	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 0～255指定のRGBA
+	gpipeline.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
@@ -141,12 +169,13 @@ void Model::InitializeGraphicsPipeline() {
 	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 レジスタ
 
 	// ルートパラメータ
-	CD3DX12_ROOT_PARAMETER rootparams[5];
+	CD3DX12_ROOT_PARAMETER rootparams[6];
 	rootparams[0].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
 	rootparams[1].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_ALL);
 	rootparams[2].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_ALL);
 	rootparams[3].InitAsDescriptorTable(1, &descRangeSRV, D3D12_SHADER_VISIBILITY_ALL);
 	rootparams[4].InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_ALL);
+	rootparams[5].InitAsConstantBufferView(4, 0, D3D12_SHADER_VISIBILITY_ALL);
 
 	// スタティックサンプル
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
@@ -187,8 +216,6 @@ Model* Model::CreateFromOBJ(const std::string& modelname, bool smoothing) {
 	// メモリ確保
 	Model* instance = new Model;
 	instance->Initialize(modelname, smoothing);
-
-
 
 	return instance;
 }
@@ -256,6 +283,23 @@ void Model::Initialize(const std::string& modelname, bool smoothing) {
 
 	// テクスチャの読み込み
 	LoadTextures();
+
+	lightGroup = std::make_unique<LightGroup>();
+
+	// ライト生成
+	lightGroup->Initialize();
+
+	lightGroup->SetPointLightActive(0, false);
+	lightGroup->SetPointLightActive(1, false);
+	lightGroup->SetPointLightActive(2, false);
+	lightGroup->SetDirLightActive(0, false);
+	lightGroup->SetDirLightActive(1, false);
+	lightGroup->SetDirLightActive(2, false);
+	lightGroup->SetSpotLightActive(0, false);
+	lightGroup->SetSpotLightActive(1, false);
+	lightGroup->SetSpotLightActive(2, false);
+	lightGroup->SetCircleShadowActive(0, false);
+	lightGroup->SetAmbientColor({ 1,1,1 });
 }
 
 void Model::LoadModel(const std::string& modelname, bool smoothing) {
@@ -453,6 +497,29 @@ void Model::LoadModel(const std::string& modelname, bool smoothing) {
 	if (smoothing) {
 		mesh->CalculateSmoothedVertexNormals();
 	}
+
+
+	// ヒーププロパティ
+	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	// リソース設定
+	CD3DX12_RESOURCE_DESC resourceDesc =
+		CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataWorldTransform) + 0xff) & ~0xff);
+
+	// 定数バッファの生成
+	HRESULT result = DirectXCore::GetInstance()->GetDevice()->CreateCommittedResource(
+		&heapProps, // アップロード可能
+		D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&constBuff_));
+	assert(SUCCEEDED(result));
+
+	//定数バッファのマッピング
+	result = constBuff_->Map(0, nullptr, (void**)&constMap);
+	assert(SUCCEEDED(result));
+
+	constMap->_Destruction = 0.0f;
+	constMap->_ScaleFactor = 1.0f;
+	constMap->_PositionFactor = 0.0f;
+	constMap->_RotationFactor = 0.0f;
 }
 
 void Model::LoadMaterial(const std::string& directoryPath, const std::string& filename) {
@@ -576,6 +643,8 @@ void Model::LoadTextures() {
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 
+	lightGroup->TransferConstBuffer();
+
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);
 
@@ -584,6 +653,9 @@ void Model::Draw(
 
 	// CBVをセット（ビュープロジェクション行列）
 	sCommandList_->SetGraphicsRootConstantBufferView(1, viewProjection.constBuff_->GetGPUVirtualAddress());
+
+	//CBVをセット（ポリゴン爆散）
+	sCommandList_->SetGraphicsRootConstantBufferView(5, constBuff_->GetGPUVirtualAddress());
 
 	for (int i = 0; i < meshes_.size(); i++) {
 		// 全メッシュを描画
@@ -594,6 +666,8 @@ void Model::Draw(
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
 	uint32_t textureHadle) {
+
+	lightGroup->TransferConstBuffer();
 
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);

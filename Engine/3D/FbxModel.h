@@ -11,7 +11,7 @@
 
 #include <Mesh.h>
 #include "Material.h"
-#include <Light.h>
+#include <LightGroup.h>
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 
@@ -92,6 +92,9 @@ private: // 静的メンバ変数
 public: // 静的メンバ関数
 	// 静的初期化
 	static void StaticInitialize();
+
+	// 静的終了処理
+	static void StaticFainalize();
 
 	// グラフィックスパイプラインの初期化
 	static void InitializeGraphicsPipeline();

@@ -9,7 +9,7 @@
 
 #include "SceneManager.h"
 #include "FbxModel.h"
-
+#include <FbxLoader.h>
 #include <memory>
 
 class Framework {
@@ -52,7 +52,7 @@ protected:
 	Input* input_ = nullptr;
 	SceneManager* sceneManager_;
 	TextureManager* TextureManager_ = nullptr;
-
+	FbxLoader* fbxLoader_ = nullptr;
 
 	//シングルトン以外
 	std::unique_ptr<ImGuiManager> imGui;

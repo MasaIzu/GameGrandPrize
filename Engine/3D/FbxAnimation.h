@@ -15,7 +15,7 @@ public:
 
 	void Load(const std::string& failPath);
 
-	aiAnimation* GetAnimation();
+	aiAnimation* GetAnimation(int AnimationNumber);
 
 public: // 定数
 	// モデル格納ルートパス
@@ -25,7 +25,9 @@ public: // 定数
 
 private:
 
-	aiAnimation* modelAnimation;
+	static const int32_t MaxAnimation = 20;
+
+	aiAnimation* modelAnimation[MaxAnimation];
 	const aiScene* mScene;
 
 };

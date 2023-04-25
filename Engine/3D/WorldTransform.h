@@ -63,7 +63,7 @@ struct WorldTransform {
 	void TransferMatrix();
 
 	void SetRot(const Vector3& rot);
-
+	void SetLookRot(const Vector3& rot);
 	void SetMatRot(const Matrix4& mat);
 
 	void MoveRot(const Vector3& move);
@@ -75,4 +75,11 @@ struct WorldTransform {
 	Quaternion& GetQuaternion();
 	
 	Vector3 GetLook(Matrix4 matRot,Vector3 at);
+
+private:
+
+	//îCà”é≤ÇÃÉçÅ[ÉJÉãâÒì]
+	Quaternion quaterni = { 0,0,0,0 };
+	Matrix4 worldLookMatRot;
+
 };

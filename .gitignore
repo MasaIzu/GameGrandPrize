@@ -75,7 +75,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-
+#*.fbx
 *.iobj
 *.pch
 *.pdb
@@ -362,3 +362,12 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 *.lib
+
+/Resources/3dGameKyaraMotionFin/3dGameKyaraMotionFin.fbx
+/Resources/3dGameKyaraMotionFin/KyaraTex1.png
+/Resources/3dRowPori/3dRowPori.fbx
+/Resources/3dGameKyaraRun/3dGameKyaraRun.fbx
+/Resources/3dGameKyaraRun/KyaraTex1.png
+/Resources/3dRowPori/RowPoriTex.png
+
+/Engine/assimp/x64-windows/lib/assimp-vc143-mtd.dll

@@ -15,61 +15,59 @@ cbuffer Material : register(b2) {
 	float3 m_specular : packoffset(c2); // スペキュラー係数
 }
 
-// 平行光源の数
-static const int DIRLIGHT_NUM = 3;
+static const uint DIR_LIGHT_NUM = 3;
 
-struct DirLight
-{
-	float3 lightv;    // ライトへの方向の単位ベクトル
-	float3 lightcolor;    // ライトの色(RGB)
+//平行
+struct DirLight {
+	float3 lightv;//ライト
+	float3 lightcolor;
 	uint active;
 };
 
-// 点光源の数
+//点光源の数
 static const int POINTLIGHT_NUM = 3;
 
-struct PointLight
-{
-	float3 lightpos;    // ライト座標
-	float3 lightcolor;  // ライトの色(RGB)
-	float3 lightatten;	// ライト距離減衰係数
+struct PointLight {
+	float3 lightpos;//ライト座標
+	float3 lightcolor;//ライトの色
+	float3 lightatten;//ライトの距離減衰係数
 	uint active;
 };
 
-// スポットライトの数
+//スポットライトの数
 static const int SPOTLIGHT_NUM = 3;
 
-struct SpotLight
-{
-	float3 lightv;		// ライトの光線方向の逆ベクトル（単位ベクトル）
-	float3 lightpos;    // ライト座標
-	float3 lightcolor;  // ライトの色(RGB)
-	float3 lightatten;	// ライト距離減衰係数
-	float2 lightfactoranglecos; // ライト減衰角度のコサイン
+struct SpotLight {
+	float3 lightv;//ライトの光線方向の逆ベクトル
+	float3 lightpos;//ライトの座標
+	float3 lightcolor;//ライトの色
+	float3 lightatten;//ライト距離減衰係数
+	float2 lightfactoranglecos;//ライト減衰角度のコサイン
 	uint active;
 };
 
-// 丸影の数
-static const int CIRCLESHADOW_NUM = 3;
 
-struct CircleShadow
-{
-	float3 dir;		// 投影方向の逆ベクトル（単位ベクトル）
-	float3 casterPos;    // キャスター座標
-	float  distanceCasterLight;	// キャスターとライトの距離
-	float3 atten;	// 距離減衰係数
-	float2 factorAngleCos; // 減衰角度のコサイン
+//丸影の数
+static const int CIRCLESHADOW_NUM = 1;
+
+struct CircleShadow {
+	float3 dir;//東映方向の逆ベクトル
+	float3 casterPos;//キャスター座標
+	float distanceCasterLight;//キャスターとライトの距離
+	float3 atten;//距離減衰係数
+	float2 factorAngleCos;//減衰角度のコサイン
 	uint active;
 };
 
-cbuffer LightGroup : register(b3)
-{
+
+cbuffer cbuff2 : register(b3) {
 	float3 ambientColor;
-	DirLight dirLights[DIRLIGHT_NUM];
+	DirLight dirLights[DIR_LIGHT_NUM];
 	PointLight pointLights[POINTLIGHT_NUM];
 	SpotLight spotLights[SPOTLIGHT_NUM];
 	CircleShadow circleShadows[CIRCLESHADOW_NUM];
 }
+
 
 cbuffer PolygonExplosion: register(b4)
 {

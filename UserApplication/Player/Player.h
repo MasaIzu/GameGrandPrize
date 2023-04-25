@@ -13,6 +13,8 @@
 #include <Easing.h>
 #include"ParticleManager.h"
 #include"recovery.h"
+#include <FbxModel.h>
+#include <FbxAnimation.h>
 
 class Player {
 
@@ -45,15 +47,22 @@ public:
 	/// <summary>
 	void Draw(ViewProjection viewProjection_);
 
+	void PlayerFbxDraw(ViewProjection viewProjection_);
+
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
 
+	void DrawHealth();
+
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
+	void SetPosition(Vector3 pos);
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
-	bool GetSpaceInput() { return spaceInput; }
+	bool GetSpaceInput() { return isSpace; }
+	Vector3 GetPlayerMoveMent() { return PlayerMoveMent; }
+
 
 	void SetIsEnemyHit(bool isHit_) { isEnemyHit = isHit_; }
 	void SetIsAttackHit(bool isHit_) { isAttackHit = isHit_; }
@@ -67,7 +76,10 @@ public:
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
-	
+
+	// スプライトの初期化
+	void SpriteInitialize();
+
 
 	/// <summary>
 	/// 攻撃が当たった時のプレイヤーの処理
@@ -75,6 +87,33 @@ private:
 	void AttackCollision();
 
 private:
+
+	enum PlayerMotion {
+
+		soukenCombo1,//0
+		soukenCombo2,//1
+		soukenCombo3,//2
+		aruki,//3
+		taiki,//4
+		//soukenFuriorosi,//5
+		//kakuseiMotion,//6
+		//taikenKiriage,//7
+		//taikenyokogiriSage,//8
+		//taikenyokogiriAge,//9
+		//sibou,//10
+		//TaikiMotion,//11
+		//hasirihajimeTOowari,//12
+		//taikenTaikiMotion,//13
+
+
+	};
+
+	PlayerMotion playerNowMotion = PlayerMotion::aruki;
+	float MaxFrem = 2.0f;
+	float MinimumFrem = 0.5f;
+	bool isWalk = false;
+	bool isWalking = false;
+
 
 	Easing* easing_;
 	//ワールド変換データ
@@ -121,11 +160,11 @@ private:
 	int MaxMoveTime = 60;
 
 	float x = 0;
-	float radius = 2.0f;//当たり判定半径
+	float radius = 4.0f;//当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.01f;
-	float playerAvoidance = 0.0f;
+	float playerSpeed = 0.5f;
+	float playerAvoidance = 20.0f;
 
 
 	bool isPushLeft = false;
@@ -137,7 +176,7 @@ private:
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
 	float KnockBackDistance = 20.0f;
-	bool isKnockBack=false;
+	bool isKnockBack = false;
 	///攻撃に使う変数
 
 	//時間計算に必要なデータ
@@ -164,8 +203,8 @@ private:
 
 	bool isAttack = false;
 
-	float attackDistanceX = 4.0f;
-	float attackDistanceZ = 10.0f;
+	float attackDistanceX = 8.0f;
+	float attackDistanceZ = 20.0f;
 
 	const int satgeSize = 200;
 
@@ -175,5 +214,48 @@ private:
 
 	const int maxHP = 100;
 
-	int HP=100;
+	float HpMax = 100;
+	float HP = 100;
+	std::unique_ptr<Sprite> healthSprite;
+	std::unique_ptr<Sprite> healthAlfaSprite;
+
+	Vector2 hpAlfaSize={ 553.0f,25.0f };
+	bool IsHpAlfa = false;
+	int hpAlfaTimer = 0;
+
+	std::unique_ptr<Sprite> HP_barSprite;
+
+	// プレイヤーの操作のスプライト
+	std::unique_ptr<Sprite> AttackFontSprite[2];
+	std::unique_ptr<Sprite> MoveFontSprite;
+	std::unique_ptr<Sprite> W_FontSprite[2];
+	std::unique_ptr<Sprite> A_FontSprite[2];
+	std::unique_ptr<Sprite> S_FontSprite[2];
+	std::unique_ptr<Sprite> D_FontSprite[2];
+	std::unique_ptr<Sprite> AvoidFontSprite[2];
+
+	//Fbxモデル
+	std::unique_ptr<FbxModel> fbxmodel;
+	std::unique_ptr<FbxAnimation> modelAnim;
+	float frem = 0;
+
+	float fremX = 1.0f;
+
+	bool taikiFlag = false;
+
+	Vector3 root;
+
+	int attackConbo = 0;
+	bool isPlayMotion = false;
+
+	float receptionTime = 0.0f;
+	bool conboFlag = false;
+
+	bool isSpace = false;
+
+	Vector3 rot;
+
+	bool isAdmission = true;
+
+	bool isAlive=true;
 };

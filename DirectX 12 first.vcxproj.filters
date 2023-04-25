@@ -260,6 +260,9 @@
     <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
       <Filter>Shaders\3D</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXGS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Sound\Audio.h">

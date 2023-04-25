@@ -37,7 +37,14 @@ public: // サブクラス
 		UINT boneIndex[MAX_BONE_INDICES];
 		float boneWeight[MAX_BONE_INDICES];
 	};
-
+	// 定数バッファ用データ構造体
+	struct ConstBufferPolygonExplosion
+	{
+		float _Destruction = 0.0f;
+		float _ScaleFactor = 1.0f;
+		float _RotationFactor = 0.0f;
+		float _PositionFactor = 0.0f;
+	};
 
 private:
 	// Microsoft::WRL::を省略
@@ -148,6 +155,9 @@ public: // メンバ関数
 
 	bool FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim, UINT& nPosIndex);
 
+	const ConstBufferPolygonExplosion GetPolygonExplosion() { return *constMap; }
+
+	const void SetPolygonExplosion(ConstBufferPolygonExplosion polygonExplosion) { *constMap = polygonExplosion; }
 
 	// メッシュコンテナを取得
 	inline const std::vector<Mesh*>& GetMeshes() { return meshes_; }
@@ -175,6 +185,11 @@ private:
 	Material* defaultMaterial_ = nullptr;
 
 	uint32_t modelTextureHandle = 0;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource> constBuff_;
+
+	ConstBufferPolygonExplosion* constMap;
 
 };
 

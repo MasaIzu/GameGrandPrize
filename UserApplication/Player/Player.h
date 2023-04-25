@@ -212,6 +212,14 @@ private:
 
 	std::unique_ptr<Recovery> recovery;
 
+	std::unique_ptr<Model> startPointModel;
+
+	WorldTransform startPointTrans;
+
+	std::unique_ptr<Model> startModel;
+
+	WorldTransform startTrans;
+
 	const int maxHP = 100;
 
 	float HpMax = 100;

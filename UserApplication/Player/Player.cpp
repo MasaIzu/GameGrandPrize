@@ -76,11 +76,26 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	recovery = std::make_unique<Recovery>();
 	recovery->Initialize();
 
+	startModel.reset(Model::CreateFromOBJ("warp",true));
+
+	startPointModel.reset(Model::CreateFromOBJ("warpPoint", true));
+
+	startTrans.Initialize();
+
+	startPointTrans.Initialize();
+
+	startPointTrans.translation_ = {0.0f,0.0f,150.0f};
+
+	startPointTrans.scale_ = {3,3,3};
+
+	startPointTrans.TransferMatrix();
+
 	// スプライトの初期化処理
 	SpriteInitialize();
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,6.28,50.0f});
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix");
 
@@ -91,6 +106,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 void Player::Update(const ViewProjection& viewProjection) {
 	if (isAdmission == true)
 	{
+
+		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
+		fbxmodel->SetPolygonExplosion({ polygon._Destruction-0.05f,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 		worldTransform_.alpha += 0.05f;
 		if (worldTransform_.alpha >= 1.0f)
 		{
@@ -539,6 +557,8 @@ void Player::Draw(ViewProjection viewProjection_) {
 			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
 		}
 	}
+
+	startPointModel->Draw(startPointTrans,viewProjection_);
 
 	recovery->Draw(viewProjection_);
 }

@@ -71,9 +71,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	recovery = std::make_unique<Recovery>();
 	recovery->Initialize();
 
-	//体力の画像読み込み
-	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
-	healthSprite->SetAnchorPoint({ 0,0 });
+	// スプライトの初期化処理
+	SpriteInitialize();
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
@@ -520,10 +519,71 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 
 void Player::DrawHealth() {
 
-	Vector2 size = { 48.0f * HP,48.0f };
+	
 	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),50 };
-	healthSprite->SetSize(size);
+
+	Vector2 AttackFontpos = { 150,480 };
+
+	Vector2 MoveFontpos = { 130,550 };
+
+	Vector2 W_Fontpos = { 270,530 };
+
+	Vector2 A_Fontpos = { 240,560 };
+
+	Vector2 S_Fontpos = { 270,560 };
+
+	Vector2 D_Fontpos = { 300,560 };
+
+	Vector2 AvoidFontpos = { 175,620 };
+
+	
+	// スプライト描画
 	healthSprite->Draw(pos, { 1,1,1,1 });
+
+	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
+
+	for (int i = 0; i < 2; i++) {
+		if (input_->PushKey(DIK_W)) {
+			W_FontSprite[1]->Draw(W_Fontpos, { 1,1,1,1 });
+		}
+		else {
+			W_FontSprite[0]->Draw(W_Fontpos, { 1,1,1,1 });
+		}
+		if (input_->PushKey(DIK_A)) {
+			A_FontSprite[1]->Draw(A_Fontpos, { 1,1,1,1 });
+		}
+		else {
+			A_FontSprite[0]->Draw(A_Fontpos, { 1,1,1,1 });
+		}
+		if (input_->PushKey(DIK_S)) {
+			S_FontSprite[1]->Draw(S_Fontpos, { 1,1,1,1 });
+		}
+		else {
+			S_FontSprite[0]->Draw(S_Fontpos, { 1,1,1,1 });
+		}
+		if (input_->PushKey(DIK_D)) {
+			D_FontSprite[1]->Draw(D_Fontpos, { 1,1,1,1 });
+		}
+		else {
+			D_FontSprite[0]->Draw(D_Fontpos, { 1,1,1,1 });
+		}
+		if (input_->PushKey(DIK_SPACE)) {
+			AvoidFontSprite[1]->Draw(AvoidFontpos, { 1,1,1,1 });
+		}
+		else {
+			AvoidFontSprite[0]->Draw(AvoidFontpos, { 1,1,1,1 });
+		}
+		
+		if (isAttack){
+			AttackFontSprite[0]->Draw(AttackFontpos, { 1,1,1,1 });
+		}
+		else if (isAttack == false) {
+			AttackFontSprite[1]->Draw(AttackFontpos, { 1,1,1,1 });
+		}
+		
+
+	}
+
 }
 
 void Player::ParticleDraw(ViewProjection view)
@@ -642,4 +702,83 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 		+ (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 
 	return position;
+}
+
+void Player::SpriteInitialize()
+{
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+#pragma region 画像の読み込み
+	// 画像の読み込み
+// Attackフォント
+	AttackFontSprite[0] = Sprite::Create(TextureManager::Load("Attack_off.png"));
+	AttackFontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	AttackFontSprite[1] = Sprite::Create(TextureManager::Load("Attack_on.png"));
+	AttackFontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+	// MOVEフォント
+	MoveFontSprite = Sprite::Create(TextureManager::Load("Move_Font.png"));
+	MoveFontSprite->SetAnchorPoint({ 0.5f,0.5f });
+	// Wフォント
+	W_FontSprite[0] = Sprite::Create(TextureManager::Load("160x144_W_Font.png"));
+	W_FontSprite[0]->SetTextureRect({ 0,0 }, { 160,144 });
+	W_FontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	W_FontSprite[1] = Sprite::Create(TextureManager::Load("160x144_W_Font.png"));
+	W_FontSprite[1]->SetTextureRect({ 160,0 }, { 160,144 });
+	W_FontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+	// Aフォント
+	A_FontSprite[0] = Sprite::Create(TextureManager::Load("160x144_A_Font.png"));
+	A_FontSprite[0]->SetTextureRect({ 0,0 }, { 160,144 });
+	A_FontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	A_FontSprite[1] = Sprite::Create(TextureManager::Load("160x144_A_Font.png"));
+	A_FontSprite[1]->SetTextureRect({ 160,0 }, { 160,144 });
+	A_FontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+	// Sフォント
+	S_FontSprite[0] = Sprite::Create(TextureManager::Load("160x144_S_Font.png"));
+	S_FontSprite[0]->SetTextureRect({ 0,0 }, { 160,144 });
+	S_FontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	S_FontSprite[1] = Sprite::Create(TextureManager::Load("160x144_S_Font.png"));
+	S_FontSprite[1]->SetTextureRect({ 160,0 }, { 160,144 });
+	S_FontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+	// Dフォント
+	D_FontSprite[0] = Sprite::Create(TextureManager::Load("160x144_D_Font.png"));
+	D_FontSprite[0]->SetTextureRect({ 0,0 }, { 160,144 });
+	D_FontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	D_FontSprite[1] = Sprite::Create(TextureManager::Load("160x144_D_Font.png"));
+	D_FontSprite[1]->SetTextureRect({ 160,0 }, { 160,144 });
+	D_FontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+	// Avoidフォント
+	AvoidFontSprite[0] = Sprite::Create(TextureManager::Load("Avoid_OnOff_Sheet.png"));
+	AvoidFontSprite[0]->SetTextureRect({ 0,0 }, { 576,96 });
+	AvoidFontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
+	AvoidFontSprite[1] = Sprite::Create(TextureManager::Load("Avoid_OnOff_Sheet.png"));
+	AvoidFontSprite[1]->SetTextureRect(Vector2{ 576,0 }, Vector2{ 576,96 });
+	AvoidFontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+#pragma endregion
+
+
+
+	// サイズ指定の変数
+	Vector2 size = { 48.0f * HP,48.0f };
+	Vector2 AttackFontsize = { 188.0f,54.0f };
+	Vector2 MoveFontsize = { 163.0f,43.0f };
+	Vector2 W_Fontsize = { 32.0f ,28.0f };
+	Vector2 A_Fontsize = { 32.0f ,28.0f };
+	Vector2 S_Fontsize = { 32.0f ,28.0f };
+	Vector2 D_Fontsize = { 32.0f ,28.0f };
+	Vector2 AvoidFontsize = { 259.0f ,43.0f };
+
+	// サイズをセットする
+	healthSprite->SetSize(size);
+	MoveFontSprite->SetSize(MoveFontsize);
+
+	for (int i = 0; i < 2; i++) {
+		AttackFontSprite[i]->SetSize(AttackFontsize);
+		W_FontSprite[i]->SetSize(W_Fontsize);
+		A_FontSprite[i]->SetSize(A_Fontsize);
+		S_FontSprite[i]->SetSize(S_Fontsize);
+		D_FontSprite[i]->SetSize(D_Fontsize);
+		AvoidFontSprite[i]->SetSize(AvoidFontsize);
+	}
 }

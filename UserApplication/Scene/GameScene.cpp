@@ -631,7 +631,7 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 
 	player->DrawHealth();
-	boss.DrawHealth();
+	//boss.DrawHealth();
 
 #pragma endregion
 }

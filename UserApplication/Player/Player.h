@@ -77,6 +77,9 @@ public:
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
 
+	// スプライトの初期化
+	void SpriteInitialize();
+
 
 	/// <summary>
 	/// 攻撃が当たった時のプレイヤーの処理
@@ -213,6 +216,15 @@ private:
 
 	int HP = 100;
 	std::unique_ptr<Sprite> healthSprite;
+
+	// プレイヤーの操作のスプライト
+	std::unique_ptr<Sprite> AttackFontSprite[2];
+	std::unique_ptr<Sprite> MoveFontSprite;
+	std::unique_ptr<Sprite> W_FontSprite[2];
+	std::unique_ptr<Sprite> A_FontSprite[2];
+	std::unique_ptr<Sprite> S_FontSprite[2];
+	std::unique_ptr<Sprite> D_FontSprite[2];
+	std::unique_ptr<Sprite> AvoidFontSprite[2];
 
 	//Fbxモデル
 	std::unique_ptr<FbxModel> fbxmodel;

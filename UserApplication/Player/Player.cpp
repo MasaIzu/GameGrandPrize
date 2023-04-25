@@ -58,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-	worldTransform_.translation_ = {-100.0f,0.0f,0.0f};
+	worldTransform_.translation_ = {0.0f,0.0f,150.0f};
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
 
 	worldTransform_.alpha = 0.0;

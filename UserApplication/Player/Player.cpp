@@ -722,7 +722,7 @@ void Player::Collision(int damage)
 			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1}, { 0,0,0,1 });
 		}
 		IsHpAlfa = true;
-		HP -= damage;
+
 	}
 }
 

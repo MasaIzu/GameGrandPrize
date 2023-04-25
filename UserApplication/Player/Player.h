@@ -214,8 +214,16 @@ private:
 
 	const int maxHP = 100;
 
-	int HP = 100;
+	float HpMax = 100;
+	float HP = 100;
 	std::unique_ptr<Sprite> healthSprite;
+	std::unique_ptr<Sprite> healthAlfaSprite;
+
+	Vector2 hpAlfaSize={ 553.0f,25.0f };
+	bool IsHpAlfa = false;
+	int hpAlfaTimer = 0;
+
+	std::unique_ptr<Sprite> HP_barSprite;
 
 	// プレイヤーの操作のスプライト
 	std::unique_ptr<Sprite> AttackFontSprite[2];

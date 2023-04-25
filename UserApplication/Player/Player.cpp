@@ -524,28 +524,63 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 
 void Player::DrawHealth() {
 
+	// HPのセット
+	float nowHp = HP / HpMax;
+	Vector2 size = { 553.0f * nowHp,25.0f };
+	healthSprite->SetSize(size);
+
+	// Hpの下の部分を減らす処理
 	
-	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),50 };
 
-	Vector2 AttackFontpos = { 150,480 };
+	if (IsHpAlfa) {
+		// 攻撃を受けてから 30 フレーム下のHpは動かない
+		if (hpAlfaTimer < 30){
+			hpAlfaTimer++;
+		}
+		else {
+			// 赤ゲージよりサイズが大きいなら減らす
+			if (size.x < hpAlfaSize.x) {
+				hpAlfaSize.x-=5.0f;
+				healthAlfaSprite->SetSize(hpAlfaSize);
+			}
+			// 赤ゲージよりサイズが小さくなったら減らすのをやめ、赤ゲージのサイズに合わせる
+			// 下のゲージのフラグをオフにする
+			else if (size.x >= hpAlfaSize.x) {
+				hpAlfaTimer = 0;
+				healthAlfaSprite->SetSize(size);
+				IsHpAlfa = false;
+			}
+		}
+	}
 
-	Vector2 MoveFontpos = { 130,550 };
+	
 
-	Vector2 W_Fontpos = { 270,530 };
+	Vector2 pos = { 54.5f,35.0f };
 
-	Vector2 A_Fontpos = { 240,560 };
+	Vector2 AttackFontpos = { 150,380 };
 
-	Vector2 S_Fontpos = { 270,560 };
+	Vector2 MoveFontpos = { 130,450 };
 
-	Vector2 D_Fontpos = { 300,560 };
+	Vector2 W_Fontpos = { 270,430 };
 
-	Vector2 AvoidFontpos = { 175,620 };
+	Vector2 A_Fontpos = { 240,460 };
 
+	Vector2 S_Fontpos = { 270,460 };
+
+	Vector2 D_Fontpos = { 300,460 };
+
+	Vector2 AvoidFontpos = { 175,520 };
+
+	Vector2 HP_barPos = { 330,50 };
 	
 	// スプライト描画
+	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
+
 	healthSprite->Draw(pos, { 1,1,1,1 });
 
 	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
+
+	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 
 	for (int i = 0; i < 2; i++) {
 		if (input_->PushKey(DIK_W)) {
@@ -572,7 +607,7 @@ void Player::DrawHealth() {
 		else {
 			D_FontSprite[0]->Draw(D_Fontpos, { 1,1,1,1 });
 		}
-		if (input_->PushKey(DIK_SPACE)) {
+		if (spaceInput) {
 			AvoidFontSprite[1]->Draw(AvoidFontpos, { 1,1,1,1 });
 		}
 		else {
@@ -654,6 +689,7 @@ void Player::Collision(int damage)
 			//追加
 			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 1,1,1,1 }, { 1,1,1,1.0f });
 		}
+		IsHpAlfa = true;
 		HP -= damage;
 	}
 }
@@ -735,13 +771,22 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 
 void Player::SpriteInitialize()
 {
-	//体力の画像読み込み
-	healthSprite = Sprite::Create(TextureManager::Load("mario.jpg"));
-	healthSprite->SetAnchorPoint({ 0,0 });
+
 
 #pragma region 画像の読み込み
 	// 画像の読み込み
-// Attackフォント
+	
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite->SetAnchorPoint({ 0,0 });
+
+	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
+	HP_barSprite->SetAnchorPoint({ 0.5,0.5 });
+
+	// Attackフォント
 	AttackFontSprite[0] = Sprite::Create(TextureManager::Load("Attack_off.png"));
 	AttackFontSprite[0]->SetAnchorPoint({ 0.5f,0.5f });
 	AttackFontSprite[1] = Sprite::Create(TextureManager::Load("Attack_on.png"));
@@ -789,7 +834,7 @@ void Player::SpriteInitialize()
 
 
 	// サイズ指定の変数
-	Vector2 size = { 48.0f * HP,48.0f };
+
 	Vector2 AttackFontsize = { 188.0f,54.0f };
 	Vector2 MoveFontsize = { 163.0f,43.0f };
 	Vector2 W_Fontsize = { 32.0f ,28.0f };
@@ -797,10 +842,12 @@ void Player::SpriteInitialize()
 	Vector2 S_Fontsize = { 32.0f ,28.0f };
 	Vector2 D_Fontsize = { 32.0f ,28.0f };
 	Vector2 AvoidFontsize = { 259.0f ,43.0f };
+	Vector2 HP_barSize = { 576.0f ,45.0f };
 
 	// サイズをセットする
-	healthSprite->SetSize(size);
+	healthAlfaSprite->SetSize(hpAlfaSize);
 	MoveFontSprite->SetSize(MoveFontsize);
+	HP_barSprite->SetSize(HP_barSize);
 
 	for (int i = 0; i < 2; i++) {
 		AttackFontSprite[i]->SetSize(AttackFontsize);

@@ -57,8 +57,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-
+	worldTransform_.translation_ = {0.0f,0.0f,0.0f};
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
+
+	worldTransform_.alpha = 0.0;
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -86,17 +88,56 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 
 void Player::Update(const ViewProjection& viewProjection) {
-
-	Move();
-	Attack();
-	KnockBackUpdate();
-
-	if (isAttackHit)
+	if (isAdmission==true)
 	{
-		AttackCollision();
-		isAttackHit = false;
+		worldTransform_.alpha += 0.05f;
+		if (worldTransform_.alpha>=1.0f)
+		{
+			isAdmission = false;
+		}
+	}
+	
+	if (isAdmission==false&&HP>0)
+	{
+		Move();
+		Attack();
+		KnockBackUpdate();
+
+		if (frem < MaxFrem) {
+			frem += 0.013f;
+			if (isPlayMotion) {
+				frem += 0.007;
+			}
+
+		}
+		else {
+			frem = MinimumFrem;
+			isPlayMotion = false;
+			if (isWalking == false) {
+				if (isAttack == false) {
+					playerNowMotion = PlayerMotion::taiki;
+				}
+			}
+		}
+		if (conboFlag == true) {
+			receptionTime += 0.02f;
+		}
+
+
+		if (isAttackHit)
+		{
+			AttackCollision();
+		}
 	}
 
+	if (HP<=0.0f&&isAlive)
+	{
+		worldTransform_.alpha -= 0.05;
+		if (worldTransform_.alpha<=0.0f)
+		{
+			isAlive = false;
+		}
+	}
 	ParticleMan->Update();
 
 	worldTransform_.TransferMatrix();
@@ -105,28 +146,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	collider->Update(worldTransform_.matWorld_);
 	recovery->Update();
-
-
-	if (frem < MaxFrem) {
-		frem += 0.013f;
-		if (isPlayMotion) {
-			frem += 0.007;
-		}
-
-	}
-	else {
-		frem = MinimumFrem;
-		isPlayMotion = false;
-		if (isWalking == false) {
-			if (isAttack == false) {
-				playerNowMotion = PlayerMotion::taiki;
-			}
-		}
-	}
-	if (conboFlag == true) {
-		receptionTime += 0.02f;
-	}
-
 	if (input_->PushKey(DIK_P)) {
 		frem = fremX;
 		playerNowMotion = PlayerMotion::soukenCombo1;
@@ -145,6 +164,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+
+	isAttackHit = false;
 
 
 
@@ -625,8 +646,15 @@ void Player::Collision(int damage)
 	if (isKnockBack == false)
 	{
 		SetKnockBackCount();
+		HP -= damage;
+
+		int ParticleNumber = 10;
+		if (HP<=0)
+		{
+			ParticleNumber = 50;
+		}
 		//スペースキーを押していたら
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < ParticleNumber; i++)
 		{
 			//消えるまでの時間
 			const float rnd_life = 70.0f;
@@ -655,9 +683,8 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 1,1,1,1 }, { 1,1,1,1.0f });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1}, { 0,0,0,1 });
 		}
-		HP -= damage;
 	}
 }
 

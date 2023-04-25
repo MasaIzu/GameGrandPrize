@@ -72,7 +72,7 @@ void Model::InitializeGraphicsPipeline() {
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "gs_5_0", // エントリーポイント名、シェーダーモデル指定
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0, &vsBlob, &errorBlob);
+		0, &gsBlob, &errorBlob);
 	if (FAILED(result)) {
 		// errorBlobからエラー内容をstring型にコピー
 		std::string errstr;
@@ -515,6 +515,11 @@ void Model::LoadModel(const std::string& modelname, bool smoothing) {
 	//定数バッファのマッピング
 	result = constBuff_->Map(0, nullptr, (void**)&constMap);
 	assert(SUCCEEDED(result));
+
+	constMap->_Destruction = 0.0f;
+	constMap->_ScaleFactor = 1.0f;
+	constMap->_PositionFactor = 0.0f;
+	constMap->_RotationFactor = 0.0f;
 }
 
 void Model::LoadMaterial(const std::string& directoryPath, const std::string& filename) {

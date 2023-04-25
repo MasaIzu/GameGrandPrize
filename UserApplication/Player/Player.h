@@ -246,4 +246,8 @@ private:
 	bool isSpace = false;
 
 	Vector3 rot;
+
+	bool isAdmission = true;
+
+	bool isAlive=true;
 };

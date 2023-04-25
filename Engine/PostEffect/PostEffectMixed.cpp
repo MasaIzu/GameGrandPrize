@@ -30,7 +30,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PostEffectMixed::rootSignature;
 
 uint32_t PostEffectMixed::textureHandle;
 
-const float PostEffectMixed::clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
+const float PostEffectMixed::clearColor[4] = {  0.1f, 0.25f, 0.5f, 0.0f  };
 
 void PostEffectMixed::Initialize()
 {

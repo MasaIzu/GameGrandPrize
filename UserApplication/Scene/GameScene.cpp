@@ -147,8 +147,6 @@ void GameScene::Update() {
 			for (int i = 0; i < 10; i++) {
 				minifishes[i].LeaveGayser(gayserPos[i / 2]);
 			}
-
-
 			////煙の処理
 			//{
 			//	//gayserFlame++;

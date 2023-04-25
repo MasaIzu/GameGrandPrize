@@ -312,6 +312,13 @@ void GameScene::Update() {
 		player->Collision(10);
 	}
 
+	if (collisionManager->GetIsWakeEnemyHit()) {
+		gameCamera->Collision();
+		Matrix4 a = collisionManager->GetEnemyWorldPos();
+		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(5);
+	}
+
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
 	ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);

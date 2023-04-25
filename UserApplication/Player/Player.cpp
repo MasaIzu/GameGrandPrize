@@ -34,7 +34,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
 
-	playerAvoidance = 6.0f;
+	playerAvoidance = 15.0f;
+	moveTime = 300;
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
@@ -57,8 +58,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-
+	worldTransform_.translation_ = {0.0f,0.0f,150.0f};
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
+
+	worldTransform_.alpha = 0.0;
 
 	worldTransform_.TransferMatrix();
 	oldWorldTransform_.TransferMatrix();
@@ -86,17 +89,56 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 
 void Player::Update(const ViewProjection& viewProjection) {
-
-	Move();
-	Attack();
-	KnockBackUpdate();
-
-	if (isAttackHit)
+	if (isAdmission==true)
 	{
-		AttackCollision();
-		isAttackHit = false;
+		worldTransform_.alpha += 0.05f;
+		if (worldTransform_.alpha>=1.0f)
+		{
+			isAdmission = false;
+		}
+	}
+	
+	if (isAdmission==false&&HP>0)
+	{
+		Move();
+		Attack();
+		KnockBackUpdate();
+
+		if (frem < MaxFrem) {
+			frem += 0.013f;
+			if (isPlayMotion) {
+				frem += 0.007;
+			}
+
+		}
+		else {
+			frem = MinimumFrem;
+			isPlayMotion = false;
+			if (isWalking == false) {
+				if (isAttack == false) {
+					playerNowMotion = PlayerMotion::taiki;
+				}
+			}
+		}
+		if (conboFlag == true) {
+			receptionTime += 0.02f;
+		}
+
+
+		if (isAttackHit)
+		{
+			AttackCollision();
+		}
 	}
 
+	if (HP<=0.0f&&isAlive)
+	{
+		worldTransform_.alpha -= 0.05;
+		if (worldTransform_.alpha<=0.0f)
+		{
+			isAlive = false;
+		}
+	}
 	ParticleMan->Update();
 
 	worldTransform_.TransferMatrix();
@@ -105,28 +147,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	collider->Update(worldTransform_.matWorld_);
 	recovery->Update();
-
-
-	if (frem < MaxFrem) {
-		frem += 0.013f;
-		if (isPlayMotion) {
-			frem += 0.007;
-		}
-
-	}
-	else {
-		frem = MinimumFrem;
-		isPlayMotion = false;
-		if (isWalking == false) {
-			if (isAttack == false) {
-				playerNowMotion = PlayerMotion::taiki;
-			}
-		}
-	}
-	if (conboFlag == true) {
-		receptionTime += 0.02f;
-	}
-
 	if (input_->PushKey(DIK_P)) {
 		frem = fremX;
 		playerNowMotion = PlayerMotion::soukenCombo1;
@@ -145,6 +165,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+
+	isAttackHit = false;
 
 
 
@@ -176,8 +198,8 @@ void Player::Move() {
 	isPushLeft = false;
 	isPushRight = false;
 	isPushBack = false;
-	spaceInput = false;
 	isWalk = false;
+	isSpace = false;
 
 	if (timer > 0) {
 		timer--;
@@ -195,39 +217,42 @@ void Player::Move() {
 
 	root = (worldTransform_.lookLeft - worldTransform_.translation_);
 
-	if (isPlayMotion == false) {
-		if (input_->PushKey(DIK_W)) {
-			PlayerMoveMent += cameraLook * playerSpeed;
-			isWalk = true;
-			rot += Vector3(0, 0, 0.2f);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_A)) {
-			PlayerMoveMent += root.normalize() * playerSpeed;
-			isPushLeft = true;
-			isWalk = true;
-			rot += Vector3(-0.1f, 0, 0);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_S)) {
-			PlayerMoveMent -= cameraLook * playerSpeed;
-			isPushBack = true;
-			isWalk = true;
-			rot += Vector3(0, 0, -0.2f);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-		if (input_->PushKey(DIK_D)) {
-			PlayerMoveMent -= root.normalize() * playerSpeed;
-			isPushRight = true;
-			isWalk = true;
-			rot += Vector3(0.1f, 0, 0);
-			playerNowMotion = PlayerMotion::aruki;
-		}
-	}
 
 	if (spaceInput == false) {
+
+		if (isPlayMotion == false) {
+			if (input_->PushKey(DIK_W)) {
+				PlayerMoveMent += cameraLook * playerSpeed;
+				isWalk = true;
+				rot += Vector3(0, 0, 0.2f);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_A)) {
+				PlayerMoveMent += root.normalize() * playerSpeed;
+				isPushLeft = true;
+				isWalk = true;
+				rot += Vector3(-0.1f, 0, 0);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_S)) {
+				PlayerMoveMent -= cameraLook * playerSpeed;
+				isPushBack = true;
+				isWalk = true;
+				rot += Vector3(0, 0, -0.2f);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			if (input_->PushKey(DIK_D)) {
+				PlayerMoveMent -= root.normalize() * playerSpeed;
+				isPushRight = true;
+				isWalk = true;
+				rot += Vector3(0.1f, 0, 0);
+				playerNowMotion = PlayerMotion::aruki;
+			}
+		}
+
 		if (input_->TriggerKey(DIK_SPACE)) {
 			spaceInput = true;
+			isSpace = true;
 			timer = 20;
 			alpha = 0.3f;
 			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
@@ -261,7 +286,7 @@ void Player::Move() {
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
 	Avoidance.y = 0;
 	Avoidance.normalize();
-	Avoidance *= playerAvoidance;
+	Avoidance = Avoidance * playerAvoidance;
 
 	//worldTransform_.translation_ += playerMovement;
 	//worldTransform_.translation_ += Avoidance;
@@ -516,9 +541,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 }
 
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
-
-	fbxmodel->Draw(worldTransform_, viewProjection_);
-
+	if (spaceInput == false) {
+		fbxmodel->Draw(worldTransform_, viewProjection_);
+	}
 }
 
 
@@ -657,8 +682,15 @@ void Player::Collision(int damage)
 	if (isKnockBack == false)
 	{
 		SetKnockBackCount();
+		HP -= damage;
+
+		int ParticleNumber = 10;
+		if (HP<=0)
+		{
+			ParticleNumber = 100;
+		}
 		//スペースキーを押していたら
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < ParticleNumber; i++)
 		{
 			//消えるまでの時間
 			const float rnd_life = 70.0f;
@@ -687,7 +719,7 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 1,1,1,1 }, { 1,1,1,1.0f });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1}, { 0,0,0,1 });
 		}
 		IsHpAlfa = true;
 		HP -= damage;

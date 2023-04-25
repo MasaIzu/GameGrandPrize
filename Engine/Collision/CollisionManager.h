@@ -37,6 +37,7 @@ public://ƒƒ“ƒoŠÖ”
 
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
+	bool GetIsWakeEnemyHit() { return isWakeEnemyHit; }
 	bool GetIsAttackHit() { return isAttackHit; }
 	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
 	int GetHitNumber() { return hitNumber; }
@@ -53,6 +54,7 @@ private:
 	std::forward_list<BaseCollider*> colliders;
 
 	bool isEnemyHit = false;
+	bool isWakeEnemyHit = false;
 	bool isAttackHit = false;
 	int hitNumber = 0;
 	bool isWakeEnemyAttackHit = false;

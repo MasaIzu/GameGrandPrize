@@ -35,6 +35,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	CollisionManager::GetInstance()->AddCollider(collider);
 
 	playerAvoidance = 15.0f;
+	moveTime = 300;
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
@@ -57,7 +58,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 		playerAttackTransformaaaa_[i].Initialize();
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
-	worldTransform_.translation_ = {0.0f,0.0f,0.0f};
+	worldTransform_.translation_ = {0.0f,0.0f,-50.0f};
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
 
 	worldTransform_.alpha = 0.0;

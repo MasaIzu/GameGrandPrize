@@ -96,6 +96,7 @@ public:
 
 
 
+
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DirectXCore* dxCommon_ = nullptr;

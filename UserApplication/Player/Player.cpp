@@ -114,18 +114,18 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		flame++;
 
-		float endflame = 120;
+		float endflame =120;
 
-		float Destruction = easeOutQuin(1.0f - 0.0f) * (flame / endflame);
-		Destruction--;
-		float a = easeOutQuin(1.0f - 0.0f) * (flame / endflame);
+		float Destruction = (0.0f - 1.0f) * easeOutQuin(flame / endflame);
+		Destruction++;
+		float a = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
 
-		float scale = easeOutQuin(0.2f - 0.0f) * (flame / endflame);
+		float scale= (0.2f - 0.0f) * easeOutQuin(flame / endflame);
 
 		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
 		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });
 		worldTransform_.alpha = a;
-		if (flame >= endflame)
+		if (flame>=endflame)
 		{
 			isAdmission = false;
 			//worldTransform_.alpha = 1;

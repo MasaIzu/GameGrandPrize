@@ -189,7 +189,7 @@ private:
 
 	std::vector<Vector3>points;
 
-	float maxTime = 0.1f * 60;				//全体時間[s]
+	float maxTime = 0.1f * 40;				//全体時間[s]
 	float timeRate;						//何％時間が進んだか
 	//球の位置
 	Vector3 position;
@@ -246,6 +246,7 @@ private:
 	Vector2 avoidGaugeUnderSize = { 128,128 };
 	//Fbxモデル
 	std::unique_ptr<FbxModel> fbxmodel;
+	FbxModel* fbxmodel2;
 	std::unique_ptr<FbxAnimation> modelAnim;
 	float frem = 0;
 

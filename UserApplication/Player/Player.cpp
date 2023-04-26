@@ -100,9 +100,13 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix2"));
 	fbxmodel->Initialize();
+	fbxmodel2 = fbxmodel.get();
+	fbxmodel2->Initialize();
 	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix2");
+
+	std::unique_ptr<FbxModel> fbxmodel;
 
 	LBoneTrans.Initialize();
 	RBoneTrans.Initialize();
@@ -331,6 +335,7 @@ void Player::Move() {
 				timer = 20;
 				alpha = 0.3f;
 				collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+				oldWorldTransform_.scale_ = worldTransform_.scale_;
 				oldWorldTransform_.translation_ = worldTransform_.translation_;
 
 				if (isPushLeft == true) {
@@ -356,6 +361,7 @@ void Player::Move() {
 	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 3);
 	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 2);
 	worldTransform_.SetMatRot(roooooot);
+	oldWorldTransform_.SetMatRot(roooooot);
 
 	worldTransform_.SetLookRot({ 0,-MyMath::GetAngle(angle),0 });
 
@@ -402,10 +408,6 @@ void Player::Move() {
 			}
 			recovery->Collision();
 		}
-	}
-
-	if (input_->MouseInputing(2)) {
-		oldWorldTransform_.translation_ = worldTransform_.look;
 	}
 
 	if (isWalk == true) {
@@ -635,18 +637,14 @@ void Player::KnockBackUpdate()
 
 void Player::Draw(ViewProjection viewProjection_) {
 
-	if (timer == 0) {
-		playerModel_->Draw(worldTransform_, viewProjection_);
-	}
-	if (timer > 0) {
-		oldWorldTransform_.alpha = alpha;
-		oldPlayerModel_->Draw(oldWorldTransform_, viewProjection_);
-	}
-	if (isAttack) {
-		for (int i = 0; i < SphereCount; i++) {
-			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-		}
-	}
+	//if (timer == 0) {
+	//	//playerModel_->Draw(worldTransform_, viewProjection_);
+	//}
+	//if (isAttack) {
+	//	for (int i = 0; i < SphereCount; i++) {
+	//		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+	//	}
+	//}
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
 
@@ -657,6 +655,10 @@ void Player::Draw(ViewProjection viewProjection_) {
 }
 
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
+	if (timer > 0) {
+		oldWorldTransform_.alpha = alpha;
+		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
+	}
 	if (spaceInput == false) {
 		fbxmodel->Draw(worldTransform_, viewProjection_);
 	}

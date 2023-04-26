@@ -201,11 +201,11 @@ void Boss::Draw(ViewProjection viewProMat)
 		testTrans.scale_ = { 3,3,3 };
 		testTrans.translation_ = posSwordColCube1;
 		testTrans.TransferMatrix();
-		fishEyeModel->Draw(testTrans, viewProMat);
+		//fishEyeModel->Draw(testTrans, viewProMat);
 		testTrans2.scale_ = { 3,3,3 };
 		testTrans2.translation_ = posSwordColCube2;
 		testTrans2.TransferMatrix();
-		fishEyeModel->Draw(testTrans2, viewProMat);
+		//fishEyeModel->Draw(testTrans2, viewProMat);
 
 	}
 
@@ -219,10 +219,6 @@ void Boss::Draw(ViewProjection viewProMat)
 	}
 
 	swordModel->Draw(fishParent.pos, viewProMat);
-
-	for (int i = 0; i < SphereCount; i++) {
-		startModel->Draw(playerAttackTransformaaaa_[i], viewProMat);
-	}
 }
 
 void Boss::DrawHealth() {

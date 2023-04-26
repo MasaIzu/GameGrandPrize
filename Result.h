@@ -22,9 +22,12 @@ public:
 
 	void Finalize() override;
 
+	void Select();
+
 private:
 	Input* input = nullptr;
 	SceneManager* sceneManager_ = nullptr;
+	GameScene* gameScene = nullptr;
 
 	uint32_t clearTexture_ = 0;
 	std::unique_ptr<Sprite> clearSprite_ = nullptr;

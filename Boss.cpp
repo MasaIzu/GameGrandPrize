@@ -787,7 +787,7 @@ void Boss::UpdateAtkRush()
 		//突進中は始点と終点でイージング
 		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = fishesAfterPos[0];
+		Vector3 pAfterPos = parentAfterPos;
 		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
 		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
@@ -807,11 +807,15 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				
 				vecfishTotarget.y = 0;
+				Vector3 afterVec = vecfishTotarget;
+				afterVec.normalize();
+				afterVec *= fishParent.radius * 3;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
-				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				parentAfterPos = parentBeforePos - (vecfishTotarget + afterVec);
 				parentAfterPos.y = parentBeforePos.y;
 
 				float len = vecfishTotarget.length();
@@ -832,7 +836,7 @@ void Boss::UpdateAtkRush()
 					}
 					else {
 						fishesBeforePos[i] = fishesAfterPos[i];
-						fishesAfterPos[i] -= (vecfishTotarget * 2);
+						fishesAfterPos[i] -= (vecfishTotarget + afterVec);
 					}
 
 

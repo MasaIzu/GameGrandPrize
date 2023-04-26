@@ -629,7 +629,7 @@ void GameScene::Clear()
 	if (boss.bossHealth <= 0)
 	{
 		isClear = true;
-		sceneManager_->ChangeScene("TITLE");
+		sceneManager_->ChangeScene("RESULT");
 	}
 	else
 	{
@@ -643,7 +643,7 @@ void GameScene::Over()
 	if (!player->GetAlive())
 	{
 		isOver = true;
-		sceneManager_->ChangeScene("TITLE");
+		sceneManager_->ChangeScene("RESULT");
 	}
 	else
 	{

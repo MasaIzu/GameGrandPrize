@@ -469,6 +469,9 @@
     <ClInclude Include="Engine\3D\CircleShadow.h">
       <Filter>Engine\ヘッダー\3D\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Result.h">
+      <Filter>ユーザーヘッダー ファイル\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -647,6 +650,9 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Result.cpp">
+      <Filter>ユーザーソース ファイル\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

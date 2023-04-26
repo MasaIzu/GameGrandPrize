@@ -7,6 +7,11 @@
 #include <FbxLoader.h>
 
 
+float easeOutQuin(float x)
+{
+	return sin((x * PI) / 2);
+}
+
 Player::Player()
 {
 }
@@ -95,7 +100,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
-	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,6.28,50.0f});
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,0.0f,600.0f});
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix");
 
@@ -109,11 +114,11 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		flame++;
 
-		float endflame = 60;
+		float endflame = 120;
 
-		float Destruction = (2.0f - 1.0f) * (flame / endflame);
+		float Destruction = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
 		Destruction--;
-		float a = (1.0f - 0.0f) * (flame / endflame);
+		float a = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
 
 		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
 		fbxmodel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
@@ -121,7 +126,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (worldTransform_.alpha >= 1.0f)
 		{
 			isAdmission = false;
-			//worldTransform_.alpha = 1;
+			worldTransform_.alpha = 1;
 		}
 	}
 
@@ -199,21 +204,23 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
-	ImGui::Text("fremX:%f", fremX);
-	ImGui::Text("frem:%f", frem);
+	ImGui::Text("flame:%f", flame);
+	ImGui::Text("a:%f", worldTransform_.alpha);
+	ImGui::Text("fra:%d", isAdmission);
+	//ImGui::Text("frem:%f", frem);
 
-	ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
+	//ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
 
-	ImGui::Text("MaxFrem:%f", MaxFrem);
-	ImGui::Text("MiniFrem:%f", MinimumFrem);
-	ImGui::Text("attackConbo:%d", attackConbo);
+	//ImGui::Text("MaxFrem:%f", MaxFrem);
+	//ImGui::Text("MiniFrem:%f", MinimumFrem);
+	//ImGui::Text("attackConbo:%d", attackConbo);
 
-	ImGui::Text("isPlayMotion:%d", isPlayMotion);
+	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-	ImGui::Text("rotX:%f", rot.x);
-	ImGui::Text("rotY:%f", rot.y);
-	ImGui::Text("rotZ:%f", rot.z);
+	//ImGui::Text("rotX:%f", rot.x);
+	//ImGui::Text("rotY:%f", rot.y);
+	//ImGui::Text("rotZ:%f", rot.z);
 	ImGui::End();
 }
 

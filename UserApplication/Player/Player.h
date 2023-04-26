@@ -267,5 +267,5 @@ private:
 
 	bool isAlive=true;
 
-	int flame = 0;
+	float flame = 0;
 };

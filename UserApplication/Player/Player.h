@@ -95,22 +95,14 @@ private:
 		soukenCombo1,//0
 		soukenCombo2,//1
 		soukenCombo3,//2
-		aruki,//3
-		taiki,//4
-		//soukenFuriorosi,//5
-		//kakuseiMotion,//6
-		//taikenKiriage,//7
-		//taikenyokogiriSage,//8
-		//taikenyokogiriAge,//9
-		//sibou,//10
-		//TaikiMotion,//11
-		//hasirihajimeTOowari,//12
-		//taikenTaikiMotion,//13
-
+		soukenCombo4,//3
+		soukenCombo5,//4
+		aruki,//5
+		taiki,//6
 
 	};
 
-	PlayerMotion playerNowMotion = PlayerMotion::aruki;
+	PlayerMotion playerNowMotion = PlayerMotion::taiki;
 	float MaxFrem = 2.0f;
 	float MinimumFrem = 0.5f;
 	bool isWalk = false;
@@ -177,7 +169,7 @@ private:
 	float angle = 0.0f;
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
-	float KnockBackDistance = 40.0f;
+	float KnockBackDistance = 20.0f;
 	bool isKnockBack = false;
 	///攻撃に使う変数
 
@@ -276,4 +268,12 @@ private:
 	int CoolTime = 180;
 
 	float flame = 0;
+
+	Matrix4 matL;
+	Matrix4 matR;
+
+	WorldTransform LBoneTrans;
+	WorldTransform RBoneTrans;
+	std::unique_ptr<Model> LSowrdModel;
+	std::unique_ptr<Model> RSowrdModel;
 };

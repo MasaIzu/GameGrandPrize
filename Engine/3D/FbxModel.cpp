@@ -511,6 +511,7 @@ void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {
 	Matrix4 mxIdentity = MyMath::MakeIdentity();
 	Node* pNode = &nodes[0];
 
+	naosi.Initialize();
 
 	FLOAT TicksPerSecond = (FLOAT)(Animation->mTicksPerSecond != 0 ? Animation->mTicksPerSecond : 25.0f);
 
@@ -533,6 +534,13 @@ void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {
 
 			constMapSkin->bones[i] = mesh->vecBones[i].matrix;
 		}
+
+		naosi.translation_ = MyMath::GetWorldTransform(mesh->bones[mesh->vecBones[9].name]->matrix) - Vector3(5,0,0);
+		naosi.translation_ = naosi.translation_;
+		naosi.TransferMatrix();
+
+		matrixL = naosi.matWorld_;
+		matrixR = mesh->bones[mesh->vecBones[33].name]->matrix;
 	}
 
 
@@ -720,6 +728,16 @@ bool FbxModel::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim, UI
 	}
 
 	return FALSE;
+}
+
+Matrix4 FbxModel::GetLeftBonePos()
+{
+	return matrixL;
+}
+
+Matrix4 FbxModel::GetRightBonePos()
+{
+	return matrixR;
 }
 
 bool FbxModel::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim, UINT& nRotationIndex)

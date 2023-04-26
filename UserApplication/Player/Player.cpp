@@ -81,7 +81,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	recovery = std::make_unique<Recovery>();
 	recovery->Initialize();
 
-	startModel.reset(Model::CreateFromOBJ("warp",true));
+	startModel.reset(Model::CreateFromOBJ("warp", true));
 
 	startPointModel.reset(Model::CreateFromOBJ("warpPoint", true));
 
@@ -89,9 +89,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	startPointTrans.Initialize();
 
-	startPointTrans.translation_ = {0.0f,0.0f,150.0f};
+	startPointTrans.translation_ = { 0.0f,0.0f,150.0f };
 
-	startPointTrans.scale_ = {3,3,3};
+	startPointTrans.scale_ = { 3,3,3 };
 
 	startPointTrans.TransferMatrix();
 
@@ -100,11 +100,15 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix2"));
 	fbxmodel->Initialize();
-	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f});
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix2");
 
+	LBoneTrans.Initialize();
+	RBoneTrans.Initialize();
 
+	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
+	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 }
 
 
@@ -114,18 +118,18 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		flame++;
 
-		float endflame =120;
+		float endflame = 120;
 
 		float Destruction = (0.0f - 1.0f) * easeOutQuin(flame / endflame);
 		Destruction++;
 		float a = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
 
-		float scale= (0.2f - 0.0f) * easeOutQuin(flame / endflame);
+		float scale = (0.2f - 0.0f) * easeOutQuin(flame / endflame);
 
 		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
 		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });
 		worldTransform_.alpha = a;
-		if (flame>=endflame)
+		if (flame >= endflame)
 		{
 			isAdmission = false;
 			//worldTransform_.alpha = 1;
@@ -200,6 +204,16 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
+	matL = fbxmodel->GetLeftBonePos() * MyMath::Scale(Vector3(0, worldTransform_.scale_.y,0));
+	matR = fbxmodel->GetRightBonePos() * worldTransform_.matWorld_;
+
+	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL) + MyMath::GetWorldTransform(worldTransform_.matWorld_);
+	RBoneTrans.translation_ = MyMath::GetWorldTransform(matR);
+
+
+
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
 
 	isAttackHit = false;
 
@@ -326,7 +340,7 @@ void Player::Move() {
 				}
 			}
 		}
-		
+
 	}
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
@@ -451,7 +465,6 @@ void Player::Attack() {
 				conboFlag = true;
 
 			}
-
 			if (attackConbo == 1) {
 				if (receptionTime > 0.8f && receptionTime < 1.36f) {
 					attackConbo = 2;
@@ -463,7 +476,39 @@ void Player::Attack() {
 					receptionTime = 0.0f;
 				}
 			}
-
+			else if (attackConbo == 2) {
+				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+					attackConbo = 3;
+					playerNowMotion = PlayerMotion::soukenCombo3;
+					isPlayMotion = true;
+					MinimumFrem = 1.86f;
+					MaxFrem = 1.88f;
+					frem = 0.0f;
+					receptionTime = 0.0f;
+				}
+			}
+			else if (attackConbo == 3) {
+				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+					attackConbo = 4;
+					playerNowMotion = PlayerMotion::soukenCombo4;
+					isPlayMotion = true;
+					MinimumFrem = 1.86f;
+					MaxFrem = 1.88f;
+					frem = 0.0f;
+					receptionTime = 0.0f;
+				}
+			}
+			else if (attackConbo == 4) {
+				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+					attackConbo = 5;
+					playerNowMotion = PlayerMotion::soukenCombo5;
+					isPlayMotion = true;
+					MinimumFrem = 1.86f;
+					MaxFrem = 1.88f;
+					frem = 0.0f;
+					receptionTime = 0.0f;
+				}
+			}
 		}
 	}
 
@@ -596,9 +641,12 @@ void Player::Draw(ViewProjection viewProjection_) {
 		}
 	}
 
-	startPointModel->Draw(startPointTrans,viewProjection_);
+	startPointModel->Draw(startPointTrans, viewProjection_);
 
 	recovery->Draw(viewProjection_);
+
+	//LSowrdModel->Draw(LBoneTrans, viewProjection_);
+	//RSowrdModel->Draw(RBoneTrans, viewProjection_);
 }
 
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
@@ -616,11 +664,11 @@ void Player::DrawHealth() {
 	healthSprite->SetSize(hpSize);
 
 	// Hpの下の部分を減らす処理
-	
+
 
 	if (IsHpAlfa) {
 		// 攻撃を受けてから 30 フレーム下のHpは動かない
-		if (hpAlfaTimer < 30){
+		if (hpAlfaTimer < 30) {
 			hpAlfaTimer++;
 		}
 		else {
@@ -639,7 +687,7 @@ void Player::DrawHealth() {
 		}
 	}
 
-	
+
 
 	Vector2 pos = { 54.5f,35.0f };
 
@@ -658,7 +706,7 @@ void Player::DrawHealth() {
 	Vector2 AvoidFontpos = { 175,520 };
 
 	Vector2 HP_barPos = { 330,50 };
-	
+
 	// スプライト描画
 	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
 
@@ -811,7 +859,7 @@ void Player::AttackCollision()
 
 		Vector3 endPos = MyMath::GetWorldTransform(CollisionManager::GetInstance()->GetAttackHitWorldPos()) + pos;
 
-		Vector3 controlPos = {startPos.x,endPos.y,startPos.z };
+		Vector3 controlPos = { startPos.x,endPos.y,startPos.z };
 
 		//startPos.y += 10;
 
@@ -868,7 +916,7 @@ void Player::SpriteInitialize()
 
 #pragma region 画像の読み込み
 	// 画像の読み込み
-	
+
 	//体力の画像読み込み
 	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
 	healthSprite->SetAnchorPoint({ 0,0 });

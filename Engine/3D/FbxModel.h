@@ -162,6 +162,9 @@ public: // メンバ関数
 	// メッシュコンテナを取得
 	inline const std::vector<Mesh*>& GetMeshes() { return meshes_; }
 
+	Matrix4 GetLeftBonePos();
+	Matrix4 GetRightBonePos();
+
 	void SetTextureHandle(uint32_t textureHandle) { modelTextureHandle = textureHandle; }
 
 private:
@@ -185,6 +188,11 @@ private:
 	Material* defaultMaterial_ = nullptr;
 
 	uint32_t modelTextureHandle = 0;
+
+	Matrix4 matrixL;
+	Matrix4 matrixR;
+
+	WorldTransform naosi;
 
 	//定数バッファ
 	ComPtr<ID3D12Resource> constBuff_;

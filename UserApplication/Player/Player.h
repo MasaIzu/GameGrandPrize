@@ -74,6 +74,8 @@ public:
 
 	void SetParticlePos(Matrix4 ParticlePos_) { ParticlePos = ParticlePos_; }
 
+	bool GetAlive() {return isAlive ; }
+
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
 
@@ -212,6 +214,14 @@ private:
 
 	std::unique_ptr<Recovery> recovery;
 
+	std::unique_ptr<Model> startPointModel;
+
+	WorldTransform startPointTrans;
+
+	std::unique_ptr<Model> startModel;
+
+	WorldTransform startTrans;
+
 	const int maxHP = 100;
 
 	float HpMax = 100;
@@ -259,4 +269,6 @@ private:
 	bool isAdmission = true;
 
 	bool isAlive=true;
+
+	float flame = 0;
 };

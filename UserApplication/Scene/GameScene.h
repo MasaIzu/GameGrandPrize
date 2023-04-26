@@ -92,12 +92,26 @@ public:
 	// 終了処理
 	void Finalize() override;
 
+	void Clear();
+
+	void ClearDraw();
+
+	void Over();
+
+	void OverDraw();
+
 	//void CreateGround();
 
 
 
 
 private: // メンバ変数
+
+	//シーンフラグ
+	bool isClear = false;
+	bool isOver = false;
+
+
 	WinApp* winApp_ = nullptr;
 	DirectXCore* dxCommon_ = nullptr;
 	Input* input_ = nullptr;

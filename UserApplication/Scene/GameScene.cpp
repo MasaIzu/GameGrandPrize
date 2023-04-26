@@ -424,7 +424,8 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
-
+	Clear();
+	Over();
 }
 
 void GameScene::PostEffectDraw()
@@ -578,7 +579,8 @@ void GameScene::Draw() {
 
 	//FbxModel::PostDraw();
 
-
+	ClearDraw();
+	OverDraw();
 #pragma endregion
 
 #pragma region ポストエフェクトの描画
@@ -598,10 +600,6 @@ void GameScene::Draw() {
 void GameScene::Finalize()
 {
 }
-
-
-
-
 
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
@@ -625,3 +623,48 @@ void GameScene::CheckAllFishLeave() {
 	isAllFishLeave = true;
 }
 
+void GameScene::Clear()
+{
+	//ボスが死んだら
+	if (boss.bossHealth <= 0)
+	{
+		isClear = true;
+		sceneManager_->ChangeScene("TITLE");
+	}
+	else
+	{
+		isClear = false;
+	}
+}
+
+void GameScene::Over()
+{
+	//プレイヤーが死んだら
+	if (!player->GetAlive())
+	{
+		isOver = true;
+		sceneManager_->ChangeScene("TITLE");
+	}
+	else
+	{
+		isOver = false;
+	}
+	
+}
+
+void GameScene::ClearDraw()
+{
+	if (isClear)
+	{
+
+	}
+}
+
+void GameScene::OverDraw()
+{
+	if (isOver)
+	{
+
+	}
+
+}

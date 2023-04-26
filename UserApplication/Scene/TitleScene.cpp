@@ -3,8 +3,9 @@
 void TitleScene::Initialize()
 {
 	input = Input::GetInstance();
-
-	loserTexture_ = TextureManager::Load("kyomu.png");
+	gameScene = new GameScene;
+	gameScene->Initialize();
+	loserTexture_ = TextureManager::Load("mario.jpg");
 	sprite_=  Sprite::Create(loserTexture_);
 	sceneManager_ = SceneManager::GetInstance();
 

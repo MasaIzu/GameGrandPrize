@@ -439,7 +439,7 @@ void GameScene::PostEffectDraw()
 	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 
-	stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	ground.Draw(nowViewProjection);
 

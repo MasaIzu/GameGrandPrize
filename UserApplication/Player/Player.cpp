@@ -207,6 +207,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
+	ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
+	ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
+
+	ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
+	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
+
 	ImGui::Text("flame:%f", flame);
 	ImGui::Text("a:%f", worldTransform_.alpha);
 	ImGui::Text("fra:%d", isAdmission);
@@ -219,6 +225,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("attackConbo:%d", attackConbo);
 
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
+
 
 
 	ImGui::Text("rotX:%f", rot.x);
@@ -659,6 +666,16 @@ void Player::DrawHealth() {
 
 	Vector2 HP_barPos = { 330,50 };
 	
+	//Vector2 avoidGauge1Pos = { 175,520 };
+
+	//Vector2 avoidGauge2Pos = { 175,520 };
+
+	//Vector2 avoidGauge3Pos = { 175,520 };
+
+	
+
+	
+
 	// スプライト描画
 	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
 
@@ -667,6 +684,12 @@ void Player::DrawHealth() {
 	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
 
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
+
+	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
+	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
+	avoidGauge2->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
+	avoidGauge3->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
+	
 
 	for (int i = 0; i < 2; i++) {
 		if (input_->PushKey(DIK_W)) {
@@ -922,6 +945,18 @@ void Player::SpriteInitialize()
 	AvoidFontSprite[1] = Sprite::Create(TextureManager::Load("Avoid_OnOff_Sheet.png"));
 	AvoidFontSprite[1]->SetTextureRect(Vector2{ 576,0 }, Vector2{ 576,96 });
 	AvoidFontSprite[1]->SetAnchorPoint({ 0.5f,0.5f });
+
+	avoidGauge1 = Sprite::Create(TextureManager::Load("avoidGauge_01.png"));
+	avoidGauge1->SetAnchorPoint({ 0,0 });
+
+	avoidGauge2 = Sprite::Create(TextureManager::Load("avoidGauge_02.png"));
+	avoidGauge2->SetAnchorPoint({ 0,0 });
+
+	avoidGauge3 = Sprite::Create(TextureManager::Load("avoidGauge_03.png"));
+	avoidGauge3->SetAnchorPoint({ 0,0 });
+
+	avoidGauge_under = Sprite::Create(TextureManager::Load("avoidGauge_under.png"));
+	avoidGauge_under->SetAnchorPoint({ 0,0 });
 #pragma endregion
 
 
@@ -936,6 +971,13 @@ void Player::SpriteInitialize()
 	Vector2 D_Fontsize = { 32.0f ,28.0f };
 	Vector2 AvoidFontsize = { 259.0f ,43.0f };
 	Vector2 HP_barSize = { 576.0f ,45.0f };
+
+
+	avoidGauge1->SetSize(avoidGaugeUnderSize);
+	avoidGauge2->SetSize(avoidGaugeUnderSize);
+	avoidGauge3->SetSize(avoidGaugeUnderSize);
+	avoidGauge_under->SetSize(avoidGaugeUnderSize);
+
 
 	// サイズをセットする
 	healthAlfaSprite->SetSize(hpAlfaSize);

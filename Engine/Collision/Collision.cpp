@@ -124,13 +124,10 @@ bool Collision::CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth1, 
 	float rectWidthHeightDepth1Z = sqrt(rectWidthHeightDepth1.x * rectWidthHeightDepth1.x);
 	float rectWidthHeightDepth2Z = sqrt(rectWidthHeightDepth2.z * rectWidthHeightDepth2.z);
 
-	float sphereX = sqrt(sphere.x * sphere.x);
-	float sphereY = sqrt(sphere.y * sphere.y);
-	float sphereZ = sqrt(sphere.z * sphere.z);
 
- 	if (rectWidthHeightDepth1X > sphereX && sphereX > rectWidthHeightDepth2X) {
-		if (rectWidthHeightDepth1Y > sphereY && sphereY > rectWidthHeightDepth2Y) {
-			if (rectWidthHeightDepth1Z > sphereZ && sphereZ > rectWidthHeightDepth2Z) {
+ 	if (centerX + rectWidthHeightDepth1X > sphere.x && sphere.x > centerX - rectWidthHeightDepth2X) {
+		if (centerY + rectWidthHeightDepth1Y > sphere.y && sphere.y > centerY - rectWidthHeightDepth2Y) {
+			if (centerZ + rectWidthHeightDepth1Z > sphere.z && sphere.z > centerZ - rectWidthHeightDepth2Z) {
 				return true;
 			}
 		}

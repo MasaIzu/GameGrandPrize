@@ -458,10 +458,7 @@ void GameScene::PostEffectDraw()
 	}
 
 	//ボス出現ムービーとボス変身ムービーの間で描画
-	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
-
 	boss.Draw(nowViewProjection);
-		}
 
 	player->Draw(nowViewProjection);
 

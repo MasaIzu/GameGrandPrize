@@ -177,7 +177,7 @@ private:
 	float angle = 0.0f;
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
-	float KnockBackDistance = 20.0f;
+	float KnockBackDistance = 40.0f;
 	bool isKnockBack = false;
 	///攻撃に使う変数
 

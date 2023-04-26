@@ -19,6 +19,7 @@ void CollisionManager::CheckAllCollisions()
 	isWakeEnemyHit = false;
 	hitNumber = 0;
 	isWakeEnemyAttackHit = false;
+	isEnemySwordHit = false;
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -75,9 +76,15 @@ void CollisionManager::CheckAllCollisions()
 						}
 					}
 				}
-				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-					//isEnemyHit = true;
+				else if (colA->attribute == COLLISION_ATTR_ENEMYBIGSOWRD && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemySwordHit = true;
+					}
 				}
+				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+				//	//isEnemyHit = true;
+				//}
 			}
 			else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
 				colB->GetShapeType() == COLLISIONSHAPE_SPHERE) {

@@ -340,14 +340,11 @@ void GameScene::Update() {
 	ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
 
 	//剣と自機の当たり判定
-	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
-		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
-			player->GetWorldPosition(), player->GetRadius())) {
-
-			gameCamera->Collision();
-			player->Collision(1);
-			player->SetEnemyPos(boss.GetSwordWorldPos());
-		}
+	if (collisionManager->GetEnemySwordHit()) {
+		gameCamera->Collision();
+		Matrix4 a = collisionManager->GetEnemyWorldPos();
+		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(20);
 	}
 
 

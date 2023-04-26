@@ -175,6 +175,13 @@ private:
 	// スプライトの初期化
 	void SpriteInitialize();
 
+	//剣に関する当たり判定
+	void SwordCollisionON();
+
+	void SwordCollisionUpdate();
+
+	void SwordCollisionOFF();
+
 	/// <summary>
 	/// メンバ変数(プライベート)
 	/// </summary>
@@ -211,10 +218,10 @@ private:
 	Vector3 posSwordColCube1;
 	Vector3 posSwordColCube2;
 	//剣のオブジェクトとしての大きさ(当たり判定用)
-	const float swordSizeX1 = -0.3f - 0.2f;
-	const float swordSizeX2 = 0.6f  + 0.3f;
-	const float swordSizeY1 = -1.0f - 2.0f;
-	const float swordSizeY2 = 1.0f;
+	const float swordSizeX1 = 1.0f;
+	const float swordSizeX2 = 1.0f;
+	const float swordSizeY1 = 0.0f;
+	const float swordSizeY2 = 0.0f;
 	const float swordSizeZ1 = -1.0f - 2.0f;
 	const float swordSizeZ2 = 12.4f;
 
@@ -226,6 +233,15 @@ private:
 
 	uint32_t healthPicture = 0;
 	//std::unique_ptr<Sprite> healthSprite;
+
+	static const int SphereCount = 10;
+
+	BaseCollider* AttackCollider[SphereCount];
+	Vector3 colliderPos[SphereCount];
+	Matrix4 worldSpherePos[SphereCount];
+	WorldTransform playerAttackTransformaaaa_[SphereCount];
+	std::unique_ptr<Model> startModel;
+
 };
 
 /// <summary>

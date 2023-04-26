@@ -546,8 +546,8 @@ void Player::Attack() {
 void Player::SetKnockBackCount()
 {
 	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) - MyMath::GetWorldTransform(EnemyPos);
-	KnockBack.normalize();
 	KnockBack.y = 0;
+	KnockBack.normalize();
 	KnockBack = KnockBack * KnockBackDistance;
 
 	moveTime = 0;

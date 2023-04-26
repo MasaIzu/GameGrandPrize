@@ -102,8 +102,8 @@ public:
 
 	//void CreateGround();
 
-	bool GetClear() { return isClear; }
-	bool GetOver() { return isOver; }
+	bool GetClear() { return isClear ; }
+	bool GetOver()  { return isOver ; }
 
 
 

@@ -15,11 +15,11 @@ void Result::Initialize()
 	input = Input::GetInstance();
 	sceneManager_ = SceneManager::GetInstance();
 	gameScene = new GameScene;
-
-	clearTexture_ = TextureManager::Load("mario.jpg");
+	gameScene->Initialize();
+	clearTexture_ = TextureManager::Load("GameClearFont.png");
 	clearSprite_ = Sprite::Create(clearTexture_);
 
-	overTexture_ = TextureManager::Load("mario.jpg");
+	overTexture_ = TextureManager::Load("GameOverFont.png");
 	overSprite_ = Sprite::Create(overTexture_);
 }
 
@@ -36,11 +36,11 @@ void Result::Draw()
 {
 	if (gameScene->GetClear())
 	{
-		clearSprite_->Draw({ 640,360 }, { 1,1,1,1 });
+		clearSprite_->Draw({ 360,360 }, { 1,1,1,1 });
 	}
 	if (gameScene->GetOver())
 	{
-		overSprite_->Draw({ 640,360 }, { 1,1,1,1 });
+		overSprite_->Draw({ 360,360 }, { 1,1,1,1 });
 	}
 }
 

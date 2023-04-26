@@ -16,8 +16,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	isClear = false;
-	isOver = false;
+	
 	dxCommon_ = DirectXCore::GetInstance();
 	winApp_ = WinApp::GetInstance();
 	input_ = Input::GetInstance();

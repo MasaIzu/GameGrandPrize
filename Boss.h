@@ -30,6 +30,7 @@ enum class BossFirstPhase {
 	Atk_Sword,//剣変形攻撃
 	Atk_Rush,//突進攻撃
 	BeginMotion,//モーション開始動作
+	Death,//死亡
 
 };
 
@@ -150,6 +151,11 @@ private:
 	/// 攻撃前予備動作の更新
 	/// </summary>
 	void UpdateBeginMotion();
+
+	/// <summary>
+	/// 死亡した時の更新処理
+	/// </summary>
+	void UpdateDeath();
 
 	/// <summary>
 	/// 剣の当たり判定の更新

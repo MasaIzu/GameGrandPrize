@@ -39,6 +39,7 @@ void Boss::Initialize()
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
 	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
 
+	startModel.reset(Model::CreateFromOBJ("UFO", true));
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
@@ -55,6 +56,17 @@ void Boss::Initialize()
 
 	testTrans.Initialize();
 	testTrans2.Initialize();
+
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		float SphereRadius = 8.0f;
+		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+	}
 
 	SpriteInitialize();
 }
@@ -106,7 +118,7 @@ void Boss::Update(const Vector3& targetPos)
 
 
 	//	ImGui::End();
-
+	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
 }
 
@@ -208,6 +220,9 @@ void Boss::Draw(ViewProjection viewProMat)
 
 	swordModel->Draw(fishParent.pos, viewProMat);
 
+	for (int i = 0; i < SphereCount; i++) {
+		startModel->Draw(playerAttackTransformaaaa_[i], viewProMat);
+	}
 }
 
 void Boss::DrawHealth() {
@@ -441,6 +456,7 @@ void Boss::UpdateAtkSword()
 			bossSwordPhase = BossSwordPhase::Attack;
 			nextPhaseInterval = swordAtkTime;
 			easeSwordPos.Start(swordAtkTime);
+			SwordCollisionON();
 		}//霧散の瞬間
 		else if (bossSwordPhase == BossSwordPhase::Attack) {
 			bossSwordPhase = BossSwordPhase::Destroy;
@@ -448,6 +464,7 @@ void Boss::UpdateAtkSword()
 			easeSwordScale.Start(swordBreakTime);
 			afterScale = { 0.5f,0.5f,0.5f };
 			beforeScale = { 0,0,0 };
+			SwordCollisionOFF();
 		}
 		else if (bossSwordPhase == BossSwordPhase::Destroy) {
 			bossSwordPhase = BossSwordPhase::Cooltime_Destroy;
@@ -770,7 +787,7 @@ void Boss::UpdateAtkRush()
 		//突進中は始点と終点でイージング
 		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = fishesAfterPos[0];
+		Vector3 pAfterPos = parentAfterPos;
 		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
 		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
@@ -790,11 +807,15 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				
 				vecfishTotarget.y = 0;
+				Vector3 afterVec = vecfishTotarget;
+				afterVec.normalize();
+				afterVec *= fishParent.radius * 3;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
-				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				parentAfterPos = parentBeforePos - (vecfishTotarget + afterVec);
 				parentAfterPos.y = parentBeforePos.y;
 
 				float len = vecfishTotarget.length();
@@ -815,7 +836,7 @@ void Boss::UpdateAtkRush()
 					}
 					else {
 						fishesBeforePos[i] = fishesAfterPos[i];
-						fishesAfterPos[i] -= (vecfishTotarget * 2);
+						fishesAfterPos[i] -= (vecfishTotarget + afterVec);
 					}
 
 
@@ -1085,6 +1106,47 @@ void Boss::Damage(int atk) {
 	bossHealth -= atk;
 	damageTimer = nextDamageInterval;
 	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+}
+
+void Boss::SwordCollisionON()
+{
+
+	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
+	float sphereY = posSwordColCube1.y - posSwordColCube2.y;
+	float sphereZ = posSwordColCube1.z - posSwordColCube2.z;
+
+	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+	for (int i = 0; i < SphereCount; i++) {
+		colliderPos[i] = posSwordColCube2 - sphere * i;
+		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+		AttackCollider[i]->Update(worldSpherePos[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYBIGSOWRD);
+	}
+}
+
+void Boss::SwordCollisionUpdate()
+{
+	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
+	float sphereY = posSwordColCube1.y - posSwordColCube2.y;
+	float sphereZ = posSwordColCube1.z - posSwordColCube2.z;
+
+	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+	for (int i = 0; i < SphereCount; i++) {
+		colliderPos[i] = posSwordColCube2 + sphere * i;
+		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+		AttackCollider[i]->Update(worldSpherePos[i]);
+		playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
+}
+
+void Boss::SwordCollisionOFF()
+{
+	for (int i = 0; i < SphereCount; i++) {
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
 }
 
 void Boss::Death()

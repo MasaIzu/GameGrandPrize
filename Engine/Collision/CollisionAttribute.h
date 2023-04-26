@@ -22,3 +22,5 @@ const unsigned short COLLISION_ATTR_WEAKENEMYS10 = 0b10101;//ŽG‹›“G10
 
 const unsigned short COLLISION_ATTR_WEAKENEMYS_DEI = 0b10110;//ŽG‹›“GŽ€–S—p
 
+const unsigned short COLLISION_ATTR_ENEMYBIGSOWRD = 0b10111;//Œ•”»’è—p
+

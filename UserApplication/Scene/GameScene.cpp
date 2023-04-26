@@ -367,6 +367,16 @@ void GameScene::Update() {
 	}
 
 
+	// ボスフェーズ１のHPが０になったら
+	if (boss.bossHealth <= 0) {
+		boss.Death();
+		//isMovie = true;
+		//movieCamera.target = boss.fishParent.pos.translation_;
+		//movieCamera.eye = player.get()->GetWorldPosition();
+		//movieCamera.UpdateMatrix();
+	}
+	
+
 
 	ImGui::Begin("Phase");
 

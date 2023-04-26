@@ -20,7 +20,7 @@ void Boss::Initialize()
 	fishParent.radius = 20.0f;
 
 
-
+	
 
 	if (!fishes.empty()) {
 		fishes.clear();
@@ -90,7 +90,7 @@ void Boss::Update(const Vector3& targetPos)
 	}
 
 	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
-	if (fishes.empty() || bossHealth <= 0) {
+	if (fishes.empty() ) {
 		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
@@ -107,6 +107,9 @@ void Boss::Update(const Vector3& targetPos)
 		break;
 	case BossFirstPhase::BeginMotion:
 		UpdateBeginMotion();
+		break;
+	case BossFirstPhase::Death:
+		UpdateDeath();
 		break;
 	default:
 		break;
@@ -187,9 +190,9 @@ void Boss::CreateFish(Vector3 spawnPos)
 
 void Boss::Draw(ViewProjection viewProMat)
 {
-	if (bossHealth <= 0) {
-		return;
-	}
+	//if (bossHealth <= 0) {
+	//	return;
+	//}
 
 
 	if (phase1 == BossFirstPhase::Atk_Sword) {
@@ -948,6 +951,54 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
+void Boss::UpdateDeath()
+{
+	//魚群の中心(真ん中)の座標更新
+	fishParent.pos.TransferMatrix();
+
+	// ボスのHPが０以下になったら
+	// 一回小魚が飛ぶベクトルを求める
+	if (ISDeadCalculation == false) {
+		for (int i = 0; i < fishes.size(); i++) {
+			// ボスと小魚の親子関係を斬る
+			fishes[i].pos.parent_ = nullptr;
+			// 小魚の位置を保持
+			Matrix4 mat;
+			fishes[i].pos.translation_ = mat.transform(fishes[i].pos.translation_, fishParent.pos.matWorld_);
+			fishes[i].pos.TransferMatrix();
+			// 親から小魚のベクトルを計算
+			Vector3 fishVel = fishes[i].pos.translation_ - fishParent.pos.translation_;
+
+			// ベクトルを正規化して、速度を掛ける
+			fishVel.normalize();
+			fishVel *= fishDeadSpeed;
+
+			// 求めた小魚のベクトルを保存
+			fishDeadVel.push_back(fishVel);
+		}
+		// for分を全て回したら計算が終了したとみなし、フラグをオンにする
+		ISDeadCalculation = true;
+	}
+
+	// ベクトルの計算が終了したら飛ばす処理
+	if (ISDeadCalculation == true&&IsDeathEnd==false) {
+		for (int i = 0; i < fishes.size(); i++) {
+			fishes[i].pos.translation_ += fishDeadVel[i];
+			fishes[i].pos.rotation_+= Vector3{ 0.2f, 0.2f, 0.5f };
+			fishes[i].pos.scale_ -= Vector3{0.005f, 0.005f, 0.005f};
+
+			fishes[i].pos.SetRot(fishes[i].pos.rotation_);
+
+			fishes[i].pos.TransferMatrix();
+		}
+		// 一匹でもスケールが０以下になったら飛ばす処理を終了する
+		if (fishes[0].pos.scale_.x <= 0) {
+			IsDeathEnd = true;
+		}
+	}
+	
+}
+
 
 
 
@@ -1092,6 +1143,18 @@ void Boss::SwordCollisionOFF()
 	for (int i = 0; i < SphereCount; i++) {
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 	}
+}
+
+void Boss::Death()
+{
+	if (phase1 == BossFirstPhase::Death) {
+		return;
+	}
+	IsDeathEnd = false;
+	ISDeadCalculation = false;
+	fishDeadVel.clear();
+	phase1 = BossFirstPhase::Death;
+
 }
 
 float Random(float num1, float num2)

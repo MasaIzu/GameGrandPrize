@@ -793,33 +793,33 @@ void Player::AttackCollision()
 	for (int i = 0; i < 10; i++)
 	{
 		//消えるまでの時間
-		const float rnd_life = 50.0f;
+		const float rnd_life = 70.0f;
 		//最低限のライフ
 		const float constlife = 10;
-		float life = (float)rand() / RAND_MAX * rnd_life - rnd_life / 2.0f + constlife;
+		float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
 		//XYZの広がる距離
-		const float rnd_pos = 200.0f;
+		const float rnd_pos = 30.0f;
 		//Y方向には最低限の飛ぶ距離
 		const float constPosY = 15;
-		Vector3 pos;
+		Vector3 pos{};
 		pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-		pos.y = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+		pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 10;
 		pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 
-		Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+		Vector3 startPos = MyMath::GetWorldTransform(CollisionManager::GetInstance()->GetAttackHitWorldPos());
 
-		Vector3 controlPos = { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z };
+		Vector3 endPos = MyMath::GetWorldTransform(CollisionManager::GetInstance()->GetAttackHitWorldPos()) + pos;
 
-		Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+		Vector3 controlPos = {startPos.x,endPos.y,startPos.z };
 
-		startPos.y += 10;
+		//startPos.y += 10;
 
-		controlPos.y += 10;
+		//controlPos.y += 10;
 
-		endPos.y += 10;
+		//endPos.y += 10;
 		//追加
-		//ParticleMan->Add(ParticleManager::Type::In, life, false, startPos, controlPos, endPos, 1.0f, 1.0f, { 2,2,2,1 }, { 2,2,2,0 });
+		ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 2.0f, 2.0f, { 0,0,0,1 }, { 0,0,0,1 });
 	}
 }
 

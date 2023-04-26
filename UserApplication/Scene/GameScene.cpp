@@ -356,6 +356,7 @@ void GameScene::Update() {
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+		isAttackHit = true;
 		playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
 
 		minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
@@ -363,6 +364,16 @@ void GameScene::Update() {
 		minifishes[playerAttackHitNumber].OnCollision();
 	}
 
+
+	// ボスフェーズ１のHPが０になったら
+	if (boss.bossHealth <= 0) {
+		boss.Death();
+		//isMovie = true;
+		//movieCamera.target = boss.fishParent.pos.translation_;
+		//movieCamera.eye = player.get()->GetWorldPosition();
+		//movieCamera.UpdateMatrix();
+	}
+	
 
 
 	ImGui::Begin("Phase");

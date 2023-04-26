@@ -67,7 +67,7 @@ public:
 
 	// ボスのHP関連
 	const float bossHpMax = 20;
-	float bossHealth = 20;							//ボスのHP
+	float bossHealth = 2;							//ボスのHP
 
 	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
 	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト
@@ -78,6 +78,14 @@ public:
 	int hpAlfaTimer = 0;                  // Hpの下のものが動き出すまでのタイマー
 
 	std::unique_ptr<Sprite> HP_barSprite; // Hpのバーのスプライト
+
+	// ボスの死亡時モーション
+	bool IsDeathEnd = false;              // 死亡後の演出が終わっているか
+	bool ISDeadCalculation = false;       // 死亡後のベクトルの計算を一回やって終わっているかどうか
+	float fishDeadSpeed = 0.65f;
+	std::vector<Vector3>fishDeadVel;      // 死亡後小魚が飛んでいくベクトル
+
+
 
 	~Boss();
 
@@ -115,6 +123,9 @@ public:
 	/// <param name="atk">ダメージ量</param>
 	void Damage(int atk);
 
+	// ボスが死亡したら死亡フェーズに移る
+	void Death();
+
 	//魚の数のゲッター
 	int GetFishCount() { return fishes.size(); }
 
@@ -125,6 +136,8 @@ public:
 	//剣の座標のゲッター
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
+	// 死んだ時の演出が終わっているか
+	bool GetIsDeathEnd()const { return IsDeathEnd; }
 
 
 	/// <summary>

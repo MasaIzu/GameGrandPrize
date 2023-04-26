@@ -100,7 +100,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
 	fbxmodel->Initialize();
-	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,0.0f,600.0f});
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f});
 	modelAnim = std::make_unique<FbxAnimation>();
 	modelAnim->Load("3dKyaraFix");
 
@@ -114,16 +114,16 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		flame++;
 
-		float endflame = 120;
+		float endflame = 60;
 
-		float Destruction = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
+		float Destruction = (1.0f - 0.0f) * (flame / endflame);
 		Destruction--;
-		float a = (1.0f - 0.0f) * easeOutQuin(flame / endflame);
+		float a = (1.0f - 0.0f) * (flame / endflame);
 
 		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
 		fbxmodel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 		worldTransform_.alpha = a;
-		if (worldTransform_.alpha >= 1.0f)
+		if (flame>=endflame)
 		{
 			isAdmission = false;
 			worldTransform_.alpha = 1;

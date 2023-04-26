@@ -98,11 +98,11 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	// スプライトの初期化処理
 	SpriteInitialize();
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix2"));
 	fbxmodel->Initialize();
 	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f});
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dKyaraFix");
+	modelAnim->Load("3dKyaraFix2");
 
 
 }

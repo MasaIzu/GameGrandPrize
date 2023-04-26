@@ -439,7 +439,7 @@ void GameScene::PostEffectDraw()
 	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 
-	stageModel_->Draw(stageWorldTransform_,viewProjection_);
+	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	ground.Draw(nowViewProjection);
 
@@ -460,9 +460,9 @@ void GameScene::PostEffectDraw()
 	//ボス出現ムービーとボス変身ムービーの間で描画
 	if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
 
+		
+	}
 	boss.Draw(nowViewProjection);
-		}
-
 	player->Draw(nowViewProjection);
 
 	// 間欠泉の描画

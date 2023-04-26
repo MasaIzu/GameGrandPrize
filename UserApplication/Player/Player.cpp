@@ -73,10 +73,10 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	playerAttackTransform_.TransferMatrix();
 
 	ParticleMan = std::make_unique<ParticleManager>();
-
 	ParticleMan->Initialize();
-
 	ParticleMan->SetTextureHandle(TextureManager::Load("effect4.png"));
+
+	playerEvasionTimes = 3;
 
 	recovery = std::make_unique<Recovery>();
 	recovery->Initialize();
@@ -218,9 +218,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-	//ImGui::Text("rotX:%f", rot.x);
-	//ImGui::Text("rotY:%f", rot.y);
-	//ImGui::Text("rotZ:%f", rot.z);
+	ImGui::Text("rotX:%f", rot.x);
+	ImGui::Text("rotY:%f", rot.y);
+	ImGui::Text("rotZ:%f", rot.z);
+
+	ImGui::Text("playerEvasionTimes:%d", playerEvasionTimes);
+	ImGui::Text("playerEvasionCoolTime:%d", playerEvasionCoolTime);
+
 	ImGui::End();
 }
 
@@ -242,6 +246,14 @@ void Player::Move() {
 	else {
 		spaceInput = false;
 		collider->SetAttribute(COLLISION_ATTR_ALLIES);
+	}
+
+	if (playerEvasionTimes < playerEvasionMaxTimes) {
+		playerEvasionCoolTime--;
+	}
+	if (playerEvasionCoolTime < 0 && playerEvasionTimes < playerEvasionMaxTimes) {
+		playerEvasionTimes++;
+		playerEvasionCoolTime = CoolTime;
 	}
 
 	cameraLookmat = MyMath::Rotation(Vector3(0, 90, 0), 2);
@@ -284,27 +296,34 @@ void Player::Move() {
 			}
 		}
 
-		if (input_->TriggerKey(DIK_SPACE)) {
-			spaceInput = true;
-			isSpace = true;
-			timer = 20;
-			alpha = 0.3f;
-			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
-			oldWorldTransform_.translation_ = worldTransform_.translation_;
+		if (playerEvasionTimes > 0) {
+			if (input_->TriggerKey(DIK_SPACE)) {
+				spaceInput = true;
+				isSpace = true;
+				if (playerEvasionTimes == playerEvasionMaxTimes) {
+					playerEvasionCoolTime = CoolTime;
+				}
+				playerEvasionTimes--;
+				timer = 20;
+				alpha = 0.3f;
+				collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+				oldWorldTransform_.translation_ = worldTransform_.translation_;
 
-			if (isPushLeft == true) {
-				Avoidance.x = playerAvoidance;
-			}
-			else if (isPushRight == true) {
-				Avoidance.x = -playerAvoidance;
-			}
-			else if (isPushBack == true) {
-				Avoidance.z = playerAvoidance;
-			}
-			else {
-				Avoidance.z = -playerAvoidance;
+				if (isPushLeft == true) {
+					Avoidance.x = playerAvoidance;
+				}
+				else if (isPushRight == true) {
+					Avoidance.x = -playerAvoidance;
+				}
+				else if (isPushBack == true) {
+					Avoidance.z = playerAvoidance;
+				}
+				else {
+					Avoidance.z = -playerAvoidance;
+				}
 			}
 		}
+		
 	}
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });

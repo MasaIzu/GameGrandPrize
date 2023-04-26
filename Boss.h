@@ -208,9 +208,9 @@ private:
 	const float swordSizeX1 = -0.3f - 0.2f;
 	const float swordSizeX2 = 0.6f  + 0.3f;
 	const float swordSizeY1 = -1.0f - 2.0f;
-	const float swordSizeY2 = 14.6f + 3.0f;
+	const float swordSizeY2 = 1.0f;
 	const float swordSizeZ1 = -1.0f - 2.0f;
-	const float swordSizeZ2 = 1.0f  + 2.0f;
+	const float swordSizeZ2 = 12.4f;
 
 	EasingData easeParentPos;
 

@@ -270,5 +270,12 @@ private:
 
 	bool isAlive=true;
 
+	int flame = 0;
+
+	int playerEvasionTimes = 0;
+	int playerEvasionCoolTime = 0;
+	int playerEvasionMaxTimes = 3;
+	int CoolTime = 180;
+
 	float flame = 0;
 };

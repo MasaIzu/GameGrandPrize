@@ -14,8 +14,7 @@ void Result::Initialize()
 {
 	input = Input::GetInstance();
 	sceneManager_ = SceneManager::GetInstance();
-	gameScene = new GameScene;
-	gameScene->Initialize();
+	
 	clearTexture_ = TextureManager::Load("GameClearFont.png");
 	clearSprite_ = Sprite::Create(clearTexture_);
 
@@ -30,15 +29,16 @@ void Result::Update()
 
 void Result::PostEffectDraw()
 {
+
 }
 
 void Result::Draw()
 {
-	if (gameScene->GetClear())
+	if (&GameScene::GetClear)
 	{
 		clearSprite_->Draw({ 360,360 }, { 1,1,1,1 });
 	}
-	if (gameScene->GetOver())
+	if (&GameScene::GetOver)
 	{
 		overSprite_->Draw({ 360,360 }, { 1,1,1,1 });
 	}

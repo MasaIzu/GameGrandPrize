@@ -1,6 +1,8 @@
 #pragma once
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
+#include "GameScene.h"
+#include "Result.h"
 
 class SceneManager final
 {
@@ -31,6 +33,9 @@ public: // ƒƒ“ƒoŠÖ”
 	void ChangeScene(const std::string& sceneName);
 
 	static SceneManager* GetInstance();
+
+	Result* result;
+	GameScene* gameScene;
 
 private:
 	static SceneManager* SceneManager_;

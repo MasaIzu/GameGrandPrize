@@ -27,6 +27,8 @@ void SceneManager::Update()
 	}
 
 	scene_->Update();
+
+	result->setGameScene(gameScene);
 }
 
 void SceneManager::PostEffectDraw()

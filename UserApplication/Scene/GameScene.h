@@ -101,7 +101,11 @@ public:
 	void OverDraw();
 
 	//void CreateGround();
-
+private:
+	//シーンフラグ
+	bool isClear = false;
+	bool isOver = false;
+public:
 	bool GetClear() { return isClear ; }
 	bool GetOver()  { return isOver ; }
 
@@ -109,9 +113,7 @@ public:
 
 private: // メンバ変数
 
-	//シーンフラグ
-	bool isClear = false;
-	bool isOver = false;
+	
 
 
 	WinApp* winApp_ = nullptr;

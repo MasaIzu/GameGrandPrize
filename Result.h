@@ -24,15 +24,17 @@ public:
 
 	void Select();
 
+	void setGameScene(GameScene *gameScene) { this->gameScene = gameScene; }
+
 private:
 	Input* input = nullptr;
 	SceneManager* sceneManager_ = nullptr;
-	GameScene* gameScene = nullptr;
-
 	uint32_t clearTexture_ = 0;
 	std::unique_ptr<Sprite> clearSprite_ = nullptr;
 	uint32_t overTexture_ = 0;
 	std::unique_ptr<Sprite> overSprite_ = nullptr;
+	GameScene* gameScene = nullptr;
+
 	
 	int selectNum = 0;
 	int production = 0;

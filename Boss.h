@@ -67,7 +67,7 @@ public:
 
 	// ボスのHP関連
 	const float bossHpMax = 20;
-	float bossHealth = 2;							//ボスのHP
+	float bossHealth = 20;							//ボスのHP
 
 	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
 	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト

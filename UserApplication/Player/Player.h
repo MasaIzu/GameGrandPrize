@@ -237,6 +237,13 @@ private:
 	std::unique_ptr<Sprite> D_FontSprite[2];
 	std::unique_ptr<Sprite> AvoidFontSprite[2];
 
+	std::unique_ptr<Sprite> avoidGauge1;
+	std::unique_ptr<Sprite> avoidGauge2;
+	std::unique_ptr<Sprite> avoidGauge3;
+	std::unique_ptr<Sprite> avoidGauge_under;
+
+	Vector2 avoidGaugeUnderPos = { 1070,412 };
+	Vector2 avoidGaugeUnderSize = { 128,128 };
 	//Fbxモデル
 	std::unique_ptr<FbxModel> fbxmodel;
 	std::unique_ptr<FbxAnimation> modelAnim;

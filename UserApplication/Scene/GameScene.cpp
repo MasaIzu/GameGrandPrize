@@ -359,6 +359,7 @@ void GameScene::Update() {
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+		isAttackHit = true;
 		playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
 
 		minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);

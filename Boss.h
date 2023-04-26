@@ -61,9 +61,22 @@ public:
 	int rushCount = 0;								//突進攻撃の残り回数
 	WorldTransform swordTransform;					//剣のワールド座標
 	static const int fishMaxCount = 200;			//小魚の最大数
-	int bossHealth = 20;							//ボスのHP
 	int nextDamageInterval = 30;					//次にダメージを受けるまでの時間
 	int damageTimer = 0;							//ボスの無敵時間
+
+	// ボスのHP関連
+	const float bossHpMax = 20;
+	float bossHealth = 20;							//ボスのHP
+
+	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
+	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト
+
+	Vector2 hpSize;                       // Hpのスプライトのサイズ
+	Vector2 hpAlfaSize = { 553.0f,25.0f };// Hpの下のスプライトのサイズ
+	bool IsHpAlfa = false;                // Hpの下のものが現れるかどうか
+	int hpAlfaTimer = 0;                  // Hpの下のものが動き出すまでのタイマー
+
+	std::unique_ptr<Sprite> HP_barSprite; // Hpのバーのスプライト
 
 	~Boss();
 
@@ -153,6 +166,9 @@ private:
 	/// </summary>
 	void FishDirectionUpdate();
 
+	// スプライトの初期化
+	void SpriteInitialize();
+
 	/// <summary>
 	/// メンバ変数(プライベート)
 	/// </summary>
@@ -203,7 +219,7 @@ private:
 	int moveFlag = 0;
 
 	uint32_t healthPicture = 0;
-	std::unique_ptr<Sprite> healthSprite;
+	//std::unique_ptr<Sprite> healthSprite;
 };
 
 /// <summary>

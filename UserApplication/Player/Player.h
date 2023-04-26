@@ -219,6 +219,7 @@ private:
 	std::unique_ptr<Sprite> healthSprite;
 	std::unique_ptr<Sprite> healthAlfaSprite;
 
+	Vector2 hpSize;
 	Vector2 hpAlfaSize={ 553.0f,25.0f };
 	bool IsHpAlfa = false;
 	int hpAlfaTimer = 0;

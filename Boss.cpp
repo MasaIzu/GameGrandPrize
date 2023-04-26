@@ -29,9 +29,9 @@ void Boss::Initialize()
 	randSpdParam = 3.75f;
 
 	//体力の画像読み込み
-	healthPicture = TextureManager::Load("mario.jpg");
-	healthSprite = Sprite::Create(healthPicture);
-	healthSprite->SetAnchorPoint({ 0,0 });
+	//healthPicture = TextureManager::Load("mario.jpg");
+	//healthSprite = Sprite::Create(healthPicture);
+	//healthSprite->SetAnchorPoint({ 0,0 });
 	//剣のモデル初期化
 	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
 
@@ -56,6 +56,7 @@ void Boss::Initialize()
 	testTrans.Initialize();
 	testTrans2.Initialize();
 
+	SpriteInitialize();
 }
 
 void Boss::Update(const Vector3& targetPos)
@@ -207,13 +208,48 @@ void Boss::Draw(ViewProjection viewProMat)
 }
 
 void Boss::DrawHealth() {
+	// HPのセット
+	float nowHp = bossHealth / bossHpMax;
+	hpSize = { 714.0f * nowHp,27.0f };
+	healthSprite->SetSize(hpSize);
 
-	Vector2 size = { 48.0f * bossHealth,48.0f };
-	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),WinApp::window_height * 8.0f / 10.0f };
-	healthSprite->SetSize(size);
-	healthSprite->Draw(pos, {1,1,1,1});
+	// Hpの下の部分を減らす処理
+	if (IsHpAlfa) {
+		// 攻撃を受けてから 30 フレーム下のHpは動かない
+		if (hpAlfaTimer < 30) {
+			hpAlfaTimer++;
+		}
+		else {
+			// 赤ゲージよりサイズが大きいなら減らす
+			if (hpSize.x < hpAlfaSize.x) {
+				hpAlfaSize.x -= 2.0f;
+				healthAlfaSprite->SetSize(hpAlfaSize);
+			}
+			// 赤ゲージよりサイズが小さくなったら減らすのをやめ、赤ゲージのサイズに合わせる
+			// 下のゲージのフラグをオフにする
+			else if (hpSize.x >= hpAlfaSize.x) {
+				hpAlfaTimer = 0;
+				healthAlfaSprite->SetSize(hpSize);
+				IsHpAlfa = false;
+			}
+		}
+	}
 
 
+	//Vector2 size = { 48.0f * bossHealth,48.0f };
+
+	Vector2 pos = { WinApp::window_width / 2 - 358,WinApp::window_height / 2 + 236 };
+
+	Vector2 HP_barPos = { WinApp::window_width / 2,WinApp::window_height / 2 + 250 };
+
+	//healthSprite->SetSize(size);
+
+	// スプライト描画
+	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
+
+	healthSprite->Draw(pos, { 1,1,1,1 });
+
+	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 }
 
 void Boss::UpdateIdle()
@@ -970,11 +1006,31 @@ void Boss::FishDirectionUpdate()
 	fishParent.pos.SetMatRot(dirMat);
 }
 
+void Boss::SpriteInitialize()
+{
+	Vector2 HP_barSize = { 742.0f ,58.0f };
+
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite->SetAnchorPoint({ 0,0 });
+
+	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
+	HP_barSprite->SetAnchorPoint({ 0.5,0.5 });
+
+	// サイズをセットする
+	healthAlfaSprite->SetSize(hpAlfaSize);
+	HP_barSprite->SetSize(HP_barSize);
+}
+
 void Boss::Damage(int atk) {
 	if (damageTimer > 0) {
 		return;
 	}
-
+	IsHpAlfa = true;
+	hpAlfaSize = hpSize;
 	bossHealth -= atk;
 	damageTimer = nextDamageInterval;
 	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);

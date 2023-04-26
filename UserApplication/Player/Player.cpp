@@ -551,8 +551,8 @@ void Player::DrawHealth() {
 
 	// HPのセット
 	float nowHp = HP / HpMax;
-	Vector2 size = { 553.0f * nowHp,25.0f };
-	healthSprite->SetSize(size);
+	hpSize = { 553.0f * nowHp,25.0f };
+	healthSprite->SetSize(hpSize);
 
 	// Hpの下の部分を減らす処理
 	
@@ -564,15 +564,15 @@ void Player::DrawHealth() {
 		}
 		else {
 			// 赤ゲージよりサイズが大きいなら減らす
-			if (size.x < hpAlfaSize.x) {
-				hpAlfaSize.x-=5.0f;
+			if (hpSize.x < hpAlfaSize.x) {
+				hpAlfaSize.x -= 2.0f;
 				healthAlfaSprite->SetSize(hpAlfaSize);
 			}
 			// 赤ゲージよりサイズが小さくなったら減らすのをやめ、赤ゲージのサイズに合わせる
 			// 下のゲージのフラグをオフにする
-			else if (size.x >= hpAlfaSize.x) {
+			else if (hpSize.x >= hpAlfaSize.x) {
 				hpAlfaTimer = 0;
-				healthAlfaSprite->SetSize(size);
+				healthAlfaSprite->SetSize(hpSize);
 				IsHpAlfa = false;
 			}
 		}
@@ -722,7 +722,7 @@ void Player::Collision(int damage)
 			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1}, { 0,0,0,1 });
 		}
 		IsHpAlfa = true;
-
+		hpAlfaSize = hpSize;
 	}
 }
 

@@ -186,6 +186,8 @@ private: // メンバ変数
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
 
+	int scene = 0;
+
 private://プライベート関数
 
 	void CheckAllFishLeave();

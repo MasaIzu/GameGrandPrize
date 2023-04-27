@@ -964,6 +964,7 @@ void Boss::UpdateDeath()
 			fishes[i].pos.parent_ = nullptr;
 			// 小魚の位置を保持
 			Matrix4 mat;
+
 			fishes[i].pos.translation_ = mat.transform(fishes[i].pos.translation_, fishParent.pos.matWorld_);
 			fishes[i].pos.TransferMatrix();
 			// 親から小魚のベクトルを計算
@@ -982,6 +983,7 @@ void Boss::UpdateDeath()
 
 	// ベクトルの計算が終了したら飛ばす処理
 	if (ISDeadCalculation == true&&IsDeathEnd==false) {
+		deathTimer++;
 		for (int i = 0; i < fishes.size(); i++) {
 			fishes[i].pos.translation_ += fishDeadVel[i];
 			fishes[i].pos.rotation_+= Vector3{ 0.2f, 0.2f, 0.5f };
@@ -992,7 +994,7 @@ void Boss::UpdateDeath()
 			fishes[i].pos.TransferMatrix();
 		}
 		// 一匹でもスケールが０以下になったら飛ばす処理を終了する
-		if (fishes[0].pos.scale_.x <= 0) {
+		if (deathTimer >= deathTimerMax) {
 			IsDeathEnd = true;
 		}
 	}
@@ -1150,6 +1152,7 @@ void Boss::Death()
 	if (phase1 == BossFirstPhase::Death) {
 		return;
 	}
+	deathTimer = 0;
 	IsDeathEnd = false;
 	ISDeadCalculation = false;
 	fishDeadVel.clear();

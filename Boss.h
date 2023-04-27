@@ -67,7 +67,7 @@ public:
 
 	// ボスのHP関連
 	const float bossHpMax = 20;
-	float bossHealth = 20;							//ボスのHP
+	float bossHealth = 2;							//ボスのHP
 
 	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
 	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト
@@ -84,7 +84,8 @@ public:
 	bool ISDeadCalculation = false;       // 死亡後のベクトルの計算を一回やって終わっているかどうか
 	float fishDeadSpeed = 0.65f;
 	std::vector<Vector3>fishDeadVel;      // 死亡後小魚が飛んでいくベクトル
-
+	int deathTimer = 0;
+	int deathTimerMax = 100;
 
 
 	~Boss();

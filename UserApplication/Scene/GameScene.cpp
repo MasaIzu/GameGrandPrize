@@ -152,7 +152,7 @@ void GameScene::Initialize() {
 	gameClearFont = std::make_unique<Sprite>();
 
 	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
-	
+
 
 	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
 	titlerogo->SetAnchorPoint({ 0,0 });
@@ -459,7 +459,7 @@ void GameScene::Update() {
 		if (boss.GetIsDeathEnd()) {
 			scene = 2;
 		}
-		if (player->GetAlive()==false)
+		if (player->GetAlive() == false)
 		{
 			scene = 3;
 		}
@@ -639,27 +639,27 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 
 
-	if (scene == 0) {
-
-	}
-	if (scene==1)
-	{
-		boss.DrawHealth();
-		player->DrawHealth();
-	boss.DrawHealth();
-	player->DrawHealth();
 
 	if (scene == 0) {
 
 		titlerogo->Draw(titlePos, { 1,1,1,1 });
 	}
+
+	if (scene == 1)
+	{
+		boss.DrawHealth();
+		player->DrawHealth();
+		boss.DrawHealth();
+		player->DrawHealth();
+
+	}
 	else if (scene == 2) {
 		gameClearFont->Draw({ 640,300 }, { 1,1,1,1 });
 	}
-	if (scene==3)
+	if (scene == 3)
 	{
 		gameover->Draw({ 640,360 }, { 1,1,1,1 });
-		gameoverFont->Draw({640,300},{1,1,1,1});
+		gameoverFont->Draw({ 640,300 }, { 1,1,1,1 });
 	}
 
 #pragma endregion

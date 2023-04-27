@@ -145,7 +145,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	if (scene == 0) {
-
+		if (input_->TriggerKey(DIK_SPACE)) {
+			scene = 1;
+		}
 	}
 	else if (scene == 1) {
 		gayserFlame++;
@@ -443,7 +445,9 @@ void GameScene::Update() {
 
 	}
 	else if (scene == 2) {
-		
+		if (input_->TriggerKey(DIK_SPACE)) {
+			scene = 0;
+		}
 	}
 
 }

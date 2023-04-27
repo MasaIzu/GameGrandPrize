@@ -141,6 +141,19 @@ void GameScene::Initialize() {
 	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
 
+	gameoverFont = std::make_unique<Sprite>();
+
+	gameover = std::make_unique<Sprite>();
+
+	gameoverFont = Sprite::Create(TextureManager::Load("GameOverFont.png"));
+
+	gameover = Sprite::Create(TextureManager::Load("gameover.png"));
+
+	gameClearFont = std::make_unique<Sprite>();
+
+	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
+	
+
 	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
 	titlerogo->SetAnchorPoint({ 0,0 });
 }
@@ -446,9 +459,19 @@ void GameScene::Update() {
 		if (boss.GetIsDeathEnd()) {
 			scene = 2;
 		}
+		if (player->GetAlive()==false)
+		{
+			scene = 3;
+		}
 
 	}
 	else if (scene == 2) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			scene = 0;
+		}
+	}
+	else if (scene == 3)
+	{
 		if (input_->TriggerKey(DIK_SPACE)) {
 			scene = 0;
 		}
@@ -616,6 +639,13 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 
 
+	if (scene == 0) {
+
+	}
+	if (scene==1)
+	{
+		boss.DrawHealth();
+		player->DrawHealth();
 	boss.DrawHealth();
 	player->DrawHealth();
 
@@ -624,7 +654,12 @@ void GameScene::Draw() {
 		titlerogo->Draw(titlePos, { 1,1,1,1 });
 	}
 	else if (scene == 2) {
-
+		gameClearFont->Draw({ 640,300 }, { 1,1,1,1 });
+	}
+	if (scene==3)
+	{
+		gameover->Draw({ 640,360 }, { 1,1,1,1 });
+		gameoverFont->Draw({640,300},{1,1,1,1});
 	}
 
 #pragma endregion

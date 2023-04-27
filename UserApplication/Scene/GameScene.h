@@ -188,6 +188,10 @@ private: // メンバ変数
 
 	int scene = 0;
 
+	std::unique_ptr<Sprite> gameoverFont;
+	std::unique_ptr<Sprite> gameClearFont;
+	std::unique_ptr<Sprite> gameover;
+
 
 	// スプライト
 	Vector2 titlePos = { 350,200 };

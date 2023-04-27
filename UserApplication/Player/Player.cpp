@@ -284,6 +284,27 @@ void Player::Move() {
 		playerEvasionCoolTime = CoolTime;
 	}
 
+	if (playerEvasionTimes == 0) {
+		spriteAlpha1 = 1.0f - playerEvasionCoolTime / CoolTime;
+		spriteAlpha2 = 0.0f;
+		spriteAlpha3 = 0.0f;
+	}
+	else if (playerEvasionTimes == 1) {
+		spriteAlpha1 = 1.0f;
+		spriteAlpha2 = 1.0f - playerEvasionCoolTime / CoolTime; 
+		spriteAlpha3 = 0.0f;
+	}
+	else if (playerEvasionTimes == 2) {
+		spriteAlpha1 = 1.0f;
+		spriteAlpha2 = 1.0f;
+		spriteAlpha3 = 1.0f - playerEvasionCoolTime / CoolTime;
+	}
+	else if (playerEvasionTimes == 3) {
+		spriteAlpha1 = 1.0f;
+		spriteAlpha2 = 1.0f;
+		spriteAlpha3 = 1.0f;
+	}
+
 	cameraLookmat = MyMath::Rotation(Vector3(0, 90, 0), 2);
 
 	Vector3 moveRot = cameraLook;
@@ -736,9 +757,9 @@ void Player::DrawHealth() {
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 
 	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
-	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
-	avoidGauge2->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
-	avoidGauge3->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
+	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha1 });
+	avoidGauge2->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha2 });
+	avoidGauge3->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha3 });
 	
 
 	for (int i = 0; i < 2; i++) {

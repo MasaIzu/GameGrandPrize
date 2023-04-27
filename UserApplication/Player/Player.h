@@ -271,11 +271,15 @@ private:
 	bool isAlive=true;
 
 	int playerEvasionTimes = 0;
-	int playerEvasionCoolTime = 0;
+	float playerEvasionCoolTime = 0;
 	int playerEvasionMaxTimes = 3;
-	int CoolTime = 180;
+	float CoolTime = 180;
 
 	float flame = 0;
+
+	float spriteAlpha1 = 0.0f;
+	float spriteAlpha2 = 0.0f;
+	float spriteAlpha3 = 0.0f;
 
 	Matrix4 matL;
 	Matrix4 matR;

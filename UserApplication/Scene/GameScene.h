@@ -188,6 +188,11 @@ private: // メンバ変数
 
 	int scene = 0;
 
+
+	// スプライト
+	Vector2 titlePos = { 350,200 };
+	std::unique_ptr <Sprite> titlerogo = nullptr;
+
 private://プライベート関数
 
 	void CheckAllFishLeave();

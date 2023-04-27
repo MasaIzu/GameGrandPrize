@@ -140,11 +140,15 @@ void GameScene::Initialize() {
 	viewProjection_.eye = gameCamera->GetEye();
 	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
+
+	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
+	titlerogo->SetAnchorPoint({ 0,0 });
 }
 
 void GameScene::Update() {
 
 	if (scene == 0) {
+		nowViewProjection = viewProjection_;
 		if (input_->TriggerKey(DIK_SPACE)) {
 			scene = 1;
 		}
@@ -617,6 +621,7 @@ void GameScene::Draw() {
 
 	if (scene == 0) {
 
+		titlerogo->Draw(titlePos, { 1,1,1,1 });
 	}
 	else if (scene == 2) {
 

@@ -150,7 +150,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (frem < MaxFrem) {
 			frem += 0.013f;
 			if (isPlayMotion) {
-				frem += 0.007;
+				frem += 0.015;
 			}
 
 		}
@@ -164,7 +164,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 		}
 		if (conboFlag == true) {
-			receptionTime += 0.02f;
+			receptionTime += 0.025f;
 		}
 
 
@@ -522,7 +522,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;
@@ -533,7 +533,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 2) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 3;
 					playerNowMotion = PlayerMotion::soukenCombo3;
 					isPlayMotion = true;
@@ -544,7 +544,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 3) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 4;
 					playerNowMotion = PlayerMotion::soukenCombo4;
 					isPlayMotion = true;
@@ -555,7 +555,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 4) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.6f) {
 					attackConbo = 5;
 					playerNowMotion = PlayerMotion::soukenCombo5;
 					isPlayMotion = true;

@@ -261,11 +261,13 @@ void Player::Move() {
 	PlayerMoveMent = { 0,0,0 };
 	rot = { 0,0,0 };
 	Avoidance = { 0,0,0 };
+	isPushSenter = false;
 	isPushLeft = false;
 	isPushRight = false;
 	isPushBack = false;
 	isWalk = false;
 	isSpace = false;
+	isInput = false;
 
 	if (timer > 0) {
 		timer--;
@@ -318,7 +320,9 @@ void Player::Move() {
 		if (isPlayMotion == false) {
 			if (input_->PushKey(DIK_W)) {
 				PlayerMoveMent += cameraLook * playerSpeed;
+				isPushSenter = true;
 				isWalk = true;
+				isInput = true;
 				rot += Vector3(0, 0, 0.2f);
 				playerNowMotion = PlayerMotion::aruki;
 			}
@@ -326,23 +330,45 @@ void Player::Move() {
 				PlayerMoveMent += root.normalize() * playerSpeed;
 				isPushLeft = true;
 				isWalk = true;
-				rot += Vector3(-0.1f, 0, 0);
+				isInput = true;
+				rot += Vector3(-0.1f, MyMath::GetAngle(-90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_S)) {
 				PlayerMoveMent -= cameraLook * playerSpeed;
 				isPushBack = true;
 				isWalk = true;
-				rot += Vector3(0, 0, -0.2f);
+				isInput = true;
+				rot += Vector3(0, MyMath::GetAngle(180), -0.2f);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_D)) {
 				PlayerMoveMent -= root.normalize() * playerSpeed;
 				isPushRight = true;
 				isWalk = true;
-				rot += Vector3(0.1f, 0, 0);
+				isInput = true;
+				rot += Vector3(0.1f, MyMath::GetAngle(90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
+
+			if (isPushSenter == true && isPushLeft == true) {
+				rot = Vector3(-0.05f, MyMath::GetAngle(-45.0f), 0.0f);
+			}
+			if (isPushSenter == true && isPushRight == true) {
+				rot = Vector3(0.05f, MyMath::GetAngle(45.0f), 0.0f);
+			}
+
+			if (isPushBack == true && isPushLeft == true) {
+				rot = Vector3(-0.05f, MyMath::GetAngle(-135.0f), 0.0f);
+			}
+			if (isPushBack == true && isPushRight == true) {
+				rot = Vector3(0.05f, MyMath::GetAngle(135.0f), 0.0f);
+			}
+
+			if (isInput == true) {
+				PlayerRot = rot;
+			}
+
 		}
 
 		if (playerEvasionTimes > 0) {
@@ -377,10 +403,10 @@ void Player::Move() {
 	}
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
-
-	Matrix4 roooooot = MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 1);
-	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 3);
-	roooooot *= MyMath::Rotation(Vector3(rot.x, -MyMath::GetAngle(angle), rot.z), 2);
+	Matrix4 roooooot;
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 1);
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 3);
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 2);
 	worldTransform_.SetMatRot(roooooot);
 	oldWorldTransform_.SetMatRot(roooooot);
 

@@ -160,7 +160,7 @@ private:
 	float playerSpeed = 0.5f;
 	float playerAvoidance = 20.0f;
 
-
+	bool isPushSenter = false;
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
@@ -283,6 +283,9 @@ private:
 
 	Matrix4 matL;
 	Matrix4 matR;
+
+	Vector3 PlayerRot;
+	bool isInput = false;
 
 	WorldTransform LBoneTrans;
 	WorldTransform RBoneTrans;

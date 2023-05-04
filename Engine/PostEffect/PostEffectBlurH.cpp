@@ -309,7 +309,7 @@ void PostEffectBlurH::CreatGraphicsPipelineState()
 
 	//ルートパラメーターの設定
 
-	D3D12_ROOT_PARAMETER rootParams[2] = {};
+	D3D12_ROOT_PARAMETER rootParams[1] = {};
 	//テクスチャレジスタ0番
 	rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;//種類
 	rootParams[0].DescriptorTable.pDescriptorRanges = &descriptorRange;//デスクリプタレンジ

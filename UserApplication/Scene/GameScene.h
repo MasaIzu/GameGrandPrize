@@ -43,6 +43,13 @@ class TouchableObject;
 #include"MiniFish.h"
 #include"FbxAnimation.h"
 
+enum class Scene {
+	Title,
+	Game,
+	GameOver,
+	Result
+};
+
 enum class GamePhase {
 	GameTutorial,	//チュートリアル
 	GameMovie1,		//ムービー1(チュートリアル→ボス戦への遷移)
@@ -82,12 +89,22 @@ public:
 	/// </summary>
 	void Update() override;
 
+	void TitleUpdate();
+
+	void GameUpdate();
+
+	void GameOverUpdate();
+
+	void ResultUpdate();
+
 	void PostEffectDraw() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw() override;
+
+	void Reset();
 
 	// 終了処理
 	void Finalize() override;
@@ -186,7 +203,7 @@ private: // メンバ変数
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
 
-	int scene = 0;
+	Scene scene = Scene::Title;
 
 	std::unique_ptr<Sprite> gameoverFont;
 	std::unique_ptr<Sprite> gameClearFont;

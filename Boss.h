@@ -67,7 +67,7 @@ public:
 
 	// ボスのHP関連
 	const float bossHpMax = 20;
-	float bossHealth = 20;							//ボスのHP
+	float bossHealth = bossHpMax;							//ボスのHP
 
 private:
 	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
@@ -140,6 +140,8 @@ public:
 
 	// 死んだ時の演出が終わっているか
 	bool GetIsDeathEnd()const { return IsDeathEnd; }
+
+	void Reset();
 
 
 	/// <summary>

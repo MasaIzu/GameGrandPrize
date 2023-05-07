@@ -55,6 +55,8 @@ public:
 
 	void DrawHealth();
 
+	void Reset();
+
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	void SetPosition(Vector3 pos);
@@ -214,10 +216,9 @@ private:
 
 	WorldTransform startTrans;
 
-	const int maxHP = 100;
+	const int maxHP = 1;
 
-	float HpMax = 100;
-	float HP = 100;
+	float HP = maxHP;
 	std::unique_ptr<Sprite> healthSprite;
 	std::unique_ptr<Sprite> healthAlfaSprite;
 

@@ -652,7 +652,7 @@ void Player::Attack() {
 
 	if (playerNowMotion == PlayerMotion::soukenCombo1) {
 		if (IsCombo == false) {
-			playerAttackMovement = 5.0f;
+			playerAttackMovement = 10.0f;
 			LookingMove = worldTransform_.look - GetWorldPosition();
 
 			LookingMove = LookingMove * playerAttackMovement;
@@ -660,6 +660,10 @@ void Player::Attack() {
 
 			AttackNowPos = worldTransform_.translation_;
 			IsCombo = true;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
 		}
 		if (attackMoveTimer < MaxAttackMoveTimer) {
 			attackMoveTimer += 1.0;
@@ -668,11 +672,92 @@ void Player::Attack() {
 
 	}
 	else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+		if (IsCombo2 == false) {
+			playerAttackMovement = 4.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
 
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = true;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo3) {
+		if (IsCombo3 == false) {
+			playerAttackMovement = 10.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = true;
+			IsCombo4 = false;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo4) {
+		if (IsCombo4 == false) {
+			playerAttackMovement = 30.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = true;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo5) {
+		if (IsCombo5 == false) {
+			playerAttackMovement = 5.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = true;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
 	}
 	else {
-		//attackMoveTimer = 0;
+		attackMoveTimer = 0;
 		IsCombo = false;
+		IsCombo2 = false;
+		IsCombo3 = false;
+		IsCombo4 = false;
+		IsCombo5 = false;
 	}
 
 

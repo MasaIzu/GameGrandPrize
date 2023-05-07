@@ -294,7 +294,10 @@ private:
 	double attackMoveTimer = 0;
 	double MaxAttackMoveTimer = 50;
 	bool IsCombo = false;
-
+	bool IsCombo2 = false;
+	bool IsCombo3 = false;
+	bool IsCombo4 = false;
+	bool IsCombo5 = false;
 
 	WorldTransform LBoneTrans;
 	WorldTransform RBoneTrans;

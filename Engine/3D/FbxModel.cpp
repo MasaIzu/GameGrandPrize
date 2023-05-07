@@ -533,6 +533,9 @@ void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {
 			mesh->vecBones[i].matrix = mesh->bones[mesh->vecBones[i].name]->matrix;
 
 			constMapSkin->bones[i] = mesh->vecBones[i].matrix;
+
+
+
 		}
 
 		naosi.translation_ = MyMath::GetWorldTransform(mesh->bones[mesh->vecBones[9].name]->matrix) - Vector3(5,0,0);
@@ -597,7 +600,7 @@ void FbxModel::ReadNodeHeirarchy(Mesh* mesh, aiAnimation* pAnimation, FLOAT Anim
 	{
 		offsetMatirx = mesh->bones[strNodeName]->offsetMatirx;
 
-		matirx = offsetMatirx.MatMul(mxGlobalTransformation).MatMul(globalInverseTransform);
+		matirx = offsetMatirx * mxGlobalTransformation * globalInverseTransform;
 
 		mesh->bones[strNodeName]->matrix = matirx;
 

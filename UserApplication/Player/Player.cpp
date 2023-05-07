@@ -5,7 +5,7 @@
 #include <CollisionAttribute.h>
 #include"ImGuiManager.h"
 #include <FbxLoader.h>
-
+#include "Easing.h"
 
 float easeOutQuin(float x)
 {
@@ -65,7 +65,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	}
 	worldTransform_.translation_ = { 0.0f,0.0f,150.0f };
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
-
+	worldTransform_.SetRot({ 0.0f,MyMath::GetAngle(-90.0f),0.0f });
 	worldTransform_.alpha = 0.0;
 
 	worldTransform_.TransferMatrix();
@@ -75,6 +75,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	ParticleMan = std::make_unique<ParticleManager>();
 	ParticleMan->Initialize();
 	ParticleMan->SetTextureHandle(TextureManager::Load("effect4.png"));
+
+	PlayerRot = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
 
 	playerEvasionTimes = 3;
 
@@ -150,7 +152,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (frem < MaxFrem) {
 			frem += 0.013f;
 			if (isPlayMotion) {
-				frem += 0.007;
+				frem += 0.015;
 			}
 
 		}
@@ -164,7 +166,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 		}
 		if (conboFlag == true) {
-			receptionTime += 0.02f;
+			receptionTime += 0.025f;
 		}
 
 
@@ -246,12 +248,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 
-	ImGui::Text("rotX:%f", rot.x);
-	ImGui::Text("rotY:%f", rot.y);
-	ImGui::Text("rotZ:%f", rot.z);
+	ImGui::Text("look:%f", worldTransform_.look.x);
+	ImGui::Text("look:%f", worldTransform_.look.y);
+	ImGui::Text("look:%f", worldTransform_.look.z);
 
-	ImGui::Text("playerEvasionTimes:%d", playerEvasionTimes);
-	ImGui::Text("playerEvasionCoolTime:%d", playerEvasionCoolTime);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
 
 	ImGui::End();
 }
@@ -312,7 +315,7 @@ void Player::Move() {
 	Vector3 moveRot = cameraLook;
 	cameraLook.normalize();
 
-	root = (worldTransform_.lookLeft - worldTransform_.translation_);
+	root = (worldTransform_.look - worldTransform_.translation_);
 
 
 	if (spaceInput == false) {
@@ -323,7 +326,7 @@ void Player::Move() {
 				isPushSenter = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, 0, 0.2f);
+				rot += Vector3(0, -MyMath::GetAngle(angle), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_A)) {
@@ -331,7 +334,7 @@ void Player::Move() {
 				isPushLeft = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(-0.1f, MyMath::GetAngle(-90), 0);
+				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_S)) {
@@ -339,35 +342,39 @@ void Player::Move() {
 				isPushBack = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, MyMath::GetAngle(180), -0.2f);
+				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_D)) {
-				PlayerMoveMent -= root.normalize() * playerSpeed;
+				PlayerMoveMent += root.normalize() * playerSpeed;
 				isPushRight = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0.1f, MyMath::GetAngle(90), 0);
+				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
 
 			if (isPushSenter == true && isPushLeft == true) {
-				rot = Vector3(-0.05f, MyMath::GetAngle(-45.0f), 0.0f);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
 			}
 			if (isPushSenter == true && isPushRight == true) {
-				rot = Vector3(0.05f, MyMath::GetAngle(45.0f), 0.0f);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
 			}
 
 			if (isPushBack == true && isPushLeft == true) {
-				rot = Vector3(-0.05f, MyMath::GetAngle(-135.0f), 0.0f);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
 			}
 			if (isPushBack == true && isPushRight == true) {
-				rot = Vector3(0.05f, MyMath::GetAngle(135.0f), 0.0f);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
 			}
 
 			if (isInput == true) {
 				PlayerRot = rot;
 			}
+
+		}
+		else {
+
 
 		}
 
@@ -404,13 +411,13 @@ void Player::Move() {
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
 	Matrix4 roooooot;
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 1);
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 3);
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, -MyMath::GetAngle(angle) + PlayerRot.y, PlayerRot.z), 2);
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 3);
+	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 2);
 	worldTransform_.SetMatRot(roooooot);
 	oldWorldTransform_.SetMatRot(roooooot);
 
-	worldTransform_.SetLookRot({ 0,-MyMath::GetAngle(angle),0 });
+	worldTransform_.SetLookMatRot(roooooot);
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
@@ -489,6 +496,7 @@ void Player::Move() {
 void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
+	playerAttackMovement = 0.0f;
 
 	if (spaceInput == false) {
 		if (input_->MouseInputTrigger(0)) {
@@ -522,7 +530,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;
@@ -533,7 +541,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 2) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 3;
 					playerNowMotion = PlayerMotion::soukenCombo3;
 					isPlayMotion = true;
@@ -544,7 +552,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 3) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 4;
 					playerNowMotion = PlayerMotion::soukenCombo4;
 					isPlayMotion = true;
@@ -555,7 +563,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 4) {
-				if (receptionTime > 0.8f && receptionTime < 1.36f) {
+				if (receptionTime > 0.8f && receptionTime < 1.6f) {
 					attackConbo = 5;
 					playerNowMotion = PlayerMotion::soukenCombo5;
 					isPlayMotion = true;
@@ -642,6 +650,117 @@ void Player::Attack() {
 
 	}
 
+	if (playerNowMotion == PlayerMotion::soukenCombo1) {
+		if (IsCombo == false) {
+			playerAttackMovement = 10.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = true;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+		if (IsCombo2 == false) {
+			playerAttackMovement = 4.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = true;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo3) {
+		if (IsCombo3 == false) {
+			playerAttackMovement = 10.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = true;
+			IsCombo4 = false;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo4) {
+		if (IsCombo4 == false) {
+			playerAttackMovement = 30.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = true;
+			IsCombo5 = false;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo5) {
+		if (IsCombo5 == false) {
+			playerAttackMovement = 5.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = true;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+	}
+	else {
+		attackMoveTimer = 0;
+		IsCombo = false;
+		IsCombo2 = false;
+		IsCombo3 = false;
+		IsCombo4 = false;
+		IsCombo5 = false;
+	}
+
+
 }
 
 void Player::SetKnockBackCount()
@@ -687,17 +806,17 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//if (timer == 0) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
-	//if (isAttack) {
-	//	for (int i = 0; i < SphereCount; i++) {
-	//		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	//	}
-	//}
+	if (isAttack) {
+		for (int i = 0; i < SphereCount; i++) {
+			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+		}
+	}
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
 
 	recovery->Draw(viewProjection_);
 
-	//LSowrdModel->Draw(LBoneTrans, viewProjection_);
+	LSowrdModel->Draw(LBoneTrans, viewProjection_);
 	//RSowrdModel->Draw(RBoneTrans, viewProjection_);
 }
 

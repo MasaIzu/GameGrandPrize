@@ -113,6 +113,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
+
+	LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
+	RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
 }
 
 

@@ -292,4 +292,6 @@ private:
 	WorldTransform RBoneTrans;
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
+
+	int sowrdFlame=0;
 };

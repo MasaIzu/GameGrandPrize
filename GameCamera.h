@@ -27,6 +27,8 @@ public:
 
 	void Collision();
 
+	void Reset();
+
 private:
 	// ƒJƒƒ‰‚ÌˆÊ’u‚ğŒvZ‚·‚éŠÖ”
 	Vector3 calculateCameraPosition(ViewProjection* viewProjection_,float distance, float angle);

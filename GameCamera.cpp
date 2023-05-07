@@ -19,7 +19,7 @@ GameCamera::GameCamera(int window_width, int window_height)
 	scaleX_ = 1.0f / (float)window_width;
 	scaleY_ = 1.0f / (float)window_height;
 
-	bool dirty = false;
+	dirty = false;
 	float angleX = 0;
 	float angleY = 0;
 
@@ -356,6 +356,104 @@ void GameCamera::Collision()
 {
 	isShake = true;
 	shakeTime = 10;
+}
+
+void GameCamera::Reset()
+{
+	// カメラ注視点までの距離
+	distance_ = 10;
+	mousePos = { 0.0f,0.0f };
+	oldMousePos = { 0.0f,0.0f };
+
+	// 回転行列
+	fTheta = 4.57f;//カメラ横方向角度
+	fDelta = 0.43f;//カメラ縦方向角度
+
+	mousepoint_a;//マウス位置
+	mousepoint_b;//マウス位置
+	dirty = false;
+
+	spaceInput = false;
+
+	// スケーリング
+	scaleX_ = 1.0f;
+	scaleY_ = 1.0f;
+
+	vTargetEye = { 0,0,0 };
+	vUp = { 0,0,0 };
+	playerPos_ = { 0,0,0 };
+	target = { 0,0,0 };
+
+	cameraMode = false;
+
+	cameraType = 0;
+
+	winWidth = 0;
+	winHeight = 0;
+	MouseMove = { 0,0 };
+	mouseMoved = { 0,0 };
+	EnemyPos_ = { 0,0,0 };
+
+	angleAroundPlayer=0; // プレイヤーの周りを回転する角度
+
+
+	float playerCameraDistance = 5.5f;
+
+	int cameraTime = 0;
+	int MaxCameraTime = 0;
+
+
+	//カメラモード(tekito-)
+	int cameraMode_ = 0;
+	//カメラ距離関係
+	cameraDistance_ = 20.0f;
+	cameraModeChangeCountTimer = 30;
+	cameraHeight_ = 6;
+
+	isShake = false;
+	shakeTime = 0;
+
+	angle = 0.0f;
+
+	// カメラの速度
+	cameraSpeed_ = 3;
+
+	// カメラが追跡する際の遅延量
+	cameraDelay = 0.1f;
+
+	cameraDis = 45.0f;
+
+	LatePlayerPos = { 0,0,0 };
+	playerCameraDelay = 0.1f;
+	playerCameraSpeed_ = 3;
+
+	TargetCameraDelay = 0.05f;
+	TargetCameraSpeed_ = 1.0;
+
+	higth = { 0,10,0 };
+
+	Fov = 45.0f;
+	float angleX = 0;
+	float angleY = 0;
+
+	MaxCameraTime = 400;
+	cameraTime = MaxCameraTime;
+	oldMousePos = mousePos;
+	mousePos = input_->GetMousePos();
+
+	// 追加回転分の回転行列を生成
+	Matrix4 matRotNew;
+	matRotNew.rotateX(-angleX);
+	matRotNew.rotateY(-angleY);
+
+	MultiplyMatrix(matRotNew);
+
+	worldTransform_.Initialize();
+	EnemyWorld_.Initialize();
+	EnemyWorld_.translation_ = Vector3(0, 0, 0);
+	EnemyWorld_.TransferMatrix();
+
+	cameraPos = { 5,5,5 };
 }
 
 void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)

@@ -266,6 +266,51 @@ void Boss::DrawHealth() {
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 }
 
+void Boss::Reset()
+{
+	fishParent.radius = 20.0f;
+
+
+
+
+	if (!fishes.empty()) {
+		fishes.clear();
+	}
+
+	randSpdParam = 3.75f;
+
+	phase1 = BossFirstPhase::Idle;
+	nextPhaseInterval = attackCooltime;
+
+	radius = 23.0f;
+
+
+	collider->Update(fishParent.pos.matWorld_);
+	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+
+	swordTransform.Initialize();
+	swordTransform.TransferMatrix();
+
+	testTrans.Initialize();
+	testTrans2.Initialize();
+
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		float SphereRadius = 8.0f;
+		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+	}
+
+	bossHealth = bossHpMax;
+
+	IsDeathEnd = false;              // 死亡後の演出が終わっているか
+	ISDeadCalculation = false;
+}
+
 void Boss::UpdateIdle()
 {
 	//魚群の中心(真ん中)の座標更新
@@ -1102,6 +1147,10 @@ void Boss::Damage(int atk) {
 	IsHpAlfa = true;
 	hpAlfaSize = hpSize;
 	bossHealth -= atk;
+	if (bossHealth<0)
+	{
+		bossHealth = 0;
+	}
 	damageTimer = nextDamageInterval;
 	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 }

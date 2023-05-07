@@ -115,6 +115,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
+
+	LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
+	RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
 }
 
 
@@ -210,7 +213,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
-	matL = fbxmodel->GetLeftBonePos() * MyMath::Scale(Vector3(0, worldTransform_.scale_.y,0));
+	matL = fbxmodel->GetLeftBonePos() * MyMath::Scale(Vector3(0, worldTransform_.scale_.y, 0));
 	matR = fbxmodel->GetRightBonePos() * worldTransform_.matWorld_;
 
 	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL) + MyMath::GetWorldTransform(worldTransform_.matWorld_);
@@ -296,7 +299,7 @@ void Player::Move() {
 	}
 	else if (playerEvasionTimes == 1) {
 		spriteAlpha1 = 1.0f;
-		spriteAlpha2 = 1.0f - playerEvasionCoolTime / CoolTime; 
+		spriteAlpha2 = 1.0f - playerEvasionCoolTime / CoolTime;
 		spriteAlpha3 = 0.0f;
 	}
 	else if (playerEvasionTimes == 2) {
@@ -834,7 +837,7 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 void Player::DrawHealth() {
 
 	// HPのセット
-	float nowHp = HP / HpMax;
+	float nowHp = HP / maxHP;
 	hpSize = { 553.0f * nowHp,25.0f };
 	healthSprite->SetSize(hpSize);
 
@@ -881,16 +884,16 @@ void Player::DrawHealth() {
 	Vector2 AvoidFontpos = { 175,520 };
 
 	Vector2 HP_barPos = { 330,50 };
-	
+
 	//Vector2 avoidGauge1Pos = { 175,520 };
 
 	//Vector2 avoidGauge2Pos = { 175,520 };
 
 	//Vector2 avoidGauge3Pos = { 175,520 };
 
-	
 
-	
+
+
 
 	// スプライト描画
 	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
@@ -905,7 +908,7 @@ void Player::DrawHealth() {
 	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha1 });
 	avoidGauge2->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha2 });
 	avoidGauge3->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha3 });
-	
+
 
 	for (int i = 0; i < 2; i++) {
 		if (input_->PushKey(DIK_W)) {
@@ -983,6 +986,10 @@ void Player::Collision(int damage)
 	{
 		SetKnockBackCount();
 		HP -= damage;
+		if (HP < 0)
+		{
+			HP = 0;
+		}
 
 		int ParticleNumber = 10;
 		if (HP <= 0)
@@ -1099,6 +1106,126 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 		+ (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 
 	return position;
+}
+
+void Player::Reset()
+{
+
+	playerAvoidance = 15.0f;
+	moveTime = 300;
+
+
+	//worldTransform_.translation_ = { 0,0,-100 };
+
+	//ワールド変換の初期化
+	worldTransform_.translation_ = { 0.0f,0.0f,150.0f };
+	worldTransform_.rotation_ = { 0.0f,0.0f,0.0f };
+
+	worldTransform_.alpha = 0.0;
+
+	worldTransform_.TransferMatrix();
+	collider->Update(worldTransform_.matWorld_);
+
+	oldWorldTransform_.translation_ = { 0,0,0 };
+	oldWorldTransform_.rotation_ = { 0,0,0 };
+	oldWorldTransform_.scale_ = { 0,0,0 };
+	oldWorldTransform_.TransferMatrix();
+
+	playerAttackTransform_.translation_ = { 0,0,0 };
+	playerAttackTransform_.rotation_ = { 0,0,0 };
+	playerAttackTransform_.scale_ = { 0,0,0 };
+	playerAttackTransform_.TransferMatrix();
+
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].translation_ = { 0,0,0 };
+		playerAttackTransformaaaa_[i].rotation_ = { 0,0,0 };
+		playerAttackTransformaaaa_[i].scale_ = { 0,0,0 };
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
+
+	playerEvasionTimes = 3;
+
+	recovery->Reset();
+
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
+
+	playerNowMotion = PlayerMotion::taiki;
+	MaxFrem = 2.0f;
+	MinimumFrem = 0.5f;
+	isWalk = false;
+	isWalking = false;
+
+	isEnemyHit = false;
+	isAttackHit = false;
+	makeColliders = false;
+
+	timer = 0;
+	alpha = 0.0f;
+	MaxMoveTime = 60;
+
+	x = 0;
+	radius = 4.0f;//当たり判定半径
+	playerSpeed = 0.5f;
+	playerAvoidance = 20.0f;
+
+	isPushSenter = false;
+	isPushLeft = false;
+	isPushRight = false;
+	isPushBack = false;
+	spaceInput = false;
+
+	angle = 0.0f;
+	KnockBackDistance = 20.0f;
+	isKnockBack = false;
+	///攻撃に使う変数
+
+	//時間計算に必要なデータ
+	startCount = 0;
+	nowCount = 0;
+	elapsedCount_ = 0;
+
+	elapsedTime = 0;
+	size_t startIndex = 1;
+
+	isAttack = false;
+
+	attackDistanceX = 8.0f;
+	attackDistanceZ = 20.0f;
+
+	HP = maxHP;
+
+	hpAlfaSize = { 553.0f,25.0f };
+	IsHpAlfa = false;
+	hpAlfaTimer = 0;
+	frem = 0;
+
+	fremX = 1.0f;
+
+	taikiFlag = false;
+
+	attackConbo = 0;
+	isPlayMotion = false;
+
+	receptionTime = 0.0f;
+	conboFlag = false;
+
+	isSpace = false;
+
+	isAdmission = true;
+
+	isAlive = true;
+
+	playerEvasionTimes = 0;
+	playerEvasionCoolTime = 0;
+	playerEvasionMaxTimes = 3;
+	CoolTime = 180;
+
+	flame = 0;
+
+	spriteAlpha1 = 0.0f;
+	spriteAlpha2 = 0.0f;
+	spriteAlpha3 = 0.0f;
+	isInput = false;
 }
 
 void Player::SpriteInitialize()

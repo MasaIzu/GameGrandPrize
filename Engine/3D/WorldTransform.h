@@ -65,6 +65,7 @@ struct WorldTransform {
 	void SetRot(const Vector3& rot);
 	void SetLookRot(const Vector3& rot);
 	void SetMatRot(const Matrix4& mat);
+	void SetLookMatRot(const Matrix4& mat);
 
 	void MoveRot(const Vector3& move);
 

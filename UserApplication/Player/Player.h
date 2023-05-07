@@ -276,6 +276,7 @@ private:
 	float CoolTime = 180;
 
 	float flame = 0;
+	float playerAttackMovement = 0.0f;
 
 	float spriteAlpha1 = 0.0f;
 	float spriteAlpha2 = 0.0f;
@@ -286,6 +287,14 @@ private:
 
 	Vector3 PlayerRot;
 	bool isInput = false;
+
+	Vector3 LookingMove;
+	Vector3 AttackedPos;
+	Vector3 AttackNowPos;
+	double attackMoveTimer = 0;
+	double MaxAttackMoveTimer = 50;
+	bool IsCombo = false;
+
 
 	WorldTransform LBoneTrans;
 	WorldTransform RBoneTrans;

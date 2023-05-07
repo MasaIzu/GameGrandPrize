@@ -127,8 +127,12 @@ Vector3 WorldTransform::GetLook(Matrix4 matRot,Vector3 at)
 
 void WorldTransform::SetLookRot(const Vector3& rot)
 {
-	quaterni.SeTEuler(rot);
+	//quaterni.SeTEuler(rot);
 
-	worldLookMatRot = quaterni.Rotate();
+	//worldLookMatRot = quaterni.Rotate();
 }
 
+void WorldTransform::SetLookMatRot(const Matrix4& mat)
+{
+	worldLookMatRot = mat;
+}

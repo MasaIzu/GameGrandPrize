@@ -5,7 +5,7 @@
 #include <CollisionAttribute.h>
 #include"ImGuiManager.h"
 #include <FbxLoader.h>
-
+#include "Easing.h"
 
 float easeOutQuin(float x)
 {
@@ -248,12 +248,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 
-	ImGui::Text("rotX:%f", rot.x);
-	ImGui::Text("rotY:%f", rot.y);
-	ImGui::Text("rotZ:%f", rot.z);
+	ImGui::Text("look:%f", worldTransform_.look.x);
+	ImGui::Text("look:%f", worldTransform_.look.y);
+	ImGui::Text("look:%f", worldTransform_.look.z);
 
-	ImGui::Text("playerEvasionTimes:%d", playerEvasionTimes);
-	ImGui::Text("playerEvasionCoolTime:%d", playerEvasionCoolTime);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
+	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
 
 	ImGui::End();
 }
@@ -314,7 +315,7 @@ void Player::Move() {
 	Vector3 moveRot = cameraLook;
 	cameraLook.normalize();
 
-	root = (worldTransform_.lookLeft - worldTransform_.translation_);
+	root = (worldTransform_.look - worldTransform_.translation_);
 
 
 	if (spaceInput == false) {
@@ -345,7 +346,7 @@ void Player::Move() {
 				playerNowMotion = PlayerMotion::aruki;
 			}
 			if (input_->PushKey(DIK_D)) {
-				PlayerMoveMent -= root.normalize() * playerSpeed;
+				PlayerMoveMent += root.normalize() * playerSpeed;
 				isPushRight = true;
 				isWalk = true;
 				isInput = true;
@@ -370,6 +371,10 @@ void Player::Move() {
 			if (isInput == true) {
 				PlayerRot = rot;
 			}
+
+		}
+		else {
+
 
 		}
 
@@ -412,7 +417,7 @@ void Player::Move() {
 	worldTransform_.SetMatRot(roooooot);
 	oldWorldTransform_.SetMatRot(roooooot);
 
-	worldTransform_.SetLookRot({ 0,-MyMath::GetAngle(angle),0 });
+	worldTransform_.SetLookMatRot(roooooot);
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
@@ -491,6 +496,7 @@ void Player::Move() {
 void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
+	playerAttackMovement = 0.0f;
 
 	if (spaceInput == false) {
 		if (input_->MouseInputTrigger(0)) {
@@ -644,6 +650,32 @@ void Player::Attack() {
 
 	}
 
+	if (playerNowMotion == PlayerMotion::soukenCombo1) {
+		if (IsCombo == false) {
+			playerAttackMovement = 5.0f;
+			LookingMove = worldTransform_.look - GetWorldPosition();
+
+			LookingMove = LookingMove * playerAttackMovement;
+			attackMoveTimer = 0;
+
+			AttackNowPos = worldTransform_.translation_;
+			IsCombo = true;
+		}
+		if (attackMoveTimer < MaxAttackMoveTimer) {
+			attackMoveTimer += 1.0;
+		}
+		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
+
+	}
+	else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+
+	}
+	else {
+		//attackMoveTimer = 0;
+		IsCombo = false;
+	}
+
+
 }
 
 void Player::SetKnockBackCount()
@@ -689,17 +721,17 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//if (timer == 0) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
-	//if (isAttack) {
-	//	for (int i = 0; i < SphereCount; i++) {
-	//		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	//	}
-	//}
+	if (isAttack) {
+		for (int i = 0; i < SphereCount; i++) {
+			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+		}
+	}
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
 
 	recovery->Draw(viewProjection_);
 
-	//LSowrdModel->Draw(LBoneTrans, viewProjection_);
+	LSowrdModel->Draw(LBoneTrans, viewProjection_);
 	//RSowrdModel->Draw(RBoneTrans, viewProjection_);
 }
 

@@ -216,7 +216,7 @@ private:
 
 	WorldTransform startTrans;
 
-	const int maxHP = 1;
+	const int maxHP = 100;
 
 	float HP = maxHP;
 	std::unique_ptr<Sprite> healthSprite;

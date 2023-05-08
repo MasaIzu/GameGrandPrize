@@ -7,6 +7,8 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+#include "Input.h"
+#include "Player.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -197,10 +199,16 @@ private:
 
 	void SwordCollisionOFF();
 
+	//第２フェーズ時の攻撃モーションの剣の投げ
+	void phase2Attack();
+	void phase2AttackDraw(ViewProjection viewProMat);
+
 	/// <summary>
 	/// メンバ変数(プライベート)
 	/// </summary>
 private:
+	Input* input_;
+	Player* player_ = nullptr;;
 
 	Vector3 targetPos;				//標的(プレイヤー)の座標
 	BossSwordPhase bossSwordPhase;	//剣の行動フェーズ
@@ -257,6 +265,15 @@ private:
 	WorldTransform playerAttackTransformaaaa_[SphereCount];
 	std::unique_ptr<Model> startModel;
 
+	//第二phaseの剣の投げAttackの剣の最大数
+	const int MAXSWROD = 5;
+	WorldTransform w[5];
+	//生成してから剣を飛ばすまでの時間
+	int phase2AttackCoolTime = 40;
+	bool t;
+	Vector3 pPos;
+	Vector3 num = {0,0,0};
+	bool isSat = false;
 };
 
 /// <summary>

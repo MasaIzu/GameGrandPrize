@@ -58,6 +58,10 @@ void GameCamera::InitializeCameraPosition()
 {
 	Vector2 windowWH = Vector2(winWidth / 2, winHeight / 2);
 
+	mouseMoved = Vector2(0, 0);
+	CameraRot = MyMath::MakeIdentity();
+
+
 	//クライアントエリア座標に変換する
 	HWND hwnd = WinApp::GetInstance()->Gethwnd();
 

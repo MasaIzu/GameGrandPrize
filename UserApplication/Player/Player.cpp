@@ -1222,6 +1222,8 @@ void Player::Reset()
 
 	flame = 0;
 
+	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
+
 	spriteAlpha1 = 0.0f;
 	spriteAlpha2 = 0.0f;
 	spriteAlpha3 = 0.0f;

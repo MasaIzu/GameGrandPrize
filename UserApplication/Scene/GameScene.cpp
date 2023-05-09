@@ -7,7 +7,7 @@
 #include"ImGuiManager.h"
 #include <CollisionAttribute.h>
 #include "Collision.h"
-
+#include "Easing.h"
 
 GameScene::GameScene() {}
 GameScene::~GameScene() {
@@ -153,12 +153,18 @@ void GameScene::Initialize() {
 
 	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
 
+	for (int i = 0; i < 5; i++) {
+		sceneChageBlack[i] = Sprite::Create(TextureManager::Load("SceneChageBlack.png"));
+		sceneChageBlack[i].get()->SetAnchorPoint({0,0});
+		sceneChageBlack[i].get()->SetPosition(startPos[i]);
+	}
 
 	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
 	titlerogo->SetAnchorPoint({ 0,0 });
 }
 
 void GameScene::Update() {
+	SceneChageUpdate();
 
 	switch (scene)
 	{
@@ -183,8 +189,13 @@ void GameScene::Update() {
 void GameScene::TitleUpdate()
 {
 	nowViewProjection = viewProjection_;
+	if (input_->TriggerKey(DIK_Q)) {
+		IsSceneChange = true;
+	}
 	if (input_->TriggerKey(DIK_SPACE)) {
-		scene = Scene::Game;
+		oldScene = Scene::Title;
+		IsSceneChange = true;
+		//scene = Scene::Game;
 	}
 }
 
@@ -403,17 +414,62 @@ void GameScene::GameUpdate()
 void GameScene::GameOverUpdate()
 {
 	if (input_->TriggerKey(DIK_SPACE)) {
-		scene = Scene::Title;
-		Reset();
+		oldScene = Scene::GameOver;
+		IsSceneChange = true;
+		
 	}
 }
 
 void GameScene::ResultUpdate()
 {
 	if (input_->TriggerKey(DIK_SPACE)) {
-		scene = Scene::Title;
-		Reset();
+		oldScene = Scene::Result;
+		IsSceneChange = true;
+		
 	}
+}
+
+void GameScene::SceneChageUpdate()
+{
+	if (IsSceneChange == true) {
+		switch (scene)
+		{
+		case Scene::Title:
+			if (oldScene == Scene::Title) {
+				// 最初のスライダーのイン
+				SceneChageFirst();
+			}
+			else {
+				// 閉じきったら消す、スライダーのアウト
+				SceneChageRast();
+			}
+			break;
+		case Scene::Game:
+			if (oldScene == Scene::Title) {
+				// 閉じきったら消す、スライダーのアウト
+				SceneChageRast();
+			}
+			break;
+		case Scene::GameOver:
+			if (oldScene == Scene::GameOver) {
+				// 最初のスライダーのイン
+				SceneChageFirst();
+			}
+			break;
+		case Scene::Result:
+			if (oldScene == Scene::Result) {
+				// 最初のスライダーのイン
+				SceneChageFirst();
+			}
+			break;
+		default:
+			break;
+		}
+
+		
+
+	}
+	
 }
 
 void GameScene::PostEffectDraw()
@@ -529,6 +585,14 @@ void GameScene::Draw() {
 		gameoverFont->Draw({ 640,300 }, { 1,1,1,1 });
 	}
 
+	// シーンチェンジ用のブラックスライダーの描画
+	if (IsSceneChange == true) {
+		for (int i = 0; i < 5; i++) {
+			sceneChageBlack[i].get()->Draw(sceneChagePos[i], { 1,1,1,1 });
+		}
+	}
+
+
 #pragma endregion
 }
 
@@ -619,6 +683,85 @@ int GameScene::GetMiniFishAlive() {
 		}
 	}
 	return count;
+}
+
+void GameScene::SceneChageFirst()
+{
+	// 最初のスライダーのイン
+	if (IsHalf == false) {
+		if (sceneChageBlack[0].get()->GetPosition().x >= 0) {
+			if (sceneChageTimer[0] < sceneChageTimerMax) {
+				sceneChageTimer[0]++;
+			}
+
+			sceneChagePos[0] = { float(Easing::easeOutCubic(startPos[0].x, endPos[0].x, sceneChageTimer[0], sceneChageTimerMax)),startPos[0].y };
+		}
+		for (int i = 1; i < 5; i++) {
+			if (sceneChageTimer[i - 1] / sceneChageTimerMax >= 0.5f) {
+				if (sceneChageTimer[i] < sceneChageTimerMax) {
+					sceneChageTimer[i]++;
+				}
+				sceneChagePos[i] = { float(Easing::easeOutCubic(startPos[i].x, endPos[i].x, sceneChageTimer[i], sceneChageTimerMax)),startPos[i].y };
+			}
+		}
+		// ハーフタイムになったら
+		if (sceneChageTimer[4] / sceneChageTimerMax >= 1.0f) {
+			for (int i = 0; i < 5; i++) {
+				sceneChageTimer[i] = 0;
+			}
+			IsHalf = true;
+
+			// 次がなんのシーンかチェックする
+			switch (scene)
+			{
+			case Scene::Title:
+				scene = Scene::Game;
+				break;
+			case Scene::Game:
+				break;
+			case Scene::GameOver:
+				scene = Scene::Title;
+				Reset();
+				break;
+			case Scene::Result:
+				scene = Scene::Title;
+				Reset();
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void GameScene::SceneChageRast()
+{
+	if (IsHalf == true) {
+		if (sceneChageBlack[0].get()->GetPosition().x >= 0) {
+			if (sceneChageTimer[0] < sceneChageTimerMax) {
+				sceneChageTimer[0]++;
+			}
+			sceneChagePos[0] = { float(Easing::easeOutCubic(endPos[0].x, startPos[0].x, sceneChageTimer[0], sceneChageTimerMax)),startPos[0].y };
+		}
+		for (int i = 1; i < 5; i++) {
+			if (sceneChageTimer[i - 1] / sceneChageTimerMax >= 0.5f) {
+				if (sceneChageTimer[i] < sceneChageTimerMax) {
+					sceneChageTimer[i]++;
+				}
+				sceneChagePos[i] = { float(Easing::easeOutCubic(endPos[i].x, startPos[i].x, sceneChageTimer[i], sceneChageTimerMax)),startPos[i].y };
+			}
+		}
+		// スライダーがすべて消えたらフラグをオフ
+		if (sceneChageTimer[4] / sceneChageTimerMax >= 1.0f) {
+			// タイマーのリセット
+			for (int i = 0; i < 5; i++) {
+				sceneChageTimer[i] = 0;
+			}
+			// フラグ関連のリセット
+			IsHalf = false;
+			IsSceneChange = false;
+		}
+	}
 }
 
 void GameScene::CheckAllFishLeave() {

@@ -97,6 +97,9 @@ public:
 
 	void ResultUpdate();
 
+
+
+
 	void PostEffectDraw() override;
 
 	/// <summary>
@@ -209,6 +212,49 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> gameClearFont;
 	std::unique_ptr<Sprite> gameover;
 
+	// シーンチェンジ用のスプライト
+	std::unique_ptr<Sprite> sceneChageBlack[5];
+	Vector2 sceneChagePos[5]= {
+		{1280,0},
+		{1280,144},
+		{1280,288},
+		{1280,432},
+		{1280,576},
+	};
+	float sceneChageTimer[5] = { 0,0,0,0,0 };
+	float sceneChageTimerMax = 40;
+	bool IsSceneChange = false;
+	bool IsHalf = false;
+	Vector2 startPos[5] = {
+		{1280,0},
+		{1280,144},
+		{1280,288},
+		{1280,432},
+		{1280,576},
+	};
+	Vector2 endPos[5] = {
+		{0,0},
+		{0,144},
+		{0,288},
+		{0,432},
+		{0,576},
+	};
+	Vector2 backStartPos[5] = {
+		{0,0},
+		{0,144},
+		{0,288},
+		{0,432},
+		{0,576},
+	};
+	Vector2 backEndPos[5] = {
+		{1280,0},
+		{1280,144},
+		{1280,288},
+		{1280,432},
+		{1280,576},
+	};
+
+	Scene oldScene = Scene::Title;
 
 	// スプライト
 	Vector2 titlePos = { 350,200 };
@@ -221,4 +267,10 @@ private://プライベート関数
 	//生きている小魚の数を更新
 	int GetMiniFishAlive();
 
+	// シーンチェンジ関数
+	void SceneChageFirst();
+
+	void SceneChageRast();
+
+	void SceneChageUpdate();
 };

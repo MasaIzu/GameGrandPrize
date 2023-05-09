@@ -115,7 +115,7 @@ void GameScene::Initialize() {
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss.Update({ 0,0,0 });
+	boss.Update({ 0,0,0 },stagePos,stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {
@@ -344,7 +344,7 @@ void GameScene::GameUpdate()
 	ImGui::End();
 
 
-	boss.Update(player->GetWorldPosition());
+	boss.Update(player->GetWorldPosition(),stagePos,stageRadius);
 	viewProjection_.UpdateMatrix();
 
 	player->SetIsEnemyHit(isEnemyHit);
@@ -574,7 +574,7 @@ void GameScene::Reset()
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss.Update({ 0,0,0 });
+	boss.Update({ 0,0,0 },stagePos,stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {

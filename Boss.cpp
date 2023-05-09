@@ -21,7 +21,7 @@ void Boss::Initialize()
 	fishParent.radius = 20.0f;
 
 
-	
+
 
 	if (!fishes.empty()) {
 		fishes.clear();
@@ -95,6 +95,8 @@ void Boss::Initialize()
 	boss2Transform[Boss2Part::HandL].parent_ = &boss2Transform[Boss2Part::ArmL];
 	boss2Transform[Boss2Part::HandR].parent_ = &boss2Transform[Boss2Part::ArmR];
 
+	SpriteInitialize();
+
 }
 
 void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
@@ -116,7 +118,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	}
 
 	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
-	if (fishes.empty() ) {
+	if (fishes.empty()) {
 		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
@@ -144,7 +146,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 
 	//	ImGui::End();
-	SwordCollisionUpdate();
+
 
 	//ボス第二形態のデバッグ用
 	ImGui::Begin("Boss2");
@@ -154,12 +156,12 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	boss2Transform[Boss2Part::Root].scale_.y = scale;
 	boss2Transform[Boss2Part::Root].scale_.z = scale;
 
-	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
-		ImGui::Text("Part::%d", i);
-		ImGui::SliderFloat("x",&boss2Transform[i].translation_.x, -20.0f, 20.0f);
-		ImGui::SliderFloat("y",&boss2Transform[i].translation_.y, -20.0f, 20.0f);
-		ImGui::SliderFloat("z",&boss2Transform[i].translation_.z, -20.0f, 20.0f);
-	}
+	//for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
+	//	ImGui::Text("Part::%d", i);
+		ImGui::SliderFloat("x", &boss2Transform[Boss2Part::Root].translation_.x, -200.0f, 200.0f);
+		ImGui::SliderFloat("y", &boss2Transform[Boss2Part::Root].translation_.y, -200.0f, 200.0f);
+		ImGui::SliderFloat("z", &boss2Transform[Boss2Part::Root].translation_.z, -200.0f, 200.0f);
+	//}
 
 	ImGui::End();
 
@@ -167,7 +169,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 		boss2Transform[i].TransferMatrix();
 	}
 
-
+	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
 }
 
@@ -903,7 +905,7 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
-				
+
 				vecfishTotarget.y = 0;
 				Vector3 afterVec = vecfishTotarget;
 				afterVec.normalize();
@@ -1082,12 +1084,12 @@ void Boss::UpdateDeath()
 	}
 
 	// ベクトルの計算が終了したら飛ばす処理
-	if (ISDeadCalculation == true&&IsDeathEnd==false) {
+	if (ISDeadCalculation == true && IsDeathEnd == false) {
 		deathTimer++;
 		for (int i = 0; i < fishes.size(); i++) {
 			fishes[i].pos.translation_ += fishDeadVel[i];
-			fishes[i].pos.rotation_+= Vector3{ 0.2f, 0.2f, 0.5f };
-			fishes[i].pos.scale_ -= Vector3{0.005f, 0.005f, 0.005f};
+			fishes[i].pos.rotation_ += Vector3{ 0.2f, 0.2f, 0.5f };
+			fishes[i].pos.scale_ -= Vector3{ 0.005f, 0.005f, 0.005f };
 
 			fishes[i].pos.SetRot(fishes[i].pos.rotation_);
 
@@ -1098,7 +1100,7 @@ void Boss::UpdateDeath()
 			IsDeathEnd = true;
 		}
 	}
-	
+
 }
 
 
@@ -1202,7 +1204,7 @@ void Boss::Damage(int atk) {
 	IsHpAlfa = true;
 	hpAlfaSize = hpSize;
 	bossHealth -= atk;
-	if (bossHealth<0)
+	if (bossHealth < 0)
 	{
 		bossHealth = 0;
 	}

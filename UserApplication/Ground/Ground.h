@@ -46,14 +46,14 @@ public:
 
 	void CreateBlock();
 
-	void CreateBlockV1(Vector3 pos);
-	void CreateBlockV2(Vector3 pos);
-	void CreateBlockV3(Vector3 pos);
+	void CreateBlockV1(Vector3 pos,Vector3 sc);
+	void CreateBlockV2(Vector3 pos,Vector3 sc);
+	void CreateBlockV3(Vector3 pos,Vector3 sc);
 	float Random(float num1, float num2);
 
 	block newblock;
 
-	static const int MaxCount = 5;
+	static const int MaxCount = 6;
 	//ínñ çÏê¨
 	std::unique_ptr<Model>groundModel_ = nullptr;
 	std::vector<ground> groundObjects;

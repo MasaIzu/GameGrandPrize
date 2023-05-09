@@ -30,6 +30,7 @@ enum class BossFirstPhase {
 	Atk_Sword,//剣変形攻撃
 	Atk_Rush,//突進攻撃
 	BeginMotion,//モーション開始動作
+	Death,//死亡
 
 };
 
@@ -74,10 +75,33 @@ public:
 	int rushCount = 0;								//突進攻撃の残り回数
 	WorldTransform swordTransform;					//剣のワールド座標
 	static const int fishMaxCount = 200;			//小魚の最大数
-	int bossHealth = 20;							//ボスのHP
 	int nextDamageInterval = 30;					//次にダメージを受けるまでの時間
 	int damageTimer = 0;							//ボスの無敵時間
 
+	// ボスのHP関連
+	const float bossHpMax = 20;
+	float bossHealth = bossHpMax;							//ボスのHP
+
+private:
+	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
+	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト
+
+	Vector2 hpSize;                       // Hpのスプライトのサイズ
+	Vector2 hpAlfaSize = { 553.0f,25.0f };// Hpの下のスプライトのサイズ
+	bool IsHpAlfa = false;                // Hpの下のものが現れるかどうか
+	int hpAlfaTimer = 0;                  // Hpの下のものが動き出すまでのタイマー
+
+	std::unique_ptr<Sprite> HP_barSprite; // Hpのバーのスプライト
+
+	// ボスの死亡時モーション
+	bool IsDeathEnd = false;              // 死亡後の演出が終わっているか
+	bool ISDeadCalculation = false;       // 死亡後のベクトルの計算を一回やって終わっているかどうか
+	float fishDeadSpeed = 0.65f;
+	std::vector<Vector3>fishDeadVel;      // 死亡後小魚が飛んでいくベクトル
+	int deathTimer = 0;
+	const int deathTimerMax = 100;
+
+public:
 	~Boss();
 
 	/// <summary>
@@ -114,6 +138,9 @@ public:
 	/// <param name="atk">ダメージ量</param>
 	void Damage(int atk);
 
+	// ボスが死亡したら死亡フェーズに移る
+	void Death();
+
 	//魚の数のゲッター
 	int GetFishCount() { return fishes.size(); }
 
@@ -124,6 +151,10 @@ public:
 	//剣の座標のゲッター
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
 
+	// 死んだ時の演出が終わっているか
+	bool GetIsDeathEnd()const { return IsDeathEnd; }
+
+	void Reset();
 
 
 	/// <summary>
@@ -152,6 +183,11 @@ private:
 	void UpdateBeginMotion();
 
 	/// <summary>
+	/// 死亡した時の更新処理
+	/// </summary>
+	void UpdateDeath();
+
+	/// <summary>
 	/// 剣の当たり判定の更新
 	/// </summary>
 	void SwordColCubeUpdate();
@@ -165,6 +201,16 @@ private:
 	/// 魚の向きの更新
 	/// </summary>
 	void FishDirectionUpdate();
+
+	// スプライトの初期化
+	void SpriteInitialize();
+
+	//剣に関する当たり判定
+	void SwordCollisionON();
+
+	void SwordCollisionUpdate();
+
+	void SwordCollisionOFF();
 
 	/// <summary>
 	/// メンバ変数(プライベート)
@@ -202,12 +248,12 @@ private:
 	Vector3 posSwordColCube1;
 	Vector3 posSwordColCube2;
 	//剣のオブジェクトとしての大きさ(当たり判定用)
-	const float swordSizeX1 = -0.3f - 0.2f;
-	const float swordSizeX2 = 0.6f  + 0.3f;
-	const float swordSizeY1 = -1.0f - 2.0f;
-	const float swordSizeY2 = 14.6f + 3.0f;
+	const float swordSizeX1 = 1.0f;
+	const float swordSizeX2 = 1.0f;
+	const float swordSizeY1 = 0.0f;
+	const float swordSizeY2 = 0.0f;
 	const float swordSizeZ1 = -1.0f - 2.0f;
-	const float swordSizeZ2 = 1.0f  + 2.0f;
+	const float swordSizeZ2 = 12.4f;
 
 	EasingData easeParentPos;
 
@@ -216,7 +262,16 @@ private:
 	int moveFlag = 0;
 
 	uint32_t healthPicture = 0;
-	std::unique_ptr<Sprite> healthSprite;
+	//std::unique_ptr<Sprite> healthSprite;
+
+	static const int SphereCount = 10;
+
+	BaseCollider* AttackCollider[SphereCount];
+	Vector3 colliderPos[SphereCount];
+	Matrix4 worldSpherePos[SphereCount];
+	WorldTransform playerAttackTransformaaaa_[SphereCount];
+	std::unique_ptr<Model> startModel;
+
 };
 
 /// <summary>

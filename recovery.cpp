@@ -168,6 +168,31 @@ void Recovery::Collision()
 	//pointModel_->SetTextureHandle(tex2);
 }
 
+void Recovery::Reset()
+{
+
+	for (int i = 0; i < 20; i++)
+	{
+
+		int randVertex = rand() % 32;
+
+		float x = pointWorldTransform_.translation_.x + sin(11.25 * randVertex * 3.141592 / 180) * scale;
+
+		float z = pointWorldTransform_.translation_.z + cos(11.25 * randVertex * 3.141592 / 180) * scale;
+
+		worldTransform_[i].translation_.z = z;
+
+		worldTransform_[i].translation_.x = x;
+
+		worldTransform_[i].translation_.y = (rand() % 500) / 100;
+
+		worldTransform_[i].alpha = 1 - worldTransform_[i].translation_.y * 0.2;
+	}
+	IntervalFlame = 0;
+
+	isActive = true;
+}
+
 Vector3 Recovery::GetWorldPosition() {
 
 	//ƒ[ƒ‹ƒhÀ•W‚ð“ü‚ê‚é•Ï”

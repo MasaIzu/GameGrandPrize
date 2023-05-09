@@ -64,8 +64,11 @@ void GameScene::Initialize() {
 	stageWorldTransform_.TransferMatrix();
 
 
+	skyModel.reset(Model::CreateFromOBJ("skydome", true));
 
 	//groundModel = std::make_unique<Model>();
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(skyModel.get());
 
 	////地面の描画
 	ground.Initialize();
@@ -124,9 +127,69 @@ void GameScene::Initialize() {
 		gayserW[i].scale_ = { 2,2,2 };
 		gayserW[i].TransferMatrix();
 	}
+
+	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+	gameCamera->SetSpaceInput(player->GetSpaceInput());
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	//gameCamera->SetCameraPosition({0,0,-100});
+	gameCamera->InitializeCameraPosition();
+
+	//カメラは最後にアプデ
+	viewProjection_.target = gameCamera->GetTarget();
+	//viewProjection_.target = boss.fishParent.pos.translation_;
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
+	viewProjection_.UpdateMatrix();
+
+	gameoverFont = std::make_unique<Sprite>();
+
+	gameover = std::make_unique<Sprite>();
+
+	gameoverFont = Sprite::Create(TextureManager::Load("GameOverFont.png"));
+
+	gameover = Sprite::Create(TextureManager::Load("gameover.png"));
+
+	gameClearFont = std::make_unique<Sprite>();
+
+	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
+
+
+	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
+	titlerogo->SetAnchorPoint({ 0,0 });
 }
 
 void GameScene::Update() {
+
+	switch (scene)
+	{
+	case Scene::Title:
+		TitleUpdate();
+		break;
+	case Scene::Game:
+		GameUpdate();
+		break;
+	case Scene::GameOver:
+		GameOverUpdate();
+		break;
+	case Scene::Result:
+		ResultUpdate();
+		break;
+	default:
+		break;
+	}
+
+}
+
+void GameScene::TitleUpdate()
+{
+	nowViewProjection = viewProjection_;
+	if (input_->TriggerKey(DIK_SPACE)) {
+		scene = Scene::Game;
+	}
+}
+
+void GameScene::GameUpdate()
+{
 	gayserFlame++;
 	if (ImGui::Button("break")) {
 		static int a = 0;
@@ -147,86 +210,6 @@ void GameScene::Update() {
 			for (int i = 0; i < 10; i++) {
 				minifishes[i].LeaveGayser(gayserPos[i / 2]);
 			}
-
-
-			////煙の処理
-			//{
-			//	//gayserFlame++;
-			//	if (gayserFlame <= gayserMaxFlame)
-			//	{
-			//		for (int i = 0; i < 1; i++)
-			//		{
-
-			//			//XYZの広がる距離
-			//			const float rnd_pos = 30.0f;
-			//			//Y方向には最低限の飛ぶ距離
-			//			const float constPosY = 15;
-			//			Vector3 pos{};
-			//			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			pos.y = 20;
-			//			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			//追加
-			//			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[0], { gayserPos[0].x, gayserPos[0].y + pos.y, gayserPos[0].z }, gayserPos[0] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
-			//		}
-			//		for (int i = 0; i < 1; i++)
-			//		{
-
-			//			//XYZの広がる距離
-			//			const float rnd_pos = 30.0f;
-			//			//Y方向には最低限の飛ぶ距離
-			//			const float constPosY = 15;
-			//			Vector3 pos{};
-			//			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			pos.y = 20;
-			//			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			//追加
-			//			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[1], { gayserPos[1].x, gayserPos[1].y + pos.y, gayserPos[1].z }, gayserPos[1] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
-			//		}
-			//		for (int i = 0; i < 1; i++)
-			//		{
-
-			//			//XYZの広がる距離
-			//			const float rnd_pos = 30.0f;
-			//			//Y方向には最低限の飛ぶ距離
-			//			const float constPosY = 15;
-			//			Vector3 pos{};
-			//			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			pos.y = 20;
-			//			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			//追加
-			//			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[2], { gayserPos[2].x, gayserPos[2].y + pos.y, gayserPos[2].z }, gayserPos[2] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
-			//		}
-			//		for (int i = 0; i < 1; i++)
-			//		{
-
-			//			//XYZの広がる距離
-			//			const float rnd_pos = 30.0f;
-			//			//Y方向には最低限の飛ぶ距離
-			//			const float constPosY = 15;
-			//			Vector3 pos{};
-			//			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			pos.y = 20;
-			//			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			//追加
-			//			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[3], { gayserPos[3].x, gayserPos[3].y + pos.y, gayserPos[3].z }, gayserPos[3] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
-			//		}
-			//		for (int i = 0; i < 1; i++)
-			//		{
-
-			//			//XYZの広がる距離
-			//			const float rnd_pos = 30.0f;
-			//			//Y方向には最低限の飛ぶ距離
-			//			const float constPosY = 15;
-			//			Vector3 pos{};
-			//			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			pos.y = 20;
-			//			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//			//追加
-			//			gayserParticle->Add(ParticleManager::Type::Out, 120, true, gayserPos[4], { gayserPos[4].x, gayserPos[4].y + pos.y, gayserPos[4].z }, gayserPos[4] + pos, 1.0, 1.0, { 0,0,0,1 }, { 0,0,0,1 });
-			//		}
-			//	}
-			//}
-
 		}
 	}
 
@@ -285,10 +268,6 @@ void GameScene::Update() {
 		isMovie = false;
 	}
 
-	/*if (input_->TriggerKey(DIK_SPACE))
-	{
-		sceneManager_->ChangeScene("TITLE");
-	}*/
 
 
 	//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
@@ -312,19 +291,23 @@ void GameScene::Update() {
 		player->Collision(10);
 	}
 
+	if (collisionManager->GetIsWakeEnemyHit()) {
+		gameCamera->Collision();
+		Matrix4 a = collisionManager->GetEnemyWorldPos();
+		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(5);
+	}
+
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
 	ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
 
 	//剣と自機の当たり判定
-	if (player->GetColliderAttribute() == COLLISION_ATTR_ALLIES) {
-		if (Collision::CheckRectSphere(MyMath::GetWorldTransform(boss.swordTransform.matWorld_), boss.GetSwordCollisionCube1(), boss.GetSwordCollisionCube2(),
-			player->GetWorldPosition(), player->GetRadius())) {
-
-			gameCamera->Collision();
-			player->Collision(1);
-			player->SetEnemyPos(boss.GetSwordWorldPos());
-		}
+	if (collisionManager->GetEnemySwordHit()) {
+		gameCamera->Collision();
+		Matrix4 a = collisionManager->GetEnemyWorldPos();
+		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+		player->Collision(20);
 	}
 
 
@@ -336,11 +319,18 @@ void GameScene::Update() {
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
+		isAttackHit = true;
 		playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
 
 		minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 
 		minifishes[playerAttackHitNumber].OnCollision();
+	}
+
+
+	// ボスフェーズ１のHPが０になったら
+	if (boss.bossHealth <= 0) {
+		boss.Death();
 	}
 
 
@@ -401,7 +391,29 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
+	if (boss.GetIsDeathEnd()) {
+		scene = Scene::Result;
+	}
+	if (player->GetAlive() == false)
+	{
+		scene = Scene::GameOver;
+	}
+}
 
+void GameScene::GameOverUpdate()
+{
+	if (input_->TriggerKey(DIK_SPACE)) {
+		scene = Scene::Title;
+		Reset();
+	}
+}
+
+void GameScene::ResultUpdate()
+{
+	if (input_->TriggerKey(DIK_SPACE)) {
+		scene = Scene::Title;
+		Reset();
+	}
 }
 
 void GameScene::PostEffectDraw()
@@ -411,9 +423,9 @@ void GameScene::PostEffectDraw()
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	//model_->Draw(worldTransform_, viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_);
 
-	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
@@ -435,10 +447,7 @@ void GameScene::PostEffectDraw()
 	}
 
 	//ボス出現ムービーとボス変身ムービーの間で描画
-	//if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
-
 	boss.Draw(nowViewProjection);
-	//	}
 
 	player->Draw(nowViewProjection);
 
@@ -486,79 +495,111 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
-	//ParticleManager::PreDraw(commandList);
-
-	//player->ParticleDraw(nowViewProjection);
-
-	//if (isMovie) {
-	//	gayserParticle->Draw(nowViewProjection);
-	//}
-
-	//ParticleManager::PostDraw();
-
-	////// 3Dオブジェクト描画前処理
-	//Model::PreDraw(commandList);
-
-	////model_->Draw(worldTransform_, viewProjection_);
-
-	////stageModel_->Draw(stageWorldTransform_, nowViewProjection);
-
-
-	////stageModel_->Draw(stageWorldTransform_,viewProjection_);
-	//
-	//ground.Draw(nowViewProjection);
-
-	//
-
-	////チュートリアルと最初のムービーでだけ小魚を描画
-	//if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
-
-	//	for (int i = 0; i < 10; i++) {
-	//		//minifishes[i].Draw(viewProjection_);
-	//		if (minifishes[i].GetAlive()) {
-	//			boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-	//			boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-	//		}
-	//	}
-	//}
-
-	////ボス出現ムービーとボス変身ムービーの間で描画
-	////if (gamePhase >= GamePhase::GameMovie1 && gamePhase <= GamePhase::GameMovie2) {
-
-	//boss.Draw(nowViewProjection);
-	////	}
-
-	//player->Draw(nowViewProjection);
-
-
-
-
-	////3Dオブジェクト描画後処理
-	//Model::PostDraw();
-
-
-
-	//FbxModel::PreDraw(commandList);
-
-	//player->PlayerFbxDraw(nowViewProjection);
-
-	//FbxModel::PostDraw();
 
 
 #pragma endregion
 
 #pragma region ポストエフェクトの描画
 
-	//PostEffect::Draw(commandList);
-
 #pragma endregion
 
 #pragma region 前景スプライト描画
 
-	player->DrawHealth();
-	boss.DrawHealth();
+
+
+	if (scene==Scene::Title ) {
+
+		titlerogo->Draw(titlePos, { 1,1,1,1 });
+	}
+
+	if (scene == Scene::Game)
+	{
+		boss.DrawHealth();
+		player->DrawHealth();
+		boss.DrawHealth();
+		player->DrawHealth();
+
+	}
+	else if (scene == Scene::Result) {
+		gameClearFont->Draw({ 640,300 }, { 1,1,1,1 });
+	}
+	if (scene == Scene::GameOver)
+	{
+		gameover->Draw({ 640,360 }, { 1,1,1,1 });
+		gameoverFont->Draw({ 640,300 }, { 1,1,1,1 });
+	}
 
 #pragma endregion
+}
+
+void GameScene::Reset()
+{
+
+	viewProjection_.eye = { 0,10,-10 };
+	viewProjection_.UpdateMatrix();
+
+	worldTransform_.translation_ = { 0,0,100 };
+	worldTransform_.rotation_ = { 0,0,0 };
+	worldTransform_.scale_ = { 0.1f,0.1f,0.1f };
+	worldTransform_.TransferMatrix();
+
+	player->Reset();
+
+	gameCamera->Initialize();
+
+
+	//model_->SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
+
+
+	//間欠泉の座標設定
+	for (int i = 0; i < 5; i++) {
+		float gayserPosRad = 360.0f / 5.0f * i;
+		gayserPos[i].x = sin(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
+		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
+	}
+
+	boss.Reset();
+
+	//ムービー用カメラの初期化
+	movieCamera.Initialize();
+
+
+	boss.fishParent.pos.translation_ = { 0,25,100 };
+	boss.fishParent.pos.TransferMatrix();
+
+	for (int i = 0; i < 10; i++) {
+		Vector3 pos;
+		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
+		pos += stagePos;
+		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
+	}
+
+	boss.Update({ 0,0,0 });
+
+	// 間欠泉の初期化
+	for (int i = 0; i < 5; i++) {
+		gayserW[i].translation_.x = gayserPos[i].x;
+		gayserW[i].translation_.y = -1.2f;
+		gayserW[i].translation_.z = gayserPos[i].z;
+		gayserW[i].scale_ = { 2,2,2 };
+		gayserW[i].TransferMatrix();
+	}
+
+	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+	gameCamera->SetSpaceInput(player->GetSpaceInput());
+	gameCamera->SetCameraPosition(player->GetWorldPosition());
+	//gameCamera->SetCameraPosition({0,0,-100});
+	gameCamera->InitializeCameraPosition();
+
+	//カメラは最後にアプデ
+	viewProjection_.target = gameCamera->GetTarget();
+	//viewProjection_.target = boss.fishParent.pos.translation_;
+	viewProjection_.eye = gameCamera->GetEye();
+	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
+	viewProjection_.UpdateMatrix();
+
+	isTutorialEnd = false;
+	isStartBossBattle = false;
 }
 
 void GameScene::Finalize()

@@ -9,7 +9,7 @@ float4 main(VSOutput input) : SV_TARGET
 {
 	float4 col = tex1.Sample(smp, input.uv);
 	col += tex0.Sample(smp, input.uv);
-
+	col.a = 1;
 	/*col.rgb = col.rgb / (col.rgb + 1);
 	col.rgb=pow(col.rgb,1/2.2);*/
 

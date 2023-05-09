@@ -18,6 +18,8 @@
 #include<memory>
 #include<vector>
 
+#include "Skydome.h"
+
 #include "BoxCollision.h"
 
 #include "Player.h"
@@ -40,6 +42,13 @@ class TouchableObject;
 
 #include"MiniFish.h"
 #include"FbxAnimation.h"
+
+enum class Scene {
+	Title,
+	Game,
+	GameOver,
+	Result
+};
 
 enum class GamePhase {
 	GameTutorial,	//チュートリアル
@@ -80,6 +89,14 @@ public:
 	/// </summary>
 	void Update() override;
 
+	void TitleUpdate();
+
+	void GameUpdate();
+
+	void GameOverUpdate();
+
+	void ResultUpdate();
+
 	void PostEffectDraw() override;
 
 	/// <summary>
@@ -87,10 +104,13 @@ public:
 	/// </summary>
 	void Draw() override;
 
+	void Reset();
+
 	// 終了処理
 	void Finalize() override;
 
 	//void CreateGround();
+
 
 
 
@@ -164,6 +184,9 @@ private: // メンバ変数
 	//ワールド変換データ
 	WorldTransform stageWorldTransform_;
 
+	//天球
+	std::unique_ptr<Model> skyModel = nullptr;
+	std::unique_ptr<Skydome> skydome_;
 
 	////地面作成
 	std::unique_ptr<Model>groundModel = nullptr;
@@ -179,6 +202,17 @@ private: // メンバ変数
 
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
+
+	Scene scene = Scene::Title;
+
+	std::unique_ptr<Sprite> gameoverFont;
+	std::unique_ptr<Sprite> gameClearFont;
+	std::unique_ptr<Sprite> gameover;
+
+
+	// スプライト
+	Vector2 titlePos = { 350,200 };
+	std::unique_ptr <Sprite> titlerogo = nullptr;
 
 private://プライベート関数
 

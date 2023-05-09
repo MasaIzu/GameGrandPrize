@@ -37,9 +37,11 @@ public://ÉÅÉìÉoä÷êî
 
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
+	bool GetIsWakeEnemyHit() { return isWakeEnemyHit; }
 	bool GetIsAttackHit() { return isAttackHit; }
 	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
 	int GetHitNumber() { return hitNumber; }
+	bool GetEnemySwordHit() { return isEnemySwordHit; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
 	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
@@ -53,9 +55,14 @@ private:
 	std::forward_list<BaseCollider*> colliders;
 
 	bool isEnemyHit = false;
+	bool isWakeEnemyHit = false;
 	bool isAttackHit = false;
 	int hitNumber = 0;
 	bool isWakeEnemyAttackHit = false;
 	Matrix4 EnemyWorldPos;
 	Matrix4 HitWorldPos;
+
+	bool isEnemySwordHit = false;
+	bool isPlayerAttacking = false;
+
 };

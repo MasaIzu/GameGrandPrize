@@ -21,7 +21,7 @@ void Boss::Initialize()
 	fishParent.radius = 20.0f;
 
 
-
+	
 
 	if (!fishes.empty()) {
 		fishes.clear();
@@ -30,9 +30,9 @@ void Boss::Initialize()
 	randSpdParam = 3.75f;
 
 	//体力の画像読み込み
-	healthPicture = TextureManager::Load("mario.jpg");
-	healthSprite = Sprite::Create(healthPicture);
-	healthSprite->SetAnchorPoint({ 0,0 });
+	//healthPicture = TextureManager::Load("mario.jpg");
+	//healthSprite = Sprite::Create(healthPicture);
+	//healthSprite->SetAnchorPoint({ 0,0 });
 	//剣のモデル初期化
 	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
 
@@ -55,7 +55,7 @@ void Boss::Initialize()
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	radius = 30.0f;
+	radius = 23.0f;
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
@@ -69,6 +69,16 @@ void Boss::Initialize()
 	testTrans.Initialize();
 	testTrans2.Initialize();
 
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		float SphereRadius = 8.0f;
+		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+	}
 	//ボス第二形態の各部位初期化
 	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
 		boss2Transform[i].Initialize();
@@ -106,7 +116,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	}
 
 	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
-	if (fishes.empty() || bossHealth <= 0) {
+	if (fishes.empty() ) {
 		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
@@ -124,6 +134,9 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	case BossFirstPhase::BeginMotion:
 		UpdateBeginMotion();
 		break;
+	case BossFirstPhase::Death:
+		UpdateDeath();
+		break;
 	default:
 		break;
 
@@ -131,6 +144,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 
 	//	ImGui::End();
+	SwordCollisionUpdate();
 
 	//ボス第二形態のデバッグ用
 	ImGui::Begin("Boss2");
@@ -225,9 +239,9 @@ void Boss::CreateFish(Vector3 spawnPos)
 
 void Boss::Draw(ViewProjection viewProMat)
 {
-	if (bossHealth <= 0) {
-		return;
-	}
+	//if (bossHealth <= 0) {
+	//	return;
+	//}
 
 
 	if (phase1 == BossFirstPhase::Atk_Sword) {
@@ -236,11 +250,11 @@ void Boss::Draw(ViewProjection viewProMat)
 		testTrans.scale_ = { 3,3,3 };
 		testTrans.translation_ = posSwordColCube1;
 		testTrans.TransferMatrix();
-		fishEyeModel->Draw(testTrans, viewProMat);
+		//fishEyeModel->Draw(testTrans, viewProMat);
 		testTrans2.scale_ = { 3,3,3 };
 		testTrans2.translation_ = posSwordColCube2;
 		testTrans2.TransferMatrix();
-		fishEyeModel->Draw(testTrans2, viewProMat);
+		//fishEyeModel->Draw(testTrans2, viewProMat);
 
 	}
 
@@ -261,13 +275,93 @@ void Boss::Draw(ViewProjection viewProMat)
 }
 
 void Boss::DrawHealth() {
+	// HPのセット
+	float nowHp = bossHealth / bossHpMax;
+	hpSize = { 714.0f * nowHp,27.0f };
+	healthSprite->SetSize(hpSize);
 
-	Vector2 size = { 48.0f * bossHealth,48.0f };
-	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),WinApp::window_height * 8.0f / 10.0f };
-	healthSprite->SetSize(size);
+	// Hpの下の部分を減らす処理
+	if (IsHpAlfa) {
+		// 攻撃を受けてから 30 フレーム下のHpは動かない
+		if (hpAlfaTimer < 30) {
+			hpAlfaTimer++;
+		}
+		else {
+			// 赤ゲージよりサイズが大きいなら減らす
+			if (hpSize.x < hpAlfaSize.x) {
+				hpAlfaSize.x -= 2.0f;
+				healthAlfaSprite->SetSize(hpAlfaSize);
+			}
+			// 赤ゲージよりサイズが小さくなったら減らすのをやめ、赤ゲージのサイズに合わせる
+			// 下のゲージのフラグをオフにする
+			else if (hpSize.x >= hpAlfaSize.x) {
+				hpAlfaTimer = 0;
+				healthAlfaSprite->SetSize(hpSize);
+				IsHpAlfa = false;
+			}
+		}
+	}
+
+
+	//Vector2 size = { 48.0f * bossHealth,48.0f };
+
+	Vector2 pos = { WinApp::window_width / 2 - 358,WinApp::window_height / 2 + 236 };
+
+	Vector2 HP_barPos = { WinApp::window_width / 2,WinApp::window_height / 2 + 250 };
+
+	//healthSprite->SetSize(size);
+
+	// スプライト描画
+	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
+
 	healthSprite->Draw(pos, { 1,1,1,1 });
 
+	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
+}
 
+void Boss::Reset()
+{
+	fishParent.radius = 20.0f;
+
+
+
+
+	if (!fishes.empty()) {
+		fishes.clear();
+	}
+
+	randSpdParam = 3.75f;
+
+	phase1 = BossFirstPhase::Idle;
+	nextPhaseInterval = attackCooltime;
+
+	radius = 23.0f;
+
+
+	collider->Update(fishParent.pos.matWorld_);
+	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+
+	swordTransform.Initialize();
+	swordTransform.TransferMatrix();
+
+	testTrans.Initialize();
+	testTrans2.Initialize();
+
+	for (int i = 0; i < SphereCount; i++) {
+		// コリジョンマネージャに追加
+		float SphereRadius = 8.0f;
+		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+	for (int i = 0; i < SphereCount; i++) {
+		playerAttackTransformaaaa_[i].Initialize();
+	}
+
+	bossHealth = bossHpMax;
+
+	IsDeathEnd = false;              // 死亡後の演出が終わっているか
+	ISDeadCalculation = false;
 }
 
 void Boss::UpdateIdle()
@@ -456,6 +550,7 @@ void Boss::UpdateAtkSword()
 			bossSwordPhase = BossSwordPhase::Attack;
 			nextPhaseInterval = swordAtkTime;
 			easeSwordPos.Start(swordAtkTime);
+			SwordCollisionON();
 		}//霧散の瞬間
 		else if (bossSwordPhase == BossSwordPhase::Attack) {
 			bossSwordPhase = BossSwordPhase::Destroy;
@@ -463,6 +558,7 @@ void Boss::UpdateAtkSword()
 			easeSwordScale.Start(swordBreakTime);
 			afterScale = { 0.5f,0.5f,0.5f };
 			beforeScale = { 0,0,0 };
+			SwordCollisionOFF();
 		}
 		else if (bossSwordPhase == BossSwordPhase::Destroy) {
 			bossSwordPhase = BossSwordPhase::Cooltime_Destroy;
@@ -785,7 +881,7 @@ void Boss::UpdateAtkRush()
 		//突進中は始点と終点でイージング
 		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = fishesAfterPos[0];
+		Vector3 pAfterPos = parentAfterPos;
 		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
 		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
@@ -807,11 +903,15 @@ void Boss::UpdateAtkRush()
 
 				//���̐e����W�I�܂ł̃x�N�g��
 				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+				
 				vecfishTotarget.y = 0;
+				Vector3 afterVec = vecfishTotarget;
+				afterVec.normalize();
+				afterVec *= fishParent.radius * 3;
 
 				//親座標の始点と終点を決める
 				parentBeforePos = fishParent.pos.translation_;
-				parentAfterPos = parentBeforePos - (vecfishTotarget * 2);
+				parentAfterPos = parentBeforePos - (vecfishTotarget + afterVec);
 				parentAfterPos.y = parentBeforePos.y;
 
 				float len = vecfishTotarget.length();
@@ -832,7 +932,7 @@ void Boss::UpdateAtkRush()
 					}
 					else {
 						fishesBeforePos[i] = fishesAfterPos[i];
-						fishesAfterPos[i] -= (vecfishTotarget * 2);
+						fishesAfterPos[i] -= (vecfishTotarget + afterVec);
 					}
 
 
@@ -951,6 +1051,56 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
+void Boss::UpdateDeath()
+{
+	//魚群の中心(真ん中)の座標更新
+	fishParent.pos.TransferMatrix();
+
+	// ボスのHPが０以下になったら
+	// 一回小魚が飛ぶベクトルを求める
+	if (ISDeadCalculation == false) {
+		for (int i = 0; i < fishes.size(); i++) {
+			// ボスと小魚の親子関係を斬る
+			fishes[i].pos.parent_ = nullptr;
+			// 小魚の位置を保持
+			Matrix4 mat;
+
+			fishes[i].pos.translation_ = mat.transform(fishes[i].pos.translation_, fishParent.pos.matWorld_);
+			fishes[i].pos.TransferMatrix();
+			// 親から小魚のベクトルを計算
+			Vector3 fishVel = fishes[i].pos.translation_ - fishParent.pos.translation_;
+
+			// ベクトルを正規化して、速度を掛ける
+			fishVel.normalize();
+			fishVel *= fishDeadSpeed;
+
+			// 求めた小魚のベクトルを保存
+			fishDeadVel.push_back(fishVel);
+		}
+		// for分を全て回したら計算が終了したとみなし、フラグをオンにする
+		ISDeadCalculation = true;
+	}
+
+	// ベクトルの計算が終了したら飛ばす処理
+	if (ISDeadCalculation == true&&IsDeathEnd==false) {
+		deathTimer++;
+		for (int i = 0; i < fishes.size(); i++) {
+			fishes[i].pos.translation_ += fishDeadVel[i];
+			fishes[i].pos.rotation_+= Vector3{ 0.2f, 0.2f, 0.5f };
+			fishes[i].pos.scale_ -= Vector3{0.005f, 0.005f, 0.005f};
+
+			fishes[i].pos.SetRot(fishes[i].pos.rotation_);
+
+			fishes[i].pos.TransferMatrix();
+		}
+		// 一匹でもスケールが０以下になったら飛ばす処理を終了する
+		if (deathTimer >= deathTimerMax) {
+			IsDeathEnd = true;
+		}
+	}
+	
+}
+
 
 
 
@@ -1026,14 +1176,92 @@ void Boss::FishDirectionUpdate()
 	fishParent.pos.SetMatRot(dirMat);
 }
 
+void Boss::SpriteInitialize()
+{
+	Vector2 HP_barSize = { 742.0f ,58.0f };
+
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite->SetAnchorPoint({ 0,0 });
+
+	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
+	HP_barSprite->SetAnchorPoint({ 0.5,0.5 });
+
+	// サイズをセットする
+	healthAlfaSprite->SetSize(hpAlfaSize);
+	HP_barSprite->SetSize(HP_barSize);
+}
+
 void Boss::Damage(int atk) {
 	if (damageTimer > 0) {
 		return;
 	}
-
+	IsHpAlfa = true;
+	hpAlfaSize = hpSize;
 	bossHealth -= atk;
+	if (bossHealth<0)
+	{
+		bossHealth = 0;
+	}
 	damageTimer = nextDamageInterval;
 	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+}
+
+void Boss::SwordCollisionON()
+{
+
+	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
+	float sphereY = posSwordColCube1.y - posSwordColCube2.y;
+	float sphereZ = posSwordColCube1.z - posSwordColCube2.z;
+
+	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+	for (int i = 0; i < SphereCount; i++) {
+		colliderPos[i] = posSwordColCube2 - sphere * i;
+		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+		AttackCollider[i]->Update(worldSpherePos[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYBIGSOWRD);
+	}
+}
+
+void Boss::SwordCollisionUpdate()
+{
+	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
+	float sphereY = posSwordColCube1.y - posSwordColCube2.y;
+	float sphereZ = posSwordColCube1.z - posSwordColCube2.z;
+
+	Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+	for (int i = 0; i < SphereCount; i++) {
+		colliderPos[i] = posSwordColCube2 + sphere * i;
+		worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+		AttackCollider[i]->Update(worldSpherePos[i]);
+		playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
+}
+
+void Boss::SwordCollisionOFF()
+{
+	for (int i = 0; i < SphereCount; i++) {
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+}
+
+void Boss::Death()
+{
+	if (phase1 == BossFirstPhase::Death) {
+		return;
+	}
+	deathTimer = 0;
+	IsDeathEnd = false;
+	ISDeadCalculation = false;
+	fishDeadVel.clear();
+	phase1 = BossFirstPhase::Death;
+
 }
 
 float Random(float num1, float num2)

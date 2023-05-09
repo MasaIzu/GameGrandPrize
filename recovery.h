@@ -21,6 +21,8 @@ public:/// <summary>
 
 	void Collision();
 
+	void Reset();
+
 	Vector3 GetWorldPosition();
 
 	Vector3 GetScale() { return pointWorldTransform_.scale_; }

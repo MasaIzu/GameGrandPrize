@@ -171,9 +171,6 @@
     <None Include="Resources\Shaders\Particle.hlsli">
       <Filter>Shaders\3D</Filter>
     </None>
-    <None Include="Resources\Shaders\FBX.hlsli">
-      <Filter>Shaders\2D</Filter>
-    </None>
     <None Include="Resources\Shaders\PostEffectBlur.hlsli">
       <Filter>Shaders\PostEfeect</Filter>
     </None>
@@ -182,6 +179,9 @@
     </None>
     <None Include="Resources\Shaders\PostEffectMixed.hlsli">
       <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\FBX.hlsli">
+      <Filter>Shaders\3D</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -213,9 +213,6 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\SpritePS.hlsl">
-      <Filter>Shaders\2D</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
       <Filter>Shaders\2D</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
@@ -259,6 +256,12 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\PostEffectMixedVS.hlsl">
       <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXGS.hlsl">
+      <Filter>Shaders\3D</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -608,9 +611,6 @@
     </ClCompile>
     <ClCompile Include="MiniFish.cpp">
       <Filter>ユーザーソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="PostEffect.cpp">
-      <Filter>Engine\ソース ファイル\2D</Filter>
     </ClCompile>
     <ClCompile Include="MiniFish.cpp">
       <Filter>ユーザーソース ファイル</Filter>

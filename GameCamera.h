@@ -16,6 +16,7 @@ public:
 	~GameCamera();
 
 	void Initialize();
+	void InitializeCameraPosition();
 
 	void Update(ViewProjection* viewProjection_);
 
@@ -25,6 +26,8 @@ public:
 	void MultiplyMatrix(Matrix4& matrix);
 
 	void Collision();
+
+	void Reset();
 
 private:
 	// ƒJƒƒ‰‚ÌˆÊ’u‚ğŒvZ‚·‚éŠÖ”

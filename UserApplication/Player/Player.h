@@ -306,4 +306,9 @@ private:
 	std::unique_ptr<Model> RSowrdModel;
 
 	int sowrdFlame=0;
+
+	uint32_t BoneNum = 0;
+
+	float size = 0.0f;
+
 };

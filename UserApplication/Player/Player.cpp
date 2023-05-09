@@ -65,7 +65,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	}
 	worldTransform_.translation_ = { 0.0f,0.0f,150.0f };
 	worldTransform_.scale_ = { 0.03f,0.03f,0.03f };
-	worldTransform_.SetRot({ 0.0f,MyMath::GetAngle(-90.0f),0.0f });
+	//worldTransform_.SetRot({ 0.0f,MyMath::GetAngle(-90.0f),0.0f });
 	worldTransform_.alpha = 0.0;
 
 	worldTransform_.TransferMatrix();
@@ -116,8 +116,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 
-	LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
-	RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
+	//LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
+	//RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
 }
 
 
@@ -205,21 +205,36 @@ void Player::Update(const ViewProjection& viewProjection) {
 	if (input_->PushKey(DIK_K)) {
 		fremX += 0.01;
 	}
-	if (input_->PushKey(DIK_N)) {
-		fremX += -0.1;
+	//if (input_->PushKey(DIK_N)) {
+	//	fremX += -0.1;
+	//}
+	//if (input_->PushKey(DIK_M)) {
+	//	fremX += -0.01;
+	//}
+
+	if (input_->TriggerKey(DIK_M)) {
+		BoneNum++;
 	}
-	if (input_->PushKey(DIK_M)) {
-		fremX += -0.01;
+	if (input_->TriggerKey(DIK_N)) {
+		BoneNum--;
 	}
 
-	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)));
-	matL = fbxmodel->GetLeftBonePos() * MyMath::Scale(Vector3(0, worldTransform_.scale_.y, 0));
+	if (input_->PushKey(DIK_X)) {
+		size += 0.001f;
+	}
+	if (input_->PushKey(DIK_Z)) {
+		size -= 0.001f;
+	}
+
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
+	matL = fbxmodel->GetLeftBonePos() * worldTransform_.matWorld_;
 	matR = fbxmodel->GetRightBonePos() * worldTransform_.matWorld_;
 
-	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL) + MyMath::GetWorldTransform(worldTransform_.matWorld_);
+	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL);
 	RBoneTrans.translation_ = MyMath::GetWorldTransform(matR);
 
-
+	LBoneTrans.scale_ = Vector3(5, 5, 5);
+	RBoneTrans.scale_ = Vector3(5, 5, 5);
 
 	LBoneTrans.TransferMatrix();
 	RBoneTrans.TransferMatrix();
@@ -414,13 +429,27 @@ void Player::Move() {
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
 	Matrix4 roooooot;
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 3);
-	roooooot *= MyMath::Rotation(Vector3(PlayerRot.x, PlayerRot.y, PlayerRot.z), 2);
+	roooooot *= MyMath::Rotation(PlayerRot, 1);
+	roooooot *= MyMath::Rotation(PlayerRot, 3);
+	roooooot *= MyMath::Rotation(PlayerRot, 2);
 	worldTransform_.SetMatRot(roooooot);
 	oldWorldTransform_.SetMatRot(roooooot);
 
 	worldTransform_.SetLookMatRot(roooooot);
+
+	Matrix4 rooooootttt;
+	rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(90.0f) + PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z), 3);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(-90.0f) + PlayerRot.y, 0.0f), 2);
+
+	LBoneTrans.SetMatRot(rooooootttt);
+
+	rooooootttt = MyMath::MakeIdentity();
+	rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(90.0f) + PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z), 3);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(-90.0f) + PlayerRot.y, 0.0f), 2);
+
+	RBoneTrans.SetMatRot(rooooootttt);
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
 	Avoidance = MyMath::MatVector(CameraRot, Avoidance);
@@ -667,6 +696,13 @@ void Player::Attack() {
 			IsCombo3 = false;
 			IsCombo4 = false;
 			IsCombo5 = false;
+
+			Matrix4 rooooootttt;
+			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(90.0f) + PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z), 3);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(-90.0f) + PlayerRot.y, 0.0f), 2);
+
+			LBoneTrans.SetMatRot(rooooootttt);
 		}
 		if (attackMoveTimer < MaxAttackMoveTimer) {
 			attackMoveTimer += 1.0;
@@ -809,18 +845,18 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//if (timer == 0) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
-	if (isAttack) {
+	/*if (isAttack) {
 		for (int i = 0; i < SphereCount; i++) {
 			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
 		}
-	}
+	}*/
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
 
 	recovery->Draw(viewProjection_);
 
 	LSowrdModel->Draw(LBoneTrans, viewProjection_);
-	//RSowrdModel->Draw(RBoneTrans, viewProjection_);
+	RSowrdModel->Draw(RBoneTrans, viewProjection_);
 }
 
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {

@@ -143,6 +143,8 @@ public:
 	// 死んだ時の演出が終わっているか
 	bool GetIsDeathEnd()const { return IsDeathEnd; }
 
+	void SetPlayer(Player* player_) { pl = player_; }
+
 
 	/// <summary>
 	/// メンバ関数(プライベート)
@@ -201,14 +203,17 @@ private:
 
 	//第２フェーズ時の攻撃モーションの剣の投げ
 	void phase2Attack();
+
 	void phase2AttackDraw(ViewProjection viewProMat);
+
+	
 
 	/// <summary>
 	/// メンバ変数(プライベート)
 	/// </summary>
 private:
 	Input* input_;
-	Player* player_ = nullptr;;
+	Player* pl = nullptr;
 
 	Vector3 targetPos;				//標的(プレイヤー)の座標
 	BossSwordPhase bossSwordPhase;	//剣の行動フェーズ
@@ -271,9 +276,12 @@ private:
 	//生成してから剣を飛ばすまでの時間
 	int phase2AttackCoolTime = 40;
 	bool t;
-	Vector3 pPos;
-	Vector3 num = {0,0,0};
+	WorldTransform pPos[5];
+	WorldTransform num[5];
+	float moveSpeed = 0.2f;
 	bool isSat = false;
+	bool isOn = false;
+	
 };
 
 /// <summary>

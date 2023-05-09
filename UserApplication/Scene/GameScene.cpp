@@ -408,7 +408,7 @@ void GameScene::Update() {
 
 		ImGui::End();
 
-
+		boss.SetPlayer(player.get());
 		boss.Update(player->GetWorldPosition());
 		viewProjection_.UpdateMatrix();
 

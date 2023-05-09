@@ -16,6 +16,24 @@ Boss::~Boss()
 
 void Boss::Initialize()
 {
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+
+		w[i].Initialize();
+		//w[i].translation_ = { 1.0f,10.0f ,1.0f };
+		w[i].TransferMatrix();
+
+		num[i].Initialize();
+		//num[i].translation_ = { 1.0f,10.0f ,1.0f };
+		num[i].TransferMatrix();
+
+		pPos[i].Initialize();
+		//pPos[i].translation_ = { 1.0f,10.0f ,1.0f };
+		pPos[i].TransferMatrix();
+	}
+
+	
+	
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
 
@@ -94,6 +112,8 @@ void Boss::Update(const Vector3& targetPos)
 		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 		return;
 	}
+
+	phase2Attack();
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -194,7 +214,7 @@ void Boss::Draw(ViewProjection viewProMat)
 	//	return;
 	//}
 
-
+	//swordModel->Draw(swordTransform, viewProMat);
 	if (phase1 == BossFirstPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
 
@@ -218,6 +238,9 @@ void Boss::Draw(ViewProjection viewProMat)
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
 	swordModel->Draw(fishParent.pos, viewProMat);
+	
+	phase2AttackDraw(viewProMat);
+	
 }
 
 void Boss::DrawHealth() {
@@ -1148,24 +1171,39 @@ void Boss::SwordCollisionOFF()
 
 void Boss::phase2Attack()
 {
-	//生成時の座標設定
-	for (int i = 0; i < MAXSWROD; i++)
-	{
-		
-		w[i].translation_ = { 
-			swordTransform.translation_.x + i * 30,
-			swordTransform.translation_.y + i * 30,
-			swordTransform.translation_.z + i * 30 
-		};
-	}
+	
 
-	pPos = player_->GetWorldPosition();
-	num = pPos - swordTransform.translation_;
-	num.normalize();
-
+	//確認用の攻撃キー
 	if (input_->PushKey(DIK_L))
 	{
-		t = true;
+		isOn = true;
+
+		//生成時の座標設定
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+
+			w[i].translation_ = {
+				fishParent.pos.translation_.x + i ,
+				fishParent.pos.translation_.y + i ,
+				fishParent.pos.translation_.z + i
+			};
+
+			w[i].TransferMatrix();
+		}
+
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+
+			pPos[i].translation_ = pl->GetWorldPosition();
+			num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+			num[i].translation_.normalize();
+			
+			num[i].TransferMatrix();
+
+		}
+			
+
+		//t = true;
 		isSat = true;
 	}
 	//攻撃開始
@@ -1176,7 +1214,8 @@ void Boss::phase2Attack()
 			//生成した剣を飛ばすシーン
 			for (int  i = 0; i < MAXSWROD; i++)
 			{
-				//w[i].
+				//計算したベクトル方向に動かす
+				//w[i].translation_ += num[i].translation_;
 			}
 		}
 	}
@@ -1188,7 +1227,7 @@ void Boss::phase2AttackDraw(ViewProjection viewProMat)
 	{
 		for (int i = 0; i < MAXSWROD; i++)
 		{
-			swordModel->Draw(w[1], viewProMat);
+			swordModel->Draw(w[i], viewProMat);
 		}
 	}
 }

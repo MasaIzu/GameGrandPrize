@@ -167,6 +167,8 @@ public: // メンバ関数
 	/// <param name="endColor">最終色</param>
 	void Add(Type type, int life,bool isBezier, Vector3 startPosition,Vector3 controlPosition,Vector3 endPosition, float startScale, float endScale, Vector4 startColor, Vector4 endColor);
 
+	void AllDelete() { Particles.clear(); }
+
 private: // メンバ変数
 	ComPtr<ID3D12Resource> constBuff; // 定数バッファ
 	//// 色

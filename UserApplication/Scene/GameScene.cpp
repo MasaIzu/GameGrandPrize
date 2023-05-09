@@ -598,6 +598,7 @@ void GameScene::Draw() {
 
 void GameScene::Reset()
 {
+	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
 	viewProjection_.UpdateMatrix();
@@ -664,6 +665,8 @@ void GameScene::Reset()
 
 	isTutorialEnd = false;
 	isStartBossBattle = false;
+
+	collisionManager->CheckAllCollisions();
 }
 
 void GameScene::Finalize()

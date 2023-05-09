@@ -279,9 +279,9 @@ private:
 	float flame = 0;
 	float playerAttackMovement = 0.0f;
 
-	float spriteAlpha1 = 0.0f;
-	float spriteAlpha2 = 0.0f;
-	float spriteAlpha3 = 0.0f;
+	float spriteAlpha1 = 1.0f;
+	float spriteAlpha2 = 1.0f;
+	float spriteAlpha3 = 1.0f;
 
 	Matrix4 matL;
 	Matrix4 matR;

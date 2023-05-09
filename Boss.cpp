@@ -8,6 +8,7 @@
 #include <SphereCollider.h>
 #include <CollisionAttribute.h>
 #include"Sprite.h"
+#include"TextureManager.h"
 
 Boss::~Boss()
 {
@@ -39,6 +40,18 @@ void Boss::Initialize()
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
 	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
 
+	//ボス2のモデル初期化
+	//Rootは大本で動かす親用なので空データでOK
+	boss2Model[Boss2Part::Chest].reset(Model::CreateFromOBJ("Boss_Body", true));
+	boss2Model[Boss2Part::Head].reset(Model::CreateFromOBJ("Boss_Head", true));
+	boss2Model[Boss2Part::Waist].reset(Model::CreateFromOBJ("Boss_Waist", true));
+	boss2Model[Boss2Part::ArmL].reset(Model::CreateFromOBJ("Boss_ShoulderL", true));
+	boss2Model[Boss2Part::ArmR].reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
+	boss2Model[Boss2Part::HandL].reset(Model::CreateFromOBJ("Boss_ArmL", true));
+	boss2Model[Boss2Part::HandR].reset(Model::CreateFromOBJ("Boss_ArmR", true));
+
+	whiteTexture = TextureManager::Load("white1x1.png");
+
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
@@ -56,9 +69,25 @@ void Boss::Initialize()
 	testTrans.Initialize();
 	testTrans2.Initialize();
 
+	//ボス第二形態の各部位初期化
+	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
+		boss2Transform[i].Initialize();
+	}
+
+	//胸は大本を親に持つ
+	boss2Transform[Boss2Part::Chest].parent_ = &boss2Transform[Boss2Part::Root];
+	//頭、腰、両腕は胸を親に持つ
+	boss2Transform[Boss2Part::Head].parent_ = &boss2Transform[Boss2Part::Chest];
+	boss2Transform[Boss2Part::Waist].parent_ = &boss2Transform[Boss2Part::Chest];
+	boss2Transform[Boss2Part::ArmL].parent_ = &boss2Transform[Boss2Part::Chest];
+	boss2Transform[Boss2Part::ArmR].parent_ = &boss2Transform[Boss2Part::Chest];
+	//それぞれの手はそれぞれの腕を親に持つ
+	boss2Transform[Boss2Part::HandL].parent_ = &boss2Transform[Boss2Part::ArmL];
+	boss2Transform[Boss2Part::HandR].parent_ = &boss2Transform[Boss2Part::ArmR];
+
 }
 
-void Boss::Update(const Vector3& targetPos)
+void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
 {
 	//第1形態の魚群の更新
 	//ImGui::Begin("sword");
@@ -102,6 +131,28 @@ void Boss::Update(const Vector3& targetPos)
 
 
 	//	ImGui::End();
+
+	//ボス第二形態のデバッグ用
+	ImGui::Begin("Boss2");
+	float scale = boss2Transform[Boss2Part::Root].scale_.x;
+	ImGui::SliderFloat("scale", &scale, 0.0f, 10.0f);
+	boss2Transform[Boss2Part::Root].scale_.x = scale;
+	boss2Transform[Boss2Part::Root].scale_.y = scale;
+	boss2Transform[Boss2Part::Root].scale_.z = scale;
+
+	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
+		ImGui::Text("Part::%d", i);
+		ImGui::SliderFloat("x",&boss2Transform[i].translation_.x, -20.0f, 20.0f);
+		ImGui::SliderFloat("y",&boss2Transform[i].translation_.y, -20.0f, 20.0f);
+		ImGui::SliderFloat("z",&boss2Transform[i].translation_.z, -20.0f, 20.0f);
+	}
+
+	ImGui::End();
+
+	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
+		boss2Transform[i].TransferMatrix();
+	}
+
 
 	collider->Update(fishParent.pos.matWorld_);
 }
@@ -165,7 +216,7 @@ void Boss::CreateFish(Vector3 spawnPos)
 	randParam = { Random(-5, 5), 30.0f, Random(-5, 5) };
 	newFish.controll2 = newFish.afterPos + randParam;
 	newFish.easeMove.Start(45);
-	
+
 	newFish.pos.translation_ = pos;
 	newFish.pos.TransferMatrix();
 	//配列にい列
@@ -204,6 +255,9 @@ void Boss::Draw(ViewProjection viewProMat)
 
 	swordModel->Draw(fishParent.pos, viewProMat);
 
+	for (int i = Boss2Part::Chest; i < Boss2Part::Boss2PartMax; i++) {
+		boss2Model[i]->Draw(boss2Transform[i], viewProMat, whiteTexture);
+	}
 }
 
 void Boss::DrawHealth() {
@@ -211,7 +265,7 @@ void Boss::DrawHealth() {
 	Vector2 size = { 48.0f * bossHealth,48.0f };
 	Vector2 pos = { WinApp::window_width / 2 - (48 * 10),WinApp::window_height * 8.0f / 10.0f };
 	healthSprite->SetSize(size);
-	healthSprite->Draw(pos, {1,1,1,1});
+	healthSprite->Draw(pos, { 1,1,1,1 });
 
 
 }
@@ -616,10 +670,10 @@ void Boss::UpdateAtkSword()
 			Vector3 bossPosY0 = fishParent.pos.translation_;
 			//平行に剣を向けるため、Yを同値に
 			bossPosY0.y = targetPos.y;
-			
+
 
 			matrot = CreateMatRot(bossPosY0, { pos.x,pos.y + 1,pos.z });
-				
+
 			//ワールド行列から回転を借りてくる
 			rot = swordTransform.rotation_;
 			//回転
@@ -737,6 +791,8 @@ void Boss::UpdateAtkRush()
 
 		fishParent.pos.translation_ = pos;
 		fishParent.pos.TransferMatrix();
+
+
 
 	}
 	else {

@@ -43,6 +43,18 @@ enum class BossSwordPhase {
 	Cooltime_Destroy,
 };
 
+enum Boss2Part {
+	Root,	//大本
+	Chest,	//胸
+	Head,	//頭
+	Waist,	//腰
+	ArmL,	//左腕
+	ArmR,	//右腕
+	HandL,	//左手
+	HandR,	//右手
+	Boss2PartMax,	//ボスの部位数
+};
+
 class Boss
 {
 public:
@@ -52,6 +64,7 @@ public:
 	std::unique_ptr<Model> fishBodyModel = nullptr;	//魚の体モデル
 	std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
 	std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
+	std::unique_ptr<Model> boss2Model[Boss2Part::Boss2PartMax];	//ボス第二形態のモデル
 	float randSpdParam = 0;							//ランダムで変化する速度の基本値
 	BossFirstPhase phase1;							//ボス第一形態のフェーズ
 	const int attackCooltime = 60 * 3;				//次の攻撃までのクールタイム
@@ -177,8 +190,8 @@ private:
 	Vector3 beforeScale;						//変化前のスケール
 	Vector3 afterScale;							//変化後のスケール
 	float lenTargetToFishes[fishMaxCount];		//小魚と標的の距離(スカラー)
-
-
+	WorldTransform boss2Transform[Boss2Part::Boss2PartMax];	//ボス第二形態の各部位のワールド行列
+	uint32_t whiteTexture = 0;	//白色のテクスチャ
 	// コライダー
 	BaseCollider* collider = nullptr;
 	float radius = 30.0f;//当たり判定半径

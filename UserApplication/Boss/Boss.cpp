@@ -13,31 +13,31 @@
 
 Boss::~Boss()
 {
-	delete bossFish;
+
 }
 
 void Boss::Initialize()
 {
-	bossFish = new BossFish{};
-	bossFish->Initialize();
+
+	bossFish.Initialize();
 }
 
 void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
 {
-	bossFish->Update(targetPos, stagePos, stageRadius);
+	bossFish.Update(targetPos, stagePos, stageRadius);
 }
 
 void Boss::Draw(const ViewProjection& viewProMat)
 {
-	bossFish->Draw(viewProMat);
+	bossFish.Draw(viewProMat);
 }
 
 void Boss::DrawHealth()
 {
-	bossFish->DrawHealth();
+	bossFish.DrawHealth();
 }
 
 void Boss::Reset()
 {
-	bossFish->Reset();
+	bossFish.Reset();
 }

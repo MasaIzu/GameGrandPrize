@@ -15,7 +15,7 @@ class Boss
 
 public:
 
-	BossFish* bossFish;
+	BossFish bossFish;
 
 	~Boss();
 

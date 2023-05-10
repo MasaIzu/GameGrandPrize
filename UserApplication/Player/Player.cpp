@@ -182,9 +182,34 @@ void Player::Update(const ViewProjection& viewProjection) {
 	if (HP <= 0.0f && isAlive)
 	{
 		worldTransform_.alpha -= 0.05;
+		//スペースキーを押していたら
+		for (int i = 0; i < 10; i++)
+		{
+			//消えるまでの時間
+			const float rnd_life = 10.0f;
+			//最低限のライフ
+			const float constlife = 10;
+			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+
+			Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+			//追加
+			ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, {0,0,0}, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+		}
 		if (worldTransform_.alpha <= 0.0f)
 		{
 			isAlive = false;
+			ParticleMan->AllDelete();
 		}
 	}
 	ParticleMan->Update();
@@ -994,7 +1019,7 @@ void Player::Collision(int damage)
 		int ParticleNumber = 10;
 		if (HP <= 0)
 		{
-			ParticleNumber = 100;
+			ParticleNumber = 0;
 		}
 		//スペースキーを押していたら
 		for (int i = 0; i < ParticleNumber; i++)
@@ -1143,7 +1168,7 @@ void Player::Reset()
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
-	playerEvasionTimes = 3;
+	playerEvasionTimes == playerEvasionMaxTimes;
 
 	recovery->Reset();
 
@@ -1215,18 +1240,18 @@ void Player::Reset()
 
 	isAlive = true;
 
-	playerEvasionTimes = 0;
+	playerEvasionTimes = 3;
 	playerEvasionCoolTime = 0;
 	playerEvasionMaxTimes = 3;
 	CoolTime = 180;
+	spriteAlpha1 = 1.0f;
+	spriteAlpha2 = 1.0f;
+	spriteAlpha3 = 1.0f;
 
 	flame = 0;
 
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
-	spriteAlpha1 = 0.0f;
-	spriteAlpha2 = 0.0f;
-	spriteAlpha3 = 0.0f;
 	isInput = false;
 }
 

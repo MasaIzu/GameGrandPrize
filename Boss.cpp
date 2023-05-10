@@ -95,6 +95,9 @@ void Boss::Initialize()
 	boss2Transform[Boss2Part::HandL].parent_ = &boss2Transform[Boss2Part::ArmL];
 	boss2Transform[Boss2Part::HandR].parent_ = &boss2Transform[Boss2Part::ArmR];
 
+	//ボスのスケールを5倍に
+	boss2Transform[Boss2Part::Root].scale_ = { 5,5,5 };
+
 	SpriteInitialize();
 
 }

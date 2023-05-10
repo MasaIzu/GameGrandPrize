@@ -148,6 +148,12 @@
     <Filter Include="Engine\ヘッダー\Math">
       <UniqueIdentifier>{4b35cdcd-550b-4d8e-93da-cbcd6bcd7028}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ユーザーヘッダー ファイル\Boss">
+      <UniqueIdentifier>{0a33e27c-eb9d-4ef7-8a55-18cec47daef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーソース ファイル\Boss">
+      <UniqueIdentifier>{4560a0bb-49c1-4eef-b64a-0da6a1806bd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Primitive.hlsli">
@@ -412,9 +418,6 @@
     <ClInclude Include="Engine\3D\FbxModel.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Boss.h">
-      <Filter>ユーザーヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="EasingData.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
@@ -468,6 +471,15 @@
     </ClInclude>
     <ClInclude Include="Engine\3D\CircleShadow.h">
       <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\Boss.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\BossFish.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\BossWarrier.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -594,9 +606,6 @@
     <ClCompile Include="Engine\3D\FbxModel.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
-    <ClCompile Include="Boss.cpp">
-      <Filter>ユーザーソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="EasingData.cpp">
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
@@ -647,6 +656,15 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\Boss.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\BossFish.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\BossWarrier.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

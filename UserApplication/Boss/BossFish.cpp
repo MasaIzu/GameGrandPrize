@@ -1,3 +1,4 @@
+﻿#include "BossFish.h"
 #include "Boss.h"
 #include<random>
 #include"Quaternion.h"
@@ -10,12 +11,12 @@
 #include"Sprite.h"
 #include"TextureManager.h"
 
-Boss::~Boss()
+BossFish::~BossFish()
 {
 	delete collider;
 }
 
-void Boss::Initialize()
+void BossFish::Initialize()
 {
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
@@ -40,19 +41,10 @@ void Boss::Initialize()
 	fishBodyModel.reset(Model::CreateFromOBJ("FishBody", true));
 	fishEyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
 
-	//ボス2のモデル初期化
-	//Rootは大本で動かす親用なので空データでOK
-	boss2Model[Boss2Part::Chest].reset(Model::CreateFromOBJ("Boss_Body", true));
-	boss2Model[Boss2Part::Head].reset(Model::CreateFromOBJ("Boss_Head", true));
-	boss2Model[Boss2Part::Waist].reset(Model::CreateFromOBJ("Boss_Waist", true));
-	boss2Model[Boss2Part::ArmL].reset(Model::CreateFromOBJ("Boss_ShoulderL", true));
-	boss2Model[Boss2Part::ArmR].reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
-	boss2Model[Boss2Part::HandL].reset(Model::CreateFromOBJ("Boss_ArmL", true));
-	boss2Model[Boss2Part::HandR].reset(Model::CreateFromOBJ("Boss_ArmR", true));
-
+	
 	whiteTexture = TextureManager::Load("white1x1.png");
 
-	phase1 = BossFirstPhase::Idle;
+	phase1 = BossFishPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
 	radius = 23.0f;
@@ -79,30 +71,15 @@ void Boss::Initialize()
 	for (int i = 0; i < SphereCount; i++) {
 		playerAttackTransformaaaa_[i].Initialize();
 	}
-	//ボス第二形態の各部位初期化
-	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
-		boss2Transform[i].Initialize();
-	}
+	
 
-	//胸は大本を親に持つ
-	boss2Transform[Boss2Part::Chest].parent_ = &boss2Transform[Boss2Part::Root];
-	//頭、腰、両腕は胸を親に持つ
-	boss2Transform[Boss2Part::Head].parent_ = &boss2Transform[Boss2Part::Chest];
-	boss2Transform[Boss2Part::Waist].parent_ = &boss2Transform[Boss2Part::Chest];
-	boss2Transform[Boss2Part::ArmL].parent_ = &boss2Transform[Boss2Part::Chest];
-	boss2Transform[Boss2Part::ArmR].parent_ = &boss2Transform[Boss2Part::Chest];
-	//それぞれの手はそれぞれの腕を親に持つ
-	boss2Transform[Boss2Part::HandL].parent_ = &boss2Transform[Boss2Part::ArmL];
-	boss2Transform[Boss2Part::HandR].parent_ = &boss2Transform[Boss2Part::ArmR];
-
-	//ボスのスケールを5倍に
-	boss2Transform[Boss2Part::Root].scale_ = { 5,5,5 };
+	
 
 	SpriteInitialize();
 
 }
 
-void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
+void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
 {
 	//第1形態の魚群の更新
 	//ImGui::Begin("sword");
@@ -127,19 +104,19 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	}
 
 	switch (phase1) {
-	case BossFirstPhase::Idle:
+	case BossFishPhase::Idle:
 		UpdateIdle();
 		break;
-	case BossFirstPhase::Atk_Sword:
+	case BossFishPhase::Atk_Sword:
 		UpdateAtkSword();
 		break;
-	case BossFirstPhase::Atk_Rush:
+	case BossFishPhase::Atk_Rush:
 		UpdateAtkRush();
 		break;
-	case BossFirstPhase::BeginMotion:
+	case BossFishPhase::BeginMotion:
 		UpdateBeginMotion();
 		break;
-	case BossFirstPhase::Death:
+	case BossFishPhase::Death:
 		UpdateDeath();
 		break;
 	default:
@@ -148,35 +125,11 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	}
 
 
-	//	ImGui::End();
-
-
-	//ボス第二形態のデバッグ用
-	ImGui::Begin("Boss2");
-	float scale = boss2Transform[Boss2Part::Root].scale_.x;
-	ImGui::SliderFloat("scale", &scale, 0.0f, 10.0f);
-	boss2Transform[Boss2Part::Root].scale_.x = scale;
-	boss2Transform[Boss2Part::Root].scale_.y = scale;
-	boss2Transform[Boss2Part::Root].scale_.z = scale;
-
-	//for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
-	//	ImGui::Text("Part::%d", i);
-		ImGui::SliderFloat("x", &boss2Transform[Boss2Part::Root].translation_.x, -200.0f, 200.0f);
-		ImGui::SliderFloat("y", &boss2Transform[Boss2Part::Root].translation_.y, -200.0f, 200.0f);
-		ImGui::SliderFloat("z", &boss2Transform[Boss2Part::Root].translation_.z, -200.0f, 200.0f);
-	//}
-
-	ImGui::End();
-
-	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
-		boss2Transform[i].TransferMatrix();
-	}
-
 	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void Boss::CreateFish(Vector3 spawnPos)
+void BossFish::CreateFish(Vector3 spawnPos)
 {
 
 	float posY = Random(-fishParent.radius, fishParent.radius);
@@ -242,14 +195,14 @@ void Boss::CreateFish(Vector3 spawnPos)
 	fishes.push_back(newFish);
 }
 
-void Boss::Draw(ViewProjection viewProMat)
+void BossFish::Draw(ViewProjection viewProMat)
 {
 	//if (bossHealth <= 0) {
 	//	return;
 	//}
 
 
-	if (phase1 == BossFirstPhase::Atk_Sword) {
+	if (phase1 == BossFishPhase::Atk_Sword) {
 		swordModel->Draw(swordTransform, viewProMat);
 
 		testTrans.scale_ = { 3,3,3 };
@@ -274,12 +227,10 @@ void Boss::Draw(ViewProjection viewProMat)
 
 	swordModel->Draw(fishParent.pos, viewProMat);
 
-	for (int i = Boss2Part::Chest; i < Boss2Part::Boss2PartMax; i++) {
-		boss2Model[i]->Draw(boss2Transform[i], viewProMat, whiteTexture);
-	}
+	
 }
 
-void Boss::DrawHealth() {
+void BossFish::DrawHealth() {
 	// HPのセット
 	float nowHp = bossHealth / bossHpMax;
 	hpSize = { 714.0f * nowHp,27.0f };
@@ -324,7 +275,7 @@ void Boss::DrawHealth() {
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 }
 
-void Boss::Reset()
+void BossFish::Reset()
 {
 	fishParent.radius = 20.0f;
 
@@ -337,7 +288,7 @@ void Boss::Reset()
 
 	randSpdParam = 3.75f;
 
-	phase1 = BossFirstPhase::Idle;
+	phase1 = BossFishPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
 	radius = 23.0f;
@@ -369,7 +320,7 @@ void Boss::Reset()
 	ISDeadCalculation = false;
 }
 
-void Boss::UpdateIdle()
+void BossFish::UpdateIdle()
 {
 	//魚群の中心(真ん中)の座標更新
 	FishDirectionUpdate();
@@ -473,7 +424,7 @@ void Boss::UpdateIdle()
 			//突進攻撃の回数を初期化
 			rushCount = rushMaxCount;
 			//フェーズ移行
-			phase1 = BossFirstPhase::Atk_Rush;
+			phase1 = BossFishPhase::Atk_Rush;
 
 			moveFlag = 1;
 		}
@@ -483,8 +434,8 @@ void Boss::UpdateIdle()
 			//0になったらクールタイムを攻撃開始モーションの時間に設定
 			nextPhaseInterval = beginAttackDelay;
 			//フェーズを移行
-			phase1 = BossFirstPhase::BeginMotion;
-			bossSwordPhase = BossSwordPhase::Start;
+			phase1 = BossFishPhase::BeginMotion;
+			bossSwordPhase = BossFishSwordPhase::Start;
 
 			//魚群の乱回転のためのランダムなベクトルを作成
 			for (int i = 0; i < fishes.size(); i++) {
@@ -501,7 +452,7 @@ void Boss::UpdateIdle()
 	}
 }
 
-void Boss::UpdateAtkSword()
+void BossFish::UpdateAtkSword()
 {
 	//行動時間のフレームまとめ
 	const int swordCreateTime = 120;	//剣の生成時間
@@ -517,8 +468,8 @@ void Boss::UpdateAtkSword()
 	//モーション開始の瞬間
 	if (nextPhaseInterval <= 0) {
 		//生成の瞬間
-		if (bossSwordPhase == BossSwordPhase::Start) {
-			bossSwordPhase = BossSwordPhase::Create;
+		if (bossSwordPhase == BossFishSwordPhase::Start) {
+			bossSwordPhase = BossFishSwordPhase::Create;
 			nextPhaseInterval = swordCreateTime;
 			swordTransform.scale_ = { 0,0,0 };
 			easeSwordScale.Start(swordCreateTime);
@@ -539,37 +490,37 @@ void Boss::UpdateAtkSword()
 
 
 		}//移動開始の瞬間
-		else if (bossSwordPhase == BossSwordPhase::Create) {
-			bossSwordPhase = BossSwordPhase::Cooltime_Create;
+		else if (bossSwordPhase == BossFishSwordPhase::Create) {
+			bossSwordPhase = BossFishSwordPhase::Cooltime_Create;
 			nextPhaseInterval = moveDelay;
 		}
-		else if (bossSwordPhase == BossSwordPhase::Cooltime_Create) {
-			bossSwordPhase = BossSwordPhase::Move;
+		else if (bossSwordPhase == BossFishSwordPhase::Cooltime_Create) {
+			bossSwordPhase = BossFishSwordPhase::Move;
 			nextPhaseInterval = swordMoveTime;
 			easeSwordPos.Start(swordMoveTime);
 			swordTransform.translation_ = swordPos;
 			//		swordTransform.SetRot({ 0,0,0 });
 
 		}//攻撃開始の瞬間
-		else if (bossSwordPhase == BossSwordPhase::Move) {
-			bossSwordPhase = BossSwordPhase::Attack;
+		else if (bossSwordPhase == BossFishSwordPhase::Move) {
+			bossSwordPhase = BossFishSwordPhase::Attack;
 			nextPhaseInterval = swordAtkTime;
 			easeSwordPos.Start(swordAtkTime);
 			SwordCollisionON();
 		}//霧散の瞬間
-		else if (bossSwordPhase == BossSwordPhase::Attack) {
-			bossSwordPhase = BossSwordPhase::Destroy;
+		else if (bossSwordPhase == BossFishSwordPhase::Attack) {
+			bossSwordPhase = BossFishSwordPhase::Destroy;
 			nextPhaseInterval = swordBreakTime;
 			easeSwordScale.Start(swordBreakTime);
 			afterScale = { 0.5f,0.5f,0.5f };
 			beforeScale = { 0,0,0 };
 			SwordCollisionOFF();
 		}
-		else if (bossSwordPhase == BossSwordPhase::Destroy) {
-			bossSwordPhase = BossSwordPhase::Cooltime_Destroy;
+		else if (bossSwordPhase == BossFishSwordPhase::Destroy) {
+			bossSwordPhase = BossFishSwordPhase::Cooltime_Destroy;
 			nextPhaseInterval = moveDelay;
 		}
-		else if (bossSwordPhase == BossSwordPhase::Cooltime_Destroy) {
+		else if (bossSwordPhase == BossFishSwordPhase::Cooltime_Destroy) {
 			//親子関係を戻す
 			for (int i = 0; i < fishes.size(); i++) {
 				if (fishes[i].pos.parent_ == nullptr) {
@@ -580,14 +531,14 @@ void Boss::UpdateAtkSword()
 			//モーション終了
 			nextPhaseInterval = attackCooltime;
 			//フェーズを移行
-			phase1 = BossFirstPhase::Idle;
+			phase1 = BossFishPhase::Idle;
 			return;
 		}
 
 	}
 	else {
 
-		if (bossSwordPhase == BossSwordPhase::Create) {
+		if (bossSwordPhase == BossFishSwordPhase::Create) {
 			//敵中心から剣の位置の中心まで移動する(120f)
 			//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
 
@@ -641,7 +592,7 @@ void Boss::UpdateAtkSword()
 			swordTransform.SetMatRot(CreateMatRot(fishParent.pos.translation_, targetPos));
 		}
 		//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
-		else if (bossSwordPhase == BossSwordPhase::Move) {
+		else if (bossSwordPhase == BossFishSwordPhase::Move) {
 
 			ImGui::Text("now move!");
 			Vector3 rotaVec;
@@ -695,7 +646,7 @@ void Boss::UpdateAtkSword()
 			swordTransform.translation_ = pos;
 
 		}
-		else if (bossSwordPhase == BossSwordPhase::Attack) {
+		else if (bossSwordPhase == BossFishSwordPhase::Attack) {
 
 			ImGui::Text("now attack!");
 
@@ -788,7 +739,7 @@ void Boss::UpdateAtkSword()
 			swordTransform.translation_ = pos;
 		}
 		//崩壊モーション
-		else if (bossSwordPhase == BossSwordPhase::Destroy) {
+		else if (bossSwordPhase == BossFishSwordPhase::Destroy) {
 
 			//毎フレーム1匹ずつ動かす
 			int fishIndex = swordBreakTime - nextPhaseInterval;
@@ -870,7 +821,7 @@ void Boss::UpdateAtkSword()
 
 }
 
-void Boss::UpdateAtkRush()
+void BossFish::UpdateAtkRush()
 {
 	const int rushMaxTime = 60;		//突進攻撃の始点から終点までかかる時間
 	const int rushCoolTime = 30;	//次の突進攻撃までのクールタイム
@@ -953,7 +904,7 @@ void Boss::UpdateAtkRush()
 			else {
 				//突進の回数が残っていないならモーション終わり
 				nextPhaseInterval = attackCooltime;
-				phase1 = BossFirstPhase::Idle;
+				phase1 = BossFishPhase::Idle;
 				for (int i = 0; i < fishes.size(); i++) {
 					fishes[i].pos.parent_ = &fishParent.pos;
 				}
@@ -1002,7 +953,7 @@ void Boss::UpdateAtkRush()
 
 }
 
-void Boss::UpdateBeginMotion()
+void BossFish::UpdateBeginMotion()
 {
 	//魚群の中心(真ん中)の座標更新
 	fishParent.pos.TransferMatrix();
@@ -1046,7 +997,7 @@ void Boss::UpdateBeginMotion()
 	nextPhaseInterval--;
 	if (nextPhaseInterval == 0) {
 		//フェーズの変更とクールタイム再設定
-		phase1 = BossFirstPhase::Atk_Sword;
+		phase1 = BossFishPhase::Atk_Sword;
 		//nextPhaseInterval = atkSwordMotionTime;
 
 		//剣の大きさ、回転を初期化
@@ -1056,7 +1007,7 @@ void Boss::UpdateBeginMotion()
 	}
 }
 
-void Boss::UpdateDeath()
+void BossFish::UpdateDeath()
 {
 	//魚群の中心(真ん中)の座標更新
 	fishParent.pos.TransferMatrix();
@@ -1109,7 +1060,7 @@ void Boss::UpdateDeath()
 
 
 
-void Boss::SwordColCubeUpdate()
+void BossFish::SwordColCubeUpdate()
 {
 
 	//剣の回転情報で座標を移動
@@ -1131,7 +1082,7 @@ void Boss::SwordColCubeUpdate()
 	posSwordColCube2 += swordTransform.translation_;*/
 }
 
-void Boss::SortFishMin()
+void BossFish::SortFishMin()
 {
 	Vector3 vecFishToTarget;
 	//�傫���𒲂ׂ�
@@ -1159,7 +1110,7 @@ void Boss::SortFishMin()
 	}
 }
 
-void Boss::FishDirectionUpdate()
+void BossFish::FishDirectionUpdate()
 {
 	//毎フレームの最初に魚を向かせる
 	Vector3 parentPos = fishParent.pos.translation_;
@@ -1181,7 +1132,7 @@ void Boss::FishDirectionUpdate()
 	fishParent.pos.SetMatRot(dirMat);
 }
 
-void Boss::SpriteInitialize()
+void BossFish::SpriteInitialize()
 {
 	Vector2 HP_barSize = { 742.0f ,58.0f };
 
@@ -1200,7 +1151,7 @@ void Boss::SpriteInitialize()
 	HP_barSprite->SetSize(HP_barSize);
 }
 
-void Boss::Damage(int atk) {
+void BossFish::Damage(int atk) {
 	if (damageTimer > 0) {
 		return;
 	}
@@ -1215,7 +1166,7 @@ void Boss::Damage(int atk) {
 	collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 }
 
-void Boss::SwordCollisionON()
+void BossFish::SwordCollisionON()
 {
 
 	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
@@ -1232,7 +1183,7 @@ void Boss::SwordCollisionON()
 	}
 }
 
-void Boss::SwordCollisionUpdate()
+void BossFish::SwordCollisionUpdate()
 {
 	float sphereX = posSwordColCube1.x - posSwordColCube2.x;
 	float sphereY = posSwordColCube1.y - posSwordColCube2.y;
@@ -1249,23 +1200,23 @@ void Boss::SwordCollisionUpdate()
 	}
 }
 
-void Boss::SwordCollisionOFF()
+void BossFish::SwordCollisionOFF()
 {
 	for (int i = 0; i < SphereCount; i++) {
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 	}
 }
 
-void Boss::Death()
+void BossFish::Death()
 {
-	if (phase1 == BossFirstPhase::Death) {
+	if (phase1 == BossFishPhase::Death) {
 		return;
 	}
 	deathTimer = 0;
 	IsDeathEnd = false;
 	ISDeadCalculation = false;
 	fishDeadVel.clear();
-	phase1 = BossFirstPhase::Death;
+	phase1 = BossFishPhase::Death;
 
 }
 

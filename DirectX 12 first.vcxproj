@@ -334,7 +334,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UserApplication\Boss\BossWarrier.h" />
-    <ClInclude Include="UserApplication\Boss\Boss.h" />
     <ClInclude Include="UserApplication\Boss\BossFish.h" />
     <ClInclude Include="Easing.h" />
     <ClInclude Include="EasingData.h" />
@@ -406,7 +405,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UserApplication\Boss\BossWarrier.cpp" />
-    <ClCompile Include="UserApplication\Boss\Boss.cpp" />
     <ClCompile Include="UserApplication\Boss\BossFish.cpp" />
     <ClCompile Include="Easing.cpp" />
     <ClCompile Include="EasingData.cpp" />

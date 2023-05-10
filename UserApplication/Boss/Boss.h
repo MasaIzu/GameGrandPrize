@@ -37,7 +37,7 @@ public:
 	/// 描画
 	/// </summary>
 	/// <param name="viewProMat">ビュープロジェクション</param>
-	void Draw(ViewProjection viewProMat);
+	void Draw(const ViewProjection& viewProMat);
 
 	/// <summary>
 	/// 体力の描画

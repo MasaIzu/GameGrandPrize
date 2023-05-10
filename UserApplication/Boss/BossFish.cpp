@@ -129,7 +129,7 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 	collider->Update(fishParent.pos.matWorld_);
 }
 
-void BossFish::CreateFish(Vector3 spawnPos)
+void BossFish::CreateFish(const Vector3& spawnPos)
 {
 
 	float posY = Random(-fishParent.radius, fishParent.radius);
@@ -195,7 +195,7 @@ void BossFish::CreateFish(Vector3 spawnPos)
 	fishes.push_back(newFish);
 }
 
-void BossFish::Draw(ViewProjection viewProMat)
+void BossFish::Draw(const ViewProjection& viewProMat)
 {
 	//if (bossHealth <= 0) {
 	//	return;

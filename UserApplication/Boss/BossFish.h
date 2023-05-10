@@ -64,13 +64,13 @@ public:
 	/// 小魚の生成
 	/// </summary>
 	/// <param name="spawnPos">生成する座標</param>
-	void CreateFish(Vector3 spawnPos);
+	void CreateFish(const Vector3& spawnPos);
 
 	/// <summary>
 	/// 描画
 	/// </summary>
 	/// <param name="viewProMat">ビュープロジェクション</param>
-	void Draw(ViewProjection viewProMat);
+	void Draw(const ViewProjection& viewProMat);
 
 	/// <summary>
 	/// 体力の描画

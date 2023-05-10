@@ -472,9 +472,6 @@
     <ClInclude Include="Engine\3D\CircleShadow.h">
       <Filter>Engine\ヘッダー\3D\Light</Filter>
     </ClInclude>
-    <ClInclude Include="UserApplication\Boss\Boss.h">
-      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
-    </ClInclude>
     <ClInclude Include="UserApplication\Boss\BossFish.h">
       <Filter>ユーザーヘッダー ファイル\Boss</Filter>
     </ClInclude>
@@ -656,9 +653,6 @@
     </ClCompile>
     <ClCompile Include="Engine\3D\FbxLoader.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="UserApplication\Boss\Boss.cpp">
-      <Filter>ユーザーソース ファイル\Boss</Filter>
     </ClCompile>
     <ClCompile Include="UserApplication\Boss\BossFish.cpp">
       <Filter>ユーザーソース ファイル\Boss</Filter>

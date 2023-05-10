@@ -311,4 +311,11 @@ private:
 
 	float size = 0.0f;
 
+	float AttackRotX = 0.0f;
+	float AttackRotZ = 0.0f;
+
+	int SowrdDrowTime = 0;
+	int NotSowrdDrowTime = 0;
+	int MaxSowrdRotate = 0;
+
 };

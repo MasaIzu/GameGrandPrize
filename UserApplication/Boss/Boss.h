@@ -10,16 +10,13 @@
 #include"BossFish.h"
 #include"BossWarrier.h"
 
-
-
-
-
-
-
 class Boss
 {
 
 public:
+
+	BossFish* bossFish;
+
 	~Boss();
 
 	/// <summary>

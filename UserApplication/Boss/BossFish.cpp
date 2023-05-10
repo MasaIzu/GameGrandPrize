@@ -20,7 +20,8 @@ void BossFish::Initialize()
 {
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
-
+	fishParent.pos.translation_ = { 0,25,100 };
+	fishParent.pos.TransferMatrix();
 
 
 
@@ -193,6 +194,14 @@ void BossFish::CreateFish(const Vector3& spawnPos)
 	newFish.pos.TransferMatrix();
 	//配列にい列
 	fishes.push_back(newFish);
+}
+
+void BossFish::Spawn(const Vector3& fishCreatePos)
+{
+	//ボスをスポーンさせる
+	for (int i = 0; i < fishMaxCount / 20; i++) {
+		CreateFish(fishCreatePos);
+	}
 }
 
 void BossFish::Draw(const ViewProjection& viewProMat)

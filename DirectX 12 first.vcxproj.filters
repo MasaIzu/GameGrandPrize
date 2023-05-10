@@ -478,6 +478,9 @@
     <ClInclude Include="UserApplication\Boss\BossWarrier.h">
       <Filter>ユーザーヘッダー ファイル\Boss</Filter>
     </ClInclude>
+    <ClInclude Include="UserApplication\Boss\Boss.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -658,6 +661,9 @@
       <Filter>ユーザーソース ファイル\Boss</Filter>
     </ClCompile>
     <ClCompile Include="UserApplication\Boss\BossWarrier.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\Boss.cpp">
       <Filter>ユーザーソース ファイル\Boss</Filter>
     </ClCompile>
   </ItemGroup>

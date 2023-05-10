@@ -47,6 +47,11 @@ enum class BossFishSwordPhase {
 class BossFish
 {
 public:
+	static const int fishMaxCount = 200;			//小魚の最大数
+	std::unique_ptr<Model> fishBodyModel = nullptr;	//魚の体モデル
+	std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
+
+public:
 	~BossFish();
 
 	/// <summary>
@@ -65,6 +70,11 @@ public:
 	/// </summary>
 	/// <param name="spawnPos">生成する座標</param>
 	void CreateFish(const Vector3& spawnPos);
+
+	/// <summary>
+	/// ボス生成
+	/// </summary>
+	void Spawn(const Vector3& fishCreatePos);
 
 	/// <summary>
 	/// 描画
@@ -95,6 +105,9 @@ public:
 	Vector3 GetSwordCollisionCube2()const { return posSwordColCube2; }
 	//剣の座標のゲッター
 	Matrix4 GetSwordWorldPos() { return swordTransform.matWorld_; }
+	//親座標のゲッタ―
+	Vector3 GetParentPos()const { return fishParent.pos.translation_; }
+	int GetHealth()const { return bossHealth; }
 
 	// 死んだ時の演出が終わっているか
 	bool GetIsDeathEnd()const { return IsDeathEnd; }
@@ -156,8 +169,7 @@ private:
 
 		fish fishParent;			//魚の中心
 		std::vector<fish> fishes;	//魚群配列
-		std::unique_ptr<Model> fishBodyModel = nullptr;	//魚の体モデル
-		std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
+		
 		std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
 		float randSpdParam = 0;							//ランダムで変化する速度の基本値
 		BossFishPhase phase1;							//ボス第一形態のフェーズ
@@ -167,7 +179,7 @@ private:
 		const int rushMaxCount = 3;						//突進攻撃(片道)をする回数
 		int rushCount = 0;								//突進攻撃の残り回数
 		WorldTransform swordTransform;					//剣のワールド座標
-		static const int fishMaxCount = 200;			//小魚の最大数
+		
 		int nextDamageInterval = 30;					//次にダメージを受けるまでの時間
 		int damageTimer = 0;							//ボスの無敵時間
 

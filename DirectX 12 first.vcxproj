@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2D;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Base;$(ProjectDir)Engine\Camera;$(ProjectDir)Engine\Collision;$(ProjectDir)Engine\Drawing;$(ProjectDir)Engine\Framework;$(ProjectDir)Engine\GameFunction;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Scene;$(ProjectDir)Engine\Sound;$(ProjectDir)Engine\PostEffect;$(ProjectDir)Engine\ImGui;$(ProjectDir)UserApplication\BackGround;$(ProjectDir)UserApplication\Base;$(ProjectDir)UserApplication\Enemy;$(ProjectDir)UserApplication\Scene;$(ProjectDir)UserApplication\Skydome;$(ProjectDir)UserApplication\Player;$(ProjectDir);$(ProjectDir)External\DirectXtex;$(ProjectDir)External\imgui;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2D;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Base;$(ProjectDir)Engine\Camera;$(ProjectDir)Engine\Collision;$(ProjectDir)Engine\Drawing;$(ProjectDir)Engine\Framework;$(ProjectDir)Engine\GameFunction;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Scene;$(ProjectDir)Engine\Sound;$(ProjectDir)Engine\PostEffect;$(ProjectDir)Engine\ImGui;$(ProjectDir)UserApplication\BackGround;$(ProjectDir)UserApplication\Base;$(ProjectDir)UserApplication\Enemy;$(ProjectDir)UserApplication\Scene;$(ProjectDir)UserApplication\Skydome;$(ProjectDir)UserApplication\Player;$(ProjectDir);$(ProjectDir)External\DirectXtex;$(ProjectDir)External\imgui;$(ProjectDir)UserApplication\Boss</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
@@ -143,7 +143,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2D;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Base;$(ProjectDir)Engine\Camera;$(ProjectDir)Engine\Collision;$(ProjectDir)Engine\Drawing;$(ProjectDir)Engine\Framework;$(ProjectDir)Engine\GameFunction;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Scene;$(ProjectDir)Engine\Sound;$(ProjectDir)Engine\PostEffect;$(ProjectDir)Engine\ImGui;$(ProjectDir)UserApplication\BackGround;$(ProjectDir)UserApplication\Base;$(ProjectDir)UserApplication\Enemy;$(ProjectDir)UserApplication\Scene;$(ProjectDir)UserApplication\Skydome;$(ProjectDir)UserApplication\Player;$(ProjectDir);$(ProjectDir)External\DirectXtex;$(ProjectDir)External\imgui;$(ProjectDir)Engine\assimp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2D;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Base;$(ProjectDir)Engine\Camera;$(ProjectDir)Engine\Collision;$(ProjectDir)Engine\Drawing;$(ProjectDir)Engine\Framework;$(ProjectDir)Engine\GameFunction;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Scene;$(ProjectDir)Engine\Sound;$(ProjectDir)Engine\PostEffect;$(ProjectDir)Engine\ImGui;$(ProjectDir)UserApplication\BackGround;$(ProjectDir)UserApplication\Base;$(ProjectDir)UserApplication\Enemy;$(ProjectDir)UserApplication\Scene;$(ProjectDir)UserApplication\Skydome;$(ProjectDir)UserApplication\Player;$(ProjectDir);$(ProjectDir)External\DirectXtex;$(ProjectDir)External\imgui;$(ProjectDir)UserApplication\Boss</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -333,6 +333,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="UserApplication\Boss\Boss.h" />
     <ClInclude Include="UserApplication\Boss\BossWarrier.h" />
     <ClInclude Include="UserApplication\Boss\BossFish.h" />
     <ClInclude Include="Easing.h" />
@@ -404,6 +405,7 @@
     <ClInclude Include="UserApplication\Scene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="UserApplication\Boss\Boss.cpp" />
     <ClCompile Include="UserApplication\Boss\BossWarrier.cpp" />
     <ClCompile Include="UserApplication\Boss\BossFish.cpp" />
     <ClCompile Include="Easing.cpp" />

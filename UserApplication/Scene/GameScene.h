@@ -145,7 +145,7 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 
-	Boss boss;
+	Boss* boss = nullptr;
 	//デバッグによる生成用
 	float newFishPosY = 0;
 

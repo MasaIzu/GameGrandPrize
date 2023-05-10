@@ -95,14 +95,13 @@ void GameScene::Initialize() {
 
 	gayserParticle->SetTextureHandle(TextureManager::Load("effect2.png"));
 
-	boss.Initialize();
+	boss->Initialize();
 
 	//ムービー用カメラの初期化
 	movieCamera.Initialize();
 
 
-	boss.fishParent.pos.translation_ = { 0,25,100 };
-	boss.fishParent.pos.TransferMatrix();
+	
 
 	/*for (int i = 0; i < boss.fishMaxCount; i++) {
 		boss.CreateFish(gayserPos[i % 5]);
@@ -115,7 +114,7 @@ void GameScene::Initialize() {
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss.Update({ 0,0,0 },stagePos,stageRadius);
+	boss->Update({ 0,0,0 },stagePos,stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {
@@ -268,8 +267,9 @@ void GameScene::GameUpdate()
 		if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
 			fishSpawnCount--;
 			fishSpawnInterval = 5;
-			for (int i = 0; i < boss.fishMaxCount / 20; i++) {
-				boss.CreateFish(gayserPos[i % 5]);
+			//ボスをスポーンさせる
+			for (int i = 0; i < boss->bossFish->fishMaxCount / 20; i++) {
+				boss->bossFish->CreateFish(gayserPos[i % 5]);
 			}
 		}
 	}
@@ -289,7 +289,7 @@ void GameScene::GameUpdate()
 
 	//ボス生成フェーズになったらカメラをボスに向ける
 	if (isStartBossBattle) {
-		movieCamera.target = boss.fishParent.pos.translation_;
+		movieCamera.target = boss->bossFish->GetParentPos();
 	}
 
 	//ムービーカメラの更新
@@ -326,7 +326,7 @@ void GameScene::GameUpdate()
 		isAttackHit = true;
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
-		boss.Damage(2);
+		boss->bossFish->Damage(2);
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -340,8 +340,8 @@ void GameScene::GameUpdate()
 
 
 	// ボスフェーズ１のHPが０になったら
-	if (boss.bossHealth <= 0) {
-		boss.Death();
+	if (boss->bossFish->GetHealth() <= 0) {
+		boss->bossFish->Death();
 	}
 
 
@@ -355,7 +355,7 @@ void GameScene::GameUpdate()
 	ImGui::End();
 
 
-	boss.Update(player->GetWorldPosition(),stagePos,stageRadius);
+	boss->Update(player->GetWorldPosition(),stagePos,stageRadius);
 	viewProjection_.UpdateMatrix();
 
 	player->SetIsEnemyHit(isEnemyHit);
@@ -402,7 +402,7 @@ void GameScene::GameUpdate()
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
-	if (boss.GetIsDeathEnd()) {
+	if (boss->bossFish->GetIsDeathEnd()) {
 		scene = Scene::Result;
 	}
 	if (player->GetAlive() == false)
@@ -496,14 +496,14 @@ void GameScene::PostEffectDraw()
 		for (int i = 0; i < 10; i++) {
 			//minifishes[i].Draw(viewProjection_);
 			if (minifishes[i].GetAlive()) {
-				boss.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-				boss.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 			}
 		}
 	}
 
 	//ボス出現ムービーとボス変身ムービーの間で描画
-	boss.Draw(nowViewProjection);
+	boss->Draw(nowViewProjection);
 
 	player->Draw(nowViewProjection);
 
@@ -570,10 +570,10 @@ void GameScene::Draw() {
 
 	if (scene == Scene::Game)
 	{
-		boss.DrawHealth();
+		boss->DrawHealth();
 		player->DrawHealth();
-		boss.DrawHealth();
-		player->DrawHealth();
+		//boss->DrawHealth();
+		//player->DrawHealth();
 
 	}
 	else if (scene == Scene::Result) {
@@ -623,14 +623,12 @@ void GameScene::Reset()
 		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 	}
 
-	boss.Reset();
+	boss->Reset();
 
 	//ムービー用カメラの初期化
 	movieCamera.Initialize();
 
 
-	boss.fishParent.pos.translation_ = { 0,25,100 };
-	boss.fishParent.pos.TransferMatrix();
 
 	for (int i = 0; i < 10; i++) {
 		Vector3 pos;
@@ -639,7 +637,7 @@ void GameScene::Reset()
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss.Update({ 0,0,0 },stagePos,stageRadius);
+	boss->Update({ 0,0,0 },stagePos,stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {
@@ -671,6 +669,7 @@ void GameScene::Reset()
 
 void GameScene::Finalize()
 {
+	delete boss;
 }
 
 

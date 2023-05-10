@@ -39,6 +39,6 @@ void BossWarrier::Initialize()
 void BossWarrier::Draw(const ViewProjection& viewProMat)
 {
 	for (int i = BossWarrierPart::Chest; i < BossWarrierPart::Boss2PartMax; i++) {
-		boss2Model[i]->Draw(boss2Transform[i], viewProMat, whiteTexture);
+		boss2Model[i]->Draw(boss2Transform[i], viewProMat);
 	}
 }

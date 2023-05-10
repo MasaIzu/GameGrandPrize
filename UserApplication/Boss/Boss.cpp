@@ -11,14 +11,33 @@
 #include"Sprite.h"
 #include"TextureManager.h"
 
+Boss::~Boss()
+{
+	delete bossFish;
+}
+
 void Boss::Initialize()
 {
+	bossFish = new BossFish{};
+	bossFish->Initialize();
 }
 
 void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
 {
+	bossFish->Update(targetPos, stagePos, stageRadius);
 }
 
 void Boss::Draw(const ViewProjection& viewProMat)
 {
+	bossFish->Draw(viewProMat);
+}
+
+void Boss::DrawHealth()
+{
+	bossFish->DrawHealth();
+}
+
+void Boss::Reset()
+{
+	bossFish->Reset();
 }

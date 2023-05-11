@@ -33,6 +33,13 @@ public:
 private:
 	std::unique_ptr<Model> boss2Model[BossWarrierPart::Boss2PartMax];	//ボス第二形態のモデル
 	WorldTransform boss2Transform[BossWarrierPart::Boss2PartMax];	//ボス第二形態の各部位のワールド行列
+	std::unique_ptr<Model> boss2TornadeModel;
+
+	WorldTransform boss2TornadoTransform[2];
+	float TornadoRotY[2];
+	float TornadoSpeedRotY = 5;
+	bool isTornado = false;
+	int TornadoFlame = 0;
 
 };
 

@@ -269,8 +269,8 @@ void GameScene::GameUpdate()
 			fishSpawnCount--;
 			fishSpawnInterval = 5;
 			//ボスをスポーンさせる
-			for (int i = 0; i < boss->bossFish.fishMaxCount / 20; i++) {
-				boss->bossFish.CreateFish(gayserPos[i % 5]);
+			for (int i = 0; i < boss->bossFish->fishMaxCount / 20; i++) {
+				boss->bossFish->CreateFish(gayserPos[i % 5]);
 			}
 		}
 	}
@@ -290,7 +290,7 @@ void GameScene::GameUpdate()
 
 	//ボス生成フェーズになったらカメラをボスに向ける
 	if (isStartBossBattle) {
-		movieCamera.target = boss->bossFish.GetParentPos();
+		movieCamera.target = boss->bossFish->GetParentPos();
 	}
 
 	//ムービーカメラの更新
@@ -327,7 +327,7 @@ void GameScene::GameUpdate()
 		isAttackHit = true;
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
-		boss->bossFish.Damage(2);
+		boss->bossFish->Damage(2);
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -341,8 +341,8 @@ void GameScene::GameUpdate()
 
 
 	// ボスフェーズ１のHPが０になったら
-	if (boss->bossFish.GetHealth() <= 0) {
-		boss->bossFish.Death();
+	if (boss->bossFish->GetHealth() <= 0) {
+		boss->bossFish->Death();
 	}
 
 
@@ -403,7 +403,7 @@ void GameScene::GameUpdate()
 	viewProjection_.UpdateMatrix();
 	//ParticleMan->Update();
 
-	if (boss->bossFish.GetIsDeathEnd()) {
+	if (boss->bossFish->GetIsDeathEnd()) {
 		scene = Scene::Result;
 	}
 	if (player->GetAlive() == false)
@@ -480,9 +480,9 @@ void GameScene::PostEffectDraw()
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
-	model_->Draw(worldTransform_, viewProjection_);
+	//model_->Draw(worldTransform_, viewProjection_);
 
-	stageModel_->Draw(stageWorldTransform_, nowViewProjection);
+	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
 
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
@@ -497,8 +497,8 @@ void GameScene::PostEffectDraw()
 		for (int i = 0; i < 10; i++) {
 			//minifishes[i].Draw(viewProjection_);
 			if (minifishes[i].GetAlive()) {
-				boss->bossFish.fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-				boss->bossFish.fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 			}
 		}
 	}

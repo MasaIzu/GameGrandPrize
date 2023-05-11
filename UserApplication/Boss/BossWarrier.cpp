@@ -1,4 +1,5 @@
 #include "BossWarrier.h"
+#include"Input.h"
 
 void BossWarrier::Initialize()
 {
@@ -34,6 +35,94 @@ void BossWarrier::Initialize()
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Transform[i].TransferMatrix();
 	}
+
+	boss2TornadeModel.reset(Model::CreateFromOBJ("tornadoGame", true));
+
+	boss2TornadoTransform[0].Initialize();
+	boss2TornadoTransform[0].scale_ = { 1,10,1 };
+	boss2TornadoTransform[0].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].Initialize();
+	boss2TornadoTransform[1].scale_ = { 1,10,1 };
+	boss2TornadoTransform[1].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[1].TransferMatrix();
+
+	boss2TornadoTransform[0].alpha = 0.6;
+	boss2TornadoTransform[1].alpha = 0.6;
+
+	TornadoRotY[0] = 0;
+
+	TornadoRotY[1] = 3.14;
+
+}
+
+void BossWarrier::Update()
+{
+	if (Input::GetInstance()->TriggerKey(DIK_L))
+	{
+		isTornado = true;
+	}
+	if (isTornado == true)
+	{
+		TornadoFlame++;
+		TornadoRotY[0] += 3.14 / 180 * TornadoSpeedRotY;
+		TornadoRotY[1] += 3.14 / 180 * TornadoSpeedRotY;
+
+		if (TornadoFlame <= 100)
+		{
+			if (boss2TornadoTransform[0].scale_.x <= 50)
+			{
+				boss2TornadoTransform[0].scale_.x += 0.5;
+				boss2TornadoTransform[0].scale_.z += 0.5;
+
+			}
+			if (boss2TornadoTransform[1].scale_.x <= 45)
+			{
+				boss2TornadoTransform[1].scale_.x += 0.5;
+				boss2TornadoTransform[1].scale_.z += 0.5;
+			}
+		}
+		else if (TornadoFlame >= 160)
+		{
+			if (boss2TornadoTransform[0].alpha > 0)
+			{
+				boss2TornadoTransform[0].alpha -= 0.05;
+				boss2TornadoTransform[1].alpha -= 0.05;
+			}
+		}
+		if (boss2TornadoTransform[1].scale_.y <= 50)
+		{
+			boss2TornadoTransform[1].scale_.y += 0.5;
+			boss2TornadoTransform[0].scale_.y += 0.5;
+		}
+
+		boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
+		boss2TornadoTransform[0].TransferMatrix();
+		boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
+		boss2TornadoTransform[1].TransferMatrix();
+		if (TornadoFlame >= 170)
+		{
+			isTornado = false;
+			TornadoFlame = 0;
+			boss2TornadoTransform[0].scale_.x = 1;
+			boss2TornadoTransform[0].scale_.z = 1;
+			boss2TornadoTransform[1].scale_.x = 1;
+			boss2TornadoTransform[1].scale_.z = 1;
+			boss2TornadoTransform[1].scale_.y = 10;
+			boss2TornadoTransform[0].scale_.y = 10;
+			TornadoRotY[0] += 0;
+			TornadoRotY[1] += 3.14;
+			boss2TornadoTransform[0].alpha = 0.6;
+			boss2TornadoTransform[1].alpha = 0.6;
+
+		}
+	}
+
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].TransferMatrix();
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		boss2Transform[i].TransferMatrix();
+	}
 }
 
 void BossWarrier::Draw(const ViewProjection& viewProMat)
@@ -41,4 +130,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 	for (int i = BossWarrierPart::Chest; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i]->Draw(boss2Transform[i], viewProMat);
 	}
+
+	boss2TornadeModel->Draw(boss2TornadoTransform[0],viewProMat);
+	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
 }

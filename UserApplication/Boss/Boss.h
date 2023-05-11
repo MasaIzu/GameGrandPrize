@@ -15,7 +15,9 @@ class Boss
 
 public:
 
-	BossFish bossFish;
+	std::unique_ptr<BossFish> bossFish;
+
+	std::unique_ptr<BossWarrier> bossWarrier;
 
 	~Boss();
 

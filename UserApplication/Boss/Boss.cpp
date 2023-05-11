@@ -18,26 +18,33 @@ Boss::~Boss()
 
 void Boss::Initialize()
 {
+	bossFish = std::make_unique<BossFish>();
+	bossFish->Initialize();
 
-	bossFish.Initialize();
+	bossWarrier= std::make_unique<BossWarrier>();
+	bossWarrier->Initialize();
 }
 
 void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)
 {
-	bossFish.Update(targetPos, stagePos, stageRadius);
+	bossFish->Update(targetPos, stagePos, stageRadius);
+
+	bossWarrier->Update();
 }
 
 void Boss::Draw(const ViewProjection& viewProMat)
 {
-	bossFish.Draw(viewProMat);
+	bossFish->Draw(viewProMat);
+
+	bossWarrier->Draw(viewProMat);
 }
 
 void Boss::DrawHealth()
 {
-	bossFish.DrawHealth();
+	bossFish->DrawHealth();
 }
 
 void Boss::Reset()
 {
-	bossFish.Reset();
+	bossFish->Reset();
 }

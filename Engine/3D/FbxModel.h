@@ -137,7 +137,7 @@ public: // ÉÅÉìÉoä÷êî
 	void Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection, uint32_t textureHadle);
 
 
-	void ModelAnimation(float frame, aiAnimation* Animation);
+	void ModelAnimation(float frame, aiAnimation* Animation,int BoneNum);
 
 	void ReadNodeHeirarchy(Mesh* mesh, aiAnimation* Animation, FLOAT AnimationTime, Node* pNode, Matrix4& mxIdentity);
 
@@ -198,6 +198,7 @@ private:
 	ComPtr<ID3D12Resource> constBuff_;
 
 	ConstBufferPolygonExplosion* constMap;
+
 
 };
 

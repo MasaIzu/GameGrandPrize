@@ -504,7 +504,7 @@ void FbxModel::Draw(const WorldTransform& worldTransform, const ViewProjection& 
 }
 
 
-void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {
+void FbxModel::ModelAnimation(float frame, aiAnimation* Animation, int BoneNum) {
 
 	HRESULT result = S_FALSE;
 
@@ -533,20 +533,19 @@ void FbxModel::ModelAnimation(float frame, aiAnimation* Animation) {
 			mesh->vecBones[i].matrix = mesh->bones[mesh->vecBones[i].name]->matrix;
 
 			constMapSkin->bones[i] = mesh->vecBones[i].matrix;
-
-
-
 		}
-
-		naosi.translation_ = MyMath::GetWorldTransform(mesh->bones[mesh->vecBones[9].name]->matrix) - Vector3(5,0,0);
-		naosi.translation_ = naosi.translation_;
-		naosi.TransferMatrix();
-
-		matrixL = naosi.matWorld_;
-		matrixR = mesh->bones[mesh->vecBones[33].name]->matrix;
 	}
 
+	for (Mesh* mesh : meshes_)
+	{
+		/*naosi.translation_ = MyMath::GetWorldTransform();
+		naosi.translation_ = naosi.translation_;
+		naosi.TransferMatrix();*/
 
+		matrixL = mesh->bones[mesh->vecBones[12].name]->matrix;
+		matrixR = mesh->bones[mesh->vecBones[36].name]->matrix;
+
+	}
 	constBuffSkin_->Unmap(0, nullptr);
 }
 

@@ -307,5 +307,35 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
-	int sowrdFlame=0;
+	WorldTransform BoneParent;
+	float BoneParentRotY = 0.0f;
+
+	int sowrdFlame = 0;
+
+	uint32_t BoneNum = 0;
+
+	float size = 0.0f;
+
+	float AttackRotX = 0.0f;
+	float AttackRotY = 0.0f;
+	float AttackRotZ = 0.0f;
+
+	float AttackOnlyLeftRotX = 0.0f;
+	float AttackOnlyLeftRotY = 0.0f;
+	float AttackOnlyLeftRotZ = 0.0f;
+
+	float AttackOnlyRightRotX = 0.0f;
+	float AttackOnlyRightRotY = 0.0f;
+	float AttackOnlyRightRotZ = 0.0f;
+
+	int SowrdDrowTime = 0;
+	int NotSowrdDrowTime = 0;
+	int MaxSowrdRotate = 0;
+
+	float OldAttackRotX = 0;
+	float OldAttackRotY = 0;
+	float OldAttackRotZ = 0;
+
+	float saveRotX = 0.0f;
+
 };

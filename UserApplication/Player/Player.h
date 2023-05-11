@@ -145,6 +145,8 @@ private:
 	Vector3 Rot;
 	Vector3 Avoidance;
 	Vector3 PlayerMoveMent;
+	bool PlayerMoveZ=false;
+	bool PlayerMoveX=false;
 	Vector3 cameraLook;
 
 	Matrix4 ParticlePos;

@@ -290,6 +290,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 void Player::Move() {
 
 	PlayerMoveMent = { 0,0,0 };
+	PlayerMoveX = false;
+	PlayerMoveZ = false;
 	rot = { 0,0,0 };
 	Avoidance = { 0,0,0 };
 	isPushSenter = false;
@@ -351,6 +353,7 @@ void Player::Move() {
 		if (isPlayMotion == false) {
 			if (input_->PushKey(DIK_W)) {
 				PlayerMoveMent += cameraLook * playerSpeed;
+				PlayerMoveZ=true;
 				isPushSenter = true;
 				isWalk = true;
 				isInput = true;
@@ -359,6 +362,7 @@ void Player::Move() {
 			}
 			if (input_->PushKey(DIK_A)) {
 				PlayerMoveMent += root.normalize() * playerSpeed;
+				PlayerMoveX = true;
 				isPushLeft = true;
 				isWalk = true;
 				isInput = true;
@@ -367,6 +371,7 @@ void Player::Move() {
 			}
 			if (input_->PushKey(DIK_S)) {
 				PlayerMoveMent -= cameraLook * playerSpeed;
+				PlayerMoveZ = true;
 				isPushBack = true;
 				isWalk = true;
 				isInput = true;
@@ -375,13 +380,17 @@ void Player::Move() {
 			}
 			if (input_->PushKey(DIK_D)) {
 				PlayerMoveMent += root.normalize() * playerSpeed;
+				PlayerMoveX = true;
 				isPushRight = true;
 				isWalk = true;
 				isInput = true;
 				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
-
+			if (PlayerMoveZ == true&& PlayerMoveX == true)
+			{
+				PlayerMoveMent /= 2;
+			}
 			if (isPushSenter == true && isPushLeft == true) {
 				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
 			}
@@ -1190,7 +1199,6 @@ void Player::Reset()
 
 	x = 0;
 	radius = 4.0f;//当たり判定半径
-	playerSpeed = 0.5f;
 	playerAvoidance = 20.0f;
 
 	isPushSenter = false;

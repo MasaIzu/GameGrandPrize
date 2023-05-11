@@ -52,7 +52,7 @@ void Boss::Initialize()
 	boss2Model[Boss2Part::HandR].reset(Model::CreateFromOBJ("Boss_ArmR", true));
 	boss2TornadoModel.reset(Model::CreateFromOBJ("tornadoGame", true));
 
-	whiteTexture = TextureManager::Load("white1x1.png");
+	//whiteTexture = TextureManager::Load("white1x1.png");
 
 	phase1 = BossFirstPhase::Idle;
 	nextPhaseInterval = attackCooltime;

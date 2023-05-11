@@ -66,6 +66,7 @@ public:
 	std::unique_ptr<Model> fishEyeModel = nullptr;	//魚の目玉モデル
 	std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
 	std::unique_ptr<Model> boss2Model[Boss2Part::Boss2PartMax];	//ボス第二形態のモデル
+	std::unique_ptr<Model> boss2TornadoModel;//ボス第二形態の竜巻攻撃のモデル
 	float randSpdParam = 0;							//ランダムで変化する速度の基本値
 	BossFirstPhase phase1;							//ボス第一形態のフェーズ
 	const int attackCooltime = 60 * 3;				//次の攻撃までのクールタイム
@@ -237,6 +238,9 @@ private:
 	Vector3 afterScale;							//変化後のスケール
 	float lenTargetToFishes[fishMaxCount];		//小魚と標的の距離(スカラー)
 	WorldTransform boss2Transform[Boss2Part::Boss2PartMax];	//ボス第二形態の各部位のワールド行列
+	WorldTransform boss2TornadoTransform;
+	float TornadoRotY = 0;
+	float TornadoSpeedRotY = 0;
 	uint32_t whiteTexture = 0;	//白色のテクスチャ
 	// コライダー
 	BaseCollider* collider = nullptr;

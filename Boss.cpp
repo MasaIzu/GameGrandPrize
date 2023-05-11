@@ -49,6 +49,7 @@ void Boss::Initialize()
 	boss2Model[Boss2Part::ArmR].reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
 	boss2Model[Boss2Part::HandL].reset(Model::CreateFromOBJ("Boss_ArmL", true));
 	boss2Model[Boss2Part::HandR].reset(Model::CreateFromOBJ("Boss_ArmR", true));
+	boss2TornadoModel.reset(Model::CreateFromOBJ("tornadoGame",true));
 
 	whiteTexture = TextureManager::Load("white1x1.png");
 
@@ -83,6 +84,10 @@ void Boss::Initialize()
 	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
 		boss2Transform[i].Initialize();
 	}
+	boss2TornadoTransform.Initialize();
+	boss2TornadoTransform.scale_ = {50,100,50};
+	boss2TornadoTransform.translation_ = { 0,-10,0 };
+	boss2TornadoTransform.TransferMatrix();
 
 	//胸は大本を親に持つ
 	boss2Transform[Boss2Part::Chest].parent_ = &boss2Transform[Boss2Part::Root];
@@ -171,6 +176,12 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
+
+	TornadoRotY += 3.14/180*0.5;
+
+	boss2TornadoTransform.SetRot({ 0,TornadoRotY,0 });
+
+	boss2TornadoTransform.TransferMatrix();
 }
 
 void Boss::CreateFish(Vector3 spawnPos)
@@ -274,6 +285,9 @@ void Boss::Draw(ViewProjection viewProMat)
 	for (int i = Boss2Part::Chest; i < Boss2Part::Boss2PartMax; i++) {
 		boss2Model[i]->Draw(boss2Transform[i], viewProMat, whiteTexture);
 	}
+
+
+	boss2TornadoModel->Draw(boss2TornadoTransform,viewProMat);
 }
 
 void Boss::DrawHealth() {

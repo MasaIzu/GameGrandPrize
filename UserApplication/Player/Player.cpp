@@ -274,6 +274,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
 
+	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
+	ImGui::SliderFloat("AttackRotY", &AttackRotY, -360.0f, 360.0f);
+
+	ImGui::SliderFloat("AttackRotZ", &AttackRotZ, -360.0f, 360.0f);
+	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
+
+
 	ImGui::End();
 }
 
@@ -531,7 +538,7 @@ void Player::Attack() {
 	playerAttackMovement = 0.0f;
 
 	if (spaceInput == false) {
-		if (input_->MouseInputTrigger(0)) {
+		if (input_->MouseInputTrigger(1)) {
 			//実行前にカウント値を取得
 			//計測開始時間の初期化
 			isAttack = true;
@@ -697,23 +704,15 @@ void Player::Attack() {
 			IsCombo4 = false;
 			IsCombo5 = false;
 
-			Matrix4 rooooootttt;
-			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(90.0f) + PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z), 3);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y, 0.0f), 2);
 
-			LBoneTrans.SetMatRot(rooooootttt);
-
-			rooooootttt = MyMath::Initialize();
-			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(90.0f) + PlayerRot.x, PlayerRot.y, PlayerRot.z), 1);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(30.0f)), 3);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(-90.0f) + PlayerRot.y, 0.0f), 2);
-
-			RBoneTrans.SetMatRot(rooooootttt);
 			SowrdDrowTime = 0;
 			MaxSowrdRotate = 35;
+			OldAttackRotX = 0.0f;
+			OldAttackRotY = 0.0f;
+			OldAttackRotZ = 0.0f;
 			AttackRotX = 0.0f;
-			AttackRotZ = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 2.0f;
 		}
 		if (attackMoveTimer < MaxAttackMoveTimer) {
 			attackMoveTimer += 1.0;
@@ -722,22 +721,8 @@ void Player::Attack() {
 		}
 		if (SowrdDrowTime < MaxSowrdRotate) {
 			AttackRotX += 6.0f;
-			AttackRotZ += 2.0f;
+			AttackRotZ += 1.1f;
 		}
-
-		Matrix4 rooooootttt;
-		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
-		rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
-		rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y, 0.0f), 2);
-
-		LBoneTrans.SetMatRot(rooooootttt);
-
-		Matrix4 roooooottttee;
-		roooooottttee *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
-		roooooottttee *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(AttackRotZ)), 3);
-		roooooottttee *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y, 0.0f), 2);
-
-		RBoneTrans.SetMatRot(roooooottttee);
 
 		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
 
@@ -756,10 +741,47 @@ void Player::Attack() {
 			IsCombo3 = false;
 			IsCombo4 = false;
 			IsCombo5 = false;
+
+			//前回の回転を残す
+			OldAttackRotX = AttackRotX;
+			OldAttackRotZ = AttackRotZ;
+
+			SowrdDrowTime = 0;
+			MaxSowrdRotate = 35;
+			AttackRotX = -212.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 0.0f;
+
+			saveRotX = AttackRotX;
+
+			Matrix4 rooooootttt;
+			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+			LBoneTrans.SetMatRot(rooooootttt);
+
+			rooooootttt = MyMath::Initialize();
+			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(AttackRotZ)), 3);
+			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+			RBoneTrans.SetMatRot(rooooootttt);
+
 		}
 		if (attackMoveTimer < MaxAttackMoveTimer) {
 			attackMoveTimer += 1.0;
+			SowrdDrowTime++;
+			NotSowrdDrowTime = 10;
 		}
+		if (SowrdDrowTime < MaxSowrdRotate) {
+			if (SowrdDrowTime < 10) {
+				AttackRotZ += (-110.0f - OldAttackRotZ) / 10;
+			}
+			AttackRotX += (-38.0f - saveRotX) / MaxSowrdRotate;
+
+		}
+
 		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
 	}
 	else if (playerNowMotion == PlayerMotion::soukenCombo3) {
@@ -832,6 +854,22 @@ void Player::Attack() {
 	}
 
 
+
+
+	Matrix4 rooooootttt;
+	rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+	LBoneTrans.SetMatRot(rooooootttt);
+
+	rooooootttt = MyMath::Initialize();
+	rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(AttackRotZ)), 3);
+	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+	RBoneTrans.SetMatRot(rooooootttt);
+
 }
 
 void Player::SetKnockBackCount()
@@ -887,12 +925,12 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 	recovery->Draw(viewProjection_);
 
-	if (SowrdDrowTime > NotSowrdDrowTime) {
+	/*if (SowrdDrowTime > NotSowrdDrowTime) {*/
 
 		LSowrdModel->Draw(LBoneTrans, viewProjection_);
 		RSowrdModel->Draw(RBoneTrans, viewProjection_);
 
-	}
+	//}
 
 }
 

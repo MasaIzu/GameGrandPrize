@@ -95,6 +95,7 @@ void GameScene::Initialize() {
 
 	gayserParticle->SetTextureHandle(TextureManager::Load("effect2.png"));
 
+	boss = new Boss();
 	boss->Initialize();
 
 	//ムービー用カメラの初期化

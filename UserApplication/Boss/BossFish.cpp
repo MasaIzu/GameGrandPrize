@@ -20,7 +20,7 @@ void BossFish::Initialize()
 {
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
-	fishParent.pos.translation_ = { 0,25,100 };
+	fishParent.pos.translation_ = { 0,2,100 };
 	fishParent.pos.TransferMatrix();
 
 

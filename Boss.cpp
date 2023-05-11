@@ -94,6 +94,9 @@ void Boss::Initialize()
 	boss2TornadoTransform[1].translation_ = { 0,-10,0 };
 	boss2TornadoTransform[1].TransferMatrix();
 
+	boss2TornadoTransform[0].alpha = 0.9;
+	boss2TornadoTransform[1].alpha = 0.9;
+
 	TornadoRotY[0] = 0;
 
 	TornadoRotY[1] = 3.14;
@@ -211,10 +214,11 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 		}
 		else if (TornadoFlame >= 160)
 		{
-			boss2TornadoTransform[0].scale_.x -= 0.5;
-			boss2TornadoTransform[0].scale_.z -= 0.5;
-			boss2TornadoTransform[1].scale_.x -= 0.5;
-			boss2TornadoTransform[1].scale_.z -= 0.5;
+			if (boss2TornadoTransform[0].alpha>0)
+			{
+				boss2TornadoTransform[0].alpha -= 0.05;
+				boss2TornadoTransform[1].alpha -= 0.05;
+			}
 		}
 		if (boss2TornadoTransform[1].scale_.y <= 50)
 		{
@@ -226,7 +230,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 		boss2TornadoTransform[0].TransferMatrix();
 		boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
 		boss2TornadoTransform[1].TransferMatrix();
-		if (TornadoFlame >= 260)
+		if (TornadoFlame >= 170)
 		{
 			isTornado = false;
 			TornadoFlame = 0;
@@ -238,6 +242,8 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 			boss2TornadoTransform[0].scale_.y = 10;
 			TornadoRotY[0] += 0;
 			TornadoRotY[1] += 3.14;
+			boss2TornadoTransform[0].alpha = 0.6;
+			boss2TornadoTransform[1].alpha = 0.6;
 
 		}
 	}

@@ -7,6 +7,7 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+#include"Input.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -238,9 +239,11 @@ private:
 	Vector3 afterScale;							//変化後のスケール
 	float lenTargetToFishes[fishMaxCount];		//小魚と標的の距離(スカラー)
 	WorldTransform boss2Transform[Boss2Part::Boss2PartMax];	//ボス第二形態の各部位のワールド行列
-	WorldTransform boss2TornadoTransform;
-	float TornadoRotY = 0;
-	float TornadoSpeedRotY = 0;
+	WorldTransform boss2TornadoTransform[2];
+	float TornadoRotY[2];
+	float TornadoSpeedRotY = 5;
+	bool isTornado = false;
+	int TornadoFlame=0;
 	uint32_t whiteTexture = 0;	//白色のテクスチャ
 	// コライダー
 	BaseCollider* collider = nullptr;

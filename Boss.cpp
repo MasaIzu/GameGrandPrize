@@ -17,6 +17,7 @@ Boss::~Boss()
 
 void Boss::Initialize()
 {
+
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
 
@@ -84,10 +85,18 @@ void Boss::Initialize()
 	for (int i = 0; i < Boss2Part::Boss2PartMax; i++) {
 		boss2Transform[i].Initialize();
 	}
-	boss2TornadoTransform.Initialize();
-	boss2TornadoTransform.scale_ = {50,100,50};
-	boss2TornadoTransform.translation_ = { 0,-10,0 };
-	boss2TornadoTransform.TransferMatrix();
+	boss2TornadoTransform[0].Initialize();
+	boss2TornadoTransform[0].scale_ = {1,70,1};
+	boss2TornadoTransform[0].translation_ = {0,-10,0};
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].Initialize();
+	boss2TornadoTransform[1].scale_ = { 1,70,1 };
+	boss2TornadoTransform[1].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[1].TransferMatrix();
+
+	TornadoRotY[0] = 0;
+
+	TornadoRotY[1] = 3.14;
 
 	//胸は大本を親に持つ
 	boss2Transform[Boss2Part::Chest].parent_ = &boss2Transform[Boss2Part::Root];
@@ -176,12 +185,44 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
+	if (Input::GetInstance()->TriggerKey(DIK_L))
+	{
+		isTornado = true;
+	}
+	if (isTornado == true)
+	{
+		TornadoFlame++;
+		TornadoRotY[0] += 3.14 / 180 * TornadoSpeedRotY;
+		TornadoRotY[1] += 3.14 / 180 * TornadoSpeedRotY;
 
-	TornadoRotY += 3.14/180*0.5;
+		if (boss2TornadoTransform[0].scale_.x<=50)
+		{
+			boss2TornadoTransform[0].scale_.x += 0.5;
+			boss2TornadoTransform[0].scale_.z += 0.5;
+		}
+		if (boss2TornadoTransform[1].scale_.x <= 45)
+		{
+			boss2TornadoTransform[1].scale_.x += 0.5;
+			boss2TornadoTransform[1].scale_.z += 0.5;
+		}
 
-	boss2TornadoTransform.SetRot({ 0,TornadoRotY,0 });
+		boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
+		boss2TornadoTransform[0].TransferMatrix();
+		boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
+		boss2TornadoTransform[1].TransferMatrix();
+		if (TornadoFlame>=150)
+		{
+			isTornado = false;
+			TornadoFlame = 0;
+			boss2TornadoTransform[0].scale_.x = 1;
+			boss2TornadoTransform[0].scale_.z = 1;
+			boss2TornadoTransform[1].scale_.x = 1;
+			boss2TornadoTransform[1].scale_.z = 1;
+			TornadoRotY[0] += 0;
+			TornadoRotY[1] += 3.14;
 
-	boss2TornadoTransform.TransferMatrix();
+		}
+	}
 }
 
 void Boss::CreateFish(Vector3 spawnPos)
@@ -286,8 +327,11 @@ void Boss::Draw(ViewProjection viewProMat)
 		boss2Model[i]->Draw(boss2Transform[i], viewProMat, whiteTexture);
 	}
 
-
-	boss2TornadoModel->Draw(boss2TornadoTransform,viewProMat);
+	if (isTornado == true)
+	{
+		boss2TornadoModel->Draw(boss2TornadoTransform[0], viewProMat);
+		boss2TornadoModel->Draw(boss2TornadoTransform[1], viewProMat);
+	}
 }
 
 void Boss::DrawHealth() {

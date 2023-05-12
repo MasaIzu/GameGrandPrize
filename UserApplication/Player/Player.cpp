@@ -574,7 +574,7 @@ void Player::Attack() {
 	playerAttackMovement = 0.0f;
 
 	if (spaceInput == false) {
-		if (input_->MouseInputTrigger(1)) {
+		if (input_->MouseInputTrigger(0)) {
 			//実行前にカウント値を取得
 			//計測開始時間の初期化
 			isAttack = true;

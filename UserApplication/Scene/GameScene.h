@@ -260,6 +260,53 @@ private: // メンバ変数
 	Vector2 titlePos = { 350,200 };
 	std::unique_ptr <Sprite> titlerogo = nullptr;
 
+	
+#pragma region タイトルオブジェクト関連
+	// タイトルビュープロジェクション
+	ViewProjection titleView;
+
+	// タイトル用のオブジェクトのモデル
+	std::unique_ptr<Model> AFontModel_;
+	std::unique_ptr<Model> TFontModel_;
+	std::unique_ptr<Model> OFontModel_;
+	std::unique_ptr<Model> MFontModel_;
+	std::unique_ptr<Model> SFontModel_;
+
+	// オブジェクトのワールドトランスフォーム
+	WorldTransform AFontWorld_;
+	WorldTransform TFontWorld_;
+	WorldTransform OFontWorld_;
+	WorldTransform MFontWorld_;
+	WorldTransform SFontWorld_;
+
+	// タイトルの浮遊に使う変数
+	float flyTimer[5];
+	float flyMax = 60 * 4;
+
+	// 浮かせるタイミングをずらすためのタイマー
+	float shiftTimer = 0;
+	float shiftTimeOneSet = 20;
+	float shiftTimeMax = shiftTimeOneSet * 5;
+
+	// 文字の角度
+	float rotationY = 0;
+	float sowrdRotationY = 0;
+
+	// 回転の開始と終わり
+	float startrota = -35.0f;
+	float endRota = -360 * 3;
+	bool IsRotaStart = false;
+	bool IsRotaEnd = false;
+
+	// 回転するときのタイマー
+	float sowrdRotaTimer = 0;
+	float sowrdRotaTimerMax = 60 * 1.5;
+
+#pragma endregion
+
+	
+
+
 private://プライベート関数
 
 	void CheckAllFishLeave();
@@ -273,4 +320,10 @@ private://プライベート関数
 	void SceneChageRast();
 
 	void SceneChageUpdate();
+
+	// 度数からラジアン
+	float DegreeToRadian(float degree);
+
+	// sin波の動きを作る関数
+	float Sin_ZeroToOne(float pos, float maxCount, float nowCount, float swingWidth);
 };

@@ -8,6 +8,7 @@
 #include <CollisionAttribute.h>
 #include "Collision.h"
 #include "Easing.h"
+#include <math.h>
 
 GameScene::GameScene() {}
 GameScene::~GameScene() {
@@ -161,6 +162,59 @@ void GameScene::Initialize() {
 
 	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
 	titlerogo->SetAnchorPoint({ 0,0 });
+
+	// タイトルのビューの初期化
+	titleView.Initialize();
+
+	// タイトルのオブジェクトの初期化
+	AFontModel_.reset(Model::CreateFromOBJ("A_Font"));
+	TFontModel_.reset(Model::CreateFromOBJ("T_Font"));
+	OFontModel_.reset(Model::CreateFromOBJ("O_Font"));
+	MFontModel_.reset(Model::CreateFromOBJ("M_Font"));
+	SFontModel_.reset(Model::CreateFromOBJ("S_Font"));
+
+	// タイトルのオブジェクトのワールドトランスフォームの初期化
+	rotationY = -35.0f;
+	sowrdRotationY = -35.0f;
+
+	AFontWorld_.Initialize();
+	AFontWorld_.scale_ = { 1,1,1 };
+	AFontWorld_.translation_ = {+7.0f,+10.5f,+180};
+
+	TFontWorld_.Initialize();
+	TFontWorld_.scale_ = { 1,1,1 };
+	TFontWorld_.translation_ = { +5.8f,+10.5f,+179 };
+
+	OFontWorld_.Initialize();
+	OFontWorld_.scale_ = { 1,1,1 };
+	OFontWorld_.translation_ = { +4.8f,+10.5f,+178 };
+
+	MFontWorld_.Initialize();
+	MFontWorld_.scale_ = { 1,1,1 };
+	MFontWorld_.translation_ = { +3.2f,+10.5f,+177 };
+
+	SFontWorld_.Initialize();
+	SFontWorld_.scale_ = { 1,1,1 };
+	SFontWorld_.translation_ = { +1.6f,+10.5f,+176 };
+
+	AFontWorld_.rotation_.y = DegreeToRadian(rotationY);
+	TFontWorld_.rotation_.y = DegreeToRadian(sowrdRotationY);
+	OFontWorld_.rotation_.y = DegreeToRadian(rotationY);
+	MFontWorld_.rotation_.y = DegreeToRadian(rotationY);
+	SFontWorld_.rotation_.y = DegreeToRadian(rotationY);
+
+	AFontWorld_.SetRot(AFontWorld_.rotation_);
+	TFontWorld_.SetRot(TFontWorld_.rotation_);
+	OFontWorld_.SetRot(OFontWorld_.rotation_);
+	MFontWorld_.SetRot(MFontWorld_.rotation_);
+	SFontWorld_.SetRot(SFontWorld_.rotation_);
+
+	AFontWorld_.TransferMatrix();
+	TFontWorld_.TransferMatrix();
+	OFontWorld_.TransferMatrix();
+	MFontWorld_.TransferMatrix();
+	SFontWorld_.TransferMatrix();
+	
 }
 
 void GameScene::Update() {
@@ -189,13 +243,97 @@ void GameScene::Update() {
 void GameScene::TitleUpdate()
 {
 	nowViewProjection = viewProjection_;
+
+	ImGui::Begin("Font");
+	ImGui::InputFloat("RotationY : %f", &rotationY);
+	ImGui::InputFloat("S_RotationY : %f", &sowrdRotationY);
+
+	ImGui::InputFloat3("AFont:%f,%f,%f", &AFontWorld_.translation_.x);
+	ImGui::InputFloat3("TFont:%f,%f,%f", &TFontWorld_.translation_.x);
+	ImGui::InputFloat3("OFont:%f,%f,%f", &OFontWorld_.translation_.x);
+	ImGui::InputFloat3("MFont:%f,%f,%f", &MFontWorld_.translation_.x);
+	ImGui::InputFloat3("SFont:%f,%f,%f", &SFontWorld_.translation_.x);
+
+	ImGui::End();
+
+	// 文字の浮遊
+
+	// ずらしタイマーのプラスと制限
+	shiftTimer++;
+	if (shiftTimer >= shiftTimeMax) {
+		shiftTimer = shiftTimeMax;
+	}
+	// 浮遊タイマーのプラスと制限
+	
+	// 文字をずらして浮遊
+	flyTimer[0]++;
+	if (shiftTimer >= shiftTimeOneSet * 1) {
+		flyTimer[1]++;
+	}
+	if (shiftTimer >= shiftTimeOneSet * 2) {
+		flyTimer[2]++;
+	}
+	if (shiftTimer >= shiftTimeOneSet * 3) {
+		flyTimer[3]++;
+	}
+	if (shiftTimer >= shiftTimeOneSet * 4) {
+		flyTimer[4]++;
+	}
+
+	for (int i = 0; i < 5; i++) {
+		if (flyTimer[i] >= flyMax) {
+			flyTimer[i] = 0;
+		}
+	}
+
+	AFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[0], 0.2f);
+	AFontWorld_.TransferMatrix();
+
+	TFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[1], 0.2f);
+	TFontWorld_.TransferMatrix();
+
+	OFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[2], 0.2f);
+	OFontWorld_.TransferMatrix();
+
+	MFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[3], 0.2f);
+	MFontWorld_.TransferMatrix();
+
+	SFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[4], 0.2f);
+	SFontWorld_.TransferMatrix();
+
 	if (input_->TriggerKey(DIK_Q)) {
 		IsSceneChange = true;
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
+		IsRotaStart = true;
+		//scene = Scene::Game;
+	}
+
+	// 文字が回転する
+	if (IsRotaStart == true) {
+		// ソードの回転タイマーがマックスになったら
+		if (sowrdRotaTimer >= sowrdRotaTimerMax) {
+			sowrdRotaTimer = sowrdRotaTimerMax;
+			IsRotaStart = false;
+			IsRotaEnd = true;
+		}
+
+		sowrdRotaTimer++;
+
+		// 回転にイージングをかける
+		sowrdRotationY = float(Easing::In(startrota, endRota, sowrdRotaTimer, sowrdRotaTimerMax));
+		TFontWorld_.rotation_.y = DegreeToRadian(sowrdRotationY);
+		TFontWorld_.TransferMatrix();
+		TFontWorld_.SetRot(TFontWorld_.rotation_);
+
+
+	}
+
+	// 文字の剣が回転終わった後シーンチェンジ
+	if (IsRotaEnd == true) {
+
 		oldScene = Scene::Title;
 		IsSceneChange = true;
-		//scene = Scene::Game;
 	}
 }
 
@@ -347,13 +485,7 @@ void GameScene::GameUpdate()
 
 
 
-	ImGui::Begin("Phase");
 
-	ImGui::Text("minifishesX:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).x);
-	ImGui::Text("minifishesY:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).y);
-	ImGui::Text("minifishesZ:%f", MyMath::GetWorldTransform(minifishes[0].GetWorldTransform().matWorld_).z);
-
-	ImGui::End();
 
 
 	boss->Update(player->GetWorldPosition(),stagePos,stageRadius);
@@ -473,12 +605,37 @@ void GameScene::SceneChageUpdate()
 	
 }
 
+float GameScene::DegreeToRadian(float degree)
+{
+	float PI = 3.141592f;
+	float result = degree * (PI / 180);
+
+	return result;
+}
+
+float GameScene::Sin_ZeroToOne(float pos, float maxCount, float nowCount, float swingWidth)
+{
+	float PI = 3.141592f;
+	float result = pos + sin(PI * 2 / maxCount * nowCount) * swingWidth;
+	return result;
+}
+
 void GameScene::PostEffectDraw()
 {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 	//// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
+
+	// タイトルのオブジェクトの描画
+	if (scene == Scene::Title) {
+		AFontModel_.get()->Draw(AFontWorld_, nowViewProjection);
+		TFontModel_.get()->Draw(TFontWorld_, nowViewProjection);
+		OFontModel_.get()->Draw(OFontWorld_, nowViewProjection);
+		MFontModel_.get()->Draw(MFontWorld_, nowViewProjection);
+		SFontModel_.get()->Draw(SFontWorld_, nowViewProjection);
+	}
+
 
 	//model_->Draw(worldTransform_, viewProjection_);
 
@@ -566,7 +723,9 @@ void GameScene::Draw() {
 
 	if (scene==Scene::Title ) {
 
-		titlerogo->Draw(titlePos, { 1,1,1,1 });
+		//titlerogo->Draw(titlePos, { 1,1,1,1 });
+
+
 	}
 
 	if (scene == Scene::Game)

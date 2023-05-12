@@ -758,6 +758,35 @@ void GameScene::Draw() {
 
 void GameScene::Reset()
 {
+	// タイトルシーンのリセット
+	if (scene == Scene::Title) {
+		AFontWorld_.translation_ = { +7.0f,+10.5f,+180 };
+		TFontWorld_.translation_ = { +5.8f,+10.5f,+179 };
+		OFontWorld_.translation_ = { +4.8f,+10.5f,+178 };
+		MFontWorld_.translation_ = { +3.2f,+10.5f,+177 };
+		SFontWorld_.translation_ = { +1.6f,+10.5f,+176 };
+
+		sowrdRotationY = -35.0f;
+		TFontWorld_.rotation_.y = DegreeToRadian(sowrdRotationY);
+		TFontWorld_.SetRot(TFontWorld_.rotation_);
+
+		AFontWorld_.TransferMatrix();
+		TFontWorld_.TransferMatrix();
+		OFontWorld_.TransferMatrix();
+		MFontWorld_.TransferMatrix();
+		SFontWorld_.TransferMatrix();
+
+		for (int i = 0; i < 5; i++) {
+			flyTimer[i] = 0;
+		}
+		shiftTimer = 0;
+		sowrdRotaTimer = 0;
+
+		IsRotaStart = false;
+		IsRotaEnd = false;
+
+	}
+
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };

@@ -257,8 +257,7 @@ private: // メンバ変数
 	Scene oldScene = Scene::Title;
 
 	// スプライト
-	Vector2 titlePos = { 350,200 };
-	std::unique_ptr <Sprite> titlerogo = nullptr;
+
 
 	
 #pragma region タイトルオブジェクト関連
@@ -301,6 +300,11 @@ private: // メンバ変数
 	// 回転するときのタイマー
 	float sowrdRotaTimer = 0;
 	float sowrdRotaTimerMax = 60 * 1.5;
+
+	// タイトルのスタートの文字スプライト
+	Vector2 titlePos = { 950,460 };
+	Vector2 titleFontSiza = { 259,124 };
+	std::unique_ptr <Sprite> titleStartFont[2];
 
 #pragma endregion
 

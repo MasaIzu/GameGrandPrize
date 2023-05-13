@@ -160,8 +160,14 @@ void GameScene::Initialize() {
 		sceneChageBlack[i].get()->SetPosition(startPos[i]);
 	}
 
-	titlerogo = Sprite::Create(TextureManager::Load("AtomsFont.png"));
-	titlerogo->SetAnchorPoint({ 0,0 });
+	titleStartFont[0] = Sprite::Create(TextureManager::Load("StartFont.png"));
+	titleStartFont[0]->SetTextureRect({ 0,0 }, { 432,208 });
+	titleStartFont[0]->SetSize(titleFontSiza);
+	titleStartFont[0]->SetAnchorPoint({ 0.5f,0.5f });
+	titleStartFont[1] = Sprite::Create(TextureManager::Load("StartFont.png"));
+	titleStartFont[1]->SetTextureRect({ 432,0 }, { 432,208 });
+	titleStartFont[1]->SetSize(titleFontSiza);
+	titleStartFont[1]->SetAnchorPoint({ 0.5f,0.5f });
 
 	// タイトルのビューの初期化
 	titleView.Initialize();
@@ -248,13 +254,19 @@ void GameScene::TitleUpdate()
 	ImGui::InputFloat("RotationY : %f", &rotationY);
 	ImGui::InputFloat("S_RotationY : %f", &sowrdRotationY);
 
+	ImGui::InputFloat2("startFontPos : %f", &titlePos.x);
+
 	ImGui::InputFloat3("AFont:%f,%f,%f", &AFontWorld_.translation_.x);
 	ImGui::InputFloat3("TFont:%f,%f,%f", &TFontWorld_.translation_.x);
 	ImGui::InputFloat3("OFont:%f,%f,%f", &OFontWorld_.translation_.x);
 	ImGui::InputFloat3("MFont:%f,%f,%f", &MFontWorld_.translation_.x);
 	ImGui::InputFloat3("SFont:%f,%f,%f", &SFontWorld_.translation_.x);
 
+	ImGui::InputFloat3("AFont:%f,%f,%f", &AFontWorld_.translation_.x);
+
 	ImGui::End();
+
+	// スプライトの位置調整
 
 	// 文字の浮遊
 
@@ -723,8 +735,13 @@ void GameScene::Draw() {
 
 	if (scene==Scene::Title ) {
 
-		//titlerogo->Draw(titlePos, { 1,1,1,1 });
-
+		//titleStartFont->Draw(titlePos, { 1,1,1,1 });
+		if (IsRotaStart==true) {
+			titleStartFont[1].get()->Draw(titlePos,{1,1,1,1});
+		}
+		else {
+			titleStartFont[0].get()->Draw(titlePos, { 1,1,1,1 });
+		}
 
 	}
 

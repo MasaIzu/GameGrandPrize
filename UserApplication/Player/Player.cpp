@@ -115,6 +115,32 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
+	{
+		LightGroup light = LSowrdModel->GetLigit();
+
+		light.SetDirLightActive(2, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(0, true);
+
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
+
+		LSowrdModel->SetLight(light);
+	}
+	{
+		LightGroup light = RSowrdModel->GetLigit();
+
+		light.SetDirLightActive(2, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(0, true);
+
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
+
+		RSowrdModel->SetLight(light);
+	}
 
 	BoneParent.Initialize();
 

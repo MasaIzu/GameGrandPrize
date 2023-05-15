@@ -637,7 +637,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.7f && receptionTime < 1.45f) {
+				if (receptionTime > 0.6f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;

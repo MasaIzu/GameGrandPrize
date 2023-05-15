@@ -189,7 +189,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 			if (isPlayMotion) {
 				frem += 0.015;
 			}
-
+			if (playerNowMotion == PlayerMotion::soukenCombo1) {
+				frem += 0.01;
+			}
+			else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+				frem += 0.01;
+			}
 		}
 		else {
 			frem = MinimumFrem;
@@ -309,9 +314,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
 	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
 
-	ImGui::Text("flame:%f", flame);
-	ImGui::Text("a:%f", worldTransform_.alpha);
-	ImGui::Text("fra:%d", isAdmission);
+	ImGui::Text("playerNowMotion:%d", static_cast<int>(playerNowMotion));
+	ImGui::Text("MinimumFrem:%f", MinimumFrem);
+	ImGui::Text("MaxFrem:%f", MaxFrem);
 	//ImGui::Text("frem:%f", frem);
 
 	//ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
@@ -575,11 +580,12 @@ void Player::Move() {
 	else {
 		if (isPlayMotion == false) {
 			if (isWalking == true) {
-				frem = 1.63f;
+				if (playerNowMotion == PlayerMotion::aruki) {
+					frem = 1.63f;
+				}
 			}
 
 			isWalking = false;
-
 			MaxFrem = 1.8f;
 			MinimumFrem = 1.8f;
 		}
@@ -622,7 +628,7 @@ void Player::Attack() {
 				attackConbo = 1;
 				playerNowMotion = PlayerMotion::soukenCombo1;
 				isPlayMotion = true;
-				MinimumFrem = 0.0f;
+				MinimumFrem = 2.0f;
 				MaxFrem = 2.0f;
 				frem = 0.0f;
 
@@ -631,7 +637,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.8f && receptionTime < 1.45f) {
+				if (receptionTime > 0.6f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;
@@ -642,7 +648,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 2) {
-				if (receptionTime > 0.8f && receptionTime < 1.45f) {
+				if (receptionTime > 0.5f && receptionTime < 1.4f) {
 					attackConbo = 3;
 					playerNowMotion = PlayerMotion::soukenCombo3;
 					isPlayMotion = true;

@@ -1,5 +1,6 @@
 #include "BossWarrier.h"
 #include"Input.h"
+#include"ImGuiManager.h"
 
 void BossWarrier::Initialize()
 {
@@ -28,16 +29,22 @@ void BossWarrier::Initialize()
 	//胸は大本を親に持つ
 	boss2Model[BossWarrierPart::Chest].Transform.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
 
-	//頭、腰、両腕は胸を親に持つ
+	//親子関係ツリー(親→子)
+	//　→首　→頭
+	//胸→股　→腰
+	//　→両肩→両腕→両肘→両手
+
+
 	boss2Model[BossWarrierPart::Neck].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::Head].Transform.parent_ = &boss2Model[BossWarrierPart::Neck].Transform;
+	//腰→股→胸
 	boss2Model[BossWarrierPart::Crotch ].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::Waist].Transform.parent_ = &boss2Model[BossWarrierPart::Crotch].Transform;
+	//両手→両肘→両腕→両肩→胸
 	boss2Model[BossWarrierPart::ShoulderL].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::ArmL].Transform.parent_ = &boss2Model[BossWarrierPart::ShoulderL].Transform;
 	boss2Model[BossWarrierPart::ShoulderR].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::ArmR].Transform.parent_ = &boss2Model[BossWarrierPart::ShoulderR].Transform;
-	//それぞれの手はそれぞれの腕を親に持つ
 	boss2Model[BossWarrierPart::elbowL].Transform.parent_ = &boss2Model[BossWarrierPart::ArmL].Transform;
 	boss2Model[BossWarrierPart::HandL].Transform.parent_ = &boss2Model[BossWarrierPart::elbowL].Transform;
 	boss2Model[BossWarrierPart::elbowR].Transform.parent_ = &boss2Model[BossWarrierPart::ArmR].Transform;
@@ -87,6 +94,8 @@ void BossWarrier::Initialize()
 
 void BossWarrier::Update()
 {
+#pragma region トルネード処理(テストキーはL)
+
 	if (Input::GetInstance()->TriggerKey(DIK_L))
 	{
 		isTornado = true;
@@ -147,6 +156,24 @@ void BossWarrier::Update()
 		}
 	}
 
+#pragma endregion 
+
+#pragma region 腕振り攻撃処理(テストキーは8)
+
+	if (Input::GetInstance()->TriggerKey(DIK_8)) {
+		//初期化処理
+		InitAtkArmSwing();
+	}
+
+	//腕振り攻撃フラグがtrue
+	if (isAtkArmSwing) {
+		ImGui::Text("boss atack ArmSwing");
+
+		UpdateAtkArmSwing();
+	}
+
+#pragma endregion
+
 	boss2TornadoTransform[0].TransferMatrix();
 	boss2TornadoTransform[1].TransferMatrix();
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
@@ -165,4 +192,38 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	boss2TornadeModel->Draw(boss2TornadoTransform[0],viewProMat);
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+}
+
+void BossWarrier::InitAtkArmSwing()
+{
+	//腕振り攻撃フラグをtrue
+	isAtkArmSwing = true;
+}
+
+void BossWarrier::UpdateAtkArmSwing()
+{
+	//大本の回転角の増減
+	rootRotRad+= 8.0f;
+	if (rootRotRad >= 360.0f) {
+		rootRotRad -= rootRotRad;
+	}
+
+	Vector3 rootRad = { 0,sin(rootRotRad * PI / 180.0f) * PI / 2.0f,0 };
+
+
+
+
+	//関節の回転幅
+	Vector3 jointRot = { 0,PI / 6.0f,0 };
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRad);
+	boss2Model[BossWarrierPart::Root].Transform.translation_.x++;
+	if (boss2Model[BossWarrierPart::Root].Transform.translation_.x > 100) {
+		boss2Model[BossWarrierPart::Root].Transform.translation_.x = 0;
+		isAtkArmSwing = false;
+	}
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(jointRot);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(-jointRot);
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(jointRot);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(-jointRot);
+
 }

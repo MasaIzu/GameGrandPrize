@@ -637,7 +637,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.8f && receptionTime < 1.45f) {
+				if (receptionTime > 0.7f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;
@@ -648,7 +648,7 @@ void Player::Attack() {
 				}
 			}
 			else if (attackConbo == 2) {
-				if (receptionTime > 0.8f && receptionTime < 1.7f) {
+				if (receptionTime > 0.5f && receptionTime < 1.4f) {
 					attackConbo = 3;
 					playerNowMotion = PlayerMotion::soukenCombo3;
 					isPlayMotion = true;

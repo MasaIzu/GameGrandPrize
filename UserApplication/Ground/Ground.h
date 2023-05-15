@@ -76,7 +76,7 @@ private:
 	TouchableObject* objGround = nullptr;*/
 
 	//ステージサイズの変更
-	CONST FLOAT XtZ = 40;
+	CONST FLOAT XtZ = 60;
 	//高さの変更
 	CONST FLOAT Y = -1.25f;
 

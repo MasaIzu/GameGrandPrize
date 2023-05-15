@@ -265,6 +265,7 @@ private: // メンバ変数
 	ViewProjection titleView;
 
 	// タイトル用のオブジェクトのモデル
+	std::unique_ptr<Model> skydomeTitle_;
 	std::unique_ptr<Model> AFontModel_;
 	std::unique_ptr<Model> TFontModel_;
 	std::unique_ptr<Model> OFontModel_;
@@ -305,6 +306,9 @@ private: // メンバ変数
 	Vector2 titlePos = { 950,460 };
 	Vector2 titleFontSiza = { 259,124 };
 	std::unique_ptr <Sprite> titleStartFont[2];
+
+	// タイトルの背景のスプライト
+	std::unique_ptr <Sprite> titleBackGround;
 
 #pragma endregion
 

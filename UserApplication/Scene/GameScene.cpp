@@ -66,10 +66,10 @@ void GameScene::Initialize() {
 
 
 	skyModel.reset(Model::CreateFromOBJ("skydome", true));
-
+	skydomeTitle_.reset(Model::CreateFromOBJ("skydomeTitle", true));
 	//groundModel = std::make_unique<Model>();
 	skydome_ = std::make_unique<Skydome>();
-	skydome_->Initialize(skyModel.get());
+	skydome_->Initialize(skydomeTitle_.get());
 
 	////地面の描画
 	ground.Initialize();
@@ -160,6 +160,7 @@ void GameScene::Initialize() {
 		sceneChageBlack[i].get()->SetPosition(startPos[i]);
 	}
 
+	// タイトルのスプライトの初期化
 	titleStartFont[0] = Sprite::Create(TextureManager::Load("StartFont.png"));
 	titleStartFont[0]->SetTextureRect({ 0,0 }, { 432,208 });
 	titleStartFont[0]->SetSize(titleFontSiza);
@@ -168,6 +169,9 @@ void GameScene::Initialize() {
 	titleStartFont[1]->SetTextureRect({ 432,0 }, { 432,208 });
 	titleStartFont[1]->SetSize(titleFontSiza);
 	titleStartFont[1]->SetAnchorPoint({ 0.5f,0.5f });
+	//titleBackGround = Sprite::Create(TextureManager::Load("titleBackGround.jpg"));
+	//titleBackGround.get()->SetSize({ 1280,720 });
+	//titleBackGround.get()->SetAnchorPoint({ 0, 0 });
 
 	// タイトルのビューの初期化
 	titleView.Initialize();
@@ -646,6 +650,8 @@ void GameScene::PostEffectDraw()
 		OFontModel_.get()->Draw(OFontWorld_, nowViewProjection);
 		MFontModel_.get()->Draw(MFontWorld_, nowViewProjection);
 		SFontModel_.get()->Draw(SFontWorld_, nowViewProjection);
+		
+		skydome_.get()->Draw(nowViewProjection);
 	}
 
 
@@ -653,34 +659,39 @@ void GameScene::PostEffectDraw()
 
 	//stageModel_->Draw(stageWorldTransform_, nowViewProjection);
 
-
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
-	ground.Draw(nowViewProjection);
+	// ゲームシーンのオブジェクトの描画
+	if (scene == Scene::Game) {
+		ground.Draw(nowViewProjection);
+
+		
+		skydome_.get()->Draw(nowViewProjection);
 
 
+		//チュートリアルと最初のムービーでだけ小魚を描画
+		if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
 
-	//チュートリアルと最初のムービーでだけ小魚を描画
-	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
-
-		for (int i = 0; i < 10; i++) {
-			//minifishes[i].Draw(viewProjection_);
-			if (minifishes[i].GetAlive()) {
-				boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-				boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+			for (int i = 0; i < 10; i++) {
+				//minifishes[i].Draw(viewProjection_);
+				if (minifishes[i].GetAlive()) {
+					boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+					boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				}
 			}
 		}
+
+		//ボス出現ムービーとボス変身ムービーの間で描画
+		boss->Draw(nowViewProjection);
+
+		player->Draw(nowViewProjection);
+
+		// 間欠泉の描画
+		for (int i = 0; i < 5; i++) {
+			gayserModel_[i]->Draw(gayserW[i], nowViewProjection);
+		}
 	}
-
-	//ボス出現ムービーとボス変身ムービーの間で描画
-	boss->Draw(nowViewProjection);
-
-	player->Draw(nowViewProjection);
-
-	// 間欠泉の描画
-	for (int i = 0; i < 5; i++) {
-		gayserModel_[i]->Draw(gayserW[i], nowViewProjection);
-	}
+	
 
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -715,6 +726,9 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
+	if (scene == Scene::Title) {
+		
+	}
 
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
@@ -777,6 +791,7 @@ void GameScene::Reset()
 {
 	// タイトルシーンのリセット
 	if (scene == Scene::Title) {
+		skydome_.get()->SetModel(skydomeTitle_.get());
 		AFontWorld_.translation_ = { +7.0f,+10.5f,+180 };
 		TFontWorld_.translation_ = { +5.8f,+10.5f,+179 };
 		OFontWorld_.translation_ = { +4.8f,+10.5f,+178 };
@@ -804,6 +819,7 @@ void GameScene::Reset()
 
 	}
 
+	skydome_.get()->SetModel(skyModel.get());
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
@@ -924,8 +940,10 @@ void GameScene::SceneChageFirst()
 			{
 			case Scene::Title:
 				scene = Scene::Game;
+				Reset();
 				break;
 			case Scene::Game:
+				
 				break;
 			case Scene::GameOver:
 				scene = Scene::Title;

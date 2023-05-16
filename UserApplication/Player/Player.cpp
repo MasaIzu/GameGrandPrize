@@ -733,7 +733,46 @@ void Player::Attack() {
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		}
 	}
+	if (isAttack == true) {
 
+		//補間で使うデータ
+		//start → end を知らん秒で完了させる
+		Vector3 p0(worldTransform_.lookRight);									//スタート地点
+		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
+		Vector3 p2(worldTransform_.look);										//制御点その2
+		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
+		Vector3 p4(worldTransform_.lookLeft);									//ゴール地点
+
+		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
+		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
+		p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
+		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
+		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
+
+
+		points = { p0,p0,p1,p2,p3,p4,p4 };
+
+		// 落下
+		// スタート地点        ：start
+		// エンド地点        　：end
+		// 経過時間            ：elapsedTime [s]
+		// 移動完了の率(経過時間/全体時間) : timeRate (%)
+		elapsedTime = nowCount - startCount;
+		timeRate = elapsedTime / maxTime;
+
+		if (timeRate >= 1.0f)
+		{
+			if (startIndex < points.size() - 3)
+			{
+				startIndex += 1.0f;
+				timeRate -= 1.0f;
+				startCount = nowCount;
+			}
+			else
+			{
+				timeRate = 1.0f;
+			}
+		}
 		position = splinePosition(points, startIndex, timeRate);
 
 		playerAttackTransform_.translation_ = position;
@@ -752,6 +791,10 @@ void Player::Attack() {
 			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
+
+	}
+	else
+	{
 
 	}
 

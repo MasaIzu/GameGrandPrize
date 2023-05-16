@@ -142,13 +142,7 @@ void GameScene::Initialize() {
 	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
 
-	gameoverFont = std::make_unique<Sprite>();
 
-	gameover = std::make_unique<Sprite>();
-
-	gameoverFont = Sprite::Create(TextureManager::Load("GameOverFont.png"));
-
-	gameover = Sprite::Create(TextureManager::Load("gameover.png"));
 
 	gameClearFont = std::make_unique<Sprite>();
 
@@ -225,6 +219,9 @@ void GameScene::Initialize() {
 	MFontWorld_.TransferMatrix();
 	SFontWorld_.TransferMatrix();
 	
+	// ゲームオーバーの初期化
+	GameOverInit();
+
 }
 
 void GameScene::Update() {
@@ -350,6 +347,11 @@ void GameScene::TitleUpdate()
 
 		oldScene = Scene::Title;
 		IsSceneChange = true;
+	}
+
+	if (input_->TriggerKey(DIK_K)) {
+		scene = Scene::GameOver;
+		Reset();
 	}
 }
 
@@ -562,11 +564,60 @@ void GameScene::GameUpdate()
 
 void GameScene::GameOverUpdate()
 {
-	if (input_->TriggerKey(DIK_SPACE)) {
-		oldScene = Scene::GameOver;
-		IsSceneChange = true;
-		
+	ImGui::Begin("Font");
+	ImGui::InputFloat2("selectSize : %f", &selectButtonSize.x);
+	ImGui::InputFloat2("replayFontSize : %f", &replayFontSize.x);
+	ImGui::InputFloat2("backTitleFontSize : %f", &backTitleFontSize.x);
+	ImGui::InputFloat2("selectButtonPos : %f", &selectButtonPos.x);
+	ImGui::InputFloat2("replayFontPos : %f", &replayFontPos.x);
+	ImGui::InputFloat2("backTitleFontPos : %f", &backTitleFontPos.x);
+
+	ImGui::End();
+
+
+	// αの出し方
+	if (alphaTimer < alphaTimeMax) {
+		alphaTimer++;
 	}
+
+	// 一段階目
+	if (alpha[0] < 1.0f) {
+		alpha[0] += alphaPlus;
+	}
+	// 二段階目
+	if (alphaTimer >= alphaTimeOneSet * 0.5f) {
+		if (alpha[1] < 1.0f) {
+			alpha[1] += alphaPlus;
+			
+		}
+	}
+	// 三段階目
+	if (alphaTimer >= alphaTimeOneSet * 2) {
+		if (alpha[2] < 1.0f) {
+			alpha[2] += alphaPlus;
+		}
+	}
+	if (input_->TriggerKey(DIK_A)) {
+		selectButtonPos = { 250,510 };
+	}
+	if (input_->TriggerKey(DIK_D)) {
+		selectButtonPos = { 760,510 };
+	}
+	if (selectButtonPos.x < 640) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			oldScene = Scene::GameOver;
+			IsSceneChange = true;
+			IsRetry = true;
+		}
+	}
+	else {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			oldScene = Scene::GameOver;
+			IsSceneChange = true;
+			IsRetry = false;
+		}
+	}
+
 }
 
 void GameScene::ResultUpdate()
@@ -594,7 +645,7 @@ void GameScene::SceneChageUpdate()
 			}
 			break;
 		case Scene::Game:
-			if (oldScene == Scene::Title) {
+			if (oldScene == Scene::Title || oldScene == Scene::GameOver) {
 				// 閉じきったら消す、スライダーのアウト
 				SceneChageRast();
 			}
@@ -662,7 +713,7 @@ void GameScene::PostEffectDraw()
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	// ゲームシーンのオブジェクトの描画
-	if (scene == Scene::Game) {
+	else{
 		ground.Draw(nowViewProjection);
 
 		
@@ -772,8 +823,13 @@ void GameScene::Draw() {
 	}
 	if (scene == Scene::GameOver)
 	{
-		gameover->Draw({ 640,360 }, { 1,1,1,1 });
-		gameoverFont->Draw({ 640,300 }, { 1,1,1,1 });
+		gameoverFont->Draw({ 640,300 }, { 1,1,1,alpha[0] });
+		gameover->Draw({ 640,360 }, { 1,1,1,alpha[1]});
+		
+
+		selectButton->Draw(selectButtonPos, { 1,1,1,alpha[2] });
+		replayFont->Draw(replayFontPos, { 1,1,1,alpha[2] });
+		backTitleFont->Draw(backTitleFontPos, { 1,1,1,alpha[2] });
 	}
 
 	// シーンチェンジ用のブラックスライダーの描画
@@ -818,8 +874,13 @@ void GameScene::Reset()
 		IsRotaEnd = false;
 
 	}
-
-	skydome_.get()->SetModel(skyModel.get());
+	if (scene == Scene::Game) {
+		skydome_.get()->SetModel(skyModel.get());
+	}
+	
+	// ゲームオーバーのリセット
+	GameOverReset();
+	
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
@@ -946,7 +1007,12 @@ void GameScene::SceneChageFirst()
 				
 				break;
 			case Scene::GameOver:
-				scene = Scene::Title;
+				if (IsRetry == false) {
+					scene = Scene::Title;
+				}
+				else if (IsRetry == true) {
+					scene = Scene::Game;
+				}
 				Reset();
 				break;
 			case Scene::Result:
@@ -999,5 +1065,36 @@ void GameScene::CheckAllFishLeave() {
 		}
 	}
 	isAllFishLeave = true;
+}
+
+void GameScene::GameOverInit()
+{
+	// スプライトのロード
+	gameoverFont = std::make_unique<Sprite>();
+
+	gameover = std::make_unique<Sprite>();
+
+	gameoverFont = Sprite::Create(TextureManager::Load("GameOverFont.png"));
+
+	gameover = Sprite::Create(TextureManager::Load("gameover.png"));
+
+	selectButton= Sprite::Create(TextureManager::Load("selectButton.png"));
+	replayFont = Sprite::Create(TextureManager::Load("RetryFont.png"));
+	backTitleFont= Sprite::Create(TextureManager::Load("backTitleFont.png"));
+
+	// サイズのセット
+	selectButton.get()->SetSize(selectButtonSize);
+	replayFont.get()->SetSize(replayFontSize);
+	backTitleFont.get()->SetSize(backTitleFontSize);
+}
+
+void GameScene::GameOverReset()
+{
+	alphaTimer = 0;
+	IsRetry = false;
+	selectButtonPos={250,510};
+	for (int i = 0; i < 3; i++) {
+		alpha[i] = 0;
+	}
 }
 

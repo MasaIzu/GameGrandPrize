@@ -208,9 +208,9 @@ private: // メンバ変数
 
 	Scene scene = Scene::Title;
 
-	std::unique_ptr<Sprite> gameoverFont;
+	Scene oldScene = Scene::Title;
 	std::unique_ptr<Sprite> gameClearFont;
-	std::unique_ptr<Sprite> gameover;
+
 
 	// シーンチェンジ用のスプライト
 	std::unique_ptr<Sprite> sceneChageBlack[5];
@@ -254,8 +254,8 @@ private: // メンバ変数
 		{1280,576},
 	};
 
-	Scene oldScene = Scene::Title;
 
+	
 	// スプライト
 
 
@@ -312,6 +312,34 @@ private: // メンバ変数
 
 #pragma endregion
 
+
+#pragma region gameOver関連
+	bool IsRetry = false;
+	float alpha[3];
+
+	float alphaTimer = 0;
+	float alphaTimeOneSet = 20;
+	float alphaTimeMax = 100;
+	float alphaPlus = 0.02f;
+
+	// スプライト
+	std::unique_ptr<Sprite> gameoverFont;
+	std::unique_ptr<Sprite> gameover;
+	std::unique_ptr<Sprite> selectButton;
+	std::unique_ptr<Sprite> replayFont;
+	std::unique_ptr<Sprite> backTitleFont;
+
+	// スプライトのサイズ
+	Vector2 selectButtonSize={40,80};
+	Vector2 replayFontSize={252,92};
+	Vector2 backTitleFontSize={282,100};
+
+	// スプライトのポジション
+	Vector2 selectButtonPos={250,510};
+	Vector2 replayFontPos={400,520};
+	Vector2 backTitleFontPos={900,520};
+#pragma endregion
+
 	
 
 
@@ -328,6 +356,11 @@ private://プライベート関数
 	void SceneChageRast();
 
 	void SceneChageUpdate();
+
+	// ゲームオーバーの初期化
+	void GameOverInit();
+
+	void GameOverReset();
 
 	// 度数からラジアン
 	float DegreeToRadian(float degree);

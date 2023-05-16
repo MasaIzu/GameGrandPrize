@@ -307,8 +307,10 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
-	int SowrdDFlame=16;
+	int SowrdDFlame=90;
 	int SowrdAFlame = 0;
+
+	bool isSowrd=false;
 
 	WorldTransform BoneParent;
 	float BoneParentRotY = 0.0f;
@@ -318,7 +320,7 @@ private:
 	uint32_t BoneNum = 0;
 
 	float size = 0.0f;
-
+	
 	float AttackRotX = 0.0f;
 	float AttackRotY = 0.0f;
 	float AttackRotZ = 0.0f;
@@ -343,8 +345,11 @@ private:
 
 	int AttackCollisionDistance = 4;
 
-	int AttackWaitTime = 10;
+	int maxAttackWaitTime = 30;
+	int maxAttackWaitintTime = 60;
+
+	int AttackWaitTime = maxAttackWaitTime;
 	bool isAttckWaiting = false;
-	int AttackWaitintTime = 10;
+	int AttackWaitintTime = maxAttackWaitintTime;
 
 };

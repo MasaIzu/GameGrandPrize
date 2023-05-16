@@ -332,8 +332,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
-	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
-	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
+	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
+	ImGui::SliderInt("AttackWaitintTime", &maxAttackWaitintTime, 0, 60);
 
 	ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
 	ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
@@ -363,7 +363,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
-	float endflame = 16;
+	float endflame = 90;
 
 	float Destruction = 1.0f * (SowrdDFlame / endflame);
 	float a = 1.0f * (SowrdAFlame / endflame);
@@ -621,6 +621,7 @@ void Player::Move() {
 			isWalking = false;
 			MaxFrem = 1.8f;
 			MinimumFrem = 1.8f;
+			isSowrd = false;
 		}
 
 	}
@@ -628,6 +629,7 @@ void Player::Move() {
 	if (playerNowMotion == PlayerMotion::taiki) {
 		MinimumFrem = 0.0f;
 		MaxFrem = 2.0f;
+		isSowrd = false;
 	}
 
 	worldTransform_.TransferMatrix();
@@ -669,7 +671,7 @@ void Player::Attack() {
 
 			}
 			if (attackConbo == 1) {
-				if (receptionTime > 0.6f && receptionTime < 1.45f) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
 					attackConbo = 2;
 					playerNowMotion = PlayerMotion::soukenCombo2;
 					isPlayMotion = true;
@@ -677,7 +679,7 @@ void Player::Attack() {
 					MaxFrem = 1.88f;
 					frem = 0.0f;
 					receptionTime = 0.0f;
-					SowrdDFlame = 16;
+					SowrdDFlame = 90;
 					SowrdAFlame = 0;
 				}
 			}
@@ -726,7 +728,7 @@ void Player::Attack() {
 		if (isAttack == true)
 		{
 			SowrdDFlame = 0;
-			SowrdAFlame = 16;
+			SowrdAFlame = 90;
 		}
 		isAttack = false;
 		for (int i = 0; i < SphereCount; i++) {
@@ -791,12 +793,48 @@ void Player::Attack() {
 			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
+	}
+	if (isSowrd)
+	{
+		if (SowrdAFlame < 90 && SowrdDFlame>0)
+		{
+			SowrdAFlame++;
 
+			float endflame = 90;
+
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				LBoneTrans.alpha = a;
+			}
+			{
+				RBoneTrans.alpha = a;
+			}
+		}
 	}
 	else
 	{
+		if (SowrdAFlame > 0 && SowrdDFlame < 90)
+		{
+			SowrdAFlame--;
+			SowrdDFlame++;
 
+			float endflame = 90;
+
+			float Destruction = 1.0f * (SowrdDFlame / endflame);
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
+				LSowrdModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				LBoneTrans.alpha = a;
+			}
+			{
+				Model::ConstBufferPolygonExplosion polygon = RSowrdModel->GetPolygonExplosion();
+				RSowrdModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				RBoneTrans.alpha = a;
+			}
+		}
 	}
+
 
 	if (playerNowMotion == PlayerMotion::soukenCombo1) {
 		if (IsCombo == false) {
@@ -828,6 +866,12 @@ void Player::Attack() {
 			AttackOnlyRightRotX = 0.0f;
 			AttackOnlyRightRotY = 0.0f;
 			AttackOnlyRightRotZ = 0.0f;
+			AttackWaitintTime = maxAttackWaitintTime;
+			AttackWaitTime = maxAttackWaitTime;
+			isSowrd = true;
+			Model::ConstBufferPolygonExplosion polygon=LSowrdModel->GetPolygonExplosion();
+			LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+			RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 		}
 		if (attackMoveTimer < MaxAttackMoveTimer) {
 			attackMoveTimer += 1.0;

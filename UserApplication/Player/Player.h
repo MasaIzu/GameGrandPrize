@@ -154,7 +154,7 @@ private:
 	float alpha = 0.0f;
 
 	int moveTime = 0;
-	int MaxMoveTime = 60;
+	int MaxMoveTime = 20;
 
 	float x = 0;
 	float radius = 5.0f;//player当たり判定半径
@@ -347,5 +347,9 @@ private:
 
 	Vector3 AttackMovememt;
 
+	bool isEnemyDamage = false;
+
+	int NotMoveTime = 0;
+	int MaxNotMoveTime = 20;
 
 };

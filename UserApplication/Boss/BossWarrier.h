@@ -7,6 +7,7 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+#include"EasingData.h"
 
 enum BossWarrierPart {
 	//(骨)は描画する
@@ -30,7 +31,7 @@ enum BossWarrierPart {
 	Boss2PartMax,	//ボスの部位数
 };
 
-struct BossWarrierModel{
+struct BossWarrierModel {
 	std::unique_ptr<Model> model;
 	WorldTransform Transform;
 	bool isDraw;
@@ -42,7 +43,7 @@ class BossWarrier
 public:
 	void Initialize();
 
-	void Update();
+	void Update(const Vector3& targetPos);
 
 	void Draw(const ViewProjection& viewProMat);
 
@@ -57,6 +58,14 @@ private:
 	bool isAtkArmSwing = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
+	EasingData easeRotArm;//腕振り制御のイージングデータ
+	Vector3 dataRotArm[2];	//イージング用回転角データ
+	Vector3 dataRotElbow[2];
+	Vector3 dataRotShoulder[2];
+	Vector3 dummyTargetPos;
+
+	//引数などでもらってくる変数
+	Vector3 targetPos = { 0,0,0 };
 
 private:
 	//腕振り攻撃の初期化

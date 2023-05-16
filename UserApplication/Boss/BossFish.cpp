@@ -1255,6 +1255,17 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t)
 	return start * (1.0f - t) + end * t;
 }
 
+Vector3 EaseOutVec3(const Vector3& start, const Vector3& end, float t)
+{
+	float resultT = sin((t * PI) / 2.0f);
+	//result.x = sin((result.x * PI) / 2.0f);
+	//result.y = sin((result.y * PI) / 2.0f);
+	//result.z = sin((result.z * PI) / 2.0f);
+
+
+	return Lerp(start,end,resultT);
+}
+
 Vector3 LerpBezireCubic(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t)
 {
 	Vector3 p1, p2, p3, p4, p5, result;

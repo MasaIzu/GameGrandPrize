@@ -1,6 +1,7 @@
 #include "BossWarrier.h"
 #include"Input.h"
 #include"ImGuiManager.h"
+#include"BossFish.h"
 
 void BossWarrier::Initialize()
 {
@@ -38,7 +39,7 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::Neck].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::Head].Transform.parent_ = &boss2Model[BossWarrierPart::Neck].Transform;
 	//腰→股→胸
-	boss2Model[BossWarrierPart::Crotch ].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
+	boss2Model[BossWarrierPart::Crotch].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
 	boss2Model[BossWarrierPart::Waist].Transform.parent_ = &boss2Model[BossWarrierPart::Crotch].Transform;
 	//両手→両肘→両腕→両肩→胸
 	boss2Model[BossWarrierPart::ShoulderL].Transform.parent_ = &boss2Model[BossWarrierPart::Chest].Transform;
@@ -92,8 +93,11 @@ void BossWarrier::Initialize()
 
 }
 
-void BossWarrier::Update()
+void BossWarrier::Update(const Vector3& targetPos)
 {
+	//引数をメンバにコピー
+	this->targetPos = targetPos;
+
 #pragma region トルネード処理(テストキーはL)
 
 	if (Input::GetInstance()->TriggerKey(DIK_L))
@@ -184,13 +188,13 @@ void BossWarrier::Update()
 void BossWarrier::Draw(const ViewProjection& viewProMat)
 {
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
-		if (boss2Model[i].isDraw==true)
+		if (boss2Model[i].isDraw == true)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
 		}
 	}
 
-	boss2TornadeModel->Draw(boss2TornadoTransform[0],viewProMat);
+	boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
 }
 
@@ -198,32 +202,79 @@ void BossWarrier::InitAtkArmSwing()
 {
 	//腕振り攻撃フラグをtrue
 	isAtkArmSwing = true;
+	//腕振りタイマーを開始(30f)で終わるようにし、30f経つごとにループさせる
+	easeRotArm.Start(30);
+
+	dataRotArm[0] = { 0,PI / 3.0f - (PI / 2.0f),0 };
+	dataRotArm[1] = { 0,-PI / 3.0f - (PI / 2.0f),0 };
+	dataRotShoulder[0] = { 0,PI / 6.0f,0 };
+	dataRotShoulder[1] = { 0,PI / 3.0f,0 };
+	dataRotElbow[0] = { 0,PI /6.0f,0 };
+	dataRotElbow[1] = { 0,PI / 4.0f * 3.0f,0 };
+	dummyTargetPos = targetPos;
 }
 
 void BossWarrier::UpdateAtkArmSwing()
 {
+	//移動処理を最初に
+
+	//ボスは30fの間決まったダミーの座標に向かって移動する
+	Vector3 bossMoveVec;
+	bossMoveVec = dummyTargetPos - boss2Model[BossWarrierPart::Root].Transform.translation_;
+	bossMoveVec.normalize();
+	//XZ移動なのでYは0
+	bossMoveVec.y = 0;
+
+
+	//イージングデータ更新
+	easeRotArm.Update();
+	//イージングが終了したら(timeRateが1.0以上)イージングのパラメータを入れ替えてまたイージング開始
+	if (!easeRotArm.GetActive()) {
+		// それぞれの回転データを
+		Vector3 data = dataRotArm[0];
+		dataRotArm[0] = dataRotArm[1];
+		dataRotArm[1] = data;
+		data = dataRotElbow[0];
+		dataRotElbow[0] = dataRotElbow[1];
+		dataRotElbow[1] = data;
+		data = dataRotShoulder[0];
+		dataRotShoulder[0] = dataRotShoulder[1];
+		dataRotShoulder[1] = data;
+
+		easeRotArm.Start(30);
+	}
+
 	//大本の回転角の増減
-	rootRotRad+= 8.0f;
+	rootRotRad += 8.0f;
 	if (rootRotRad >= 360.0f) {
 		rootRotRad -= rootRotRad;
 	}
 
-	Vector3 rootRad = { 0,sin(rootRotRad * PI / 180.0f) * PI / 2.0f,0 };
+	Vector3 rotArm;
+	rotArm = EaseOutVec3(dataRotArm[0], dataRotArm[1], easeRotArm.GetTimeRate());
 
-
-
+	ImGui::Text("dataRotArm[0]:%f,%f,%f", dataRotArm[0].x, dataRotArm[0].y, dataRotArm[0].z);
+	ImGui::Text("dataRotArm[1]:%f,%f,%f", dataRotArm[1].x, dataRotArm[1].y, dataRotArm[1].z);
+	ImGui::Text("rotArm:%f,%f,%f", rotArm.x, rotArm.y * PI, rotArm.z);
 
 	//関節の回転幅
+
 	Vector3 jointRot = { 0,PI / 6.0f,0 };
-	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRad);
-	boss2Model[BossWarrierPart::Root].Transform.translation_.x++;
+	Vector3 rotShoulderL, rotShoulderR, rotElbowL, rotElbowR;
+	rotShoulderL = Lerp(dataRotShoulder[1], dataRotShoulder[0], easeRotArm.GetTimeRate());
+	rotShoulderR = Lerp(-dataRotShoulder[0], -dataRotShoulder[1], easeRotArm.GetTimeRate());
+	rotElbowL = Lerp(dataRotElbow[1], dataRotElbow[0], easeRotArm.GetTimeRate());
+	rotElbowR = Lerp(-dataRotElbow[0], -dataRotElbow[1], easeRotArm.GetTimeRate());
+
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rotArm);
+	boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;
 	if (boss2Model[BossWarrierPart::Root].Transform.translation_.x > 100) {
 		boss2Model[BossWarrierPart::Root].Transform.translation_.x = 0;
 		isAtkArmSwing = false;
 	}
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(jointRot);
-	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(-jointRot);
-	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(jointRot);
-	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(-jointRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
 }

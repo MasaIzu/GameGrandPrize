@@ -37,6 +37,8 @@ struct WorldTransform {
 	Vector3 lookBack = { 0,0,0 };
 	Vector3 lookRight = { 0,0,0 };
 	Vector3 lookLeft = { 0,0,0 };
+	Vector3 lookUp = { 0,0,0 };
+	Vector3 lookDown = { 0,0,0 };
 	// 親となるワールド変換へのポインタ
 	const WorldTransform* parent_ = nullptr;
 

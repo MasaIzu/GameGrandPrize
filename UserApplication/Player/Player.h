@@ -125,7 +125,7 @@ private:
 	// コライダー
 	BaseCollider* collider = nullptr;
 
-	static const int SphereCount = 10;
+	static const int SphereCount = 8;
 
 	BaseCollider* AttackCollider[SphereCount];
 	Vector3 colliderPos[SphereCount];
@@ -307,6 +307,9 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
+	int SowrdDFlame=16;
+	int SowrdAFlame = 0;
+
 	WorldTransform BoneParent;
 	float BoneParentRotY = 0.0f;
 
@@ -337,5 +340,11 @@ private:
 	float OldAttackRotZ = 0;
 
 	float saveRotX = 0.0f;
+
+	int AttackCollisionDistance = 4;
+
+	int AttackWaitTime = 10;
+	bool isAttckWaiting = false;
+	int AttackWaitintTime = 10;
 
 };

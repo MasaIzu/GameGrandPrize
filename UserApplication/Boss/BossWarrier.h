@@ -7,6 +7,8 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+#include "Player.h"
+#include "Input.h"
 
 enum BossWarrierPart {
 	//(骨)は描画する
@@ -45,8 +47,20 @@ public:
 	void Update();
 
 	void Draw(const ViewProjection& viewProMat);
+	void SetPlayer(Player* player_) { pl = player_; }
 
+	void phase2Attack();
+	void phase2AttackP2();
+
+	void phase2AttackDraw(ViewProjection viewProMat);
+
+	void Rota();
 private:
+
+	std::unique_ptr<Model> swordModel = nullptr;	//剣のモデルデータ
+
+	Input* input_ = nullptr;
+	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ボス第二形態のモデル
 	std::unique_ptr<Model> boss2TornadeModel;
 
@@ -58,6 +72,28 @@ private:
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
 
+	//
+
+	//第二phaseの剣の投げAttackの剣の最大数
+	const int MAXSWROD = 5;
+	WorldTransform w[5];
+	//生成してから剣を飛ばすまでの時間
+	int phase2AttackCoolTime = 70;
+	bool t;
+	bool t2;
+	WorldTransform pPos[5];
+	WorldTransform num[5];
+	int interval = 10;
+	float moveSpeed = 0.2f;
+	bool isSat = false;
+	bool isSat2 = false;
+	bool isOn = false;
+	bool isShot[5];
+	const int MAXSHOTTIME = 40;
+	int shotTime = MAXSHOTTIME;
+
+	bool kenrot[5];
+
 private:
 	//腕振り攻撃の初期化
 	void InitAtkArmSwing();
@@ -67,3 +103,4 @@ private:
 
 };
 
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

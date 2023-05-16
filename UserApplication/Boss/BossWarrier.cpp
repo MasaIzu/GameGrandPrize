@@ -4,6 +4,8 @@
 
 void BossWarrier::Initialize()
 {
+	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
+	input_->GetInstance();
 	//ボス2のモデル初期化
 	//Rootは大本で動かす親用なので空データでOK
 	boss2Model[BossWarrierPart::Chest].model.reset(Model::CreateFromOBJ("Boss_Body", true));
@@ -194,6 +196,235 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
 }
 
+void BossWarrier::phase2Attack()
+{
+	
+
+//確認用の攻撃キー
+if (input_->PushKey(DIK_L))
+{
+	//isOn = true;
+
+
+
+	//生成時の座標設定
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+
+		w[i].translation_ = 
+		{
+			//BOSS第二形態の真ん中の座標
+			//fishParent.pos.translation_.x - interval * 2 + i * interval,
+			//fishParent.pos.translation_.y + 10 ,
+			//fishParent.pos.translation_.z 
+		};
+
+		w[i].TransferMatrix();
+		
+	}
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		//
+		//剣からプレイヤーへのベクトル計算,飛ばす用
+		pPos[i].translation_ = pl->GetWorldPosition();
+		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+		num[i].translation_.normalize();
+		
+		num[i].TransferMatrix();
+		
+
+	}
+		
+
+	t = true;
+	isSat = true;
+	Rota();
+}
+
+//攻撃開始
+if (t)
+{
+	phase2AttackCoolTime--;
+	if (phase2AttackCoolTime <= 0)
+	{
+		//生成した剣を飛ばすシーン
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+
+
+			//
+			// 
+			//計算したベクトル方向に動かす
+			w[i].translation_ += num[i].translation_ * 10;
+			w[i].TransferMatrix();
+
+		
+
+		}
+		//フラグ解除
+		if (phase2AttackCoolTime <= -40)
+		{
+			
+			//t = false;
+
+		}
+	}
+}
+else
+{
+	phase2AttackCoolTime = 70;
+	isSat = false;
+}
+
+
+}
+
+void BossWarrier::phase2AttackP2()
+{
+	//一個ずつ飛ばす
+//確認用の攻撃キー
+	if (input_->PushKey(DIK_K))
+	{
+		//isOn = true;
+
+
+
+		//生成時の座標設定
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+
+			w[i].translation_ =
+			{
+				//BOSS第二形態の真ん中の座標
+				//fishParent.pos.translation_.x - interval * 2 + i * interval,
+				//fishParent.pos.translation_.y + 10 ,
+				//fishParent.pos.translation_.z
+			};
+
+			w[i].TransferMatrix();
+		}
+
+
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+			//
+			////剣からプレイヤーへのベクトル計算,飛ばす用
+			//pPos[i].translation_ = pl->GetWorldPosition();
+			//num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+			//num[i].translation_.normalize();
+
+			//num[i].TransferMatrix();
+
+			isShot[i] = false;
+			kenrot[i] = false;
+		}
+
+
+		t2 = true;
+		isSat2 = true;
+		//Rota();
+	}
+
+
+	//攻撃開始
+	if (t2)
+	{
+		shotTime--;
+		for (int i = 0; i < 5; i++)
+		{
+			if (shotTime <= 0)
+			{
+				if (isShot[i] == false)
+				{
+
+					isShot[i] = true;
+					//剣からプレイヤーへのベクトル計算,飛ばす用
+					pPos[i].translation_ = pl->GetWorldPosition();
+					num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+					num[i].translation_.normalize();
+					num[i].TransferMatrix();
+					//Rota();
+					shotTime = MAXSHOTTIME;
+					break;
+				}
+
+			}
+		}
+
+
+		//生成した剣を飛ばすシーン
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+
+			//計算したベクトル方向に動かす
+			if (isShot[i] == true)
+			{
+
+				w[i].translation_ += num[i].translation_ * 10;
+				w[i].TransferMatrix();
+			}
+		}
+		if (phase2AttackCoolTime <= -40)
+		{
+			phase2AttackCoolTime = 70;
+			//t2 = false;
+
+		}
+
+	}
+	else
+	{
+		phase2AttackCoolTime = 70;
+		isSat2 = false;
+	}
+	//向きを変える
+	for (int i = 0; i < 5; i++)
+	{
+		if (isShot[i] == false)
+		{
+
+			WorldTransform plWorldTransform;
+
+			plWorldTransform.translation_ = pl->GetWorldPosition();
+
+			Matrix4 mat;
+			mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
+
+			w[i].SetMatRot(mat);
+			w[i].TransferMatrix();
+		}
+	}
+}
+
+void BossWarrier::phase2AttackDraw(ViewProjection viewProMat)
+{
+	if (isSat || isSat2)
+	{
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+			swordModel->Draw(w[i], viewProMat);
+		}
+	}
+}
+
+void BossWarrier::Rota()
+{
+	WorldTransform plWorldTransform;
+
+	plWorldTransform.translation_ = pl->GetWorldPosition();
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		Matrix4 mat;
+		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
+
+		w[i].SetMatRot(mat);
+	}
+
+
+}
+
 void BossWarrier::InitAtkArmSwing()
 {
 	//腕振り攻撃フラグをtrue
@@ -226,4 +457,26 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(jointRot);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(-jointRot);
 
+}
+
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target)
+{
+	Vector3 matRotX, matRotY, matRotZ;
+	Vector3 up{ 0,1,0 };
+
+	matRotZ = target - pos;
+	matRotZ.normalize();
+	matRotX = up.cross(matRotZ);
+	matRotX.normalize();
+	matRotY = matRotZ.cross(matRotX);
+	matRotY.normalize();
+
+	Matrix4 matRot{
+				matRotX.x,matRotX.y,matRotX.z,0,
+				matRotY.x,matRotY.y,matRotY.z,0,
+				matRotZ.x,matRotZ.y,matRotZ.z,0,
+				0,0,0,1
+	};
+
+	return matRot;
 }

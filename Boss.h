@@ -203,8 +203,11 @@ private:
 
 	//第２フェーズ時の攻撃モーションの剣の投げ
 	void phase2Attack();
+	void phase2AttackP2();
 
 	void phase2AttackDraw(ViewProjection viewProMat);
+
+	void Rota();
 
 	
 
@@ -274,13 +277,21 @@ private:
 	const int MAXSWROD = 5;
 	WorldTransform w[5];
 	//生成してから剣を飛ばすまでの時間
-	int phase2AttackCoolTime = 40;
+	int phase2AttackCoolTime = 70;
 	bool t;
+	bool t2;
 	WorldTransform pPos[5];
 	WorldTransform num[5];
+	int interval = 10;
 	float moveSpeed = 0.2f;
 	bool isSat = false;
+	bool isSat2 = false;
 	bool isOn = false;
+	bool isShot[5];
+	const int MAXSHOTTIME = 40;
+	int shotTime = MAXSHOTTIME;
+
+	bool kenrot[5];
 	
 };
 

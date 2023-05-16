@@ -91,6 +91,7 @@ void Boss::Initialize()
 
 void Boss::Update(const Vector3& targetPos)
 {
+	
 	//第1形態の魚群の更新
 	//ImGui::Begin("sword");
 
@@ -114,6 +115,8 @@ void Boss::Update(const Vector3& targetPos)
 	}
 
 	phase2Attack();
+	phase2AttackP2();
+	ImGui::Text("timer %d", shotTime);
 
 	switch (phase1) {
 	case BossFirstPhase::Idle:
@@ -135,8 +138,8 @@ void Boss::Update(const Vector3& targetPos)
 		break;
 
 	}
-
-
+	
+	
 	//	ImGui::End();
 	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
@@ -226,7 +229,7 @@ void Boss::Draw(ViewProjection viewProMat)
 		testTrans2.translation_ = posSwordColCube2;
 		testTrans2.TransferMatrix();
 		//fishEyeModel->Draw(testTrans2, viewProMat);
-
+		
 	}
 
 	if (fishes.empty()) {
@@ -1171,65 +1174,231 @@ void Boss::SwordCollisionOFF()
 
 void Boss::phase2Attack()
 {
-	
+	//
 
+	////確認用の攻撃キー
+	//if (input_->PushKey(DIK_L))
+	//{
+	//	//isOn = true;
+
+
+
+	//	//生成時の座標設定
+	//	for (int i = 0; i < MAXSWROD; i++)
+	//	{
+
+	//		w[i].translation_ = 
+	//		{
+	//			fishParent.pos.translation_.x - interval * 2 + i * interval,
+	//			fishParent.pos.translation_.y + 10 ,
+	//			fishParent.pos.translation_.z 
+	//		};
+
+	//		w[i].TransferMatrix();
+	//		
+	//	}
+
+	//	for (int i = 0; i < MAXSWROD; i++)
+	//	{
+	//		//
+	//		//剣からプレイヤーへのベクトル計算,飛ばす用
+	//		pPos[i].translation_ = pl->GetWorldPosition();
+	//		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+	//		num[i].translation_.normalize();
+	//		
+	//		num[i].TransferMatrix();
+	//		
+
+	//	}
+	//		
+
+	//	t = true;
+	//	isSat = true;
+	//	Rota();
+	//}
+	//
+	////攻撃開始
+	//if (t)
+	//{
+	//	phase2AttackCoolTime--;
+	//	if (phase2AttackCoolTime <= 0)
+	//	{
+	//		//生成した剣を飛ばすシーン
+	//		for (int i = 0; i < MAXSWROD; i++)
+	//		{
+
+
+	//			//
+	//			// 
+	//			//計算したベクトル方向に動かす
+	//			w[i].translation_ += num[i].translation_ * 10;
+	//			w[i].TransferMatrix();
+
+	//		
+
+	//		}
+	//		//フラグ解除
+	//		if (phase2AttackCoolTime <= -40)
+	//		{
+	//			
+	//			//t = false;
+
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	phase2AttackCoolTime = 70;
+	//	isSat = false;
+	//}
+	//
+	
+}
+
+void Boss::phase2AttackP2()
+{
+	//一個ずつ飛ばす
 	//確認用の攻撃キー
-	if (input_->PushKey(DIK_L))
+	if (input_->PushKey(DIK_K))
 	{
-		isOn = true;
+		//isOn = true;
+
+
 
 		//生成時の座標設定
 		for (int i = 0; i < MAXSWROD; i++)
 		{
 
-			w[i].translation_ = {
-				fishParent.pos.translation_.x + i ,
-				fishParent.pos.translation_.y + i ,
-				fishParent.pos.translation_.z + i
+			w[i].translation_ =
+			{
+				
+				fishParent.pos.translation_.x - interval * 2 + i * interval,
+				fishParent.pos.translation_.y + 10 ,
+				fishParent.pos.translation_.z
 			};
 
 			w[i].TransferMatrix();
 		}
 
+
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+			//
+			////剣からプレイヤーへのベクトル計算,飛ばす用
+			//pPos[i].translation_ = pl->GetWorldPosition();
+			//num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+			//num[i].translation_.normalize();
+
+			//num[i].TransferMatrix();
+
+			isShot[i] = false;
+			kenrot[i] = false;
+		}
+
+
+		t2 = true;
+		isSat2 = true;
+		//Rota();
+	}
+
+	
+	//攻撃開始
+	if (t2)
+	{
+		shotTime--;
+		for (int  i = 0; i < 5; i++)
+		{
+			if (shotTime <= 0)
+			{
+				if (isShot[i] == false)
+				{
+
+					isShot[i] = true;
+					//剣からプレイヤーへのベクトル計算,飛ばす用
+					pPos[i].translation_ = pl->GetWorldPosition();
+					num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+					num[i].translation_.normalize();
+					num[i].TransferMatrix();
+					//Rota();
+					shotTime = MAXSHOTTIME;
+					break;
+				}
+			
+			}
+		}
+		
+		
+		//生成した剣を飛ばすシーン
 		for (int i = 0; i < MAXSWROD; i++)
 		{
 
-			pPos[i].translation_ = pl->GetWorldPosition();
-			num[i].translation_ = pPos[i].translation_ - w[i].translation_;
-			num[i].translation_.normalize();
-			
-			num[i].TransferMatrix();
+				//計算したベクトル方向に動かす
+			if (isShot[i] == true)
+			{
+
+				w[i].translation_ += num[i].translation_ * 10;
+				w[i].TransferMatrix();
+			}
+		}
+		if (phase2AttackCoolTime <= -40)
+		{
+			phase2AttackCoolTime = 70;
+			//t2 = false;
 
 		}
-			
-
-		//t = true;
-		isSat = true;
+		
 	}
-	//攻撃開始
-	if (t)
+	else
 	{
-		if (phase2AttackCoolTime <= 0)
+		phase2AttackCoolTime = 70;
+		isSat2 = false;
+	}
+	//向きを変える
+	for (int i = 0; i < 5; i++)
+	{
+		if (isShot[i] == false)
 		{
-			//生成した剣を飛ばすシーン
-			for (int  i = 0; i < MAXSWROD; i++)
-			{
-				//計算したベクトル方向に動かす
-				//w[i].translation_ += num[i].translation_;
-			}
+
+			WorldTransform plWorldTransform;
+
+			plWorldTransform.translation_ = pl->GetWorldPosition();
+
+			Matrix4 mat;
+			mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
+
+			w[i].SetMatRot(mat);
+			w[i].TransferMatrix();
 		}
 	}
 }
 
 void Boss::phase2AttackDraw(ViewProjection viewProMat)
 {
-	if (isSat)
+	if (isSat || isSat2)
 	{
 		for (int i = 0; i < MAXSWROD; i++)
 		{
 			swordModel->Draw(w[i], viewProMat);
 		}
 	}
+}
+
+void Boss::Rota()
+{
+	WorldTransform plWorldTransform;
+
+	plWorldTransform.translation_ = pl->GetWorldPosition();
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		Matrix4 mat;
+		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
+
+		w[i].SetMatRot(mat);
+	}
+
+
+
 }
 
 void Boss::Death()

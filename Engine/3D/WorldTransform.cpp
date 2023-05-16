@@ -63,6 +63,9 @@ void WorldTransform::TransferMatrix() {
 	lookRight = GetLook(worldLookMatRot, Vector3(0, 0, 1));
 	lookLeft = GetLook(worldLookMatRot, Vector3(0, 0, -1));
 
+	lookUp = GetLook(worldLookMatRot, Vector3(0, 1, 0));
+	lookDown = GetLook(worldLookMatRot, Vector3(0, -1, 0));
+
 	//親オブジェクトがあれば
 	if (parent_) {
 		//親オブジェクトのワールド行列を掛ける

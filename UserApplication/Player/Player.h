@@ -125,7 +125,7 @@ private:
 	// コライダー
 	BaseCollider* collider = nullptr;
 
-	static const int SphereCount = 10;
+	static const int SphereCount = 8;
 
 	BaseCollider* AttackCollider[SphereCount];
 	Vector3 colliderPos[SphereCount];
@@ -337,5 +337,11 @@ private:
 	float OldAttackRotZ = 0;
 
 	float saveRotX = 0.0f;
+
+	int AttackCollisionDistance = 4;
+
+	int AttackWaitTime = 10;
+	bool isAttckWaiting = false;
+	int AttackWaitintTime = 10;
 
 };

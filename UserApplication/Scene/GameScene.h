@@ -272,6 +272,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> MFontModel_;
 	std::unique_ptr<Model> SFontModel_;
 
+	std::unique_ptr<ParticleManager> TitileParticle;
+
 	// オブジェクトのワールドトランスフォーム
 	WorldTransform AFontWorld_;
 	WorldTransform TFontWorld_;
@@ -309,6 +311,8 @@ private: // メンバ変数
 
 	// タイトルの背景のスプライト
 	std::unique_ptr <Sprite> titleBackGround;
+
+	int ParticleFlame=0;
 
 #pragma endregion
 

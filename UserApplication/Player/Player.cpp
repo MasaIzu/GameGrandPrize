@@ -113,6 +113,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	LBoneTrans.Initialize();
 	RBoneTrans.Initialize();
 
+	LBoneTrans.alpha = 0;
+	RBoneTrans.alpha = 0;
+
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	{
@@ -144,8 +147,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	BoneParent.Initialize();
 
-	//LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
-	//RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
+	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f});
+	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 
@@ -360,6 +363,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
+	float endflame = 16;
+
+	float Destruction = 1.0f * (SowrdDFlame / endflame);
+	float a = 1.0f * (SowrdAFlame / endflame);
+	ImGui::Text("a:%f", a);
+	ImGui::Text("D:%f", Destruction);
 
 	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
 	ImGui::SliderFloat("AttackRotY", &AttackRotY, -360.0f, 360.0f);
@@ -655,8 +664,6 @@ void Player::Attack() {
 				MinimumFrem = 2.0f;
 				MaxFrem = 2.0f;
 				frem = 0.0f;
-				//AttackWaitTime = 10;
-				//AttackWaitingTime = 10;
 				receptionTime = 0.0f;
 				conboFlag = true;
 
@@ -670,6 +677,8 @@ void Player::Attack() {
 					MaxFrem = 1.88f;
 					frem = 0.0f;
 					receptionTime = 0.0f;
+					SowrdDFlame = 16;
+					SowrdAFlame = 0;
 				}
 			}
 			else if (attackConbo == 2) {
@@ -714,10 +723,36 @@ void Player::Attack() {
 		nowCount++;
 	}
 	else {
+		if (isAttack == true)
+		{
+			SowrdDFlame = 0;
+			SowrdAFlame = 16;
+		}
 		isAttack = false;
 		for (int i = 0; i < SphereCount; i++) {
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		}
+	}
+
+		position = splinePosition(points, startIndex, timeRate);
+
+		playerAttackTransform_.translation_ = position;
+
+		float sphereX = position.x - GetWorldPosition().x;
+		float sphereY = position.y - GetWorldPosition().y;
+		float sphereZ = position.z - GetWorldPosition().z;
+
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+		for (int i = 0; i < SphereCount; i++) {
+			colliderPos[i] = GetWorldPosition() + sphere * i;
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+			playerAttackTransformaaaa_[i].TransferMatrix();
+		}
+
 	}
 
 	if (playerNowMotion == PlayerMotion::soukenCombo1) {

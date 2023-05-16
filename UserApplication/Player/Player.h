@@ -307,6 +307,9 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
+	int SowrdDFlame=16;
+	int SowrdAFlame = 0;
+
 	WorldTransform BoneParent;
 	float BoneParentRotY = 0.0f;
 

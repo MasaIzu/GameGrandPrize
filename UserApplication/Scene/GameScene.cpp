@@ -183,6 +183,12 @@ void GameScene::Initialize() {
 	MFontModel_.reset(Model::CreateFromOBJ("M_Font"));
 	SFontModel_.reset(Model::CreateFromOBJ("S_Font"));
 
+	TitileParticle = std::make_unique<ParticleManager>();
+
+	TitileParticle->Initialize();
+
+	TitileParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
+
 	// タイトルのオブジェクトのワールドトランスフォームの初期化
 	rotationY = -35.0f;
 	sowrdRotationY = -35.0f;
@@ -255,6 +261,8 @@ void GameScene::TitleUpdate()
 	nowViewProjection = viewProjection_;
 
 	ImGui::Begin("Font");
+
+	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x,nowViewProjection.eye.y, nowViewProjection.eye.z);
 	ImGui::InputFloat("RotationY : %f", &rotationY);
 	ImGui::InputFloat("S_RotationY : %f", &sowrdRotationY);
 
@@ -301,6 +309,41 @@ void GameScene::TitleUpdate()
 			flyTimer[i] = 0;
 		}
 	}
+	ParticleFlame++;
+	if (ParticleFlame>=10)
+	{
+		ParticleFlame = 0;
+		for (int i = 0; i < 2; i++)
+		{
+			//消えるまでの時間
+			const float rnd_life = 200.0f;
+			//最低限のライフ
+			const float constlife = 100;
+			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+
+			//XYZの広がる距離
+			const float rnd_pos = 15.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2;
+			pos.y = -0;
+			pos.z = 181;
+
+			Vector3 startPos = pos;
+
+			Vector3 endPos = { pos.x,8.0f,pos.z };
+
+			//消えるまでの時間
+			const float rndScale = 0.2f;
+			//最低限のライフ
+			const float constScale = 0.3f;
+			float scale = (float)rand() / RAND_MAX * rndScale + constScale;
+			//追加
+			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.5 });
+		}
+	}
+
 
 	AFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[0], 0.2f);
 	AFontWorld_.TransferMatrix();
@@ -316,6 +359,8 @@ void GameScene::TitleUpdate()
 
 	SFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[4], 0.2f);
 	SFontWorld_.TransferMatrix();
+
+	TitileParticle->Update();
 
 	if (input_->TriggerKey(DIK_Q)) {
 		IsSceneChange = true;
@@ -350,7 +395,9 @@ void GameScene::TitleUpdate()
 
 		oldScene = Scene::Title;
 		IsSceneChange = true;
+		TitileParticle->AllDelete();
 	}
+	
 }
 
 void GameScene::GameUpdate()
@@ -699,20 +746,18 @@ void GameScene::PostEffectDraw()
 
 
 	FbxModel::PreDraw(commandList);
-
-	player->PlayerFbxDraw(nowViewProjection);
-
+	if (scene == Scene::Game) {
+		player->PlayerFbxDraw(nowViewProjection);
+	}
 	FbxModel::PostDraw();
 
 	ParticleManager::PreDraw(commandList);
+	if (scene == Scene::Title) {
+		TitileParticle->Draw(nowViewProjection);
+	}
+	if (scene == Scene::Game) {
 
-	player->ParticleDraw(nowViewProjection);
-
-	if (isMovie) {
-
-
-		gayserParticle->Draw(nowViewProjection);
-
+		player->ParticleDraw(nowViewProjection);
 	}
 
 

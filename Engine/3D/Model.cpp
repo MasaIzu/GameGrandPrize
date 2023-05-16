@@ -642,6 +642,10 @@ void Model::LoadTextures() {
 
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	if (worldTransform.alpha<=0)
+	{
+		return;
+	}
 
 	lightGroup->TransferConstBuffer();
 

@@ -138,7 +138,6 @@ private:
 
 	//モデル
 	Model* playerModel_ = nullptr;
-	std::unique_ptr<Model> oldPlayerModel_;
 
 	Matrix4 CameraRot;
 	Matrix4 EnemyPos;
@@ -158,16 +157,18 @@ private:
 	int MaxMoveTime = 60;
 
 	float x = 0;
-	float radius = 4.0f;//当たり判定半径
+	float radius = 5.0f;//player当たり判定半径
+	float AttackRadius = 8.0f;//Attack当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.5f;
-	float playerAvoidance = 20.0f;
+	float playerSpeed = 1.0f;
+	float playerAvoidance = 40.0f;
 
 	bool isPushSenter = false;
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
+	bool isNotPush = false;
 	bool spaceInput = false;
 
 	float angle = 0.0f;
@@ -276,7 +277,7 @@ private:
 	int playerEvasionTimes = 0;
 	float playerEvasionCoolTime = 0;
 	int playerEvasionMaxTimes = 3;
-	float CoolTime = 180;
+	float CoolTime = 10;
 
 	float flame = 0;
 	float playerAttackMovement = 0.0f;
@@ -343,5 +344,8 @@ private:
 	int AttackWaitTime = 10;
 	bool isAttckWaiting = false;
 	int AttackWaitintTime = 10;
+
+	Vector3 AttackMovememt;
+
 
 };

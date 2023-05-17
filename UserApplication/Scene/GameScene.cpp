@@ -337,7 +337,7 @@ void GameScene::TitleUpdate()
 			const float constScale = 0.3f;
 			float scale = (float)rand() / RAND_MAX * rndScale + constScale;
 			//追加
-			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.5 });
+			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.0 });
 		}
 	}
 

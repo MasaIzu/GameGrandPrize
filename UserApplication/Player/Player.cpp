@@ -1433,7 +1433,7 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 1.0f, 1.0f, { 0.5,0,0,1 }, { 0.5,0,0,1 });
 		}
 		IsHpAlfa = true;
 		hpAlfaSize = hpSize;

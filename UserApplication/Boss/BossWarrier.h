@@ -58,6 +58,8 @@ private:
 	bool isAtkArmSwing = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
+	bool isLastAtkStart = false;
+	int lastAtkCount = 0;
 	EasingData easeRotArm;//腕振り制御のイージングデータ
 	Vector3 dataRotArm[2];	//イージング用回転角データ
 	Vector3 dataRotElbow[2];

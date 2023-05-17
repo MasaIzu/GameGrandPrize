@@ -209,7 +209,7 @@ void BossWarrier::InitAtkArmSwing()
 	dataRotArm[1] = { 0,-PI / 3.0f - (PI / 2.0f),0 };
 	dataRotShoulder[0] = { 0,PI / 6.0f,0 };
 	dataRotShoulder[1] = { 0,PI / 3.0f,0 };
-	dataRotElbow[0] = { 0,PI /6.0f,0 };
+	dataRotElbow[0] = { 0,PI / 6.0f,0 };
 	dataRotElbow[1] = { 0,PI / 4.0f * 3.0f,0 };
 	dummyTargetPos = targetPos;
 }
@@ -225,12 +225,17 @@ void BossWarrier::UpdateAtkArmSwing()
 	//XZ移動なのでYは0
 	bossMoveVec.y = 0;
 
+	//ボスの移動速度(スカラー)は1秒に5進むくらい(1fで 5 /60)
+	float bossSpdScalar = 5.0f / 60.0f;
+	//正規化した移動ベクトルにボス速度を掛け算
+	bossMoveVec *= bossSpdScalar;
+
 
 	//イージングデータ更新
 	easeRotArm.Update();
 	//イージングが終了したら(timeRateが1.0以上)イージングのパラメータを入れ替えてまたイージング開始
 	if (!easeRotArm.GetActive()) {
-		// それぞれの回転データを
+		// それぞれの回転データをスワップ
 		Vector3 data = dataRotArm[0];
 		dataRotArm[0] = dataRotArm[1];
 		dataRotArm[1] = data;
@@ -241,7 +246,26 @@ void BossWarrier::UpdateAtkArmSwing()
 		dataRotShoulder[0] = dataRotShoulder[1];
 		dataRotShoulder[1] = data;
 
+		//腕振り開始
 		easeRotArm.Start(30);
+		//向かう用のダミー座標更新
+		dummyTargetPos = targetPos;
+		//ボスの現在の座標と自機座標が近かったら攻撃終了カウント開始
+		Vector3 bossToTarget = boss2Model->Transform.translation_ - targetPos;
+		if (bossToTarget.length() <= 25.0f && !isLastAtkStart) {
+			isLastAtkStart = true;
+			//残りの移動回数は合計距離が 攻撃終了カウントの計算に使った距離の二倍になるように
+			lastAtkCount = 20;
+		}
+		//攻撃終了カウントがあるなら減らす
+		if (isLastAtkStart) {
+			lastAtkCount--;
+			//攻撃終了カウントが0未満ならモーション終了
+			if (lastAtkCount < 0) {
+				isAtkArmSwing = false;
+			}
+		}
+
 	}
 
 	//大本の回転角の増減
@@ -267,11 +291,11 @@ void BossWarrier::UpdateAtkArmSwing()
 	rotElbowR = Lerp(-dataRotElbow[0], -dataRotElbow[1], easeRotArm.GetTimeRate());
 
 	boss2Model[BossWarrierPart::Root].Transform.SetRot(rotArm);
-	boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;
-	if (boss2Model[BossWarrierPart::Root].Transform.translation_.x > 100) {
-		boss2Model[BossWarrierPart::Root].Transform.translation_.x = 0;
-		isAtkArmSwing = false;
-	}
+	//boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;
+	//if (boss2Model[BossWarrierPart::Root].Transform.translation_.x > 100) {
+	//	boss2Model[BossWarrierPart::Root].Transform.translation_.x = 0;
+	//	isAtkArmSwing = false;
+	//}
 	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);

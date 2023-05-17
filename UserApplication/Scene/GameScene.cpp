@@ -228,6 +228,7 @@ void GameScene::Initialize() {
 	// ゲームオーバーの初期化
 	GameOverInit();
 
+	firstCamera.Initialize();
 }
 
 void GameScene::Update() {
@@ -403,6 +404,9 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
+	// 最初のカメラのアップデート
+	FirstCameraUpdate();
+
 	gayserFlame++;
 	if (ImGui::Button("break")) {
 		static int a = 0;
@@ -561,7 +565,13 @@ void GameScene::GameUpdate()
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
-	player->Update(viewProjection_);
+
+	// プレイヤーが生成するのは最初のカメラが終わってから
+	if (IsFirst == false) {
+		player->Update(viewProjection_);
+		nowViewProjection = viewProjection_;
+	}
+	
 
 
 
@@ -574,7 +584,7 @@ void GameScene::GameUpdate()
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
-	nowViewProjection = viewProjection_;
+	
 
 	//ムービーフラグがオンならカメラをムービー用に
 	if (isMovie) {
@@ -925,6 +935,8 @@ void GameScene::Reset()
 	// ゲームオーバーのリセット
 	GameOverReset();
 	
+	IsFirst = true;
+
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
@@ -1139,6 +1151,25 @@ void GameScene::GameOverReset()
 	selectButtonPos={250,510};
 	for (int i = 0; i < 3; i++) {
 		alpha[i] = 0;
+	}
+}
+
+void GameScene::FirstCameraUpdate()
+{
+	// 最初のカメラがオンだったら
+	if (IsFirst == true) {
+		// エネミーがスポーンする前
+		if (IsEnemySpon == false) {
+			// 最初のカメラ
+			firstCamera.eye = { 0,15,100 };
+			firstCamera.target = { 0,0,0 };
+
+			// ファーストかめらのカメラ情報を今のカメラ
+			nowViewProjection = firstCamera;
+		}
+		else {
+
+		}
 	}
 }
 

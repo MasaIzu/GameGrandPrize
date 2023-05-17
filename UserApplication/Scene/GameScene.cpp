@@ -392,7 +392,6 @@ void GameScene::TitleUpdate()
 
 		oldScene = Scene::Title;
 		IsSceneChange = true;
-		TitileParticle->AllDelete();
 	}
 
 	if (input_->TriggerKey(DIK_K)) {
@@ -1039,7 +1038,7 @@ void GameScene::SceneChageFirst()
 				sceneChageTimer[i] = 0;
 			}
 			IsHalf = true;
-
+			TitileParticle->AllDelete();
 			// 次がなんのシーンかチェックする
 			switch (scene)
 			{

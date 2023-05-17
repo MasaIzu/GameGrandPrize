@@ -1190,6 +1190,8 @@ void Player::KnockBackUpdate()
 
 		float AR;
 		float BR;
+		
+		damageFlashFlame++;
 
 		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
 		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
@@ -1236,7 +1238,10 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
-		fbxmodel->Draw(worldTransform_, viewProjection_);
+		if (isKnockBack==false||damageFlashFlame%6==0)
+		{
+			fbxmodel->Draw(worldTransform_, viewProjection_);
+		}
 	}
 }
 
@@ -1393,6 +1398,7 @@ void Player::Collision(int damage)
 	{
 		SetKnockBackCount();
 		HP -= damage;
+		damageFlashFlame = 0;
 		if (HP < 0)
 		{
 			HP = 0;

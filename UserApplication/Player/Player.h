@@ -352,4 +352,5 @@ private:
 	bool isAttckWaiting = false;
 	int AttackWaitintTime = maxAttackWaitintTime;
 
+	int damageFlashFlame=0;
 };

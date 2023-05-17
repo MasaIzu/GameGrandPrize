@@ -344,7 +344,33 @@ private: // メンバ変数
 	Vector2 backTitleFontPos={900,520};
 #pragma endregion
 
-	
+#pragma region gameStartカメラ関連
+	// ゲームスタートのカメラになっているかフラグ
+	bool IsFirst = false;
+	// ゲームスタート時かめら
+	ViewProjection firstCamera;
+	// エネミーが生成し終わっているかどうか
+	bool IsEnemySpon = false;
+	// かめら移動速度
+	Vector3 moveSpeed;
+	// スタート時のカメラが終わっているかどうか
+	bool IsFirstCameraEnd = false;
+	// 最初のスタート位置
+	Vector3 FirstStartPos = { 0,60,120 };
+	Vector3 FirstStartTarget = { 0,-5,0 };
+	// 最初のエンド位置
+	Vector3 FirstEndPos = { 0,8,195 };
+	Vector3 FirstEndTarget = { 0,8,150 };
+
+	// 仮のタイマー
+	float timer = 0;
+	float timerMax = 240;
+
+	// 移動タイマー
+	float firstCameraTimer = 0;
+	float firstCameraTimeMax = 180;
+
+#pragma endregion
 
 
 private://プライベート関数
@@ -365,6 +391,9 @@ private://プライベート関数
 	void GameOverInit();
 
 	void GameOverReset();
+
+	// 最初のカメラの更新処理
+	void FirstCameraUpdate();
 
 	// 度数からラジアン
 	float DegreeToRadian(float degree);

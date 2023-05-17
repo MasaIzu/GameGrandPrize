@@ -796,18 +796,18 @@ void Player::Attack() {
 	}
 	if (isSowrd)
 	{
-		if (SowrdAFlame < 36 && SowrdDFlame>0)
+		if (SowrdAFlame < 18 && SowrdDFlame>0)
 		{
 			SowrdAFlame++;
 
-			float endflame = 36;
+			float endflame = 18;
 
 			float a = 1.0f * (SowrdAFlame / endflame);
 			{
-				LBoneTrans.alpha = 1;
+				LBoneTrans.alpha = a;
 			}
 			{
-				RBoneTrans.alpha = 1;
+				RBoneTrans.alpha = a;
 			}
 		}
 	}

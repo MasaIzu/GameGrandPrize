@@ -229,6 +229,9 @@ void GameScene::Initialize() {
 	GameOverInit();
 
 	firstCamera.Initialize();
+	// 最初のカメラ
+	firstCamera.eye = { 0,15,100 };
+	firstCamera.target = { 0,0,0 };
 }
 
 void GameScene::Update() {
@@ -261,6 +264,8 @@ void GameScene::TitleUpdate()
 	ImGui::Begin("Font");
 
 	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x,nowViewProjection.eye.y, nowViewProjection.eye.z);
+	ImGui::Text("target:%f,%f,%f", nowViewProjection.target.x, nowViewProjection.target.y, nowViewProjection.target.z);
+
 	ImGui::InputFloat("RotationY : %f", &rotationY);
 	ImGui::InputFloat("S_RotationY : %f", &sowrdRotationY);
 
@@ -430,8 +435,6 @@ void GameScene::GameUpdate()
 		}
 	}
 
-
-
 	//チュートリアルと最初のムービーでだけ小魚を動かす
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
 
@@ -466,8 +469,6 @@ void GameScene::GameUpdate()
 	}
 
 	fishSpawnInterval--;
-
-
 
 	if (isStartBossBattle) {
 		ImGui::Text("boss battle start!");
@@ -570,17 +571,19 @@ void GameScene::GameUpdate()
 	if (IsFirst == false) {
 		player->Update(viewProjection_);
 		nowViewProjection = viewProjection_;
+		gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+		gameCamera->SetSpaceInput(player->GetSpaceInput());
+		gameCamera->SetCameraPosition(player->GetWorldPosition());
+		gameCamera->Update(&viewProjection_);
 	}
 	
 
 
 
 
-	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
-	gameCamera->SetSpaceInput(player->GetSpaceInput());
-	gameCamera->SetCameraPosition(player->GetWorldPosition());
+
 	//gameCamera->SetCameraPosition({0,0,-100});
-	gameCamera->Update(&viewProjection_);
+	
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
@@ -1011,10 +1014,6 @@ void GameScene::Finalize()
 	delete boss;
 }
 
-
-
-
-
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
@@ -1156,19 +1155,43 @@ void GameScene::GameOverReset()
 
 void GameScene::FirstCameraUpdate()
 {
+	ImGui::Begin("camera");
+
+	ImGui::InputFloat3("firstEye:%f,%f,%f", &firstCamera.eye.x);
+	ImGui::InputFloat3("firstCamera.target:%f,%f,%f", &firstCamera.target.x);
+
+	ImGui::End();
+
 	// 最初のカメラがオンだったら
 	if (IsFirst == true) {
 		// エネミーがスポーンする前
 		if (IsEnemySpon == false) {
-			// 最初のカメラ
-			firstCamera.eye = { 0,15,100 };
-			firstCamera.target = { 0,0,0 };
+			timer++;
+			if (timer >= timerMax) {
+				IsEnemySpon = true;
+			}
+			// 
+			firstCamera.eye = { 0,60,120 };
+			firstCamera.target = { 0,-5,0 };
 
 			// ファーストかめらのカメラ情報を今のカメラ
 			nowViewProjection = firstCamera;
+			nowViewProjection.UpdateMatrix();
 		}
 		else {
+			firstCameraTimer++;
+			// カメラ移動
+			firstCamera.eye = Easing::InOutVec3(FirstStartPos, FirstEndPos, firstCameraTimer, firstCameraTimeMax);
+			firstCamera.target = Easing::InOutVec3(FirstStartTarget, FirstEndTarget, firstCameraTimer, firstCameraTimeMax);
 
+			// ファーストかめらのカメラ情報を今のカメラ
+			nowViewProjection = firstCamera;
+			nowViewProjection.UpdateMatrix();
+
+			if (firstCameraTimer >= firstCameraTimeMax) {
+				IsEnemySpon = false;
+				IsFirst = false;
+			}
 		}
 	}
 }

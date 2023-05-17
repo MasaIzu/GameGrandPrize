@@ -363,7 +363,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
-	float endflame = 90;
+	float endflame = 36;
 
 	float Destruction = 1.0f * (SowrdDFlame / endflame);
 	float a = 1.0f * (SowrdAFlame / endflame);
@@ -679,7 +679,7 @@ void Player::Attack() {
 					MaxFrem = 1.88f;
 					frem = 0.0f;
 					receptionTime = 0.0f;
-					SowrdDFlame = 90;
+					SowrdDFlame = 36;
 					SowrdAFlame = 0;
 				}
 			}
@@ -728,7 +728,7 @@ void Player::Attack() {
 		if (isAttack == true)
 		{
 			SowrdDFlame = 0;
-			SowrdAFlame = 90;
+			SowrdAFlame = 36;
 		}
 		isAttack = false;
 		for (int i = 0; i < SphereCount; i++) {
@@ -796,40 +796,40 @@ void Player::Attack() {
 	}
 	if (isSowrd)
 	{
-		if (SowrdAFlame < 90 && SowrdDFlame>0)
+		if (SowrdAFlame < 36 && SowrdDFlame>0)
 		{
 			SowrdAFlame++;
 
-			float endflame = 90;
+			float endflame = 36;
 
 			float a = 1.0f * (SowrdAFlame / endflame);
 			{
-				LBoneTrans.alpha = a;
+				LBoneTrans.alpha = 1;
 			}
 			{
-				RBoneTrans.alpha = a;
+				RBoneTrans.alpha = 1;
 			}
 		}
 	}
 	else
 	{
-		if (SowrdAFlame > 0 && SowrdDFlame < 90)
+		if (SowrdAFlame > 0 && SowrdDFlame < 36)
 		{
 			SowrdAFlame--;
 			SowrdDFlame++;
 
-			float endflame = 90;
+			float endflame = 36;
 
 			float Destruction = 1.0f * (SowrdDFlame / endflame);
 			float a = 1.0f * (SowrdAFlame / endflame);
 			{
 				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
-				LSowrdModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				LSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
 				LBoneTrans.alpha = a;
 			}
 			{
 				Model::ConstBufferPolygonExplosion polygon = RSowrdModel->GetPolygonExplosion();
-				RSowrdModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				RSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
 				RBoneTrans.alpha = a;
 			}
 		}

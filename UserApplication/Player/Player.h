@@ -307,7 +307,7 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
-	int SowrdDFlame=90;
+	int SowrdDFlame=36;
 	int SowrdAFlame = 0;
 
 	bool isSowrd=false;
@@ -345,8 +345,8 @@ private:
 
 	int AttackCollisionDistance = 4;
 
-	int maxAttackWaitTime = 30;
-	int maxAttackWaitintTime = 60;
+	int maxAttackWaitTime = 16;
+	int maxAttackWaitintTime = 20;
 
 	int AttackWaitTime = maxAttackWaitTime;
 	bool isAttckWaiting = false;

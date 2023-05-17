@@ -1329,6 +1329,21 @@ Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target)
 	return matRot;
 }
 
+Matrix4 CreateMatRot(const Vector3& euler)
+{
+	Matrix4 result,rotX,rotY,rotZ;
+
+	result.identity();
+	rotZ.rotateZ(euler.z);
+	rotX.rotateX(euler.x);
+	rotY.rotateY(euler.y);
+	result *= rotZ;
+	result *= rotX;
+	result *= rotY;
+
+	return result;
+}
+
 
 
 

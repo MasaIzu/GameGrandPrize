@@ -212,6 +212,8 @@ void BossWarrier::InitAtkArmSwing()
 	dataRotElbow[0] = { 0,PI / 6.0f,0 };
 	dataRotElbow[1] = { 0,PI / 4.0f * 3.0f,0 };
 	dummyTargetPos = targetPos;
+
+	isLastAtkStart = false;
 }
 
 void BossWarrier::UpdateAtkArmSwing()
@@ -226,10 +228,15 @@ void BossWarrier::UpdateAtkArmSwing()
 	bossMoveVec.y = 0;
 
 	//ボスの移動速度(スカラー)は1秒に5進むくらい(1fで 5 /60)
-	float bossSpdScalar = 5.0f / 60.0f;
+	float bossSpdScalar = 5.0f / 10.0f;
 	//正規化した移動ベクトルにボス速度を掛け算
 	bossMoveVec *= bossSpdScalar;
 
+	ImGui::Text("bossMoveVec:%f,%f,%f", bossMoveVec.x, bossMoveVec.y, bossMoveVec.z);
+	ImGui::Text("atkCount:%d", lastAtkCount);
+
+	//大本のモデルを移動
+	boss2Model[BossWarrierPart::Root].Transform.translation_ += bossMoveVec;
 
 	//イージングデータ更新
 	easeRotArm.Update();
@@ -248,14 +255,24 @@ void BossWarrier::UpdateAtkArmSwing()
 
 		//腕振り開始
 		easeRotArm.Start(30);
-		//向かう用のダミー座標更新
-		dummyTargetPos = targetPos;
+
+		//ダミー座標更新
+		//攻撃終了フラグが経っているならダミーはの座標は進行方向に
+		if (isLastAtkStart) {
+			dummyTargetPos += bossMoveVec;
+		}
+		else {
+			dummyTargetPos = targetPos;
+		}
+
 		//ボスの現在の座標と自機座標が近かったら攻撃終了カウント開始
 		Vector3 bossToTarget = boss2Model->Transform.translation_ - targetPos;
-		if (bossToTarget.length() <= 25.0f && !isLastAtkStart) {
+		bossToTarget.y = 0;
+			ImGui::Text("length bossToPlayer:%f", bossToTarget.length());
+			if (bossToTarget.length() <= 25.0f && !isLastAtkStart) {
 			isLastAtkStart = true;
 			//残りの移動回数は合計距離が 攻撃終了カウントの計算に使った距離の二倍になるように
-			lastAtkCount = 20;
+			lastAtkCount = 6;
 		}
 		//攻撃終了カウントがあるなら減らす
 		if (isLastAtkStart) {
@@ -268,29 +285,28 @@ void BossWarrier::UpdateAtkArmSwing()
 
 	}
 
-	//大本の回転角の増減
-	rootRotRad += 8.0f;
-	if (rootRotRad >= 360.0f) {
-		rootRotRad -= rootRotRad;
-	}
 
-	Vector3 rotArm;
-	rotArm = EaseOutVec3(dataRotArm[0], dataRotArm[1], easeRotArm.GetTimeRate());
+	
 
-	ImGui::Text("dataRotArm[0]:%f,%f,%f", dataRotArm[0].x, dataRotArm[0].y, dataRotArm[0].z);
-	ImGui::Text("dataRotArm[1]:%f,%f,%f", dataRotArm[1].x, dataRotArm[1].y, dataRotArm[1].z);
-	ImGui::Text("rotArm:%f,%f,%f", rotArm.x, rotArm.y * PI, rotArm.z);
-
-	//関節の回転幅
-
-	Vector3 jointRot = { 0,PI / 6.0f,0 };
-	Vector3 rotShoulderL, rotShoulderR, rotElbowL, rotElbowR;
+	//各関節の回転処理
+	Vector3 rotArm, rotShoulderL, rotShoulderR, rotElbowL, rotElbowR;
+	rotArm = EaseOutVec3(dataRotArm[0], dataRotArm[1], easeRotArm.GetTimeRate()); 
 	rotShoulderL = Lerp(dataRotShoulder[1], dataRotShoulder[0], easeRotArm.GetTimeRate());
 	rotShoulderR = Lerp(-dataRotShoulder[0], -dataRotShoulder[1], easeRotArm.GetTimeRate());
 	rotElbowL = Lerp(dataRotElbow[1], dataRotElbow[0], easeRotArm.GetTimeRate());
 	rotElbowR = Lerp(-dataRotElbow[0], -dataRotElbow[1], easeRotArm.GetTimeRate());
 
-	boss2Model[BossWarrierPart::Root].Transform.SetRot(rotArm);
+	//	自機を向く回転行列、体を回転させる回転行列をそれぞれ作成
+	Matrix4 matBossDir,matBodyRot,matBossRot;
+
+	//進行方向に向かせたいのでダミーの自機を向いてもらう
+	matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, dummyTargetPos);
+
+	matBodyRot = CreateMatRot(rotArm);
+
+	matBossRot =  matBodyRot*matBossDir;
+
+	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossRot);
 	//boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;
 	//if (boss2Model[BossWarrierPart::Root].Transform.translation_.x > 100) {
 	//	boss2Model[BossWarrierPart::Root].Transform.translation_.x = 0;

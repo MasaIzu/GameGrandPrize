@@ -311,3 +311,5 @@ float LerpConbertOut(float t);
 bool IsPercent(float param = 100.0f);
 
 Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+
+Matrix4 CreateMatRot(const Vector3& euler);

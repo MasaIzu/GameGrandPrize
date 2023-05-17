@@ -174,7 +174,7 @@ private:
 	float angle = 0.0f;
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
-	float KnockBackDistance = 20.0f;
+	float KnockBackDistance = 30.0f;
 	bool isKnockBack = false;
 	///攻撃に使う変数
 
@@ -350,6 +350,6 @@ private:
 	bool isEnemyDamage = false;
 
 	int NotMoveTime = 0;
-	int MaxNotMoveTime = 20;
+	int MaxNotMoveTime = 30;
 
 };

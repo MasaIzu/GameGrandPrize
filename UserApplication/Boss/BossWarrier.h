@@ -46,6 +46,9 @@ enum class Attack
 	StandBy,
 	ArmSwing,
 	Tornado,
+	MultiLaunchSword,
+	LaunchSword,
+
 };
 
 class BossWarrier
@@ -59,10 +62,12 @@ public:
 	void Draw(const ViewProjection& viewProMat);
 	void SetPlayer(Player* player_) { pl = player_; }
 
-	void phase2Attack();
-	void phase2AttackP2();
+	void MultiLaunchSword();
+	void StartMultiLaunchSword();
+	void LaunchSword();
+	void StartLaunchSword();
 
-	void phase2AttackDraw(ViewProjection viewProMat);
+	void LaunchSwordDraw(ViewProjection viewProMat);
 
 	void Rota();
 private:

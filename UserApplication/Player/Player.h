@@ -99,8 +99,10 @@ private:
 		soukenCombo3,//2
 		soukenCombo4,//3
 		soukenCombo5,//4
-		aruki,//5
-		taiki,//6
+		DamegeAction,//5
+		DeathMotion,//6
+		aruki,//7
+		taiki,//8
 
 	};
 
@@ -125,7 +127,7 @@ private:
 	// コライダー
 	BaseCollider* collider = nullptr;
 
-	static const int SphereCount = 10;
+	static const int SphereCount = 8;
 
 	BaseCollider* AttackCollider[SphereCount];
 	Vector3 colliderPos[SphereCount];
@@ -138,7 +140,6 @@ private:
 
 	//モデル
 	Model* playerModel_ = nullptr;
-	std::unique_ptr<Model> oldPlayerModel_;
 
 	Matrix4 CameraRot;
 	Matrix4 EnemyPos;
@@ -155,25 +156,27 @@ private:
 	float alpha = 0.0f;
 
 	int moveTime = 0;
-	int MaxMoveTime = 60;
+	int MaxMoveTime = 20;
 
 	float x = 0;
-	float radius = 4.0f;//当たり判定半径
+	float radius = 5.0f;//player当たり判定半径
+	float AttackRadius = 8.0f;//Attack当たり判定半径
 	float Window_Width;
 	float Window_Height;
-	float playerSpeed = 0.5f;
-	float playerAvoidance = 20.0f;
+	float playerSpeed = 1.0f;
+	float playerAvoidance = 40.0f;
 
 	bool isPushSenter = false;
 	bool isPushLeft = false;
 	bool isPushRight = false;
 	bool isPushBack = false;
+	bool isNotPush = false;
 	bool spaceInput = false;
 
 	float angle = 0.0f;
 	Matrix4 cameraLookmat;
 	Vector3 KnockBack;
-	float KnockBackDistance = 20.0f;
+	float KnockBackDistance = 30.0f;
 	bool isKnockBack = false;
 	///攻撃に使う変数
 
@@ -276,7 +279,7 @@ private:
 	int playerEvasionTimes = 0;
 	float playerEvasionCoolTime = 0;
 	int playerEvasionMaxTimes = 3;
-	float CoolTime = 180;
+	float CoolTime = 10;
 
 	float flame = 0;
 	float playerAttackMovement = 0.0f;
@@ -307,6 +310,11 @@ private:
 	std::unique_ptr<Model> LSowrdModel;
 	std::unique_ptr<Model> RSowrdModel;
 
+	int SowrdDFlame=36;
+	int SowrdAFlame = 0;
+
+	bool isSowrd=false;
+
 	WorldTransform BoneParent;
 	float BoneParentRotY = 0.0f;
 
@@ -315,7 +323,7 @@ private:
 	uint32_t BoneNum = 0;
 
 	float size = 0.0f;
-
+	
 	float AttackRotX = 0.0f;
 	float AttackRotY = 0.0f;
 	float AttackRotZ = 0.0f;
@@ -337,5 +345,25 @@ private:
 	float OldAttackRotZ = 0;
 
 	float saveRotX = 0.0f;
+
+	int AttackCollisionDistance = 4;
+
+	int maxAttackWaitTime = 0;
+	int maxAttackWaitintTime = 0;
+
+	int AttackWaitTime = maxAttackWaitTime;
+	bool isAttckWaiting = false;
+	int AttackWaitintTime = maxAttackWaitintTime;
+
+
+	Vector3 AttackMovememt;
+
+	bool isEnemyDamage = false;
+
+	int NotMoveTime = 0;
+	int MaxNotMoveTime = 30;
+
+
+	int damageFlashFlame=0;
 
 };

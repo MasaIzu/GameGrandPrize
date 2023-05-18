@@ -208,9 +208,9 @@ private: // メンバ変数
 
 	Scene scene = Scene::Title;
 
-	std::unique_ptr<Sprite> gameoverFont;
+	Scene oldScene = Scene::Title;
 	std::unique_ptr<Sprite> gameClearFont;
-	std::unique_ptr<Sprite> gameover;
+
 
 	// シーンチェンジ用のスプライト
 	std::unique_ptr<Sprite> sceneChageBlack[5];
@@ -254,8 +254,8 @@ private: // メンバ変数
 		{1280,576},
 	};
 
-	Scene oldScene = Scene::Title;
 
+	
 	// スプライト
 
 
@@ -271,6 +271,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> OFontModel_;
 	std::unique_ptr<Model> MFontModel_;
 	std::unique_ptr<Model> SFontModel_;
+
+	std::unique_ptr<ParticleManager> TitileParticle;
 
 	// オブジェクトのワールドトランスフォーム
 	WorldTransform AFontWorld_;
@@ -310,9 +312,65 @@ private: // メンバ変数
 	// タイトルの背景のスプライト
 	std::unique_ptr <Sprite> titleBackGround;
 
+	int ParticleFlame=0;
+
 #pragma endregion
 
-	
+
+#pragma region gameOver関連
+	bool IsRetry = false;
+	float alpha[3];
+
+	float alphaTimer = 0;
+	float alphaTimeOneSet = 20;
+	float alphaTimeMax = 100;
+	float alphaPlus = 0.02f;
+
+	// スプライト
+	std::unique_ptr<Sprite> gameoverFont;
+	std::unique_ptr<Sprite> gameover;
+	std::unique_ptr<Sprite> selectButton;
+	std::unique_ptr<Sprite> replayFont;
+	std::unique_ptr<Sprite> backTitleFont;
+
+	// スプライトのサイズ
+	Vector2 selectButtonSize={40,80};
+	Vector2 replayFontSize={252,92};
+	Vector2 backTitleFontSize={282,100};
+
+	// スプライトのポジション
+	Vector2 selectButtonPos={250,510};
+	Vector2 replayFontPos={400,520};
+	Vector2 backTitleFontPos={900,520};
+#pragma endregion
+
+#pragma region gameStartカメラ関連
+	// ゲームスタートのカメラになっているかフラグ
+	bool IsFirst = false;
+	// ゲームスタート時かめら
+	ViewProjection firstCamera;
+	// エネミーが生成し終わっているかどうか
+	bool IsEnemySpon = false;
+	// かめら移動速度
+	Vector3 moveSpeed;
+	// スタート時のカメラが終わっているかどうか
+	bool IsFirstCameraEnd = false;
+	// 最初のスタート位置
+	Vector3 FirstStartPos = { 0,60,120 };
+	Vector3 FirstStartTarget = { 0,-5,0 };
+	// 最初のエンド位置
+	Vector3 FirstEndPos = { 0,8,195 };
+	Vector3 FirstEndTarget = { 0,8,150 };
+
+	// 仮のタイマー
+	float timer = 0;
+	float timerMax = 240;
+
+	// 移動タイマー
+	float firstCameraTimer = 0;
+	float firstCameraTimeMax = 180;
+
+#pragma endregion
 
 
 private://プライベート関数
@@ -328,6 +386,14 @@ private://プライベート関数
 	void SceneChageRast();
 
 	void SceneChageUpdate();
+
+	// ゲームオーバーの初期化
+	void GameOverInit();
+
+	void GameOverReset();
+
+	// 最初のカメラの更新処理
+	void FirstCameraUpdate();
 
 	// 度数からラジアン
 	float DegreeToRadian(float degree);

@@ -79,9 +79,6 @@
     <Filter Include="ユーザーソース ファイル\Enemy">
       <UniqueIdentifier>{e3b8b230-f642-4f8f-9d57-48e59550326b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ユーザーヘッダー ファイル\Enemy">
-      <UniqueIdentifier>{1dac81ab-cda1-46b0-aa7a-bf312e51348b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ユーザーソース ファイル\Player">
       <UniqueIdentifier>{afe63864-f970-413a-a081-a5d0e58f2a22}</UniqueIdentifier>
     </Filter>
@@ -153,6 +150,9 @@
     </Filter>
     <Filter Include="ユーザーソース ファイル\Boss">
       <UniqueIdentifier>{4560a0bb-49c1-4eef-b64a-0da6a1806bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーヘッダー ファイル\Boss\Enemy">
+      <UniqueIdentifier>{1dac81ab-cda1-46b0-aa7a-bf312e51348b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -341,7 +341,7 @@
       <Filter>Engine\ヘッダー\GameFunction</Filter>
     </ClInclude>
     <ClInclude Include="UserApplication\Enemy\Enemy.h">
-      <Filter>ユーザーヘッダー ファイル\Enemy</Filter>
+      <Filter>ユーザーヘッダー ファイル\Boss\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Collision\BaseCollider.h">
       <Filter>Engine\ヘッダー\Collision</Filter>

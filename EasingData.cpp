@@ -30,4 +30,5 @@ void EasingData::Start(float animationFrame)
 	startCount = clock();
 	maxTime = animationFrame;
 	isActive = true;
+	Update();
 }

@@ -25,7 +25,6 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	//NULLポインタチェック
 	assert(model);
 	playerModel_ = model;
-	oldPlayerModel_.reset(Model::CreateFromOBJ("UFO", true));
 
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -44,7 +43,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
-		AttackCollider[i] = new SphereCollider(Vector4(0, radius, 0, 0), radius);
+		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 	}
@@ -100,18 +99,21 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	// スプライトの初期化処理
 	SpriteInitialize();
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix2"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix4"));
 	fbxmodel->Initialize();
 	fbxmodel2 = fbxmodel.get();
 	fbxmodel2->Initialize();
 	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dKyaraFix2");
+	modelAnim->Load("3dKyaraFix4");
 
 	std::unique_ptr<FbxModel> fbxmodel;
 
 	LBoneTrans.Initialize();
 	RBoneTrans.Initialize();
+
+	LBoneTrans.alpha = 0;
+	RBoneTrans.alpha = 0;
 
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
@@ -144,8 +146,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	BoneParent.Initialize();
 
-	//LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
-	//RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
+	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
+	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 
@@ -184,29 +186,52 @@ void Player::Update(const ViewProjection& viewProjection) {
 		Attack();
 		KnockBackUpdate();
 
-		if (frem < MaxFrem) {
-			frem += 0.013f;
-			if (isPlayMotion) {
-				frem += 0.015;
+		if (playerNowMotion == PlayerMotion::soukenCombo1) {
+			if (AttackWaitTime > 0) {
+				AttackWaitTime--;
 			}
-			if (playerNowMotion == PlayerMotion::soukenCombo1) {
-				frem += 0.01;
+			else {
+				isAttckWaiting = true;
 			}
-			else if (playerNowMotion == PlayerMotion::soukenCombo2) {
-				frem += 0.01;
-			}
-		}
-		else {
-			frem = MinimumFrem;
-			isPlayMotion = false;
-			if (isWalking == false) {
-				if (isAttack == false) {
-					playerNowMotion = PlayerMotion::taiki;
+			if (isAttckWaiting == true) {
+				if (AttackWaitintTime > 0) {
+					AttackWaitintTime--;
+				}
+				else {
+					isAttckWaiting = false;
 				}
 			}
 		}
-		if (conboFlag == true) {
-			receptionTime += 0.025f;
+
+		if (isAttckWaiting == false) {
+
+			if (frem < MaxFrem) {
+				frem += 0.013f;
+				if (isPlayMotion) {
+					frem += 0.015;
+				}
+				if (playerNowMotion == PlayerMotion::soukenCombo1) {
+					frem += 0.01;
+				}
+				else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+					frem += 0.01;
+				}
+			}
+			else {
+				frem = MinimumFrem;
+				isPlayMotion = false;
+				if (isWalking == false) {
+					if (isAttack == false) {
+						if (isKnockBack == false) {
+							playerNowMotion = PlayerMotion::taiki;
+						}
+					}
+				}
+			}
+			if (conboFlag == true) {
+				receptionTime += 0.025f;
+			}
+
 		}
 
 
@@ -241,7 +266,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, {0,0,0}, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
 		}
 		if (worldTransform_.alpha <= 0.0f)
 		{
@@ -308,15 +333,23 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
-	ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
-	ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
 
-	ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
-	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
+	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
+	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
 
-	ImGui::Text("playerNowMotion:%d", static_cast<int>(playerNowMotion));
-	ImGui::Text("MinimumFrem:%f", MinimumFrem);
-	ImGui::Text("MaxFrem:%f", MaxFrem);
+	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
+	ImGui::SliderInt("AttackWaitintTime", &maxAttackWaitintTime, 0, 60);
+
+
+	//ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
+	//ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
+
+	//ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
+	//ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
+
+	//
+	//ImGui::Text("MinimumFrem:%f", MinimumFrem);
+	//ImGui::Text("MaxFrem:%f", MaxFrem);
 	//ImGui::Text("frem:%f", frem);
 
 	//ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
@@ -328,7 +361,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-
+	ImGui::Text("attackConbo:%d", attackConbo);
+	ImGui::Text("isKnockBack:%d", isKnockBack);
 	ImGui::Text("look:%f", worldTransform_.look.x);
 	ImGui::Text("look:%f", worldTransform_.look.y);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -336,6 +370,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
+	float endflame = 36;
+
+	float Destruction = 1.0f * (SowrdDFlame / endflame);
+	float a = 1.0f * (SowrdAFlame / endflame);
+	ImGui::Text("a:%f", a);
+	ImGui::Text("D:%f", Destruction);
 
 	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
 	ImGui::SliderFloat("AttackRotY", &AttackRotY, -360.0f, 360.0f);
@@ -368,6 +408,7 @@ void Player::Move() {
 	isWalk = false;
 	isSpace = false;
 	isInput = false;
+	isNotPush = false;
 
 	if (timer > 0) {
 		timer--;
@@ -420,7 +461,7 @@ void Player::Move() {
 		if (isPlayMotion == false) {
 			if (input_->PushKey(DIK_W)) {
 				PlayerMoveMent += cameraLook * playerSpeed;
-				PlayerMoveZ=true;
+				PlayerMoveZ = true;
 				isPushSenter = true;
 				isWalk = true;
 				isInput = true;
@@ -454,7 +495,7 @@ void Player::Move() {
 				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
 				playerNowMotion = PlayerMotion::aruki;
 			}
-			if (PlayerMoveZ == true&& PlayerMoveX == true)
+			if (PlayerMoveZ == true && PlayerMoveX == true)
 			{
 				PlayerMoveMent /= 2;
 			}
@@ -507,6 +548,7 @@ void Player::Move() {
 				}
 				else {
 					Avoidance.z = -playerAvoidance;
+					isNotPush = true;
 				}
 			}
 		}
@@ -522,6 +564,8 @@ void Player::Move() {
 	oldWorldTransform_.SetMatRot(roooooot);
 
 	worldTransform_.SetLookMatRot(roooooot);
+	worldTransform_.TransferMatrix();
+
 	BoneParent.SetMatRot(roooooot);
 
 	CameraRot = MyMath::Rotation(Vector3(Rot.x, Rot.y, Rot.z), 6);
@@ -530,11 +574,18 @@ void Player::Move() {
 	Avoidance.normalize();
 	Avoidance = Avoidance * playerAvoidance;
 
+	if (isNotPush == true) {
+		Avoidance = worldTransform_.look - worldTransform_.translation_;
+		Avoidance.normalize();
+		Avoidance *= playerAvoidance;
+	}
+
+
 	//worldTransform_.translation_ += playerMovement;
 	//worldTransform_.translation_ += Avoidance;
 	AvoidanceMove += Avoidance;
 
-	Vector3 allMove = PlayerMoveMent + AvoidanceMove;
+	Vector3 allMove = PlayerMoveMent + AvoidanceMove + AttackMovememt;
 
 	AvoidanceMove = { 0,0,0 };
 	//ステージからでないようにする処理
@@ -588,6 +639,7 @@ void Player::Move() {
 			isWalking = false;
 			MaxFrem = 1.8f;
 			MinimumFrem = 1.8f;
+			isSowrd = false;
 		}
 
 	}
@@ -595,6 +647,7 @@ void Player::Move() {
 	if (playerNowMotion == PlayerMotion::taiki) {
 		MinimumFrem = 0.0f;
 		MaxFrem = 2.0f;
+		isSowrd = false;
 	}
 
 	worldTransform_.TransferMatrix();
@@ -604,97 +657,114 @@ void Player::Attack() {
 
 	Vector3 moveRot = cameraLook;
 	playerAttackMovement = 0.0f;
+	AttackMovememt = { 0, 0, 0 };
 
 	if (spaceInput == false) {
-		if (input_->MouseInputTrigger(0)) {
-			//実行前にカウント値を取得
-			//計測開始時間の初期化
-			isAttack = true;
-			startCount = 0;
-			nowCount = 0;
-			timeRate = 0;
-			startIndex = 1;
+		if (isEnemyDamage == false) {
+			if (input_->MouseInputTrigger(1)) {
+				//実行前にカウント値を取得
+				//計測開始時間の初期化
+				isAttack = true;
+				startCount = 0;
+				nowCount = 0;
+				timeRate = 0;
+				startIndex = 1;
 
-			/*if (attackConbo < 3) {
-				attackConbo++;
-			}
-			else {
-				attackConbo = 0;
-			}*/
+				/*if (attackConbo < 3) {
+					attackConbo++;
+				}
+				else {
+					attackConbo = 0;
+				}*/
 
 
-			if (isPlayMotion == false) {
 
-				attackConbo = 1;
-				playerNowMotion = PlayerMotion::soukenCombo1;
-				isPlayMotion = true;
-				MinimumFrem = 2.0f;
-				MaxFrem = 2.0f;
-				frem = 0.0f;
+				if (isPlayMotion == false) {
 
-				receptionTime = 0.0f;
-				conboFlag = true;
-
-			}
-			if (attackConbo == 1) {
-				if (receptionTime > 0.6f && receptionTime < 1.45f) {
-					attackConbo = 2;
-					playerNowMotion = PlayerMotion::soukenCombo2;
+					attackConbo = 1;
+					playerNowMotion = PlayerMotion::soukenCombo1;
 					isPlayMotion = true;
-					MinimumFrem = 1.86f;
-					MaxFrem = 1.88f;
+					MinimumFrem = 2.0f;
+					MaxFrem = 2.0f;
 					frem = 0.0f;
 					receptionTime = 0.0f;
+					conboFlag = true;
+
 				}
-			}
-			else if (attackConbo == 2) {
-				if (receptionTime > 0.5f && receptionTime < 1.4f) {
-					attackConbo = 3;
-					playerNowMotion = PlayerMotion::soukenCombo3;
-					isPlayMotion = true;
-					MinimumFrem = 1.86f;
-					MaxFrem = 1.88f;
-					frem = 0.0f;
-					receptionTime = 0.0f;
+				if (attackConbo == 1) {
+					if (receptionTime > 0.8f && receptionTime < 1.45f) {
+						attackConbo = 2;
+						playerNowMotion = PlayerMotion::soukenCombo2;
+
+						isPlayMotion = true;
+						MinimumFrem = 2.0f;
+						MaxFrem = 2.0f;
+						frem = 0.0f;
+						//AttackWaitTime = 10;
+						//AttackWaitingTime = 10;
+						receptionTime = 0.0f;
+
+						conboFlag = true;
+
+
+						SowrdDFlame = 36;
+						SowrdAFlame = 0;
+
+					}
 				}
-			}
-			else if (attackConbo == 3) {
-				if (receptionTime > 0.8f && receptionTime < 1.45f) {
-					attackConbo = 4;
-					playerNowMotion = PlayerMotion::soukenCombo4;
-					isPlayMotion = true;
-					MinimumFrem = 1.86f;
-					MaxFrem = 1.88f;
-					frem = 0.0f;
-					receptionTime = 0.0f;
+				else if (attackConbo == 2) {
+					if (receptionTime > 0.5f && receptionTime < 1.4f) {
+						attackConbo = 3;
+						playerNowMotion = PlayerMotion::soukenCombo3;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
+					}
 				}
-			}
-			else if (attackConbo == 4) {
-				if (receptionTime > 0.8f && receptionTime < 1.6f) {
-					attackConbo = 5;
-					playerNowMotion = PlayerMotion::soukenCombo5;
-					isPlayMotion = true;
-					MinimumFrem = 1.86f;
-					MaxFrem = 1.88f;
-					frem = 0.0f;
-					receptionTime = 0.0f;
+				else if (attackConbo == 3) {
+					if (receptionTime > 0.8f && receptionTime < 1.45f) {
+						attackConbo = 4;
+						playerNowMotion = PlayerMotion::soukenCombo4;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
+					}
 				}
+				else if (attackConbo == 4) {
+					if (receptionTime > 0.8f && receptionTime < 1.6f) {
+						attackConbo = 5;
+						playerNowMotion = PlayerMotion::soukenCombo5;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
+					}
+				}
+
 			}
 		}
 	}
-
 
 
 	if (nowCount < maxTime * 4) {
 		nowCount++;
 	}
 	else {
+		if (isAttack == true)
+		{
+			SowrdDFlame = 0;
+			SowrdAFlame = 36;
+		}
 		isAttack = false;
 		for (int i = 0; i < SphereCount; i++) {
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		}
 	}
-
 	if (isAttack == true) {
 
 		//補間で使うデータ
@@ -735,7 +805,6 @@ void Player::Attack() {
 				timeRate = 1.0f;
 			}
 		}
-
 		position = splinePosition(points, startIndex, timeRate);
 
 		playerAttackTransform_.translation_ = position;
@@ -754,274 +823,330 @@ void Player::Attack() {
 			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
+	}
+	if (isSowrd)
+	{
+		if (SowrdAFlame < 18 && SowrdDFlame>0)
+		{
+			SowrdAFlame++;
 
+			float endflame = 18;
+
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				LBoneTrans.alpha = a;
+			}
+			{
+				RBoneTrans.alpha = a;
+			}
+		}
+	}
+	else
+	{
+		if (SowrdAFlame > 0 && SowrdDFlame < 36)
+		{
+			SowrdAFlame--;
+			SowrdDFlame++;
+
+			float endflame = 36;
+
+			float Destruction = 1.0f * (SowrdDFlame / endflame);
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
+				LSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				LBoneTrans.alpha = a;
+			}
+			{
+				Model::ConstBufferPolygonExplosion polygon = RSowrdModel->GetPolygonExplosion();
+				RSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				RBoneTrans.alpha = a;
+			}
+		}
 	}
 
-	if (playerNowMotion == PlayerMotion::soukenCombo1) {
-		if (IsCombo == false) {
-			playerAttackMovement = 10.0f;
-			LookingMove = worldTransform_.look - GetWorldPosition();
 
-			LookingMove = LookingMove * playerAttackMovement;
+
+	if (isEnemyDamage == false) {
+		if (playerNowMotion == PlayerMotion::soukenCombo1) {
+			if (IsCombo == false) {
+				playerAttackMovement = 20.0f;
+				LookingMove = worldTransform_.look - GetWorldPosition();
+
+				LookingMove = LookingMove * playerAttackMovement;
+				attackMoveTimer = 0;
+
+				AttackNowPos = worldTransform_.translation_;
+				IsCombo = true;
+				IsCombo2 = false;
+				IsCombo3 = false;
+				IsCombo4 = false;
+				IsCombo5 = false;
+
+				BoneParentRotY = 0.0f;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				OldAttackRotX = 0.0f;
+				OldAttackRotY = 0.0f;
+				OldAttackRotZ = 0.0f;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 2.0f;
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+				AttackWaitintTime = maxAttackWaitintTime;
+				AttackWaitTime = maxAttackWaitTime;
+				isSowrd = true;
+				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
+				LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+				RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+
+			}
+			if (attackMoveTimer < MaxAttackMoveTimer) {
+				attackMoveTimer += 1.0;
+				SowrdDrowTime++;
+				NotSowrdDrowTime = 10;
+			}
+			if (SowrdDrowTime < MaxSowrdRotate) {
+				AttackRotX += 6.0f;
+				AttackRotZ += 1.1f;
+			}
+
+			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+
+		}
+		else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+			if (IsCombo2 == false) {
+				playerAttackMovement = 10.0f;
+				LookingMove = worldTransform_.look - GetWorldPosition();
+
+				LookingMove = LookingMove * playerAttackMovement;
+				attackMoveTimer = 0;
+
+				AttackNowPos = worldTransform_.translation_;
+				IsCombo = false;
+				IsCombo2 = true;
+				IsCombo3 = false;
+				IsCombo4 = false;
+				IsCombo5 = false;
+
+				//前回の回転を残す
+				OldAttackRotX = AttackRotX;
+				OldAttackRotZ = AttackRotZ;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				AttackRotX = -212.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+				BoneParentRotY = 0.0f;
+
+				saveRotX = AttackRotX;
+
+				/*Matrix4 rooooootttt;
+				rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+				rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
+				rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+				LBoneTrans.SetMatRot(rooooootttt);
+
+				rooooootttt = MyMath::Initialize();
+				rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+				rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(AttackRotZ)), 3);
+				rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
+
+				RBoneTrans.SetMatRot(rooooootttt);*/
+
+			}
+			if (attackMoveTimer < MaxAttackMoveTimer) {
+				attackMoveTimer += 1.0;
+				SowrdDrowTime++;
+				NotSowrdDrowTime = 10;
+			}
+			if (SowrdDrowTime < MaxSowrdRotate) {
+				if (SowrdDrowTime < 10) {
+					AttackRotZ += (-110.0f - OldAttackRotZ) / 10;
+				}
+				AttackRotX += (-38.0f - saveRotX) / MaxSowrdRotate;
+
+			}
+
+			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+		}
+		else if (playerNowMotion == PlayerMotion::soukenCombo3) {
+			if (IsCombo3 == false) {
+				playerAttackMovement = 15.0f;
+				LookingMove = worldTransform_.look - GetWorldPosition();
+
+				LookingMove = LookingMove * playerAttackMovement;
+				attackMoveTimer = 0;
+
+				AttackNowPos = worldTransform_.translation_;
+				IsCombo = false;
+				IsCombo2 = false;
+				IsCombo3 = true;
+				IsCombo4 = false;
+				IsCombo5 = false;
+
+				//前回の回転を残す
+				OldAttackRotX = AttackRotX;
+				OldAttackRotZ = AttackRotZ;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+				BoneParentRotY = 0.0f;
+			}
+			if (attackMoveTimer < MaxAttackMoveTimer) {
+				attackMoveTimer += 1.0;
+				SowrdDrowTime++;
+				NotSowrdDrowTime = 10;
+			}
+			if (SowrdDrowTime < MaxSowrdRotate) {
+				if (SowrdDrowTime < 10) {
+					AttackOnlyLeftRotY += 190.0f / 10.0f;
+					AttackOnlyLeftRotZ += (-85.0f) / 10;
+				}
+
+			}
+			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+		}
+		else if (playerNowMotion == PlayerMotion::soukenCombo4) {
+			if (IsCombo4 == false) {
+				playerAttackMovement = 35.0f;
+				LookingMove = worldTransform_.look - GetWorldPosition();
+
+				LookingMove = LookingMove * playerAttackMovement;
+				attackMoveTimer = 0;
+
+				AttackNowPos = worldTransform_.translation_;
+				IsCombo = false;
+				IsCombo2 = false;
+				IsCombo3 = false;
+				IsCombo4 = true;
+				IsCombo5 = false;
+
+				//前回の回転を残す
+				OldAttackRotX = AttackRotX;
+				OldAttackRotZ = AttackRotZ;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+				BoneParentRotY = 0.0f;
+			}
+			if (attackMoveTimer < MaxAttackMoveTimer) {
+				attackMoveTimer += 1.0;
+				SowrdDrowTime++;
+				NotSowrdDrowTime = 10;
+			}
+			if (SowrdDrowTime < MaxSowrdRotate) {
+				if (SowrdDrowTime < 11) {
+					AttackOnlyLeftRotY += 155.0f / 10.0f;
+					AttackOnlyLeftRotZ += 86.0f / 10.0f;
+
+					AttackOnlyRightRotY += 333.0f / 10.0f;
+					AttackOnlyRightRotZ += 108.0f / 10.0f;
+				}
+
+				BoneParentRotY += (-360.0f * 3.0f) / (MaxSowrdRotate - 1);
+			}
+
+			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+		}
+		else if (playerNowMotion == PlayerMotion::soukenCombo5) {
+			if (IsCombo5 == false) {
+				playerAttackMovement = 20.0f;
+				LookingMove = worldTransform_.look - GetWorldPosition();
+
+				LookingMove = LookingMove * playerAttackMovement;
+				attackMoveTimer = 0;
+
+				AttackNowPos = worldTransform_.translation_;
+				IsCombo = false;
+				IsCombo2 = false;
+				IsCombo3 = false;
+				IsCombo4 = false;
+				IsCombo5 = true;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+				BoneParentRotY = 0.0f;
+
+			}
+			if (attackMoveTimer < MaxAttackMoveTimer) {
+				attackMoveTimer += 1.0;
+				SowrdDrowTime++;
+				NotSowrdDrowTime = 10;
+			}
+			if (SowrdDrowTime < MaxSowrdRotate) {
+				if (SowrdDrowTime < 5) {
+					AttackRotX += -60.0f / 4.0f;
+					AttackRotY += -182.0f / 4.0f;
+					AttackRotZ += 39.0f / 4.0f;
+				}
+				if (SowrdDrowTime > 5 && SowrdDrowTime < 20) {
+					AttackRotX += 14.0f;
+				}
+			}
+			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+		}
+		else {
 			attackMoveTimer = 0;
-
-			AttackNowPos = worldTransform_.translation_;
-			IsCombo = true;
+			IsCombo = false;
 			IsCombo2 = false;
 			IsCombo3 = false;
 			IsCombo4 = false;
 			IsCombo5 = false;
-
-
-			SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			OldAttackRotX = 0.0f;
-			OldAttackRotY = 0.0f;
-			OldAttackRotZ = 0.0f;
-			AttackRotX = 0.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 2.0f;
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
 		}
-		if (attackMoveTimer < MaxAttackMoveTimer) {
-			attackMoveTimer += 1.0;
-			SowrdDrowTime++;
-			NotSowrdDrowTime = 10;
-		}
-		if (SowrdDrowTime < MaxSowrdRotate) {
-			AttackRotX += 6.0f;
-			AttackRotZ += 1.1f;
-		}
-
-		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
-
 	}
-	else if (playerNowMotion == PlayerMotion::soukenCombo2) {
-		if (IsCombo2 == false) {
-			playerAttackMovement = 4.0f;
-			LookingMove = worldTransform_.look - GetWorldPosition();
-
-			LookingMove = LookingMove * playerAttackMovement;
-			attackMoveTimer = 0;
-
-			AttackNowPos = worldTransform_.translation_;
-			IsCombo = false;
-			IsCombo2 = true;
-			IsCombo3 = false;
-			IsCombo4 = false;
-			IsCombo5 = false;
-
-			//前回の回転を残す
-			OldAttackRotX = AttackRotX;
-			OldAttackRotZ = AttackRotZ;
-
-			SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			AttackRotX = -212.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 0.0f;
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
-
-			saveRotX = AttackRotX;
-
-			/*Matrix4 rooooootttt;
-			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
-
-			LBoneTrans.SetMatRot(rooooootttt);
-
-			rooooootttt = MyMath::Initialize();
-			rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(AttackRotZ)), 3);
-			rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
-
-			RBoneTrans.SetMatRot(rooooootttt);*/
-
-		}
-		if (attackMoveTimer < MaxAttackMoveTimer) {
-			attackMoveTimer += 1.0;
-			SowrdDrowTime++;
-			NotSowrdDrowTime = 10;
-		}
-		if (SowrdDrowTime < MaxSowrdRotate) {
-			if (SowrdDrowTime < 10) {
-				AttackRotZ += (-110.0f - OldAttackRotZ) / 10;
-			}
-			AttackRotX += (-38.0f - saveRotX) / MaxSowrdRotate;
-
-		}
-
-		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
-	}
-	else if (playerNowMotion == PlayerMotion::soukenCombo3) {
-		if (IsCombo3 == false) {
-			playerAttackMovement = 10.0f;
-			LookingMove = worldTransform_.look - GetWorldPosition();
-
-			LookingMove = LookingMove * playerAttackMovement;
-			attackMoveTimer = 0;
-
-			AttackNowPos = worldTransform_.translation_;
-			IsCombo = false;
-			IsCombo2 = false;
-			IsCombo3 = true;
-			IsCombo4 = false;
-			IsCombo5 = false;
-
-			//前回の回転を残す
-			OldAttackRotX = AttackRotX;
-			OldAttackRotZ = AttackRotZ;
-
-			SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			AttackRotX = 0.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 0.0f;
-
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
-		}
-		if (attackMoveTimer < MaxAttackMoveTimer) {
-			attackMoveTimer += 1.0;
-			SowrdDrowTime++;
-			NotSowrdDrowTime = 10;
-		}
-		if (SowrdDrowTime < MaxSowrdRotate) {
-			if (SowrdDrowTime < 10) {
-				AttackOnlyLeftRotY += 190.0f / 10.0f;
-				AttackOnlyLeftRotZ += (-85.0f) / 10;
-			}
-
-		}
-		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
-	}
-	else if (playerNowMotion == PlayerMotion::soukenCombo4) {
-		if (IsCombo4 == false) {
-			playerAttackMovement = 30.0f;
-			LookingMove = worldTransform_.look - GetWorldPosition();
-
-			LookingMove = LookingMove * playerAttackMovement;
-			attackMoveTimer = 0;
-
-			AttackNowPos = worldTransform_.translation_;
-			IsCombo = false;
-			IsCombo2 = false;
-			IsCombo3 = false;
-			IsCombo4 = true;
-			IsCombo5 = false;
-
-			//前回の回転を残す
-			OldAttackRotX = AttackRotX;
-			OldAttackRotZ = AttackRotZ;
-
-			SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			AttackRotX = 0.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 0.0f;
-
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
-
-			BoneParentRotY = 0.0f;
-		}
-		if (attackMoveTimer < MaxAttackMoveTimer) {
-			attackMoveTimer += 1.0;
-			SowrdDrowTime++;
-			NotSowrdDrowTime = 10;
-		}
-		if (SowrdDrowTime < MaxSowrdRotate) {
-			if (SowrdDrowTime < 11) {
-				AttackOnlyLeftRotY += 155.0f / 10.0f;
-				AttackOnlyLeftRotZ += 86.0f / 10.0f;
-
-				AttackOnlyRightRotY += 333.0f / 10.0f;
-				AttackOnlyRightRotZ += 108.0f / 10.0f;
-			}
-
-			BoneParentRotY += (-360.0f * 3.0f) / (MaxSowrdRotate - 1);
-		}
-
-		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
-	}
-	else if (playerNowMotion == PlayerMotion::soukenCombo5) {
-		if (IsCombo5 == false) {
-			playerAttackMovement = 5.0f;
-			LookingMove = worldTransform_.look - GetWorldPosition();
-
-			LookingMove = LookingMove * playerAttackMovement;
-			attackMoveTimer = 0;
-
-			AttackNowPos = worldTransform_.translation_;
-			IsCombo = false;
-			IsCombo2 = false;
-			IsCombo3 = false;
-			IsCombo4 = false;
-			IsCombo5 = true;
-
-			SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			AttackRotX = 0.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 0.0f;
-
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
-
-		}
-		if (attackMoveTimer < MaxAttackMoveTimer) {
-			attackMoveTimer += 1.0;
-			SowrdDrowTime++;
-			NotSowrdDrowTime = 10;
-		}
-		if (SowrdDrowTime < MaxSowrdRotate) {
-			if (SowrdDrowTime < 5) {
-				AttackRotX += -60.0f / 4.0f;
-				AttackRotY += -182.0f / 4.0f;
-				AttackRotZ += 39.0f / 4.0f;
-			}
-			if (SowrdDrowTime > 5 && SowrdDrowTime < 20) {
-				AttackRotX += 14.0f;
-			}
-		}
-		worldTransform_.translation_ = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer);
-	}
-	else {
-		attackMoveTimer = 0;
-		IsCombo = false;
-		IsCombo2 = false;
-		IsCombo3 = false;
-		IsCombo4 = false;
-		IsCombo5 = false;
-	}
-
 
 
 
@@ -1031,6 +1156,7 @@ void Player::Attack() {
 	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY) + MyMath::GetAngle(AttackOnlyLeftRotY), 0.0f), 2);
 
 	LBoneTrans.SetMatRot(rooooootttt);
+	LBoneTrans.SetLookMatRot(rooooootttt);
 
 	rooooootttt = MyMath::Initialize();
 	rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX) + MyMath::GetAngle(AttackOnlyRightRotX), PlayerRot.y, PlayerRot.z), 1);
@@ -1038,6 +1164,7 @@ void Player::Attack() {
 	rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY) + MyMath::GetAngle(AttackOnlyRightRotY), 0.0f), 2);
 
 	RBoneTrans.SetMatRot(rooooootttt);
+	RBoneTrans.SetLookMatRot(rooooootttt);
 
 	Matrix4 roooooottttee;
 	roooooottttee *= MyMath::Rotation(Vector3(PlayerRot.x, 0.0f, 0.0f), 1);
@@ -1045,6 +1172,39 @@ void Player::Attack() {
 	roooooottttee *= MyMath::Rotation(Vector3(0.0f, PlayerRot.y + MyMath::GetAngle(BoneParentRotY), 0.0f), 2);
 
 	BoneParent.SetMatRot(roooooottttee);
+
+	Vector3 LBoneLook = LBoneTrans.lookUp - LBoneTrans.translation_;
+	LBoneLook.normalize();
+
+	Vector3 RBoneLook = RBoneTrans.lookDown - RBoneTrans.translation_;
+	RBoneLook.normalize();
+
+	for (int i = 0; i < SphereCount; i++) {
+		if (i < SphereCount / 2) {
+			if (i < SphereCount / 4 + 1) {
+				playerAttackTransformaaaa_[i].translation_ = MyMath::GetWorldTransform(matL) + (LBoneLook * i) * AttackCollisionDistance;
+			}
+			else {
+				playerAttackTransformaaaa_[i].translation_ = MyMath::GetWorldTransform(matL) - (LBoneLook * (i - (SphereCount / 4))) * AttackCollisionDistance;
+			}
+		}
+		else {
+			if (i < SphereCount / 2 + SphereCount / 4 + 1) {
+				playerAttackTransformaaaa_[i].translation_ = MyMath::GetWorldTransform(matR) + (RBoneLook * (i - (SphereCount / 2 + 1))) * AttackCollisionDistance;
+			}
+			else {
+				playerAttackTransformaaaa_[i].translation_ = MyMath::GetWorldTransform(matR) - (RBoneLook * (i - (SphereCount / 2 + SphereCount / 4 - 1))) * AttackCollisionDistance;
+			}
+		}
+		playerAttackTransformaaaa_[i].TransferMatrix();
+	}
+
+	if (isAttack == true) {
+		for (int i = 0; i < SphereCount; i++) {
+			AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+		}
+	}
 
 }
 
@@ -1058,18 +1218,26 @@ void Player::SetKnockBackCount()
 	moveTime = 0;
 	KnockBack = MyMath::GetWorldTransform(worldTransform_.matWorld_) + KnockBack;
 
+	NotMoveTime = 0;
+
 	isKnockBack = true;
+
+	isEnemyDamage = true;
 }
 
 void Player::KnockBackUpdate()
 {
 	if (moveTime < MaxMoveTime) {
 		moveTime++;
-		KnockBack += PlayerMoveMent;
+		KnockBack += PlayerMoveMent / 2;
+		KnockBack += Avoidance;
+		KnockBack += AttackMovememt / 2;
 		Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 
 		float AR;
 		float BR;
+
+		damageFlashFlame++;
 
 		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
 		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
@@ -1078,6 +1246,51 @@ void Player::KnockBackUpdate()
 		{
 			worldTransform_.translation_ = KnockBackMove;
 		}
+		worldTransform_.TransferMatrix();
+		if (isEnemyDamage == true) {
+
+			if (NotMoveTime < MaxNotMoveTime) {
+				NotMoveTime++;
+				playerNowMotion = PlayerMotion::DamegeAction;
+
+				attackMoveTimer = 0;
+				isPlayMotion = false;
+
+				attackConbo = 0;
+
+				frem = 30.0f;
+				receptionTime = 0.0f;
+
+				SowrdDrowTime = 0;
+				MaxSowrdRotate = 35;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+				BoneParentRotY = 0.0f;
+
+				IsCombo = false;
+				IsCombo2 = false;
+				IsCombo3 = false;
+				IsCombo4 = false;
+				IsCombo5 = false;
+
+				LookingMove = { 0,0,0 };
+				AttackNowPos = worldTransform_.translation_;
+			}
+			else {
+				isEnemyDamage = false;
+			}
+		}
+
 	}
 	else
 	{
@@ -1091,11 +1304,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//if (timer == 0) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
-	/*if (isAttack) {
-		for (int i = 0; i < SphereCount; i++) {
-			playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-		}
-	}*/
+
+	for (int i = 0; i < SphereCount; i++) {
+		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+	}
+
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
 
@@ -1103,8 +1316,8 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 	/*if (SowrdDrowTime > NotSowrdDrowTime) {*/
 
-		LSowrdModel->Draw(LBoneTrans, viewProjection_);
-		RSowrdModel->Draw(RBoneTrans, viewProjection_);
+	LSowrdModel->Draw(LBoneTrans, viewProjection_);
+	RSowrdModel->Draw(RBoneTrans, viewProjection_);
 
 	//}
 
@@ -1116,7 +1329,10 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
-		fbxmodel->Draw(worldTransform_, viewProjection_);
+		if (isKnockBack == false || damageFlashFlame % 6 == 0)
+		{
+			fbxmodel->Draw(worldTransform_, viewProjection_);
+		}
 	}
 }
 
@@ -1273,6 +1489,7 @@ void Player::Collision(int damage)
 	{
 		SetKnockBackCount();
 		HP -= damage;
+		damageFlashFlame = 0;
 		if (HP < 0)
 		{
 			HP = 0;
@@ -1313,7 +1530,7 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 1.0f, 1.0f, { 0.5,0,0,1 }, { 0.5,0,0,1 });
 		}
 		IsHpAlfa = true;
 		hpAlfaSize = hpSize;
@@ -1426,7 +1643,7 @@ void Player::Reset()
 	for (int i = 0; i < SphereCount; i++) {
 		playerAttackTransformaaaa_[i].translation_ = { 0,0,0 };
 		playerAttackTransformaaaa_[i].rotation_ = { 0,0,0 };
-		playerAttackTransformaaaa_[i].scale_ = { 0,0,0 };
+		playerAttackTransformaaaa_[i].scale_ = { 1,1,1 };
 		playerAttackTransformaaaa_[i].TransferMatrix();
 	}
 
@@ -1448,7 +1665,7 @@ void Player::Reset()
 
 	timer = 0;
 	alpha = 0.0f;
-	MaxMoveTime = 60;
+	MaxMoveTime = 40;
 
 	x = 0;
 	radius = 4.0f;//当たり判定半径
@@ -1504,7 +1721,7 @@ void Player::Reset()
 	playerEvasionTimes = 3;
 	playerEvasionCoolTime = 0;
 	playerEvasionMaxTimes = 3;
-	CoolTime = 180;
+	CoolTime = 80;
 	spriteAlpha1 = 1.0f;
 	spriteAlpha2 = 1.0f;
 	spriteAlpha3 = 1.0f;

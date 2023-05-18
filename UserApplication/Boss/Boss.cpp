@@ -31,7 +31,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 {
 	bossFish->Update(targetPos, stagePos, stageRadius);
 
-	bossWarrier->Update();
+	bossWarrier->Update(targetPos);
 }
 
 void Boss::Draw(const ViewProjection& viewProMat)

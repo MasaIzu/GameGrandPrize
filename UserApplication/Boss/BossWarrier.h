@@ -37,6 +37,13 @@ struct BossWarrierModel {
 	bool isDraw;
 };
 
+enum class Attack
+{
+	StandBy,
+	ArmSwing,
+	Tornado,
+};
+
 class BossWarrier
 {
 
@@ -68,6 +75,8 @@ private:
 
 	//ˆø”‚È‚Ç‚Å‚à‚ç‚Á‚Ä‚­‚é•Ï”
 	Vector3 targetPos = { 0,0,0 };
+
+	Attack attack=Attack::StandBy;
 
 private:
 	//˜rU‚èUŒ‚‚Ì‰Šú‰»

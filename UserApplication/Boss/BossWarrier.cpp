@@ -19,9 +19,9 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::ArmL].isDraw = true;
 	boss2Model[BossWarrierPart::ArmR].model.reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
 	boss2Model[BossWarrierPart::ArmR].isDraw = true;
-	boss2Model[BossWarrierPart::HandL].model.reset(Model::CreateFromOBJ("Boss_ArmL", true));
+	boss2Model[BossWarrierPart::HandL].model.reset(Model::CreateFromOBJ("Boss_ArmL_Gu", true));
 	boss2Model[BossWarrierPart::HandL].isDraw = true;
-	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR", true));
+	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR_Gu", true));
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
 	//ボス第二形態の各部位初期化
@@ -61,15 +61,21 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::Neck].Transform.translation_ = { 0,3,0 };
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,1.5,0 };
 	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 3,1.5,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({0,0,0});
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 2,0,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -3,1.5,0 };
-	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,0 });
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI/4 });
 	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -2,0,0 };
 	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 2,0,0 };
 	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 2,0,0 };
+	//boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1,1.5,1.5 };
 	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({0,0,-PI/4});
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({0,0,PI/4});
 	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -2,0,0 };
+	boss2Model[BossWarrierPart::HandR].Transform.SetRot({0,1.57,0});
+	boss2Model[BossWarrierPart::HandL].Transform.SetRot({ 0,1.57,0 });
+	//boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1,1.5,1.5 };
 	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-3,0 };
 	boss2Model[BossWarrierPart::Crotch].Transform.SetRot({0,0,0});
 	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-1.5,0 };
@@ -441,8 +447,8 @@ void BossWarrier::InitAtkArmSwing()
 	//腕振りタイマーを開始(30f)で終わるようにし、30f経つごとにループさせる
 	easeRotArm.Start(30);
 
-	dataRotArm[0] = { 0,PI / -3.0f - (PI / 2.0f),0 };
-	dataRotArm[1] = { 0,-PI / -3.0f - (PI / 2.0f),0 };
+	dataRotArm[0] = { 0,PI / -3.0f,0 };
+	dataRotArm[1] = { 0,-PI / -3.0f ,0 };
 	dataRotShoulder[0] = { 0,PI / -6.0f,0 };
 	dataRotShoulder[1] = { 0,PI / -3.0f,0 };
 	dataRotElbow[0] = { 0,PI / -6.0f,0 };
@@ -540,7 +546,7 @@ void BossWarrier::UpdateAtkArmSwing()
 
 	matBodyRot = CreateMatRot(rotArm);
 
-	matBossRot =  matBossDir;
+	matBossRot =  matBossDir*matBodyRot;
 
 	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossRot);
 	//boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;

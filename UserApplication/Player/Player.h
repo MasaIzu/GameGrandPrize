@@ -99,8 +99,10 @@ private:
 		soukenCombo3,//2
 		soukenCombo4,//3
 		soukenCombo5,//4
-		aruki,//5
-		taiki,//6
+		DamegeAction,//5
+		DeathMotion,//6
+		aruki,//7
+		taiki,//8
 
 	};
 

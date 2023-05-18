@@ -99,13 +99,13 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	// スプライトの初期化処理
 	SpriteInitialize();
 
-	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix2"));
+	fbxmodel.reset(FbxLoader::GetInstance()->LoadModelFromFile("3dKyaraFix4"));
 	fbxmodel->Initialize();
 	fbxmodel2 = fbxmodel.get();
 	fbxmodel2->Initialize();
 	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 	modelAnim = std::make_unique<FbxAnimation>();
-	modelAnim->Load("3dKyaraFix2");
+	modelAnim->Load("3dKyaraFix4");
 
 	std::unique_ptr<FbxModel> fbxmodel;
 
@@ -337,7 +337,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
 	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
 
-	ImGui::Text("playerNowMotion:%d", static_cast<int>(playerNowMotion));
+	
 	ImGui::Text("MinimumFrem:%f", MinimumFrem);
 	ImGui::Text("MaxFrem:%f", MaxFrem);*/
 	//ImGui::Text("frem:%f", frem);
@@ -351,7 +351,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-
+	ImGui::Text("playerNowMotion:%d", static_cast<int>(playerNowMotion));
+	ImGui::Text("isKnockBack:%d", isKnockBack);
 	ImGui::Text("look:%f", worldTransform_.look.x);
 	ImGui::Text("look:%f", worldTransform_.look.y);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -1108,14 +1109,14 @@ void Player::KnockBackUpdate()
 
 			if (NotMoveTime < MaxNotMoveTime) {
 				NotMoveTime++;
-				playerNowMotion = PlayerMotion::taiki;
+				playerNowMotion = PlayerMotion::DamegeAction;
 
 				attackMoveTimer = 0;
 				isPlayMotion = false;
 
 				attackConbo = 0;
 
-				frem = 0.0f;
+				frem = 30.0f;
 				receptionTime = 0.0f;
 
 				SowrdDrowTime = 0;

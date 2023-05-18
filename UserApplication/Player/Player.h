@@ -348,8 +348,8 @@ private:
 
 	int AttackCollisionDistance = 4;
 
-	int maxAttackWaitTime = 16;
-	int maxAttackWaitintTime = 20;
+	int maxAttackWaitTime = 0;
+	int maxAttackWaitintTime = 0;
 
 	int AttackWaitTime = maxAttackWaitTime;
 	bool isAttckWaiting = false;

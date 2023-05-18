@@ -146,7 +146,7 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	BoneParent.Initialize();
 
-	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f});
+	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
@@ -222,7 +222,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 				isPlayMotion = false;
 				if (isWalking == false) {
 					if (isAttack == false) {
-						playerNowMotion = PlayerMotion::taiki;
+						if (isKnockBack == false) {
+							playerNowMotion = PlayerMotion::taiki;
+						}
 					}
 				}
 			}
@@ -332,22 +334,22 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Begin("player");
 
 
-	/*ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
+	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
 
 	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &maxAttackWaitintTime, 0, 60);
 
 
-	ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
-	ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
+	//ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
+	//ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
 
-	ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
-	ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
+	//ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
+	//ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
 
-	
-	ImGui::Text("MinimumFrem:%f", MinimumFrem);
-	ImGui::Text("MaxFrem:%f", MaxFrem);*/
+	//
+	//ImGui::Text("MinimumFrem:%f", MinimumFrem);
+	//ImGui::Text("MaxFrem:%f", MaxFrem);
 	//ImGui::Text("frem:%f", frem);
 
 	//ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
@@ -359,7 +361,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-	ImGui::Text("playerNowMotion:%d", static_cast<int>(playerNowMotion));
+	ImGui::Text("attackConbo:%d", attackConbo);
 	ImGui::Text("isKnockBack:%d", isKnockBack);
 	ImGui::Text("look:%f", worldTransform_.look.x);
 	ImGui::Text("look:%f", worldTransform_.look.y);
@@ -709,51 +711,41 @@ void Player::Attack() {
 						SowrdAFlame = 0;
 
 					}
-					if (attackConbo == 1) {
-						if (receptionTime > 0.6f && receptionTime < 1.45f) {
-							attackConbo = 2;
-							playerNowMotion = PlayerMotion::soukenCombo2;
-							isPlayMotion = true;
-							MinimumFrem = 1.86f;
-							MaxFrem = 1.88f;
-							frem = 0.0f;
-							receptionTime = 0.0f;
-						}
-					}
-					else if (attackConbo == 2) {
-						if (receptionTime > 0.5f && receptionTime < 1.4f) {
-							attackConbo = 3;
-							playerNowMotion = PlayerMotion::soukenCombo3;
-							isPlayMotion = true;
-							MinimumFrem = 1.86f;
-							MaxFrem = 1.88f;
-							frem = 0.0f;
-							receptionTime = 0.0f;
-						}
-					}
-					else if (attackConbo == 3) {
-						if (receptionTime > 0.8f && receptionTime < 1.45f) {
-							attackConbo = 4;
-							playerNowMotion = PlayerMotion::soukenCombo4;
-							isPlayMotion = true;
-							MinimumFrem = 1.86f;
-							MaxFrem = 1.88f;
-							frem = 0.0f;
-							receptionTime = 0.0f;
-						}
-					}
-					else if (attackConbo == 4) {
-						if (receptionTime > 0.8f && receptionTime < 1.6f) {
-							attackConbo = 5;
-							playerNowMotion = PlayerMotion::soukenCombo5;
-							isPlayMotion = true;
-							MinimumFrem = 1.86f;
-							MaxFrem = 1.88f;
-							frem = 0.0f;
-							receptionTime = 0.0f;
-						}
+				}
+				else if (attackConbo == 2) {
+					if (receptionTime > 0.5f && receptionTime < 1.4f) {
+						attackConbo = 3;
+						playerNowMotion = PlayerMotion::soukenCombo3;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
 					}
 				}
+				else if (attackConbo == 3) {
+					if (receptionTime > 0.8f && receptionTime < 1.45f) {
+						attackConbo = 4;
+						playerNowMotion = PlayerMotion::soukenCombo4;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
+					}
+				}
+				else if (attackConbo == 4) {
+					if (receptionTime > 0.8f && receptionTime < 1.6f) {
+						attackConbo = 5;
+						playerNowMotion = PlayerMotion::soukenCombo5;
+						isPlayMotion = true;
+						MinimumFrem = 1.86f;
+						MaxFrem = 1.88f;
+						frem = 0.0f;
+						receptionTime = 0.0f;
+					}
+				}
+
 			}
 		}
 	}
@@ -891,6 +883,7 @@ void Player::Attack() {
 				IsCombo4 = false;
 				IsCombo5 = false;
 
+				BoneParentRotY = 0.0f;
 
 				SowrdDrowTime = 0;
 				MaxSowrdRotate = 35;
@@ -906,30 +899,13 @@ void Player::Attack() {
 				AttackOnlyRightRotX = 0.0f;
 				AttackOnlyRightRotY = 0.0f;
 				AttackOnlyRightRotZ = 0.0f;
+				AttackWaitintTime = maxAttackWaitintTime;
+				AttackWaitTime = maxAttackWaitTime;
+				isSowrd = true;
+				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
+				LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+				RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-				BoneParentRotY = 0.0f;
-        
-        SowrdDrowTime = 0;
-			MaxSowrdRotate = 35;
-			OldAttackRotX = 0.0f;
-			OldAttackRotY = 0.0f;
-			OldAttackRotZ = 0.0f;
-			AttackRotX = 0.0f;
-			AttackRotY = 0.0f;
-			AttackRotZ = 2.0f;
-			AttackOnlyLeftRotX = 0.0f;
-			AttackOnlyLeftRotY = 0.0f;
-			AttackOnlyLeftRotZ = 0.0f;
-			AttackOnlyRightRotX = 0.0f;
-			AttackOnlyRightRotY = 0.0f;
-			AttackOnlyRightRotZ = 0.0f;
-			AttackWaitintTime = maxAttackWaitintTime;
-			AttackWaitTime = maxAttackWaitTime;
-			isSowrd = true;
-			Model::ConstBufferPolygonExplosion polygon=LSowrdModel->GetPolygonExplosion();
-			LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
-			RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
-        
 			}
 			if (attackMoveTimer < MaxAttackMoveTimer) {
 				attackMoveTimer += 1.0;
@@ -942,7 +918,7 @@ void Player::Attack() {
 			}
 
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
-		
+
 		}
 		else if (playerNowMotion == PlayerMotion::soukenCombo2) {
 			if (IsCombo2 == false) {
@@ -1260,7 +1236,7 @@ void Player::KnockBackUpdate()
 
 		float AR;
 		float BR;
-		
+
 		damageFlashFlame++;
 
 		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
@@ -1353,7 +1329,7 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
-		if (isKnockBack==false||damageFlashFlame%6==0)
+		if (isKnockBack == false || damageFlashFlame % 6 == 0)
 		{
 			fbxmodel->Draw(worldTransform_, viewProjection_);
 		}

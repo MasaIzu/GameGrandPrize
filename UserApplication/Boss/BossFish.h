@@ -258,6 +258,8 @@ private:
 		Matrix4 worldSpherePos[SphereCount];
 		WorldTransform playerAttackTransformaaaa_[SphereCount];
 		std::unique_ptr<Model> startModel;
+
+		float SphereRadius = 8.0f;
 };
 
 

@@ -64,7 +64,6 @@ void BossFish::Initialize()
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
-		float SphereRadius = 8.0f;
 		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
@@ -314,7 +313,6 @@ void BossFish::Reset()
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
-		float SphereRadius = 8.0f;
 		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);

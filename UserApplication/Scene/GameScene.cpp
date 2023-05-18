@@ -24,7 +24,7 @@ void GameScene::Initialize() {
 	//当たり判定
 	collisionManager = CollisionManager::GetInstance();
 
-	model_.reset(Model::CreateFromOBJ("UFO", true));
+	model_.reset(Model::CreateFromOBJ("sphere", true));
 
 	viewProjection_.eye = { 0,10,-10 };
 

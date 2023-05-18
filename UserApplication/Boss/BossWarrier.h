@@ -7,28 +7,33 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+
+#include "Player.h"
+#include "Input.h"
+=======
 #include"EasingData.h"
 
+
 enum BossWarrierPart {
-	//(œ)‚Í•`‰æ‚·‚é
-	//(ŠÖß)‚Í•`‰æ‚µ‚È‚¢
-	//œ‚Í“®‚©‚³‚¸ŠÖß‚Ì‰ñ“]‚Å“®‚©‚·
-	//enum‚Ì‡”Ô‚Íq‚É‚È‚é‚É‚Â‚ê‚Ä‰º‚És‚­‚æ‚¤‚ÉŒˆ‚ß‚½
-	Root,		//‘å–{(ŠÖß)
-	Chest,		//‹¹(œ)
-	Neck,		//ñ(ŠÖß)
-	Head,		//“ª(œ)
-	ShoulderL,	//¶Œ¨(ŠÖß)
-	ArmL,		//¶˜r(œ)
-	elbowL,		//¶•I(ŠÖß)
-	HandL,		//¶è(œ)
-	ShoulderR,	//‰EŒ¨(ŠÖß)
-	ArmR,		//‰E˜r(œ)
-	elbowR,		//‰E•I(ŠÖß)
-	HandR,		//‰Eè(œ)
-	Crotch,		//ŒÒ(ŠÖß)
-	Waist,		//˜(œ)
-	Boss2PartMax,	//ƒ{ƒX‚Ì•”ˆÊ”
+	//(éª¨)ã¯æç”»ã™ã‚‹
+	//(é–¢ç¯€)ã¯æç”»ã—ãªã„
+	//éª¨ã¯å‹•ã‹ã•ãšé–¢ç¯€ã®å›è»¢ã§å‹•ã‹ã™
+	//enumã®é †ç•ªã¯å­ã«ãªã‚‹ã«ã¤ã‚Œã¦ä¸‹ã«è¡Œãã‚ˆã†ã«æ±ºã‚ãŸ
+	Root,		//å¤§æœ¬(é–¢ç¯€)
+	Chest,		//èƒ¸(éª¨)
+	Neck,		//é¦–(é–¢ç¯€)
+	Head,		//é ­(éª¨)
+	ShoulderL,	//å·¦è‚©(é–¢ç¯€)
+	ArmL,		//å·¦è…•(éª¨)
+	elbowL,		//å·¦è‚˜(é–¢ç¯€)
+	HandL,		//å·¦æ‰‹(éª¨)
+	ShoulderR,	//å³è‚©(é–¢ç¯€)
+	ArmR,		//å³è…•(éª¨)
+	elbowR,		//å³è‚˜(é–¢ç¯€)
+	HandR,		//å³æ‰‹(éª¨)
+	Crotch,		//è‚¡(é–¢ç¯€)
+	Waist,		//è…°(éª¨)
+	Boss2PartMax,	//ãƒœã‚¹ã®éƒ¨ä½æ•°
 };
 
 struct BossWarrierModel {
@@ -53,9 +58,21 @@ public:
 	void Update(const Vector3& targetPos);
 
 	void Draw(const ViewProjection& viewProMat);
+	void SetPlayer(Player* player_) { pl = player_; }
 
+	void phase2Attack();
+	void phase2AttackP2();
+
+	void phase2AttackDraw(ViewProjection viewProMat);
+
+	void Rota();
 private:
-	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ƒ{ƒX‘æ“ñŒ`‘Ô‚Ìƒ‚ƒfƒ‹
+
+	std::unique_ptr<Model> swordModel = nullptr;	//å‰£ã®ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿
+
+	Input* input_ = nullptr;
+	Player* pl = nullptr;
+	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ãƒœã‚¹ç¬¬äºŒå½¢æ…‹ã®ãƒ¢ãƒ‡ãƒ«
 	std::unique_ptr<Model> boss2TornadeModel;
 
 	WorldTransform boss2TornadoTransform[2];
@@ -67,23 +84,46 @@ private:
 	int TornadoFlame = 0;
 	bool isLastAtkStart = false;
 	int lastAtkCount = 0;
-	EasingData easeRotArm;//˜rU‚è§Œä‚ÌƒC[ƒWƒ“ƒOƒf[ƒ^
-	Vector3 dataRotArm[2];	//ƒC[ƒWƒ“ƒO—p‰ñ“]Špƒf[ƒ^
+	EasingData easeRotArm;//è…•æŒ¯ã‚Šåˆ¶å¾¡ã®ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿
+	Vector3 dataRotArm[2];	//ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ç”¨å›è»¢è§’ãƒ‡ãƒ¼ã‚¿
 	Vector3 dataRotElbow[2];
 	Vector3 dataRotShoulder[2];
 	Vector3 dummyTargetPos;
 
-	//ˆø”‚È‚Ç‚Å‚à‚ç‚Á‚Ä‚­‚é•Ï”
+	//å¼•æ•°ãªã©ã§ã‚‚ã‚‰ã£ã¦ãã‚‹å¤‰æ•°
 	Vector3 targetPos = { 0,0,0 };
 
 	Attack attack=Attack::StandBy;
 
+	//
+
+	//ç¬¬äºŒphaseã®å‰£ã®æŠ•ã’Attackã®å‰£ã®æœ€å¤§æ•°
+	const int MAXSWROD = 5;
+	WorldTransform w[5];
+	//ç”Ÿæˆã—ã¦ã‹ã‚‰å‰£ã‚’é£›ã°ã™ã¾ã§ã®æ™‚é–“
+	int phase2AttackCoolTime = 70;
+	bool t;
+	bool t2;
+	WorldTransform pPos[5];
+	WorldTransform num[5];
+	int interval = 10;
+	float moveSpeed = 0.2f;
+	bool isSat = false;
+	bool isSat2 = false;
+	bool isOn = false;
+	bool isShot[5];
+	const int MAXSHOTTIME = 40;
+	int shotTime = MAXSHOTTIME;
+
+	bool kenrot[5];
+
 private:
-	//˜rU‚èUŒ‚‚Ì‰Šú‰»
+	//è…•æŒ¯ã‚Šæ”»æ’ƒã®åˆæœŸåŒ–
 	void InitAtkArmSwing();
 
-	//˜rU‚èUŒ‚‚ÌXV
+	//è…•æŒ¯ã‚Šæ”»æ’ƒã®æ›´æ–°
 	void UpdateAtkArmSwing();
 
 };
 
+Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

@@ -98,7 +98,7 @@ void GameScene::Initialize() {
 
 	boss = new Boss();
 	boss->Initialize();
-
+	boss->SetPlayer(player.get());
 	//ムービー用カメラの初期化
 	movieCamera.Initialize();
 

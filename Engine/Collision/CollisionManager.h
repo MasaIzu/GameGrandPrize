@@ -42,6 +42,8 @@ public://ƒƒ“ƒoŠÖ”
 	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
 	int GetHitNumber() { return hitNumber; }
 	bool GetEnemySwordHit() { return isEnemySwordHit; }
+	bool GetIsEnemyReception() { return isEnemyReception; }
+
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
 	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
@@ -64,5 +66,7 @@ private:
 
 	bool isEnemySwordHit = false;
 	bool isPlayerAttacking = false;
+
+	bool isEnemyReception = false;
 
 };

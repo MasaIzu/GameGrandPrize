@@ -48,7 +48,7 @@ void BossFish::Initialize()
 	phase1 = BossFishPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	radius = 23.0f;
+	radius = 18.0f;
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
@@ -106,15 +106,19 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 	switch (phase1) {
 	case BossFishPhase::Idle:
 		UpdateIdle();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Atk_Sword:
 		UpdateAtkSword();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Atk_Rush:
 		UpdateAtkRush();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::BeginMotion:
 		UpdateBeginMotion();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Death:
 		UpdateDeath();

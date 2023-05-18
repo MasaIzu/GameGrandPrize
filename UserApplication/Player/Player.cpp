@@ -178,6 +178,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	if (isAdmission == false && HP > 0)
 	{
+		OldTrans = worldTransform_.translation_;
+
 		Move();
 
 		BoneParent.translation_ = worldTransform_.translation_;
@@ -281,6 +283,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 	BoneParent.TransferMatrix();
 
+
+	collider->AddPlayerMovement(PlayerMoveMent);
 	collider->Update(worldTransform_.matWorld_);
 	recovery->Update();
 	if (input_->PushKey(DIK_P)) {
@@ -1305,9 +1309,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
 
-	for (int i = 0; i < SphereCount; i++) {
+	/*for (int i = 0; i < SphereCount; i++) {
 		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	}
+	}*/
 
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
@@ -1731,6 +1735,13 @@ void Player::Reset()
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
 	isInput = false;
+}
+
+void Player::EnemyNotAttackCollision()
+{
+
+	worldTransform_.translation_ = OldTrans;
+
 }
 
 void Player::SpriteInitialize()

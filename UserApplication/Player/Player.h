@@ -57,6 +57,8 @@ public:
 
 	void Reset();
 
+	void EnemyNotAttackCollision();
+
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
 	void SetPosition(Vector3 pos);
@@ -115,9 +117,11 @@ private:
 
 	Easing* easing_;
 	//ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform worldTransform_;;
 	WorldTransform oldWorldTransform_;
 	WorldTransform playerAttackTransform_;
+
+	Vector3 OldTrans;
 
 	bool isEnemyHit = false;
 	bool isAttackHit = false;

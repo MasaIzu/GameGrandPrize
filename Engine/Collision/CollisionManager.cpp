@@ -20,6 +20,7 @@ void CollisionManager::CheckAllCollisions()
 	hitNumber = 0;
 	isWakeEnemyAttackHit = false;
 	isEnemySwordHit = false;
+	isEnemyReception = false;
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -80,6 +81,20 @@ void CollisionManager::CheckAllCollisions()
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colA->GetWorldPos();
 						isEnemySwordHit = true;
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						isEnemyReception = true;
+
+						Vector3 enemyPos = MyMath::GetWorldTransform(colA->GetWorldPos());
+						Vector3 playerPos = MyMath::GetWorldTransform(colB->GetWorldPos());
+
+						Vector3 player_enemy = playerPos - enemyPos;
+						player_enemy.normalize();
+						Vector3 playerMovement = colB->playerMovement;
+						playerMovement.normalize();
+
 					}
 				}
 				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {

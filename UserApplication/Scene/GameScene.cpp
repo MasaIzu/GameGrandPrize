@@ -516,6 +516,10 @@ void GameScene::GameUpdate()
 		player->Collision(5);
 	}
 
+	if (collisionManager->GetIsEnemyReception()) {
+		player->EnemyNotAttackCollision();
+	}
+
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
 	ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);

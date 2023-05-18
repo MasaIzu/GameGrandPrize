@@ -1737,10 +1737,10 @@ void Player::Reset()
 	isInput = false;
 }
 
-void Player::EnemyNotAttackCollision()
+void Player::EnemyNotAttackCollision(Vector3 Pos)
 {
 
-	worldTransform_.translation_ = OldTrans;
+	worldTransform_.translation_ += Pos;
 
 }
 

@@ -35,6 +35,9 @@ public://ÉÅÉìÉoä÷êî
 
 	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, Matrix4* worldPos = nullptr);
 
+	bool DetectCollision(const Sphere& sphereA, const Sphere& sphereB, Vector3& out_collision_depth_direction);
+
+	Vector3 ResolveCollision(Sphere& sphereA, const Sphere& sphereB);
 
 	bool GetIsEnemyHit() { return isEnemyHit; }
 	bool GetIsWakeEnemyHit() { return isWakeEnemyHit; }
@@ -44,6 +47,7 @@ public://ÉÅÉìÉoä÷êî
 	bool GetEnemySwordHit() { return isEnemySwordHit; }
 	bool GetIsEnemyReception() { return isEnemyReception; }
 
+	Vector3 GetPlayerPos() { return playerPos; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
 	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
 
@@ -63,6 +67,7 @@ private:
 	bool isWakeEnemyAttackHit = false;
 	Matrix4 EnemyWorldPos;
 	Matrix4 HitWorldPos;
+	Vector3 playerPos;
 
 	bool isEnemySwordHit = false;
 	bool isPlayerAttacking = false;

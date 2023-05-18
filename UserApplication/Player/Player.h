@@ -57,7 +57,7 @@ public:
 
 	void Reset();
 
-	void EnemyNotAttackCollision();
+	void EnemyNotAttackCollision(Vector3 Pos);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();

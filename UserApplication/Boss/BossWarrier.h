@@ -10,7 +10,6 @@
 
 #include "Player.h"
 #include "Input.h"
-=======
 #include"EasingData.h"
 
 
@@ -95,7 +94,6 @@ private:
 
 	Attack attack=Attack::StandBy;
 
-<<<<<<< HEAD
 	//
 
 	//隨ｬ莠継hase縺ｮ蜑｣縺ｮ謚輔￡Attack縺ｮ蜑｣縺ｮ譛螟ｧ謨ｰ
@@ -117,7 +115,6 @@ private:
 	int shotTime = MAXSHOTTIME;
 
 	bool kenrot[5];
-=======
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 
 	const Vector3 StandByNeck = { 0,0,0 };
@@ -127,7 +124,6 @@ private:
 	const Vector3 StandByElbowR = { 0,0,PI/4 };
 	const Vector3 StandByWaist = { 0,0,0 };
 #pragma endregion
->>>>>>> 繝懊せ縺ｮ縺・ｍ縺・ｍ縺ｨ繝昴せ繝医お繝輔ぉ繧ｯ繝医・隱ｿ謨ｴ
 
 private:
 	//閻墓険繧頑判謦・・蛻晄悄蛹・

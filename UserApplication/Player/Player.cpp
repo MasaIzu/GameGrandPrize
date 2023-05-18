@@ -678,79 +678,80 @@ void Player::Attack() {
 
 
 				if (isPlayMotion == false) {
-          
-				attackConbo = 1;
-				playerNowMotion = PlayerMotion::soukenCombo1;
-				isPlayMotion = true;
-				MinimumFrem = 2.0f;
-				MaxFrem = 2.0f;
-				frem = 0.0f;
-				receptionTime = 0.0f;
-				conboFlag = true;
 
-			}
-			if (attackConbo == 1) {
-				if (receptionTime > 0.8f && receptionTime < 1.45f) {
-					attackConbo = 2;
-					playerNowMotion = PlayerMotion::soukenCombo2;
-
+					attackConbo = 1;
+					playerNowMotion = PlayerMotion::soukenCombo1;
 					isPlayMotion = true;
 					MinimumFrem = 2.0f;
 					MaxFrem = 2.0f;
 					frem = 0.0f;
-					//AttackWaitTime = 10;
-					//AttackWaitingTime = 10;
 					receptionTime = 0.0f;
-
 					conboFlag = true;
-
-
-					SowrdDFlame = 36;
-					SowrdAFlame = 0;
 
 				}
 				if (attackConbo == 1) {
-					if (receptionTime > 0.6f && receptionTime < 1.45f) {
+					if (receptionTime > 0.8f && receptionTime < 1.45f) {
 						attackConbo = 2;
 						playerNowMotion = PlayerMotion::soukenCombo2;
+
 						isPlayMotion = true;
-						MinimumFrem = 1.86f;
-						MaxFrem = 1.88f;
+						MinimumFrem = 2.0f;
+						MaxFrem = 2.0f;
 						frem = 0.0f;
+						//AttackWaitTime = 10;
+						//AttackWaitingTime = 10;
 						receptionTime = 0.0f;
+
+						conboFlag = true;
+
+
+						SowrdDFlame = 36;
+						SowrdAFlame = 0;
+
 					}
-				}
-				else if (attackConbo == 2) {
-					if (receptionTime > 0.5f && receptionTime < 1.4f) {
-						attackConbo = 3;
-						playerNowMotion = PlayerMotion::soukenCombo3;
-						isPlayMotion = true;
-						MinimumFrem = 1.86f;
-						MaxFrem = 1.88f;
-						frem = 0.0f;
-						receptionTime = 0.0f;
+					if (attackConbo == 1) {
+						if (receptionTime > 0.6f && receptionTime < 1.45f) {
+							attackConbo = 2;
+							playerNowMotion = PlayerMotion::soukenCombo2;
+							isPlayMotion = true;
+							MinimumFrem = 1.86f;
+							MaxFrem = 1.88f;
+							frem = 0.0f;
+							receptionTime = 0.0f;
+						}
 					}
-				}
-				else if (attackConbo == 3) {
-					if (receptionTime > 0.8f && receptionTime < 1.45f) {
-						attackConbo = 4;
-						playerNowMotion = PlayerMotion::soukenCombo4;
-						isPlayMotion = true;
-						MinimumFrem = 1.86f;
-						MaxFrem = 1.88f;
-						frem = 0.0f;
-						receptionTime = 0.0f;
+					else if (attackConbo == 2) {
+						if (receptionTime > 0.5f && receptionTime < 1.4f) {
+							attackConbo = 3;
+							playerNowMotion = PlayerMotion::soukenCombo3;
+							isPlayMotion = true;
+							MinimumFrem = 1.86f;
+							MaxFrem = 1.88f;
+							frem = 0.0f;
+							receptionTime = 0.0f;
+						}
 					}
-				}
-				else if (attackConbo == 4) {
-					if (receptionTime > 0.8f && receptionTime < 1.6f) {
-						attackConbo = 5;
-						playerNowMotion = PlayerMotion::soukenCombo5;
-						isPlayMotion = true;
-						MinimumFrem = 1.86f;
-						MaxFrem = 1.88f;
-						frem = 0.0f;
-						receptionTime = 0.0f;
+					else if (attackConbo == 3) {
+						if (receptionTime > 0.8f && receptionTime < 1.45f) {
+							attackConbo = 4;
+							playerNowMotion = PlayerMotion::soukenCombo4;
+							isPlayMotion = true;
+							MinimumFrem = 1.86f;
+							MaxFrem = 1.88f;
+							frem = 0.0f;
+							receptionTime = 0.0f;
+						}
+					}
+					else if (attackConbo == 4) {
+						if (receptionTime > 0.8f && receptionTime < 1.6f) {
+							attackConbo = 5;
+							playerNowMotion = PlayerMotion::soukenCombo5;
+							isPlayMotion = true;
+							MinimumFrem = 1.86f;
+							MaxFrem = 1.88f;
+							frem = 0.0f;
+							receptionTime = 0.0f;
+						}
 					}
 				}
 			}
@@ -871,6 +872,7 @@ void Player::Attack() {
 			}
 		}
 	}
+
 
 
 	if (isEnemyDamage == false) {

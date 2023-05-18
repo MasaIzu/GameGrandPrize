@@ -280,6 +280,8 @@ float Random(float num1, float num2);
 /// <returns>座標</returns>
 Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 
+Vector3 EaseOutVec3(const Vector3& start, const Vector3& end, float t);
+
 /// <summary>
 /// 3次ベジエ曲線補間
 /// </summary>
@@ -311,3 +313,5 @@ float LerpConbertOut(float t);
 bool IsPercent(float param = 100.0f);
 
 Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+
+Matrix4 CreateMatRot(const Vector3& euler);

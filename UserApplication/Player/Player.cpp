@@ -112,6 +112,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	LBoneTrans.Initialize();
 	RBoneTrans.Initialize();
 
+	LBoneTrans.alpha = 0;
+	RBoneTrans.alpha = 0;
+
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	{
@@ -143,8 +146,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	BoneParent.Initialize();
 
-	//LSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f});
-	//RSowrdModel->SetPolygonExplosion({ 1.0f,1.0f,6.28,600.0f });
+	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f});
+	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 
@@ -328,8 +331,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Begin("player");
 
+
 	/*ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
+
+	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
+	ImGui::SliderInt("AttackWaitintTime", &maxAttackWaitintTime, 0, 60);
+
 
 	ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
 	ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
@@ -360,6 +368,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
 	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
+	float endflame = 36;
+
+	float Destruction = 1.0f * (SowrdDFlame / endflame);
+	float a = 1.0f * (SowrdAFlame / endflame);
+	ImGui::Text("a:%f", a);
+	ImGui::Text("D:%f", Destruction);
 
 	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
 	ImGui::SliderFloat("AttackRotY", &AttackRotY, -360.0f, 360.0f);
@@ -623,6 +637,7 @@ void Player::Move() {
 			isWalking = false;
 			MaxFrem = 1.8f;
 			MinimumFrem = 1.8f;
+			isSowrd = false;
 		}
 
 	}
@@ -630,6 +645,7 @@ void Player::Move() {
 	if (playerNowMotion == PlayerMotion::taiki) {
 		MinimumFrem = 0.0f;
 		MaxFrem = 2.0f;
+		isSowrd = false;
 	}
 
 	worldTransform_.TransferMatrix();
@@ -660,10 +676,24 @@ void Player::Attack() {
 				}*/
 
 
-				if (isPlayMotion == false) {
 
-					attackConbo = 1;
-					playerNowMotion = PlayerMotion::soukenCombo1;
+				if (isPlayMotion == false) {
+          
+				attackConbo = 1;
+				playerNowMotion = PlayerMotion::soukenCombo1;
+				isPlayMotion = true;
+				MinimumFrem = 2.0f;
+				MaxFrem = 2.0f;
+				frem = 0.0f;
+				receptionTime = 0.0f;
+				conboFlag = true;
+
+			}
+			if (attackConbo == 1) {
+				if (receptionTime > 0.8f && receptionTime < 1.45f) {
+					attackConbo = 2;
+					playerNowMotion = PlayerMotion::soukenCombo2;
+
 					isPlayMotion = true;
 					MinimumFrem = 2.0f;
 					MaxFrem = 2.0f;
@@ -671,7 +701,12 @@ void Player::Attack() {
 					//AttackWaitTime = 10;
 					//AttackWaitingTime = 10;
 					receptionTime = 0.0f;
+
 					conboFlag = true;
+
+
+					SowrdDFlame = 36;
+					SowrdAFlame = 0;
 
 				}
 				if (attackConbo == 1) {
@@ -727,11 +762,116 @@ void Player::Attack() {
 		nowCount++;
 	}
 	else {
+		if (isAttack == true)
+		{
+			SowrdDFlame = 0;
+			SowrdAFlame = 36;
+		}
 		isAttack = false;
 		for (int i = 0; i < SphereCount; i++) {
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		}
 	}
+	if (isAttack == true) {
+
+		//補間で使うデータ
+		//start → end を知らん秒で完了させる
+		Vector3 p0(worldTransform_.lookRight);									//スタート地点
+		Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
+		Vector3 p2(worldTransform_.look);										//制御点その2
+		Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
+		Vector3 p4(worldTransform_.lookLeft);									//ゴール地点
+
+		p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
+		p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
+		p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
+		p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
+		p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
+
+
+		points = { p0,p0,p1,p2,p3,p4,p4 };
+
+		// 落下
+		// スタート地点        ：start
+		// エンド地点        　：end
+		// 経過時間            ：elapsedTime [s]
+		// 移動完了の率(経過時間/全体時間) : timeRate (%)
+		elapsedTime = nowCount - startCount;
+		timeRate = elapsedTime / maxTime;
+
+		if (timeRate >= 1.0f)
+		{
+			if (startIndex < points.size() - 3)
+			{
+				startIndex += 1.0f;
+				timeRate -= 1.0f;
+				startCount = nowCount;
+			}
+			else
+			{
+				timeRate = 1.0f;
+			}
+		}
+		position = splinePosition(points, startIndex, timeRate);
+
+		playerAttackTransform_.translation_ = position;
+
+		float sphereX = position.x - GetWorldPosition().x;
+		float sphereY = position.y - GetWorldPosition().y;
+		float sphereZ = position.z - GetWorldPosition().z;
+
+		Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
+
+		for (int i = 0; i < SphereCount; i++) {
+			colliderPos[i] = GetWorldPosition() + sphere * i;
+			worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
+			AttackCollider[i]->Update(worldSpherePos[i]);
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
+			playerAttackTransformaaaa_[i].TransferMatrix();
+		}
+	}
+	if (isSowrd)
+	{
+		if (SowrdAFlame < 18 && SowrdDFlame>0)
+		{
+			SowrdAFlame++;
+
+			float endflame = 18;
+
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				LBoneTrans.alpha = a;
+			}
+			{
+				RBoneTrans.alpha = a;
+			}
+		}
+	}
+	else
+	{
+		if (SowrdAFlame > 0 && SowrdDFlame < 36)
+		{
+			SowrdAFlame--;
+			SowrdDFlame++;
+
+			float endflame = 36;
+
+			float Destruction = 1.0f * (SowrdDFlame / endflame);
+			float a = 1.0f * (SowrdAFlame / endflame);
+			{
+				Model::ConstBufferPolygonExplosion polygon = LSowrdModel->GetPolygonExplosion();
+				LSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				LBoneTrans.alpha = a;
+			}
+			{
+				Model::ConstBufferPolygonExplosion polygon = RSowrdModel->GetPolygonExplosion();
+				RSowrdModel->SetPolygonExplosion({ Destruction,polygon._ScaleFactor,polygon._PositionFactor,polygon._PositionFactor });
+				RBoneTrans.alpha = a;
+			}
+		}
+	}
+
 
 	if (isEnemyDamage == false) {
 		if (playerNowMotion == PlayerMotion::soukenCombo1) {
@@ -766,6 +906,28 @@ void Player::Attack() {
 				AttackOnlyRightRotZ = 0.0f;
 
 				BoneParentRotY = 0.0f;
+        
+        SowrdDrowTime = 0;
+			MaxSowrdRotate = 35;
+			OldAttackRotX = 0.0f;
+			OldAttackRotY = 0.0f;
+			OldAttackRotZ = 0.0f;
+			AttackRotX = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 2.0f;
+			AttackOnlyLeftRotX = 0.0f;
+			AttackOnlyLeftRotY = 0.0f;
+			AttackOnlyLeftRotZ = 0.0f;
+			AttackOnlyRightRotX = 0.0f;
+			AttackOnlyRightRotY = 0.0f;
+			AttackOnlyRightRotZ = 0.0f;
+			AttackWaitintTime = maxAttackWaitintTime;
+			AttackWaitTime = maxAttackWaitTime;
+			isSowrd = true;
+			Model::ConstBufferPolygonExplosion polygon=LSowrdModel->GetPolygonExplosion();
+			LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+			RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+        
 			}
 			if (attackMoveTimer < MaxAttackMoveTimer) {
 				attackMoveTimer += 1.0;
@@ -778,7 +940,7 @@ void Player::Attack() {
 			}
 
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
-
+		
 		}
 		else if (playerNowMotion == PlayerMotion::soukenCombo2) {
 			if (IsCombo2 == false) {
@@ -1096,6 +1258,8 @@ void Player::KnockBackUpdate()
 
 		float AR;
 		float BR;
+		
+		damageFlashFlame++;
 
 		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
 		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
@@ -1187,7 +1351,10 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
-		fbxmodel->Draw(worldTransform_, viewProjection_);
+		if (isKnockBack==false||damageFlashFlame%6==0)
+		{
+			fbxmodel->Draw(worldTransform_, viewProjection_);
+		}
 	}
 }
 
@@ -1344,6 +1511,7 @@ void Player::Collision(int damage)
 	{
 		SetKnockBackCount();
 		HP -= damage;
+		damageFlashFlame = 0;
 		if (HP < 0)
 		{
 			HP = 0;
@@ -1384,7 +1552,7 @@ void Player::Collision(int damage)
 
 			endPos.y += 10;
 			//追加
-			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 1.0f, 1.0f, { 0.5,0,0,1 }, { 0.5,0,0,1 });
 		}
 		IsHpAlfa = true;
 		hpAlfaSize = hpSize;

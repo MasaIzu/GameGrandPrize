@@ -560,3 +560,16 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
 }
+
+void BossWarrier::InitAtkSwordSwing()
+{
+	//各部位の回転角を設定
+	//肩の回転について、x軸120度,y軸30度,z軸180+45度
+	boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_ = { PI / 3.0f * 2,PI / 6.0f,PI / 4.0f * 5 };
+
+
+}
+
+void BossWarrier::UpdateAtkSwordSwing()
+{
+}

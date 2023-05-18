@@ -126,11 +126,17 @@ private:
 #pragma endregion
 
 private:
-	//閻墓険繧頑判謦・・蛻晄悄蛹・
+	//腕振り攻撃の初期化
 	void InitAtkArmSwing();
 
-	//閻墓険繧頑判謦・・譖ｴ譁ｰ
+	//腕振り攻撃更新
 	void UpdateAtkArmSwing();
+
+	//剣振り攻撃の初期化
+	void InitAtkSwordSwing();
+
+	//剣振り攻撃更新
+	void UpdateAtkSwordSwing();
 
 };
 

@@ -134,4 +134,4 @@ private:
 
 };
 
-Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+//Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

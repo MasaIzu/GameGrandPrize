@@ -23,8 +23,6 @@ void Boss::Initialize()
 
 	bossWarrier= std::make_unique<BossWarrier>();
 	bossWarrier->Initialize();
-
-	B2->SetPlayer(pl);
 }
 
 void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageRadius)

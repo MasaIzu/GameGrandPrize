@@ -242,7 +242,7 @@ if (input_->PushKey(DIK_L))
 	{
 		//
 		//剣からプレイヤーへのベクトル計算,飛ばす用
-		pPos[i].translation_ = pl->GetWorldPosition();
+		pPos[i].translation_ = targetPos;
 		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 		num[i].translation_.normalize();
 		
@@ -355,7 +355,7 @@ void BossWarrier::phase2AttackP2()
 
 					isShot[i] = true;
 					//剣からプレイヤーへのベクトル計算,飛ばす用
-					pPos[i].translation_ = pl->GetWorldPosition();
+					pPos[i].translation_ = targetPos;
 					num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 					num[i].translation_.normalize();
 					num[i].TransferMatrix();
@@ -401,7 +401,7 @@ void BossWarrier::phase2AttackP2()
 
 			WorldTransform plWorldTransform;
 
-			plWorldTransform.translation_ = pl->GetWorldPosition();
+			plWorldTransform.translation_ =targetPos;
 
 			Matrix4 mat;
 			mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
@@ -427,7 +427,7 @@ void BossWarrier::Rota()
 {
 	WorldTransform plWorldTransform;
 
-	plWorldTransform.translation_ = pl->GetWorldPosition();
+	plWorldTransform.translation_ = targetPos;
 
 	for (int i = 0; i < MAXSWROD; i++)
 	{
@@ -559,26 +559,4 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
-}
-
-Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target)
-{
-	Vector3 matRotX, matRotY, matRotZ;
-	Vector3 up{ 0,1,0 };
-
-	matRotZ = target - pos;
-	matRotZ.normalize();
-	matRotX = up.cross(matRotZ);
-	matRotX.normalize();
-	matRotY = matRotZ.cross(matRotX);
-	matRotY.normalize();
-
-	Matrix4 matRot{
-				matRotX.x,matRotX.y,matRotX.z,0,
-				matRotY.x,matRotY.y,matRotY.z,0,
-				matRotZ.x,matRotZ.y,matRotZ.z,0,
-				0,0,0,1
-	};
-
-	return matRot;
 }

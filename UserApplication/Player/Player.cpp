@@ -371,9 +371,14 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Text("look:%f", worldTransform_.look.y);
 	ImGui::Text("look:%f", worldTransform_.look.z);
 
-	ImGui::Text("translation_:%f", worldTransform_.translation_.x);
-	ImGui::Text("translation_:%f", worldTransform_.translation_.y);
-	ImGui::Text("translation_:%f", worldTransform_.translation_.z);
+	ImGui::Text("AttackMovememtX:%f", AttackMovememt.x);
+	ImGui::Text("AttackMovememtY:%f", AttackMovememt.y);
+	ImGui::Text("AttackMovememtZ:%f", AttackMovememt.z);
+
+	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.x);
+	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.y);
+	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.z);
+
 	float endflame = 36;
 
 	float Destruction = 1.0f * (SowrdDFlame / endflame);
@@ -877,7 +882,12 @@ void Player::Attack() {
 				playerAttackMovement = 20.0f;
 				LookingMove = worldTransform_.look - GetWorldPosition();
 
-				LookingMove = LookingMove * playerAttackMovement;
+				if (isPlayerEnemycontact == true) {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
+				else {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
 				attackMoveTimer = 0;
 
 				AttackNowPos = worldTransform_.translation_;
@@ -921,6 +931,8 @@ void Player::Attack() {
 				AttackRotZ += 1.1f;
 			}
 
+			AttackNowPos += PlayerContactPos;
+
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 
 		}
@@ -929,7 +941,12 @@ void Player::Attack() {
 				playerAttackMovement = 10.0f;
 				LookingMove = worldTransform_.look - GetWorldPosition();
 
-				LookingMove = LookingMove * playerAttackMovement;
+				if (isPlayerEnemycontact == true) {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
+				else {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
 				attackMoveTimer = 0;
 
 				AttackNowPos = worldTransform_.translation_;
@@ -988,6 +1005,7 @@ void Player::Attack() {
 
 			}
 
+			AttackNowPos += PlayerContactPos;
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 		}
 		else if (playerNowMotion == PlayerMotion::soukenCombo3) {
@@ -995,7 +1013,12 @@ void Player::Attack() {
 				playerAttackMovement = 15.0f;
 				LookingMove = worldTransform_.look - GetWorldPosition();
 
-				LookingMove = LookingMove * playerAttackMovement;
+				if (isPlayerEnemycontact == true) {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
+				else {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
 				attackMoveTimer = 0;
 
 				AttackNowPos = worldTransform_.translation_;
@@ -1037,6 +1060,7 @@ void Player::Attack() {
 				}
 
 			}
+			AttackNowPos += PlayerContactPos;
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 		}
 		else if (playerNowMotion == PlayerMotion::soukenCombo4) {
@@ -1044,7 +1068,12 @@ void Player::Attack() {
 				playerAttackMovement = 35.0f;
 				LookingMove = worldTransform_.look - GetWorldPosition();
 
-				LookingMove = LookingMove * playerAttackMovement;
+				if (isPlayerEnemycontact == true) {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
+				else {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
 				attackMoveTimer = 0;
 
 				AttackNowPos = worldTransform_.translation_;
@@ -1090,7 +1119,7 @@ void Player::Attack() {
 
 				BoneParentRotY += (-360.0f * 3.0f) / (MaxSowrdRotate - 1);
 			}
-
+			AttackNowPos += PlayerContactPos;
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 		}
 		else if (playerNowMotion == PlayerMotion::soukenCombo5) {
@@ -1098,7 +1127,12 @@ void Player::Attack() {
 				playerAttackMovement = 20.0f;
 				LookingMove = worldTransform_.look - GetWorldPosition();
 
-				LookingMove = LookingMove * playerAttackMovement;
+				if (isPlayerEnemycontact == true) {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
+				else {
+					LookingMove = LookingMove * playerAttackMovement;
+				}
 				attackMoveTimer = 0;
 
 				AttackNowPos = worldTransform_.translation_;
@@ -1140,6 +1174,7 @@ void Player::Attack() {
 					AttackRotX += 14.0f;
 				}
 			}
+			AttackNowPos += PlayerContactPos;
 			AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 		}
 		else {
@@ -1150,6 +1185,7 @@ void Player::Attack() {
 			IsCombo4 = false;
 			IsCombo5 = false;
 		}
+
 	}
 
 
@@ -1672,7 +1708,7 @@ void Player::Reset()
 	MaxMoveTime = 40;
 
 	x = 0;
-	radius = 4.0f;//当たり判定半径
+	radius = 5.0f;//当たり判定半径
 	playerAvoidance = 20.0f;
 
 	isPushSenter = false;
@@ -1737,11 +1773,14 @@ void Player::Reset()
 	isInput = false;
 }
 
-void Player::EnemyNotAttackCollision(Vector3 Pos)
+void Player::EnemyNotAttackCollision(bool IsPlayerEnemycontact,Vector3 Pos)
 {
-
-	worldTransform_.translation_ += Pos;
-
+	isPlayerEnemycontact = IsPlayerEnemycontact;
+	PlayerContactPos = Pos;
+	if (isPlayerEnemycontact == true) {
+		worldTransform_.translation_ += PlayerContactPos;
+	}
+	worldTransform_.TransferMatrix();
 }
 
 void Player::SpriteInitialize()

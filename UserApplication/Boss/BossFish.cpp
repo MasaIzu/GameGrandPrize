@@ -20,7 +20,7 @@ void BossFish::Initialize()
 {
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
-	fishParent.pos.translation_ = { 0,20,100 };
+	fishParent.pos.translation_ = { 0,16,100 };
 	fishParent.pos.TransferMatrix();
 
 
@@ -114,7 +114,7 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 		break;
 	case BossFishPhase::Atk_Rush:
 		UpdateAtkRush();
-		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
+		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 		break;
 	case BossFishPhase::BeginMotion:
 		UpdateBeginMotion();

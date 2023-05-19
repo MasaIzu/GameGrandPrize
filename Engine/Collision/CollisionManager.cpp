@@ -21,6 +21,7 @@ void CollisionManager::CheckAllCollisions()
 	isWakeEnemyAttackHit = false;
 	isEnemySwordHit = false;
 	isEnemyReception = false;
+	playerPos = { 0,0,0 };
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -42,7 +43,6 @@ void CollisionManager::CheckAllCollisions()
 				Vector4 inter;
 				if ((colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) ||
 					(colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES)) {
-					int a = 1;
 
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colA->GetWorldPos();
@@ -84,20 +84,12 @@ void CollisionManager::CheckAllCollisions()
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ALLIES) {
+					playerPos = ResolveCollision(*SphereA, *SphereB);
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						isEnemyReception = true;
-
-						/*Vector3 enemyPos = MyMath::GetWorldTransform(colA->GetWorldPos());
-						Vector3 playerPos = MyMath::GetWorldTransform(colB->GetWorldPos());
-
-						Vector3 player_enemy = playerPos - enemyPos;
-						player_enemy.normalize();
-						Vector3 playerMovement = colB->playerMovement;
-						playerMovement.normalize();*/
-
-						playerPos = ResolveCollision(*SphereA, *SphereB);
-
-
+						
+						isAttackHit = true;
 					}
 				}
 				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
@@ -287,6 +279,7 @@ Vector3 CollisionManager::ResolveCollision(Sphere& sphereA, const Sphere& sphere
 	Vector3 collision_depth_direction;
 	if (DetectCollision(sphereA, sphereB, collision_depth_direction)) {
 		
+		isEnemyReception = true;
 
 	}
 

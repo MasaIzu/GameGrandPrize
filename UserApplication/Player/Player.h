@@ -57,7 +57,7 @@ public:
 
 	void Reset();
 
-	void EnemyNotAttackCollision(Vector3 Pos);
+	void EnemyNotAttackCollision(bool IsPlayerEnemycontact, Vector3 Pos);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
@@ -369,5 +369,11 @@ private:
 
 
 	int damageFlashFlame=0;
+
+	bool isPlayerEnemycontact = false;
+
+	Vector3 PlayerContactPos;
+
+	float AttackDis = 10.0f;
 
 };

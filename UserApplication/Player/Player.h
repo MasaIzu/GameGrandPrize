@@ -376,4 +376,7 @@ private:
 
 	float AttackDis = 10.0f;
 
+	bool isPlayerDieMotion = false;
+	bool isPlayerDieMotion2 = false;
+
 };

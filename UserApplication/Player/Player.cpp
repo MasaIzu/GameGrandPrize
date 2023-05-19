@@ -167,7 +167,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
 		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });
-		worldTransform_.alpha = a;
+		if (isPlayerDieMotion2 == false) {
+			worldTransform_.alpha = a;
+		}
 		if (flame >= endflame)
 		{
 			isAdmission = false;
@@ -245,34 +247,62 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	if (HP <= 0.0f && isAlive)
 	{
-		worldTransform_.alpha -= 0.05;
-		//スペースキーを押していたら
-		for (int i = 0; i < 10; i++)
-		{
-			//消えるまでの時間
-			const float rnd_life = 10.0f;
-			//最低限のライフ
-			const float constlife = 10;
-			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+		//worldTransform_.alpha -= 0.05;
+		if (isPlayerDieMotion == false) {
+			isPlayerDieMotion = true;
+			playerNowMotion = PlayerMotion::DeathMotion;
+			frem = 0;
 
-			//XYZの広がる距離
-			const float rnd_pos = 30.0f;
-			//Y方向には最低限の飛ぶ距離
-			const float constPosY = 15;
-			Vector3 pos{};
-			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
-			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			////スペースキーを押していたら
+			//for (int i = 0; i < 10; i++)
+			//{
+			//	//消えるまでの時間
+			//	const float rnd_life = 10.0f;
+			//	//最低限のライフ
+			//	const float constlife = 10;
+			//	float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
-			Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+			//	//XYZの広がる距離
+			//	const float rnd_pos = 30.0f;
+			//	//Y方向には最低限の飛ぶ距離
+			//	const float constPosY = 15;
+			//	Vector3 pos{};
+			//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			//	pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
+			//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 
-			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
-			//追加
-			ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			//	Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+			//	Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+			//	//追加
+			//	ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			//}
+
+
+
 		}
+
+		if (isPlayerDieMotion) {
+			if (frem < 2.1f) {
+				frem += 0.013f;
+			}
+			else {
+				if (isPlayerDieMotion2 == false) {
+					worldTransform_.alpha = 0.5f;
+					isPlayerDieMotion2 = true;
+				}
+			}
+		}
+
+		if (isPlayerDieMotion2) {
+			worldTransform_.alpha -= 0.01f;
+			isAdmission = true;
+		}
+
 		if (worldTransform_.alpha <= 0.0f)
 		{
 			isAlive = false;
+			isPlayerDieMotion2 = false;
 			ParticleMan->AllDelete();
 		}
 	}
@@ -288,21 +318,20 @@ void Player::Update(const ViewProjection& viewProjection) {
 	collider->Update(worldTransform_.matWorld_);
 	recovery->Update();
 	if (input_->PushKey(DIK_P)) {
-		frem = fremX;
-		playerNowMotion = PlayerMotion::soukenCombo1;
+		HP = 0;
 	}
-	if (input_->PushKey(DIK_J)) {
+	if (input_->PushKey(DIK_I)) {
 		fremX += 0.1;
 	}
-	if (input_->PushKey(DIK_K)) {
+	if (input_->PushKey(DIK_O)) {
 		fremX += 0.01;
 	}
-	//if (input_->PushKey(DIK_N)) {
-	//	fremX += -0.1;
-	//}
-	//if (input_->PushKey(DIK_M)) {
-	//	fremX += -0.01;
-	//}
+	if (input_->PushKey(DIK_K)) {
+		fremX += -0.1;
+	}
+	if (input_->PushKey(DIK_L)) {
+		fremX += -0.01;
+	}
 
 	if (input_->TriggerKey(DIK_M)) {
 		BoneNum++;
@@ -365,8 +394,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
-	ImGui::Text("attackConbo:%d", attackConbo);
-	ImGui::Text("isKnockBack:%d", isKnockBack);
+	ImGui::Text("worldTransform_.alpha:%f", worldTransform_.alpha);
+	ImGui::Text("isAdmission:%d", isAdmission);
 	ImGui::Text("look:%f", worldTransform_.look.x);
 	ImGui::Text("look:%f", worldTransform_.look.y);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -1773,7 +1802,7 @@ void Player::Reset()
 	isInput = false;
 }
 
-void Player::EnemyNotAttackCollision(bool IsPlayerEnemycontact,Vector3 Pos)
+void Player::EnemyNotAttackCollision(bool IsPlayerEnemycontact, Vector3 Pos)
 {
 	isPlayerEnemycontact = IsPlayerEnemycontact;
 	PlayerContactPos = Pos;

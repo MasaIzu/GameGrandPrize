@@ -1580,7 +1580,7 @@ void Player::Collision(int damage)
 void Player::AttackCollision()
 {
 	//スペースキーを押していたら
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		//消えるまでの時間
 		const float rnd_life = 70.0f;

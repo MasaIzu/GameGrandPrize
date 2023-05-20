@@ -1235,6 +1235,7 @@ void GameScene::FirstCameraUpdate()
 			nowViewProjection.UpdateMatrix();
 
 			if (firstCameraTimer >= firstCameraTimeMax) {
+				timer = 0;
 				IsEnemySpon = false;
 				IsFirst = false;
 			}

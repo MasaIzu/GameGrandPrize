@@ -108,8 +108,6 @@ void BossWarrier::Initialize()
 		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
-	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
-
 	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
 	CollisionManager::GetInstance()->AddCollider(Tornado);
 	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
@@ -327,7 +325,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 	boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
 
-	ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
+	//ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
 	
 
 	LaunchSwordDraw(viewProMat);

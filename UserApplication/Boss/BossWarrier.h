@@ -132,8 +132,6 @@ private:
 
 	bool kenrot[MAXSWROD];
 
-	std::unique_ptr<Model>ModelSpere;
-
 	//Œ•‚Ì“–‚½‚è”»’è
 	BaseCollider* AttackCollider[MAXSWROD];
 	float AttackRadius = 4.0f;

@@ -99,11 +99,18 @@ void CollisionManager::CheckAllCollisions()
 						isEnemyHit = true;
 					}
 				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYTORNADOATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemyHit = true;
+					}
+				}
 				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 				//	//isEnemyHit = true;
 				//}
 			}
-			else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
+			/*else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
 				colB->GetShapeType() == COLLISIONSHAPE_SPHERE) {
 				MeshCollider* meshCollider = dynamic_cast<MeshCollider*>(colA);
 				Sphere* sphere = dynamic_cast<Sphere*>(colB);
@@ -120,7 +127,7 @@ void CollisionManager::CheckAllCollisions()
 				if (meshCollider->CheckCollisionSphere(*sphere, &inter, nullptr)) {
 
 				}
-			}
+			}*/
 		}
 	}
 }

@@ -29,8 +29,11 @@ void MiniFish::Initialize(const Vector3& pos, unsigned short attribute)
 	isAlive = true;
 
 	// コリジョンマネージャに追加
-	collider = new SphereCollider(Vector4(0, fishRadius, 0, 0), fishRadius);
-	CollisionManager::GetInstance()->AddCollider(collider);
+	if (collider == nullptr)
+	{
+		collider = new SphereCollider(Vector4(0, fishRadius, 0, 0), fishRadius);
+		CollisionManager::GetInstance()->AddCollider(collider);
+	}
 
 	collider->Update(world.matWorld_);
 	collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS);
@@ -46,6 +49,7 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 {
 	//死んでいるなら当たり判定をとらない
 	if (!isAlive) {
+		collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS_DEI);
 		collider->SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 	}
 

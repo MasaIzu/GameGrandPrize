@@ -2,6 +2,8 @@
 #include"Input.h"
 #include"ImGuiManager.h"
 #include"BossFish.h"
+#include <CollisionManager.h>
+#include <CollisionAttribute.h>
 
 void BossWarrier::Initialize()
 {
@@ -53,7 +55,7 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::HandR].Transform.parent_ = &boss2Model[BossWarrierPart::elbowR].Transform;
 
 	//ボスのスケールを5倍に
-	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15};
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,1,0 };
@@ -94,10 +96,16 @@ void BossWarrier::Initialize()
 
 	TornadoRotY[1] = 3.14;
 
-	for (int i=0;i<MAXSWROD;i++)
+	for (int i = 0; i < MAXSWROD; i++)
 	{
 		w[i].Initialize();
 		num[i].Initialize();
+
+		// コリジョンマネージャに追加
+		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
 }
@@ -118,7 +126,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		{
 			attack = Attack::Tornado;
 		}
-		if(Input::GetInstance()->TriggerKey(DIK_L))
+		if (Input::GetInstance()->TriggerKey(DIK_L))
 		{
 			attack = Attack::MultiLaunchSword;
 			StartMultiLaunchSword();
@@ -247,7 +255,7 @@ void BossWarrier::MultiLaunchSword()
 				w[i].translation_ += num[i].translation_ * 10;
 				w[i].TransferMatrix();
 
-
+				AttackCollider[i]->Update(w[i].matWorld_);
 
 			}
 			//フラグ解除
@@ -284,14 +292,14 @@ void BossWarrier::StartMultiLaunchSword()
 		};
 		Rota();
 		w[i].TransferMatrix();
-
+		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
 	for (int i = 0; i < MAXSWROD; i++)
 	{
 		//
 		//剣からプレイヤーへのベクトル計算,飛ばす用
-		pPos[i].translation_ = targetPos;
+		pPos[i].translation_ = targetPos + Vector3(0, 7, 0);
 		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 		num[i].translation_.normalize();
 
@@ -324,7 +332,7 @@ void BossWarrier::LaunchSword()
 
 					isShot[i] = true;
 					//剣からプレイヤーへのベクトル計算,飛ばす用
-					pPos[i].translation_ = targetPos;
+					pPos[i].translation_ = targetPos + Vector3(0, 7, 0);
 					num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 					num[i].translation_.normalize();
 					num[i].TransferMatrix();
@@ -347,6 +355,7 @@ void BossWarrier::LaunchSword()
 
 				w[i].translation_ += num[i].translation_ * 10;
 				w[i].TransferMatrix();
+				AttackCollider[i]->Update(w[i].matWorld_);
 			}
 		}
 		if (shotTime <= -40)
@@ -378,6 +387,7 @@ void BossWarrier::LaunchSword()
 
 			w[i].SetMatRot(mat);
 			w[i].TransferMatrix();
+			AttackCollider[i]->Update(w[i].matWorld_);
 		}
 	}
 }
@@ -397,6 +407,7 @@ void BossWarrier::StartLaunchSword()
 		};
 
 		w[i].TransferMatrix();
+		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
 
@@ -550,7 +561,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	Matrix4 matBossDir, matBodyRot, matBossRot;
 
 	//進行方向に向かせたいのでダミーの自機を向いてもらう
-	matBossDir = CreateMatRot({0.785,0,0});
+	matBossDir = CreateMatRot({ 0.785,0,0 });
 
 	matBodyRot = CreateMatRot(rotArm);
 

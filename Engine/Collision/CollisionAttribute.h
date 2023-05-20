@@ -24,3 +24,5 @@ const unsigned short COLLISION_ATTR_WEAKENEMYS_DEI = 0b10110;//G‹›“G€–S—p
 
 const unsigned short COLLISION_ATTR_ENEMYBIGSOWRD = 0b10111;//Œ•”»’è—p
 const unsigned short COLLISION_ATTR_ENEMYRECEPTION = 0b11000;//“GUŒ‚‘Ò‹@
+const unsigned short COLLISION_ATTR_ENEMYSOWRDATTACK = 0b11001;//“GŒ•UŒ‚‘Ò‹@
+

@@ -102,24 +102,29 @@ private:
 	//
 
 	//隨ｬ莠継hase縺ｮ蜑｣縺ｮ謚輔￡Attack縺ｮ蜑｣縺ｮ譛螟ｧ謨ｰ
-	const int MAXSWROD = 5;
-	WorldTransform w[5];
+	static const int MAXSWROD = 5;
+	WorldTransform w[MAXSWROD];
 	//逕滓・縺励※縺九ｉ蜑｣繧帝｣帙・縺吶∪縺ｧ縺ｮ譎る俣
 	int phase2AttackCoolTime = 70;
 	bool t;
 	bool t2;
-	WorldTransform pPos[5];
-	WorldTransform num[5];
+	WorldTransform pPos[MAXSWROD];
+	WorldTransform num[MAXSWROD];
 	int interval = 10;
 	float moveSpeed = 0.2f;
 	bool isSat = false;
 	bool isSat2 = false;
 	bool isOn = false;
-	bool isShot[5];
+	bool isShot[MAXSWROD];
 	const int MAXSHOTTIME = 40;
 	int shotTime = MAXSHOTTIME;
 
-	bool kenrot[5];
+	bool kenrot[MAXSWROD];
+
+	//剣の当たり判定
+	BaseCollider* AttackCollider[MAXSWROD];
+	float AttackRadius = 4.0f;
+
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 
 	const Vector3 StandByNeck = { 0,0,0 };

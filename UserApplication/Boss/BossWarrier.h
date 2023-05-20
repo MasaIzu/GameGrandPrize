@@ -51,6 +51,13 @@ enum class Attack
 
 };
 
+enum class BossAttackPhase
+{
+	Before,
+	Attack,
+	After,
+};
+
 class BossWarrier
 {
 
@@ -98,6 +105,10 @@ private:
 	Vector3 targetPos = { 0,0,0 };
 
 	Attack attack=Attack::StandBy;
+
+	BossAttackPhase bossAttackPhase = BossAttackPhase::Before;
+
+	EasingData attackEasing;
 
 	//
 

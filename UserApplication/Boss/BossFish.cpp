@@ -20,7 +20,7 @@ void BossFish::Initialize()
 {
 	fishParent.pos.Initialize();
 	fishParent.radius = 20.0f;
-	fishParent.pos.translation_ = { 0,2,100 };
+	fishParent.pos.translation_ = { 0,16,100 };
 	fishParent.pos.TransferMatrix();
 
 
@@ -48,7 +48,7 @@ void BossFish::Initialize()
 	phase1 = BossFishPhase::Idle;
 	nextPhaseInterval = attackCooltime;
 
-	radius = 23.0f;
+	radius = 18.0f;
 	// コリジョンマネージャに追加
 	collider = new SphereCollider(Vector4(0, radius, 0, 0), radius);
 	CollisionManager::GetInstance()->AddCollider(collider);
@@ -64,7 +64,6 @@ void BossFish::Initialize()
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
-		float SphereRadius = 8.0f;
 		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
@@ -107,15 +106,19 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 	switch (phase1) {
 	case BossFishPhase::Idle:
 		UpdateIdle();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Atk_Sword:
 		UpdateAtkSword();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Atk_Rush:
 		UpdateAtkRush();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 		break;
 	case BossFishPhase::BeginMotion:
 		UpdateBeginMotion();
+		collider->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 		break;
 	case BossFishPhase::Death:
 		UpdateDeath();
@@ -314,7 +317,6 @@ void BossFish::Reset()
 
 	for (int i = 0; i < SphereCount; i++) {
 		// コリジョンマネージャに追加
-		float SphereRadius = 8.0f;
 		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
@@ -1255,6 +1257,17 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t)
 	return start * (1.0f - t) + end * t;
 }
 
+Vector3 EaseOutVec3(const Vector3& start, const Vector3& end, float t)
+{
+	float resultT = sin((t * PI) / 2.0f);
+	//result.x = sin((result.x * PI) / 2.0f);
+	//result.y = sin((result.y * PI) / 2.0f);
+	//result.z = sin((result.z * PI) / 2.0f);
+
+
+	return Lerp(start,end,resultT);
+}
+
 Vector3 LerpBezireCubic(const Vector3& start, const Vector3& contRollP1, const Vector3& contRollP2, const Vector3& end, float t)
 {
 	Vector3 p1, p2, p3, p4, p5, result;
@@ -1316,6 +1329,21 @@ Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target)
 	};
 
 	return matRot;
+}
+
+Matrix4 CreateMatRot(const Vector3& euler)
+{
+	Matrix4 result,rotX,rotY,rotZ;
+
+	result.identity();
+	rotZ.rotateZ(euler.z);
+	rotX.rotateX(euler.x);
+	rotY.rotateY(euler.y);
+	result *= rotZ;
+	result *= rotX;
+	result *= rotY;
+
+	return result;
 }
 
 

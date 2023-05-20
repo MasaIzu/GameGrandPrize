@@ -20,6 +20,8 @@ void CollisionManager::CheckAllCollisions()
 	hitNumber = 0;
 	isWakeEnemyAttackHit = false;
 	isEnemySwordHit = false;
+	isEnemyReception = false;
+	playerPos = { 0,0,0 };
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -41,7 +43,6 @@ void CollisionManager::CheckAllCollisions()
 				Vector4 inter;
 				if ((colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) ||
 					(colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES)) {
-					int a = 1;
 
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colA->GetWorldPos();
@@ -80,6 +81,15 @@ void CollisionManager::CheckAllCollisions()
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 						EnemyWorldPos = colA->GetWorldPos();
 						isEnemySwordHit = true;
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ALLIES) {
+					playerPos = ResolveCollision(*SphereA, *SphereB);
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						
+						isAttackHit = true;
 					}
 				}
 				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
@@ -235,4 +245,43 @@ void CollisionManager::QuerySphere(const Sphere& sphere, QueryCallback* callback
 			}
 		}
 	}
+}
+
+bool CollisionManager::DetectCollision(const Sphere& sphereA, const Sphere& sphereB, Vector3& out_collision_depth_direction)
+{
+	Vector3 a_center = { sphereA.center.x,sphereA.center.y,sphereA.center.z };
+	Vector3 b_center = { sphereB.center.x,sphereB.center.y,sphereB.center.z };
+
+	Vector3 diff = a_center - b_center;
+	float distance = diff.length();
+	float total_radius = sphereA.radius + sphereB.radius;
+
+	// If the distance between the centers of the spheres is less than the sum of their radii, then they are colliding
+	if (distance < total_radius) {
+		// Calculate the collision depth and direction
+		float collision_depth = total_radius - distance;
+		Vector3 collision_direction = diff.norm();
+
+		// Output the collision depth multiplied by the collision direction
+		out_collision_depth_direction = collision_direction * collision_depth;
+
+		out_collision_depth_direction *= -1;
+
+		out_collision_depth_direction.y = 0;
+
+		return true;
+	}
+
+	return false;
+}
+
+Vector3 CollisionManager::ResolveCollision(Sphere& sphereA, const Sphere& sphereB) {
+	Vector3 collision_depth_direction;
+	if (DetectCollision(sphereA, sphereB, collision_depth_direction)) {
+		
+		isEnemyReception = true;
+
+	}
+
+	return collision_depth_direction;
 }

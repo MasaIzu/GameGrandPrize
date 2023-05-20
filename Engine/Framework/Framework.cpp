@@ -11,7 +11,7 @@ void Framework::Initialize()
 
 	// ゲームウィンドウの作成
 	winApp_ = WinApp::GetInstance();
-	winApp_->MakeWindow(L"Maverick");
+	winApp_->MakeWindow(L"Atoms");
 
 	// DirectX初期化処理
 	directXCore_ = DirectXCore::GetInstance();

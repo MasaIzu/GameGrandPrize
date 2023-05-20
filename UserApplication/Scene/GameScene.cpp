@@ -24,7 +24,7 @@ void GameScene::Initialize() {
 	//当たり判定
 	collisionManager = CollisionManager::GetInstance();
 
-	model_.reset(Model::CreateFromOBJ("UFO", true));
+	model_.reset(Model::CreateFromOBJ("sphere", true));
 
 	viewProjection_.eye = { 0,10,-10 };
 
@@ -98,7 +98,7 @@ void GameScene::Initialize() {
 
 	boss = new Boss();
 	boss->Initialize();
-
+	boss->SetPlayer(player.get());
 	//ムービー用カメラの初期化
 	movieCamera.Initialize();
 
@@ -228,6 +228,10 @@ void GameScene::Initialize() {
 	// ゲームオーバーの初期化
 	GameOverInit();
 
+	firstCamera.Initialize();
+	// 最初のカメラ
+	firstCamera.eye = { 0,15,100 };
+	firstCamera.target = { 0,0,0 };
 }
 
 void GameScene::Update() {
@@ -260,6 +264,8 @@ void GameScene::TitleUpdate()
 	ImGui::Begin("Font");
 
 	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x,nowViewProjection.eye.y, nowViewProjection.eye.z);
+	ImGui::Text("target:%f,%f,%f", nowViewProjection.target.x, nowViewProjection.target.y, nowViewProjection.target.z);
+
 	ImGui::InputFloat("RotationY : %f", &rotationY);
 	ImGui::InputFloat("S_RotationY : %f", &sowrdRotationY);
 
@@ -337,7 +343,7 @@ void GameScene::TitleUpdate()
 			const float constScale = 0.3f;
 			float scale = (float)rand() / RAND_MAX * rndScale + constScale;
 			//追加
-			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.5 });
+			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.0 });
 		}
 	}
 
@@ -392,7 +398,6 @@ void GameScene::TitleUpdate()
 
 		oldScene = Scene::Title;
 		IsSceneChange = true;
-		TitileParticle->AllDelete();
 	}
 
 	if (input_->TriggerKey(DIK_K)) {
@@ -403,6 +408,9 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
+	// 最初のカメラのアップデート
+	FirstCameraUpdate();
+
 	gayserFlame++;
 	if (ImGui::Button("break")) {
 		static int a = 0;
@@ -425,8 +433,6 @@ void GameScene::GameUpdate()
 			}
 		}
 	}
-
-
 
 	//チュートリアルと最初のムービーでだけ小魚を動かす
 	if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
@@ -462,8 +468,6 @@ void GameScene::GameUpdate()
 	}
 
 	fishSpawnInterval--;
-
-
 
 	if (isStartBossBattle) {
 		ImGui::Text("boss battle start!");
@@ -511,6 +515,10 @@ void GameScene::GameUpdate()
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 		player->Collision(5);
 	}
+
+	
+	player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(),collisionManager->GetPlayerPos());
+	
 
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
@@ -561,20 +569,28 @@ void GameScene::GameUpdate()
 	player->SetAngle(gameCamera->GetCameraAngle());
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
-	player->Update(viewProjection_);
+
+	// プレイヤーが生成するのは最初のカメラが終わってから
+	if (IsFirst == false) {
+		player->Update(viewProjection_);
+		nowViewProjection = viewProjection_;
+		gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+		gameCamera->SetSpaceInput(player->GetSpaceInput());
+		gameCamera->SetCameraPosition(player->GetWorldPosition());
+		gameCamera->Update(&viewProjection_);
+	}
+	
 
 
 
 
-	gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
-	gameCamera->SetSpaceInput(player->GetSpaceInput());
-	gameCamera->SetCameraPosition(player->GetWorldPosition());
+
 	//gameCamera->SetCameraPosition({0,0,-100});
-	gameCamera->Update(&viewProjection_);
+	
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
-	nowViewProjection = viewProjection_;
+	
 
 	//ムービーフラグがオンならカメラをムービー用に
 	if (isMovie) {
@@ -925,6 +941,8 @@ void GameScene::Reset()
 	// ゲームオーバーのリセット
 	GameOverReset();
 	
+	IsFirst = true;
+
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
@@ -999,10 +1017,6 @@ void GameScene::Finalize()
 	delete boss;
 }
 
-
-
-
-
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
@@ -1039,7 +1053,7 @@ void GameScene::SceneChageFirst()
 				sceneChageTimer[i] = 0;
 			}
 			IsHalf = true;
-
+			TitileParticle->AllDelete();
 			// 次がなんのシーンかチェックする
 			switch (scene)
 			{
@@ -1139,6 +1153,49 @@ void GameScene::GameOverReset()
 	selectButtonPos={250,510};
 	for (int i = 0; i < 3; i++) {
 		alpha[i] = 0;
+	}
+}
+
+void GameScene::FirstCameraUpdate()
+{
+	ImGui::Begin("camera");
+
+	ImGui::InputFloat3("firstEye:%f,%f,%f", &firstCamera.eye.x);
+	ImGui::InputFloat3("firstCamera.target:%f,%f,%f", &firstCamera.target.x);
+
+	ImGui::End();
+
+	// 最初のカメラがオンだったら
+	if (IsFirst == true) {
+		// エネミーがスポーンする前
+		if (IsEnemySpon == false) {
+			timer++;
+			if (timer >= timerMax) {
+				IsEnemySpon = true;
+			}
+			// 
+			firstCamera.eye = { 0,60,120 };
+			firstCamera.target = { 0,-5,0 };
+
+			// ファーストかめらのカメラ情報を今のカメラ
+			nowViewProjection = firstCamera;
+			nowViewProjection.UpdateMatrix();
+		}
+		else {
+			firstCameraTimer++;
+			// カメラ移動
+			firstCamera.eye = Easing::InOutVec3(FirstStartPos, FirstEndPos, firstCameraTimer, firstCameraTimeMax);
+			firstCamera.target = Easing::InOutVec3(FirstStartTarget, FirstEndTarget, firstCameraTimer, firstCameraTimeMax);
+
+			// ファーストかめらのカメラ情報を今のカメラ
+			nowViewProjection = firstCamera;
+			nowViewProjection.UpdateMatrix();
+
+			if (firstCameraTimer >= firstCameraTimeMax) {
+				IsEnemySpon = false;
+				IsFirst = false;
+			}
+		}
 	}
 }
 

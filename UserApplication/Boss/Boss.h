@@ -9,6 +9,7 @@
 #include"Sprite.h"
 #include"BossFish.h"
 #include"BossWarrier.h"
+#include "Player.h"
 
 class Boss
 {
@@ -44,13 +45,14 @@ public:
 	void DrawHealth();
 
 	void Reset();
-
+	void SetPlayer(Player* player_) { pl = player_; }
 
 	/// <summary>
 	/// メンバ関数(プライベート)
 	/// </summary>
 private:
-
+	Player* pl = nullptr;
+	BossWarrier* B2 = nullptr;
 
 	/// <summary>
 	/// メンバ変数(プライベート)

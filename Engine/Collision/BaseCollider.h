@@ -59,6 +59,14 @@ public:
 		this->attribute &= !attribute;
 	}
 
+	/// <summary>
+	/// プレイヤーの動いてる方向を求める
+	/// </summary>
+	/// <param name="Movement">動く方向</param>
+	inline void AddPlayerMovement(Vector3 Movement) {
+		this->playerMovement = Movement;
+	}
+
 protected:
 	// 形状タイプ
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;
@@ -69,5 +77,7 @@ protected:
 
 	//位置
 	Matrix4 worldPos_;
+
+	Vector3 playerMovement;
 };
 

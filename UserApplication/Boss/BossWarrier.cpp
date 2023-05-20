@@ -21,9 +21,9 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::ArmL].isDraw = true;
 	boss2Model[BossWarrierPart::ArmR].model.reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
 	boss2Model[BossWarrierPart::ArmR].isDraw = true;
-	boss2Model[BossWarrierPart::HandL].model.reset(Model::CreateFromOBJ("Boss_ArmL_Gu", true));
+	boss2Model[BossWarrierPart::HandL].model.reset(Model::CreateFromOBJ("Boss_ArmL", true));
 	boss2Model[BossWarrierPart::HandL].isDraw = true;
-	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR_Gu", true));
+	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR", true));
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
 	//ボス第二形態の各部位初期化
@@ -56,21 +56,21 @@ void BossWarrier::Initialize()
 
 	//ボスのスケールを5倍に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
-	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,0,50 };
 	//それぞれの部位の位置をセット
-	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,1,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { -0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,PI / 4 });
-	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { -0.2,0,0 };
-	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { 0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,-PI / 4 });
-	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { 0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { -0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,PI / 4 });
-	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { -0.7,0,0 };
-	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { 0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,-PI / 4 });
-	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { 0.7,0,0 };
+	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
+	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
 	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-0.5,0 };
 	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-0.5,0 };
 

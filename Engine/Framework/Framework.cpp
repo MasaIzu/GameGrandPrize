@@ -58,6 +58,9 @@ void Framework::Initialize()
 
 	PostEffectMixed::Initialize();
 
+	// サウンドの静的の初期化
+	Sound::StaticInitialize();
+
 #pragma endregion
 
 	//シーンマネージャーの生成

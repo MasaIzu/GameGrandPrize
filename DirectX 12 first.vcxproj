@@ -335,6 +335,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="UserApplication\Boss\Boss.h" />
     <ClInclude Include="UserApplication\Boss\BossWarrier.h" />
     <ClInclude Include="UserApplication\Boss\BossFish.h" />
@@ -407,6 +408,7 @@
     <ClInclude Include="UserApplication\Scene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="UserApplication\Boss\Boss.cpp" />
     <ClCompile Include="UserApplication\Boss\BossWarrier.cpp" />
     <ClCompile Include="UserApplication\Boss\BossFish.cpp" />

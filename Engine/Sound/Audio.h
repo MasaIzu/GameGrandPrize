@@ -52,7 +52,7 @@ public:
 	//âπê∫ì«Ç›çûÇ›
 	SoundData SoundLoadWave(const char* filename);
 	//âπê∫çƒê∂
-	void SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData, bool loop = false, float volume = 1.0f);
+	void SoundPlayWave(const SoundData& soundData, bool loop = false, float volume = 1.0f);
 	// âπê∫í‚é~
 	void StopWave(const SoundData& soundData);
 	//void StopWave(const std::string& filename);

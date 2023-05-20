@@ -481,6 +481,9 @@
     <ClInclude Include="UserApplication\Boss\Boss.h">
       <Filter>ユーザーヘッダー ファイル\Boss</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Sound\Sound.h">
+      <Filter>Engine\ヘッダー\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -665,6 +668,9 @@
     </ClCompile>
     <ClCompile Include="UserApplication\Boss\Boss.cpp">
       <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Sound\Sound.cpp">
+      <Filter>Engine\ソース ファイル\Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@
 #include"recovery.h"
 #include <FbxModel.h>
 #include <FbxAnimation.h>
+#include "Sound.h"
 
 class Player {
 
@@ -379,4 +380,6 @@ private:
 	bool isPlayerDieMotion = false;
 	bool isPlayerDieMotion2 = false;
 
+	Sound playerAttackSE;
+	Sound playerAttackSE4;
 };

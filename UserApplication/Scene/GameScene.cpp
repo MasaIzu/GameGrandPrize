@@ -103,7 +103,7 @@ void GameScene::Initialize() {
 	movieCamera.Initialize();
 
 
-	
+
 
 	/*for (int i = 0; i < boss.fishMaxCount; i++) {
 		boss.CreateFish(gayserPos[i % 5]);
@@ -116,7 +116,7 @@ void GameScene::Initialize() {
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss->Update({ 0,0,0 },stagePos,stageRadius);
+	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {
@@ -150,7 +150,7 @@ void GameScene::Initialize() {
 
 	for (int i = 0; i < 5; i++) {
 		sceneChageBlack[i] = Sprite::Create(TextureManager::Load("SceneChageBlack.png"));
-		sceneChageBlack[i].get()->SetAnchorPoint({0,0});
+		sceneChageBlack[i].get()->SetAnchorPoint({ 0,0 });
 		sceneChageBlack[i].get()->SetPosition(startPos[i]);
 	}
 
@@ -189,7 +189,7 @@ void GameScene::Initialize() {
 
 	AFontWorld_.Initialize();
 	AFontWorld_.scale_ = { 1,1,1 };
-	AFontWorld_.translation_ = {+7.0f,+10.5f,+180};
+	AFontWorld_.translation_ = { +7.0f,+10.5f,+180 };
 
 	TFontWorld_.Initialize();
 	TFontWorld_.scale_ = { 1,1,1 };
@@ -224,7 +224,7 @@ void GameScene::Initialize() {
 	OFontWorld_.TransferMatrix();
 	MFontWorld_.TransferMatrix();
 	SFontWorld_.TransferMatrix();
-	
+
 	// ゲームオーバーの初期化
 	GameOverInit();
 
@@ -266,7 +266,7 @@ void GameScene::TitleUpdate()
 
 	ImGui::Begin("Font");
 
-	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x,nowViewProjection.eye.y, nowViewProjection.eye.z);
+	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x, nowViewProjection.eye.y, nowViewProjection.eye.z);
 	ImGui::Text("target:%f,%f,%f", nowViewProjection.target.x, nowViewProjection.target.y, nowViewProjection.target.z);
 
 	ImGui::InputFloat("RotationY : %f", &rotationY);
@@ -286,7 +286,7 @@ void GameScene::TitleUpdate()
 
 	// BGＭを鳴らす
 	if (IsTitleBGM == false) {
-		titleBGM.SoundPlayWave( true, 0.5f);
+		titleBGM.SoundPlayWave(true, 0.5f);
 		IsTitleBGM = true;
 	}
 
@@ -300,7 +300,7 @@ void GameScene::TitleUpdate()
 		shiftTimer = shiftTimeMax;
 	}
 	// 浮遊タイマーのプラスと制限
-	
+
 	// 文字をずらして浮遊
 	flyTimer[0]++;
 	if (shiftTimer >= shiftTimeOneSet * 1) {
@@ -322,7 +322,7 @@ void GameScene::TitleUpdate()
 		}
 	}
 	ParticleFlame++;
-	if (ParticleFlame>=10)
+	if (ParticleFlame >= 10)
 	{
 		ParticleFlame = 0;
 		for (int i = 0; i < 2; i++)
@@ -352,7 +352,7 @@ void GameScene::TitleUpdate()
 			const float constScale = 0.3f;
 			float scale = (float)rand() / RAND_MAX * rndScale + constScale;
 			//追加
-			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale,scale, { 5,5,0,1 }, { 5,5,0,0.0 });
+			TitileParticle->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, scale, scale, { 5,5,0,1 }, { 5,5,0,0.0 });
 		}
 	}
 
@@ -379,7 +379,7 @@ void GameScene::TitleUpdate()
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		IsRotaStart = true;
-		
+
 		//scene = Scene::Game;
 	}
 
@@ -479,6 +479,7 @@ void GameScene::GameUpdate()
 			isStartBossBattle = true;
 			//小魚を全員殺す
 			for (int i = 0; i < 10; i++) {
+				minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 				minifishes[i].OnCollision();
 			}
 		}
@@ -533,9 +534,9 @@ void GameScene::GameUpdate()
 		player->Collision(5);
 	}
 
-	
-	player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(),collisionManager->GetPlayerPos());
-	
+
+	player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(), collisionManager->GetPlayerPos());
+
 
 	ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 	ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
@@ -577,7 +578,7 @@ void GameScene::GameUpdate()
 
 
 
-	boss->Update(player->GetWorldPosition(),stagePos,stageRadius);
+	boss->Update(player->GetWorldPosition(), stagePos, stageRadius);
 	viewProjection_.UpdateMatrix();
 
 	player->SetIsEnemyHit(isEnemyHit);
@@ -596,18 +597,18 @@ void GameScene::GameUpdate()
 		gameCamera->SetCameraPosition(player->GetWorldPosition());
 		gameCamera->Update(&viewProjection_);
 	}
-	
+
 
 
 
 
 
 	//gameCamera->SetCameraPosition({0,0,-100});
-	
+
 	//	viewProjection_.eye = gameCamera->GetEye();
 
 
-	
+
 
 	//ムービーフラグがオンならカメラをムービー用に
 	if (isMovie) {
@@ -672,7 +673,7 @@ void GameScene::GameOverUpdate()
 	if (alphaTimer >= alphaTimeOneSet * 0.5f) {
 		if (alpha[1] < 1.0f) {
 			alpha[1] += alphaPlus;
-			
+
 		}
 	}
 	// 三段階目
@@ -714,7 +715,7 @@ void GameScene::ResultUpdate()
 	if (input_->TriggerKey(DIK_SPACE)) {
 		oldScene = Scene::Result;
 		IsSceneChange = true;
-		
+
 	}
 }
 
@@ -755,10 +756,10 @@ void GameScene::SceneChageUpdate()
 			break;
 		}
 
-		
+
 
 	}
-	
+
 }
 
 float GameScene::DegreeToRadian(float degree)
@@ -790,7 +791,7 @@ void GameScene::PostEffectDraw()
 		OFontModel_.get()->Draw(OFontWorld_, nowViewProjection);
 		MFontModel_.get()->Draw(MFontWorld_, nowViewProjection);
 		SFontModel_.get()->Draw(SFontWorld_, nowViewProjection);
-		
+
 		skydome_.get()->Draw(nowViewProjection);
 	}
 
@@ -802,10 +803,10 @@ void GameScene::PostEffectDraw()
 	//stageModel_->Draw(stageWorldTransform_,viewProjection_);
 
 	// ゲームシーンのオブジェクトの描画
-	else{
+	else {
 		ground.Draw(nowViewProjection);
 
-		
+
 		skydome_.get()->Draw(nowViewProjection);
 
 
@@ -820,6 +821,11 @@ void GameScene::PostEffectDraw()
 				}
 			}
 		}
+		for (int i = 0; i < 10; i++) {
+			if (minifishes[i].GetAlive()) {
+				model_->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+			}
+		}
 
 		//ボス出現ムービーとボス変身ムービーの間で描画
 		boss->Draw(nowViewProjection);
@@ -831,7 +837,7 @@ void GameScene::PostEffectDraw()
 			gayserModel_[i]->Draw(gayserW[i], nowViewProjection);
 		}
 	}
-	
+
 
 	//3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -865,7 +871,7 @@ void GameScene::Draw() {
 
 #pragma region 背景スプライト描画
 	if (scene == Scene::Title) {
-		
+
 	}
 
 	// 深度バッファクリア
@@ -885,11 +891,11 @@ void GameScene::Draw() {
 
 
 
-	if (scene==Scene::Title ) {
+	if (scene == Scene::Title) {
 
 		//titleStartFont->Draw(titlePos, { 1,1,1,1 });
-		if (IsRotaStart==true) {
-			titleStartFont[1].get()->Draw(titlePos,{1,1,1,1});
+		if (IsRotaStart == true) {
+			titleStartFont[1].get()->Draw(titlePos, { 1,1,1,1 });
 		}
 		else {
 			titleStartFont[0].get()->Draw(titlePos, { 1,1,1,1 });
@@ -911,8 +917,8 @@ void GameScene::Draw() {
 	if (scene == Scene::GameOver)
 	{
 		gameoverFont->Draw({ 640,300 }, { 1,1,1,alpha[0] });
-		gameover->Draw({ 640,360 }, { 1,1,1,alpha[1]});
-		
+		gameover->Draw({ 640,360 }, { 1,1,1,alpha[1] });
+
 
 		selectButton->Draw(selectButtonPos, { 1,1,1,alpha[2] });
 		replayFont->Draw(replayFontPos, { 1,1,1,alpha[2] });
@@ -964,10 +970,10 @@ void GameScene::Reset()
 	if (scene == Scene::Game) {
 		skydome_.get()->SetModel(skyModel.get());
 	}
-	
+
 	// ゲームオーバーのリセット
 	GameOverReset();
-	
+
 	IsFirst = true;
 
 	collisionManager->CheckAllCollisions();
@@ -1009,7 +1015,7 @@ void GameScene::Reset()
 		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
 	}
 
-	boss->Update({ 0,0,0 },stagePos,stageRadius);
+	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
 	// 間欠泉の初期化
 	for (int i = 0; i < 5; i++) {
@@ -1091,7 +1097,7 @@ void GameScene::SceneChageFirst()
 				Reset();
 				break;
 			case Scene::Game:
-				
+
 				break;
 			case Scene::GameOver:
 				if (IsRetry == false) {
@@ -1169,9 +1175,9 @@ void GameScene::GameOverInit()
 
 	gameover = Sprite::Create(TextureManager::Load("gameover.png"));
 
-	selectButton= Sprite::Create(TextureManager::Load("selectButton.png"));
+	selectButton = Sprite::Create(TextureManager::Load("selectButton.png"));
 	replayFont = Sprite::Create(TextureManager::Load("RetryFont.png"));
-	backTitleFont= Sprite::Create(TextureManager::Load("backTitleFont.png"));
+	backTitleFont = Sprite::Create(TextureManager::Load("backTitleFont.png"));
 
 	// サイズのセット
 	selectButton.get()->SetSize(selectButtonSize);
@@ -1183,7 +1189,7 @@ void GameScene::GameOverReset()
 {
 	alphaTimer = 0;
 	IsRetry = false;
-	selectButtonPos={250,510};
+	selectButtonPos = { 250,510 };
 	for (int i = 0; i < 3; i++) {
 		alpha[i] = 0;
 	}

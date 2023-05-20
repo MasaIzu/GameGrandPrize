@@ -148,6 +148,11 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 
 	LSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
+
+	// SEの初期化
+	playerAttackSE.SoundLoadWave("playerAttack.wav");
+
+	playerAttackSE4.SoundLoadWave("playerAttack4.wav");
 }
 
 
@@ -718,7 +723,7 @@ void Player::Attack() {
 
 
 				if (isPlayMotion == false) {
-
+					
 					attackConbo = 1;
 					playerNowMotion = PlayerMotion::soukenCombo1;
 					isPlayMotion = true;
@@ -919,6 +924,9 @@ void Player::Attack() {
 				}
 				attackMoveTimer = 0;
 
+				// 音を鳴らす
+				playerAttackSE.SoundPlayWave(false, 0.5f);
+
 				AttackNowPos = worldTransform_.translation_;
 				IsCombo = true;
 				IsCombo2 = false;
@@ -977,6 +985,8 @@ void Player::Attack() {
 					LookingMove = LookingMove * playerAttackMovement;
 				}
 				attackMoveTimer = 0;
+				// 音を鳴らす
+				playerAttackSE.SoundPlayWave(false, 0.5f);
 
 				AttackNowPos = worldTransform_.translation_;
 				IsCombo = false;
@@ -1049,6 +1059,8 @@ void Player::Attack() {
 					LookingMove = LookingMove * playerAttackMovement;
 				}
 				attackMoveTimer = 0;
+				// 音を鳴らす
+				playerAttackSE.SoundPlayWave(false, 0.5f);
 
 				AttackNowPos = worldTransform_.translation_;
 				IsCombo = false;
@@ -1104,6 +1116,8 @@ void Player::Attack() {
 					LookingMove = LookingMove * playerAttackMovement;
 				}
 				attackMoveTimer = 0;
+				// 音を鳴らす
+				playerAttackSE4.SoundPlayWave(false, 0.5f);
 
 				AttackNowPos = worldTransform_.translation_;
 				IsCombo = false;
@@ -1163,6 +1177,8 @@ void Player::Attack() {
 					LookingMove = LookingMove * playerAttackMovement;
 				}
 				attackMoveTimer = 0;
+				// 音を鳴らす
+				playerAttackSE.SoundPlayWave(false, 0.5f);
 
 				AttackNowPos = worldTransform_.translation_;
 				IsCombo = false;

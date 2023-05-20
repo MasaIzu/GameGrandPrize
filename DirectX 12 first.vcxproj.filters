@@ -430,9 +430,6 @@
     <ClInclude Include="ParticleManager.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
-    <ClInclude Include="MiniFish.h">
-      <Filter>ユーザーヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="recovery.h">
       <Filter>ユーザーヘッダー ファイル\Player</Filter>
     </ClInclude>
@@ -483,6 +480,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Sound\Sound.h">
       <Filter>Engine\ヘッダー\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniFish.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -624,9 +624,6 @@
     <ClCompile Include="MiniFish.cpp">
       <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="MiniFish.cpp">
-      <Filter>ユーザーソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="recovery.cpp">
       <Filter>ユーザーソース ファイル\Player</Filter>
     </ClCompile>
@@ -671,6 +668,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Sound\Sound.cpp">
       <Filter>Engine\ソース ファイル\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -194,18 +194,18 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	}
 
 
-	if (input_->PushKey(DIK_8) == 0) {
-		cameraDis += 0.1f;
-	}
-	if (input_->PushKey(DIK_9) == 0) {
-		cameraDis += -0.1f;
-	}
-	if (input_->PushKey(DIK_6) == 0) {
-		Fov += 0.1f;
-	}
-	if (input_->PushKey(DIK_7) == 0) {
-		Fov += -0.1f;
-	}
+	//if (input_->PushKey(DIK_8) == 0) {
+	//	cameraDis += 0.1f;
+	//}
+	//if (input_->PushKey(DIK_9) == 0) {
+	//	cameraDis += -0.1f;
+	//}
+	//if (input_->PushKey(DIK_6) == 0) {
+	//	Fov += 0.1f;
+	//}
+	//if (input_->PushKey(DIK_7) == 0) {
+	//	Fov += -0.1f;
+	//}
 
 	ImGui::Begin("camera");
 	ImGui::Text("mouseMovedX : %f", mouseMoved.x);

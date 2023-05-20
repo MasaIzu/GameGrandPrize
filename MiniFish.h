@@ -30,9 +30,11 @@ private:
 
 
 	float fishRadius = 3;
-	BaseCollider* collider;
+	BaseCollider* collider = nullptr;
 
 	bool isAlive = false;
+
+	WorldTransform sine;
 
 public:
 

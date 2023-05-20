@@ -24,6 +24,7 @@ public:
 	/// 更新
 	/// </summary>
 	void Update(const Matrix4& worldPos) override;
+	void Update(const Matrix4& worldPos, const float& radius) override;
 
 	inline void SetRadius(float radius) { this->radius = radius; }
 

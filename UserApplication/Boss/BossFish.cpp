@@ -315,12 +315,7 @@ void BossFish::Reset()
 	testTrans.Initialize();
 	testTrans2.Initialize();
 
-	for (int i = 0; i < SphereCount; i++) {
-		// コリジョンマネージャに追加
-		AttackCollider[i] = new SphereCollider(Vector4(0, SphereRadius, 0, 0), SphereRadius);
-		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-	}
+
 	for (int i = 0; i < SphereCount; i++) {
 		playerAttackTransformaaaa_[i].Initialize();
 	}

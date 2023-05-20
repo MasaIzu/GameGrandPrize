@@ -104,9 +104,16 @@ void BossWarrier::Initialize()
 		// コリジョンマネージャに追加
 		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
 		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		AttackCollider[i]->Update(w[i].matWorld_);
 	}
+
+	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
+
+	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
+	CollisionManager::GetInstance()->AddCollider(Tornado);
+	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
+	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
 
 }
 
@@ -163,7 +170,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			{
 				boss2TornadoTransform[0].scale_.x += 0.5;
 				boss2TornadoTransform[0].scale_.z += 0.5;
-
+				TornadoRadius += 0.5f;
 			}
 			if (boss2TornadoTransform[1].scale_.x <= 45)
 			{
@@ -203,9 +210,9 @@ void BossWarrier::Update(const Vector3& targetPos)
 			TornadoRotY[1] += 3.14;
 			boss2TornadoTransform[0].alpha = 0.6;
 			boss2TornadoTransform[1].alpha = 0.6;
-
+			TornadoRadius = 1.0f;
 		}
-
+		Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
 #pragma endregion 
 		break;
 	case Attack::MultiLaunchSword:
@@ -223,6 +230,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.TransferMatrix();
 	}
+
+	ImGui::Begin("Warrier");
+
+	ImGui::Text("TornadoRadius:%f", TornadoRadius);
+
+	ImGui::End();
+
 }
 
 void BossWarrier::Draw(const ViewProjection& viewProMat)
@@ -236,6 +250,9 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+
+	ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
+	
 
 	LaunchSwordDraw(viewProMat);
 }
@@ -297,6 +314,7 @@ void BossWarrier::StartMultiLaunchSword()
 		};
 		Rota();
 		w[i].TransferMatrix();
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
@@ -360,6 +378,7 @@ void BossWarrier::LaunchSword()
 
 				w[i].translation_ += num[i].translation_ * 10;
 				w[i].TransferMatrix();
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 				AttackCollider[i]->Update(w[i].matWorld_);
 			}
 		}
@@ -392,6 +411,7 @@ void BossWarrier::LaunchSword()
 
 			w[i].SetMatRot(mat);
 			w[i].TransferMatrix();
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 			AttackCollider[i]->Update(w[i].matWorld_);
 		}
 	}
@@ -412,6 +432,7 @@ void BossWarrier::StartLaunchSword()
 		};
 
 		w[i].TransferMatrix();
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 

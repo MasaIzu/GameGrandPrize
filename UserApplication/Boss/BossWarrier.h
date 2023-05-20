@@ -121,9 +121,15 @@ private:
 
 	bool kenrot[MAXSWROD];
 
+	std::unique_ptr<Model>ModelSpere;
+
 	//剣の当たり判定
 	BaseCollider* AttackCollider[MAXSWROD];
 	float AttackRadius = 4.0f;
+
+	//風の当たり判定
+	BaseCollider* Tornado;
+	float TornadoRadius = 1.0f;
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 

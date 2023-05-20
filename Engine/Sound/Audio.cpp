@@ -53,8 +53,31 @@ SoundData SoundManager::SoundLoadWave(const char* filename) {
 	ChunkHeader data;
 	file.read((char*)&data, sizeof(data));
 
+	//bextチャンクを検出した場合
+	if (strncmp(data.id, "bext", 4) == 0) {
+		//読み込み位置をJUNKチャンクの終わるまで進める
+		file.seekg(data.size, std::ios_base::cur);
+		//再読み込み
+		file.read((char*)&data, sizeof(data));
+	}
+
 	//JUNKチャンクを検出した場合
 	if (strncmp(data.id, "JUNK ", 4) == 0) {
+		//読み込み位置をJUNKチャンクの終わるまで進める
+		file.seekg(data.size, std::ios_base::cur);
+		//再読み込み
+		file.read((char*)&data, sizeof(data));
+	}
+
+	//JUNKチャンクを検出した場合
+	if (strncmp(data.id, "junk", 4) == 0) {
+		//読み込み位置をJUNKチャンクの終わるまで進める
+		file.seekg(data.size, std::ios_base::cur);
+		//再読み込み
+		file.read((char*)&data, sizeof(data));
+	}
+	//LISTチャンクを検出した場合
+	if (strncmp(data.id, "LIST", 4) == 0) {
 		//読み込み位置をJUNKチャンクの終わるまで進める
 		file.seekg(data.size, std::ios_base::cur);
 		//再読み込み
@@ -98,7 +121,7 @@ void SoundManager::SoundUnload(SoundData* soundData) {
 //------サウンドの再生-------//
 
 //音声再生
-void SoundManager::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData, bool loop, float volume) {
+void SoundManager::SoundPlayWave(const SoundData& soundData, bool loop, float volume) {
 	//波形フォーマットを元にSourceVoiceの生成
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
 	result = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);

@@ -232,6 +232,9 @@ void GameScene::Initialize() {
 	// 最初のカメラ
 	firstCamera.eye = { 0,15,100 };
 	firstCamera.target = { 0,0,0 };
+
+	// サウンドの初期化
+	SoundLoadInit();
 }
 
 void GameScene::Update() {
@@ -280,6 +283,12 @@ void GameScene::TitleUpdate()
 	ImGui::InputFloat3("AFont:%f,%f,%f", &AFontWorld_.translation_.x);
 
 	ImGui::End();
+
+	// BGＭを鳴らす
+	if (IsTitleBGM == false) {
+		titleBGM.SoundPlayWave( true, 0.5f);
+		IsTitleBGM = true;
+	}
 
 	// スプライトの位置調整
 
@@ -370,6 +379,7 @@ void GameScene::TitleUpdate()
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		IsRotaStart = true;
+		
 		//scene = Scene::Game;
 	}
 
@@ -398,6 +408,7 @@ void GameScene::TitleUpdate()
 
 		oldScene = Scene::Title;
 		IsSceneChange = true;
+
 	}
 
 	if (input_->TriggerKey(DIK_K)) {
@@ -410,6 +421,12 @@ void GameScene::GameUpdate()
 {
 	// 最初のカメラのアップデート
 	FirstCameraUpdate();
+
+	// 最初のボス一のBGM
+	//if (IsBattle01BGM == false && IsBattle02BGM == false) {
+	//	battle01BGM.SoundPlayWave(true, 0.5f);
+	//	IsBattle01BGM = true;
+	//}
 
 	gayserFlame++;
 	if (ImGui::Button("break")) {
@@ -636,6 +653,11 @@ void GameScene::GameOverUpdate()
 
 	ImGui::End();
 
+	// ゲームオーバーのBGMを鳴らす
+	if (IsGameOverBGM == false) {
+		gameOverBGM.SoundPlayWave(true, 0.5f);
+		IsGameOverBGM = true;
+	}
 
 	// αの出し方
 	if (alphaTimer < alphaTimeMax) {
@@ -684,6 +706,11 @@ void GameScene::GameOverUpdate()
 
 void GameScene::ResultUpdate()
 {
+	// ゲームオーバーのBGMを鳴らす
+	if (IsGameClearBGM == false) {
+		gameClearBGM.SoundPlayWave(true, 0.5f);
+		IsGameClearBGM = true;
+	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		oldScene = Scene::Result;
 		IsSceneChange = true;
@@ -1059,6 +1086,8 @@ void GameScene::SceneChageFirst()
 			{
 			case Scene::Title:
 				scene = Scene::Game;
+				IsTitleBGM = false;
+				titleBGM.StopWave();
 				Reset();
 				break;
 			case Scene::Game:
@@ -1071,10 +1100,14 @@ void GameScene::SceneChageFirst()
 				else if (IsRetry == true) {
 					scene = Scene::Game;
 				}
+				IsGameOverBGM = false;
+				gameOverBGM.StopWave();
 				Reset();
 				break;
 			case Scene::Result:
 				scene = Scene::Title;
+				IsGameClearBGM = false;
+				gameClearBGM.StopWave();
 				Reset();
 				break;
 			default:
@@ -1154,6 +1187,16 @@ void GameScene::GameOverReset()
 	for (int i = 0; i < 3; i++) {
 		alpha[i] = 0;
 	}
+}
+
+void GameScene::SoundLoadInit()
+{
+
+	titleBGM.SoundLoadWave("titleBGM.wav");
+	battle01BGM.SoundLoadWave("Battle-Conflict_loop.wav");
+	battle02BGM.SoundLoadWave("battle-dark_loop.wav");
+	gameOverBGM.SoundLoadWave("Rest-in-Peace_loop.wav");
+	gameClearBGM.SoundLoadWave("Loop02.wav");
 }
 
 void GameScene::FirstCameraUpdate()

@@ -30,8 +30,7 @@
 #include "UserApplication/Ground/Ground.h"
 
 #include <objbase.h>
-
-
+#include "Sound.h"
 class TouchableObject;
 
 //struct ground
@@ -316,7 +315,6 @@ private: // メンバ変数
 
 #pragma endregion
 
-
 #pragma region gameOver関連
 	bool IsRetry = false;
 	float alpha[3];
@@ -372,6 +370,20 @@ private: // メンバ変数
 
 #pragma endregion
 
+	#pragma region  gameのBGM
+	Sound titleBGM;
+	Sound battle01BGM;
+	Sound battle02BGM;
+	Sound gameOverBGM;
+	Sound gameClearBGM;
+
+	bool IsTitleBGM = false;
+	bool IsBattle01BGM = false;
+	bool IsBattle02BGM = false;
+	bool IsGameOverBGM = false;
+	bool IsGameClearBGM = false;
+	#pragma endregion
+
 
 private://プライベート関数
 
@@ -394,6 +406,9 @@ private://プライベート関数
 
 	// 最初のカメラの更新処理
 	void FirstCameraUpdate();
+
+	// サウンドのロード
+	void SoundLoadInit();
 
 	// 度数からラジアン
 	float DegreeToRadian(float degree);

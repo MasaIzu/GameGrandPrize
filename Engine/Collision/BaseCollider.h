@@ -26,6 +26,8 @@ public:
 	inline unsigned short GetAttribute() { return attribute; }
 
 	inline Matrix4 GetWorldPos() { return worldPos_; }
+	inline Matrix4 GetOldEnemyAttackPos() { return OldEnemyAttackPos; }
+
 
 	/// <summary>
 	/// 当たり判定属性をセット
@@ -67,6 +69,14 @@ public:
 		this->playerMovement = Movement;
 	}
 
+	/// <summary>
+	/// プレイヤーの動いてる方向を求める
+	/// </summary>
+	/// <param name="Movement">動く方向</param>
+	inline void SetOldEnemyAttackPos(Matrix4 oldEnemyAttackPos) {
+		this->OldEnemyAttackPos = oldEnemyAttackPos;
+	}
+
 protected:
 	// 形状タイプ
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;
@@ -79,5 +89,7 @@ protected:
 	Matrix4 worldPos_;
 
 	Vector3 playerMovement;
+
+	Matrix4 OldEnemyAttackPos;
 };
 

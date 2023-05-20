@@ -95,7 +95,7 @@ void CollisionManager::CheckAllCollisions()
 				else if (colA->attribute == COLLISION_ATTR_ENEMYSOWRDATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 
-						EnemyWorldPos = colA->GetWorldPos();
+						EnemyWorldPos = colA->GetOldEnemyAttackPos();
 						isEnemyHit = true;
 					}
 				}

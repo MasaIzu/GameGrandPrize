@@ -115,6 +115,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		AttackCollider[i]->SetOldEnemyAttackPos(w[i].matWorld_);
+	}
+
 	switch (attack)
 	{
 	case Attack::StandBy:
@@ -299,7 +304,7 @@ void BossWarrier::StartMultiLaunchSword()
 	{
 		//
 		//剣からプレイヤーへのベクトル計算,飛ばす用
-		pPos[i].translation_ = targetPos + Vector3(0, 7, 0);
+		pPos[i].translation_ = targetPos + Vector3(0, 5, 0);
 		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 		num[i].translation_.normalize();
 
@@ -332,7 +337,7 @@ void BossWarrier::LaunchSword()
 
 					isShot[i] = true;
 					//剣からプレイヤーへのベクトル計算,飛ばす用
-					pPos[i].translation_ = targetPos + Vector3(0, 7, 0);
+					pPos[i].translation_ = targetPos + Vector3(0, 5, 0);
 					num[i].translation_ = pPos[i].translation_ - w[i].translation_;
 					num[i].translation_.normalize();
 					num[i].TransferMatrix();

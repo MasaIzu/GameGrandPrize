@@ -26,9 +26,20 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR", true));
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
+	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
+
 	//ボス第二形態の各部位初期化
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.Initialize();
+
+		modelSpere[i].Initialize();
+
+		// コリジョンマネージャに追加
+		BossWarrier[i] = new SphereCollider(Vector4(0, BossWarrierRadius, 0, 0), BossWarrierRadius);
+		CollisionManager::GetInstance()->AddCollider(BossWarrier[i]);
+		BossWarrier[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+
 	}
 
 	//胸は大本を親に持つ
@@ -66,7 +77,7 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -0.2,0,0 };
 	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI/4 });
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
 	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -0.2,0,0 };
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
@@ -76,6 +87,9 @@ void BossWarrier::Initialize()
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.TransferMatrix();
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].TransferMatrix();
 	}
 
 	boss2TornadeModel.reset(Model::CreateFromOBJ("tornadoGame", true));
@@ -221,8 +235,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::Before:
 			if (attackEasing.GetActive())
 			{
-				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI/2,0 }, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp(StandByElbowL, { -PI/2,0,0 }, attackEasing.GetTimeRate());
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { -PI / 2,0,0 }, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -240,7 +254,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			if (attackEasing.GetActive())
 			{
 				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 }, StandByShoulderL, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp({-PI/2,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ -PI / 2,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -303,6 +317,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 	boss2TornadoTransform[1].TransferMatrix();
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.TransferMatrix();
+
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].TransferMatrix();
 	}
 
 	ImGui::Begin("Warrier");
@@ -319,6 +338,8 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		if (boss2Model[i].isDraw == true)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
+
+			ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 
@@ -326,9 +347,15 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
 
 	//ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
-	
+
 
 	LaunchSwordDraw(viewProMat);
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+
+		ModelSpere->Draw(modelSpere[i], viewProMat);
+	}
+
 }
 
 void BossWarrier::MultiLaunchSword()
@@ -571,7 +598,7 @@ void BossWarrier::InitAtkArmSwing()
 	dataRotArm[0] = { 0,PI / -3.0f,0 };
 	dataRotArm[1] = { 0,-PI / -3.0f ,0 };
 	dataRotShoulder[0] = { 0,PI / -6.0f,0 };
-	dataRotShoulder[1] = {0,PI / -3.0f,0 };
+	dataRotShoulder[1] = { 0,PI / -3.0f,0 };
 	dataRotElbow[0] = { 0,PI / -6.0f,0 };
 	dataRotElbow[1] = { 0,PI / -4.0f * 3.0f,0 };
 	dummyTargetPos = targetPos;

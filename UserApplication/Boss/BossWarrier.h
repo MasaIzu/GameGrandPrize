@@ -86,6 +86,13 @@ private:
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ãƒœã‚¹ç¬¬äºŒå½¢æ…‹ãEãƒ¢ãƒEƒ«
 	std::unique_ptr<Model> boss2TornadeModel;
 
+	std::unique_ptr<Model> ModelSpere;
+
+	//•—‚Ì“–‚½‚è”»’è
+	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
+	float BossWarrierRadius = 1.0f;
+	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
+
 	WorldTransform boss2TornadoTransform[2];
 	float TornadoRotY[2];
 	float TornadoSpeedRotY = 5;

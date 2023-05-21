@@ -542,8 +542,8 @@ void FbxModel::ModelAnimation(float frame, aiAnimation* Animation, int BoneNum) 
 		naosi.translation_ = naosi.translation_;
 		naosi.TransferMatrix();*/
 
-		matrixL = mesh->bones[mesh->vecBones[12].name]->matrix;
-		matrixR = mesh->bones[mesh->vecBones[36].name]->matrix;
+		matrixL = mesh->bones[mesh->vecBones[16].name]->matrix;
+		matrixR = mesh->bones[mesh->vecBones[40].name]->matrix;
 
 	}
 	constBuffSkin_->Unmap(0, nullptr);

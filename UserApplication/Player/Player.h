@@ -397,4 +397,12 @@ private:
 
 
 	Sound playerDamegeSE;
+
+	std::unique_ptr<Model> ModelKEN;
+	WorldTransform ULTKEN;
+
+	bool isUltKenGeneration = false;
+	int UltKenGenerationTime = 0;
+	int UltKenGenerationMaxTime = 110;
+
 };

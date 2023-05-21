@@ -179,23 +179,25 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
 		{
+			attackEasing.Start(30);
+			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::Tornado;
 		}
-		if (Input::GetInstance()->TriggerKey(DIK_L))
-		{
-			attackEasing.Start(30);
-			attack = Attack::MultiLaunchSword;
-			bossAttackPhase = BossAttackPhase::Before;
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_K))
-		{
-			attack = Attack::LaunchSword;
-			attackEasing.Start(30);
-			bossAttackPhase = BossAttackPhase::Before;
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_0)) {
-			InitAtkSwordSwing();
-		}
+		//if (Input::GetInstance()->TriggerKey(DIK_L))
+		//{
+		//	attackEasing.Start(30);
+		//	attack = Attack::MultiLaunchSword;
+		//	bossAttackPhase = BossAttackPhase::Before;
+		//}
+		//if (Input::GetInstance()->TriggerKey(DIK_K))
+		//{
+		//	attack = Attack::LaunchSword;
+		//	attackEasing.Start(30);
+		//	bossAttackPhase = BossAttackPhase::Before;
+		//}
+		//if (Input::GetInstance()->TriggerKey(DIK_0)) {
+		//	InitAtkSwordSwing();
+		//}
 
 		break;
 	case Attack::ArmSwing:
@@ -259,15 +261,62 @@ void BossWarrier::Update(const Vector3& targetPos)
 		switch (bossAttackPhase)
 		{
 		case BossAttackPhase::Before:
+			if (attackEasing.GetActive())
+			{
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI/2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
+				Vector3 rotRoot = Lerp({ 0,0,0 }, { 0,100,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   rotRoot.y ,
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+							  { targetPos.x,0,targetPos.z }));
+
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 boss2Pos = Lerp({ 0,20,0 }, { 0,50,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y = boss2Pos.y;
+			}
+			else
+			{
+				bossAttackPhase = BossAttackPhase::Attack;
+			}
 			break;
 		case BossAttackPhase::Attack:
+			boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   100 ,
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+				{ targetPos.x,0,targetPos.z }));
 			BossTornado();
 			break;
 		case BossAttackPhase::After:
+			if (attackEasing.GetActive())
+			{
+				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 },StandByShoulderL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,0,0 },StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotRoot = Lerp({0,100,0 }, { 0,0,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   rotRoot.y ,
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+					{ targetPos.x,0,targetPos.z }));
+
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 boss2Pos = Lerp({ 0,50,0 }, {0,20,0}, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y=boss2Pos.y;
+			}
+			else
+			{
+				attack = Attack::StandBy;
+			}
 			break;
 		default:
 			break;
 		}
+		attackEasing.Update();
 		break;
 	case Attack::MultiLaunchSword:
 		switch (bossAttackPhase)
@@ -651,14 +700,18 @@ void BossWarrier::BossTornado()
 		boss2TornadoTransform[1].scale_.y += 0.5;
 		boss2TornadoTransform[0].scale_.y += 0.5;
 	}
-
+	boss2TornadoTransform[0].translation_.x = boss2Model[BossWarrierPart::Root].Transform.translation_.x;
+	boss2TornadoTransform[0].translation_.z = boss2Model[BossWarrierPart::Root].Transform.translation_.z;
 	boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
 	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].translation_.x = boss2Model[BossWarrierPart::Root].Transform.translation_.x;
+	boss2TornadoTransform[1].translation_.z = boss2Model[BossWarrierPart::Root].Transform.translation_.z;
 	boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
 	boss2TornadoTransform[1].TransferMatrix();
 	if (TornadoFlame >= 170)
 	{
-		attack = Attack::StandBy;
+		bossAttackPhase = BossAttackPhase::After;
+		attackEasing.Start(30);
 		TornadoFlame = 0;
 		boss2TornadoTransform[0].scale_.x = 1;
 		boss2TornadoTransform[0].scale_.z = 1;

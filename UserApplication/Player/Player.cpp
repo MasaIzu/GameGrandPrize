@@ -115,8 +115,13 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	LBoneTrans.alpha = 0;
 	RBoneTrans.alpha = 0;
 
+	ULTKEN.Initialize();
+
 	LSowrdModel.reset(Model::CreateFromOBJ("ken", true));
 	RSowrdModel.reset(Model::CreateFromOBJ("ken", true));
+
+	ModelKEN.reset(Model::CreateFromOBJ("kenn", true));
+
 	{
 		LightGroup light = LSowrdModel->GetLigit();
 
@@ -220,6 +225,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 		}
 
+		if (UltKenGenerationTime < UltKenGenerationMaxTime) {
+			UltKenGenerationTime++;
+		}
+		else {
+			isUltKenGeneration = true;
+		}
+
 		if (isAttckWaiting == false) {
 
 			if (frem < MaxFrem) {
@@ -234,10 +246,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 					frem += 0.015;
 				}
 				if (playerNowMotion == PlayerMotion::Ult1) {
-					frem -= 0.004f;
+					frem -= 0.003f;
 				}
 				else if (playerNowMotion == PlayerMotion::Ult2) {
-					frem -= 0.004f;
+					frem -= 0.003f;
 				}
 			}
 			else {
@@ -387,11 +399,16 @@ void Player::Update(const ViewProjection& viewProjection) {
 	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL);
 	RBoneTrans.translation_ = MyMath::GetWorldTransform(matR);
 
+	ULTKEN.translation_ = MyMath::GetWorldTransform(matL);
+
 	LBoneTrans.scale_ = Vector3(5, 5, 5);
 	RBoneTrans.scale_ = Vector3(5, 5, 5);
+	ULTKEN.scale_ = Vector3(5, 5, 5);
 
 	LBoneTrans.TransferMatrix();
 	RBoneTrans.TransferMatrix();
+
+	ULTKEN.TransferMatrix();
 
 	isAttackHit = false;
 
@@ -400,7 +417,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Begin("player");
 
 
-	ImGui::Text("UltGage:%d", UltGage);
+	ImGui::Text("BoneNum:%d", BoneNum);
 
 	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
@@ -1394,7 +1411,7 @@ void Player::Attack() {
 					nowCount = 0;
 					timeRate = 0;
 					startIndex = 1;
-
+					IsCombo = false;
 					if (isPlayMotion == false) {
 
 						attackConbo = 1;
@@ -1408,7 +1425,7 @@ void Player::Attack() {
 						isAttckWaiting = false;
 					}
 					if (attackConbo == 1) {
-						if (receptionTime > 19 && receptionTime < 50) {
+						if (receptionTime > 25 && receptionTime < 50) {
 							attackConbo = 2;
 							playerNowMotion = PlayerMotion::Ult2;
 
@@ -1428,6 +1445,141 @@ void Player::Attack() {
 				}
 			}
 		}
+
+		if (isEnemyDamage == false) {
+			if (playerNowMotion == PlayerMotion::Ult1) {
+				if (IsCombo == false) {
+					playerAttackMovement = 20.0f;
+					LookingMove = worldTransform_.look - GetWorldPosition();
+
+					if (isPlayerEnemycontact == true) {
+						LookingMove = LookingMove * playerAttackMovement;
+					}
+					else {
+						LookingMove = LookingMove * playerAttackMovement;
+					}
+					attackMoveTimer = 0;
+
+					AttackNowPos = worldTransform_.translation_;
+					IsCombo = true;
+					IsCombo2 = false;
+					IsCombo3 = false;
+					IsCombo4 = false;
+					IsCombo5 = false;
+
+					BoneParentRotY = 0.0f;
+
+					SowrdDrowTime = 0;
+					MaxSowrdRotate = 35;
+					OldAttackRotX = 0.0f;
+					OldAttackRotY = -24.0f;
+					OldAttackRotZ = 25.0f;
+					AttackRotX = 0.0f;
+					AttackRotY = -24.0f;
+					AttackRotZ = 25.0f;
+					AttackOnlyLeftRotX = 0.0f;
+					AttackOnlyLeftRotY = 0.0f;
+					AttackOnlyLeftRotZ = 0.0f;
+					AttackOnlyRightRotX = 0.0f;
+					AttackOnlyRightRotY = 0.0f;
+					AttackOnlyRightRotZ = 0.0f;
+					AttackWaitintTime = maxAttackWaitintTime;
+					AttackWaitTime = maxAttackWaitTime;
+					isSowrd = true;
+					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
+					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+
+				}
+				if (attackMoveTimer < MaxAttackMoveTimer) {
+					attackMoveTimer += 1.0;
+					SowrdDrowTime++;
+					NotSowrdDrowTime = 10;
+				}
+				if (SowrdDrowTime < MaxSowrdRotate) {
+					if (SowrdDrowTime < 34) {
+						AttackRotX += ( 30.0f - OldAttackRotX) / 33.0f;
+						AttackRotY += ( -280.0f - OldAttackRotY) / 33.0f;
+						AttackRotZ += ( 137.0f - OldAttackRotZ)/ 33.0f;
+					}
+				}
+
+				AttackNowPos += PlayerContactPos;
+
+				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+
+			}
+			else if (playerNowMotion == PlayerMotion::Ult2) {//ここやる
+				if (IsCombo == false) {
+					playerAttackMovement = 20.0f;
+					LookingMove = worldTransform_.look - GetWorldPosition();
+
+					if (isPlayerEnemycontact == true) {
+						LookingMove = LookingMove * playerAttackMovement;
+					}
+					else {
+						LookingMove = LookingMove * playerAttackMovement;
+					}
+					attackMoveTimer = 0;
+
+					AttackNowPos = worldTransform_.translation_;
+					IsCombo = true;
+					IsCombo2 = false;
+					IsCombo3 = false;
+					IsCombo4 = false;
+					IsCombo5 = false;
+
+					BoneParentRotY = 0.0f;
+
+					SowrdDrowTime = 0;
+					MaxSowrdRotate = 35;
+					OldAttackRotX = 30.0f;
+					OldAttackRotY = -280.0f;
+					OldAttackRotZ = 137.0f;
+					AttackRotX = 0.0f;
+					AttackRotY = -24.0f;
+					AttackRotZ = 25.0f;
+					AttackOnlyLeftRotX = 0.0f;
+					AttackOnlyLeftRotY = 0.0f;
+					AttackOnlyLeftRotZ = 0.0f;
+					AttackOnlyRightRotX = 0.0f;
+					AttackOnlyRightRotY = 0.0f;
+					AttackOnlyRightRotZ = 0.0f;
+					AttackWaitintTime = maxAttackWaitintTime;
+					AttackWaitTime = maxAttackWaitTime;
+					isSowrd = true;
+					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
+					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+
+				}
+				if (attackMoveTimer < MaxAttackMoveTimer) {
+					attackMoveTimer += 1.0;
+					SowrdDrowTime++;
+					NotSowrdDrowTime = 10;
+				}
+				if (SowrdDrowTime < MaxSowrdRotate) {
+					if (SowrdDrowTime < 34) {
+						AttackRotX += (30.0f - OldAttackRotX) / 33.0f;
+						AttackRotY += (-280.0f - OldAttackRotY) / 33.0f;
+						AttackRotZ += (137.0f - OldAttackRotZ) / 33.0f;
+					}
+				}
+
+				AttackNowPos += PlayerContactPos;
+
+				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
+
+			}
+		}
+
+
+
+		Matrix4 rooooootttt;
+		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX) + MyMath::GetAngle(AttackOnlyLeftRotX), PlayerRot.y, PlayerRot.z), 1);
+		rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ) + MyMath::GetAngle(-AttackOnlyLeftRotZ)), 3);
+		rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY) + MyMath::GetAngle(AttackOnlyLeftRotY), 0.0f), 2);
+
+		ULTKEN.SetMatRot(rooooootttt);
+		ULTKEN.SetLookMatRot(rooooootttt);
 
 	}
 
@@ -1545,6 +1697,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 	LSowrdModel->Draw(LBoneTrans, viewProjection_);
 	RSowrdModel->Draw(RBoneTrans, viewProjection_);
 
+	if (isUltKenGeneration == true) {
+		ModelKEN->Draw(ULTKEN, viewProjection_);
+	}
 	//}
 
 }
@@ -1976,8 +2131,10 @@ void Player::UltStart()
 				isAwakening = true;
 				playerNowMotion = PlayerMotion::AwakeningMotion;
 				frem = 0.0f;
-				MinimumFrem = 2.0f;
-				MaxFrem = 2.0f;
+				MinimumFrem = 2.6f;
+				MaxFrem = 2.6f;
+				UltKenGenerationTime = 0;
+				isUltKenGeneration = false;
 			}
 		}
 	}

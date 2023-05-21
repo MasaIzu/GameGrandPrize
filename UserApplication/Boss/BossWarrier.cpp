@@ -152,7 +152,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
-			InitAtkArmSwing();			
+			InitAtkArmSwing();
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
 		}
@@ -172,6 +172,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
 		}
+		if (Input::GetInstance()->TriggerKey(DIK_0)) {
+			InitAtkSwordSwing();
+		}
+
 		break;
 	case Attack::ArmSwing:
 #pragma region 腕振り攻撃処理(テストキーは8)
@@ -208,7 +212,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			{
 
 				Vector3 rotShoulderL = Lerp({ PI / 4,-PI / -6.0f,0 }, StandByShoulderL, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp({ 0,PI / -6.0f,0 },StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,PI / -6.0f,0 }, StandByElbowL, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -328,6 +332,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	case Attack::SwordSwing:
 		UpdateAtkSwordSwing();
 		break;
+
 	default:
 		break;
 	}
@@ -703,7 +708,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	//大本のモデルを移動
 	boss2Model[BossWarrierPart::Root].Transform.translation_ += bossMoveVec;
 
-	if (atkArmSwingTime>=14)
+	if (atkArmSwingTime >= 14)
 	{
 		bossAttackPhase = BossAttackPhase::After;
 
@@ -867,7 +872,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 	rootRot = { 0,15,0 };
 	shoulderRotL = { 180,30,30 };
 	shoulderRotR = { 0,30,95 };
-	elbowRotR = { 30,20,95 };	
+	elbowRotR = { 30,20,95 };
 	shoulderRotR = convertDegreeToRadian(shoulderRotR);
 	elbowRotR = convertDegreeToRadian(elbowRotR);
 

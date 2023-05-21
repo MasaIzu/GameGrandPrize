@@ -525,14 +525,14 @@ void GameScene::GameUpdate()
 		gameCamera->Collision();
 		Matrix4 a = collisionManager->GetEnemyWorldPos();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-		player->Collision(10);
+		//player->Collision(10);
 	}
 
 	if (collisionManager->GetIsWakeEnemyHit()) {
 		gameCamera->Collision();
 		Matrix4 a = collisionManager->GetEnemyWorldPos();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-		player->Collision(5);
+		//player->Collision(5);
 	}
 
 
@@ -548,7 +548,7 @@ void GameScene::GameUpdate()
 		gameCamera->Collision();
 		Matrix4 a = collisionManager->GetEnemyWorldPos();
 		player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-		player->Collision(20);
+		//player->Collision(20);
 	}
 
 

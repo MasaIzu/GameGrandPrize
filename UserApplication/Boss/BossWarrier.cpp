@@ -160,21 +160,21 @@ void BossWarrier::Update(const Vector3& targetPos)
 		{
 			attack = Attack::Tornado;
 		}
-		if (Input::GetInstance()->TriggerKey(DIK_L))
-		{
-			attackEasing.Start(30);
-			attack = Attack::MultiLaunchSword;
-			bossAttackPhase = BossAttackPhase::Before;
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_K))
-		{
-			attack = Attack::LaunchSword;
-			attackEasing.Start(30);
-			bossAttackPhase = BossAttackPhase::Before;
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_0)) {
-			InitAtkSwordSwing();
-		}
+		//if (Input::GetInstance()->TriggerKey(DIK_L))
+		//{
+		//	attackEasing.Start(30);
+		//	attack = Attack::MultiLaunchSword;
+		//	bossAttackPhase = BossAttackPhase::Before;
+		//}
+		//if (Input::GetInstance()->TriggerKey(DIK_K))
+		//{
+		//	attack = Attack::LaunchSword;
+		//	attackEasing.Start(30);
+		//	bossAttackPhase = BossAttackPhase::Before;
+		//}
+		//if (Input::GetInstance()->TriggerKey(DIK_0)) {
+		//	InitAtkSwordSwing();
+		//}
 
 		break;
 	case Attack::ArmSwing:

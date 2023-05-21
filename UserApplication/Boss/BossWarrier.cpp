@@ -144,6 +144,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 		AttackCollider[i]->SetOldEnemyAttackPos(w[i].matWorld_);
 	}
 
+	//swordRad = convertRadianToDegree(swordRad);
+	//ImGui::SliderFloat("swordAngle", &swordRad, 0.0f, 360.0f);
+	swordRad = convertDegreeToRadian(130);
+
 	Matrix4 bossDir;
 	switch (attack)
 	{
@@ -158,6 +162,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
 		{
+			attackEasing.Start(30);
+			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::Tornado;
 		}
 		//if (Input::GetInstance()->TriggerKey(DIK_L))
@@ -238,15 +244,62 @@ void BossWarrier::Update(const Vector3& targetPos)
 		switch (bossAttackPhase)
 		{
 		case BossAttackPhase::Before:
+			if (attackEasing.GetActive())
+			{
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI/2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
+				Vector3 rotRoot = Lerp({ 0,0,0 }, { 0,100,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   rotRoot.y ,
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+							  { targetPos.x,0,targetPos.z }));
+
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 boss2Pos = Lerp({ 0,20,0 }, { 0,50,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y = boss2Pos.y;
+			}
+			else
+			{
+				bossAttackPhase = BossAttackPhase::Attack;
+			}
 			break;
 		case BossAttackPhase::Attack:
+			boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   100 ,
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+				{ targetPos.x,0,targetPos.z }));
 			BossTornado();
 			break;
 		case BossAttackPhase::After:
+			if (attackEasing.GetActive())
+			{
+				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 },StandByShoulderL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,0,0 },StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotRoot = Lerp({0,100,0 }, { 0,0,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
+					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+							   rotRoot.y ,
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+					{ targetPos.x,0,targetPos.z }));
+
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 boss2Pos = Lerp({ 0,50,0 }, {0,20,0}, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y=boss2Pos.y;
+			}
+			else
+			{
+				attack = Attack::StandBy;
+			}
 			break;
 		default:
 			break;
 		}
+		attackEasing.Update();
 		break;
 	case Attack::MultiLaunchSword:
 		switch (bossAttackPhase)
@@ -372,6 +425,10 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	//ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
 
+	//剣振り攻撃なら剣を一本描画
+	if (attack == Attack::SwordSwing) {
+		swordModel->Draw(w[0], viewProMat);
+	}
 
 	LaunchSwordDraw(viewProMat);
 
@@ -617,14 +674,18 @@ void BossWarrier::BossTornado()
 		boss2TornadoTransform[1].scale_.y += 0.5;
 		boss2TornadoTransform[0].scale_.y += 0.5;
 	}
-
+	boss2TornadoTransform[0].translation_.x = boss2Model[BossWarrierPart::Root].Transform.translation_.x;
+	boss2TornadoTransform[0].translation_.z = boss2Model[BossWarrierPart::Root].Transform.translation_.z;
 	boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
 	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].translation_.x = boss2Model[BossWarrierPart::Root].Transform.translation_.x;
+	boss2TornadoTransform[1].translation_.z = boss2Model[BossWarrierPart::Root].Transform.translation_.z;
 	boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
 	boss2TornadoTransform[1].TransferMatrix();
 	if (TornadoFlame >= 170)
 	{
-		attack = Attack::StandBy;
+		bossAttackPhase = BossAttackPhase::After;
+		attackEasing.Start(30);
 		TornadoFlame = 0;
 		boss2TornadoTransform[0].scale_.x = 1;
 		boss2TornadoTransform[0].scale_.z = 1;
@@ -807,7 +868,6 @@ void BossWarrier::InitAtkSwordSwing()
 	//左肩の回転:x180度,y30度,z30度
 	//右肩の回転:x0度,y30度,z95度
 	//右肘の回転:x30度,y20度,z95度
-
 	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
 	rootRot = { 0,15,0 };
 	shoulderRotL = { 180,30,30 };
@@ -826,22 +886,23 @@ void BossWarrier::InitAtkSwordSwing()
 	atkStartTime = 60;
 	isAfter = false;
 
-	//剣の座標を決める
+	//剣の座標を決める(決め方は魚群の時の剣振りから参照)
 	Vector3 rotaV[2];
-	rotaV[0].x = sin(PI / 3.0f);
-	rotaV[0].z = cos(PI / 3.0f);
+	rotaV[0].x = sin(swordRad);
+	rotaV[0].z = cos(swordRad);
 	rotaV[0].normalize();
-	rotaV[1].x = -sin(PI / 3.0f);
-	rotaV[1].z = -cos(PI / 3.0f);
+	rotaV[1].x = -sin(swordRad);
+	rotaV[1].z = -cos(swordRad);
 	rotaV[1].normalize();
-	rotaV[0] *= 90.0f;
-	rotaV[1] *= 90.0f;
+	rotaV[0] *=75.0f;
+	rotaV[1] *=75.0f;
 
-	Matrix4 bossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+	Matrix4 bossDir = CreateMatRot(targetPos, boss2Model[BossWarrierPart::Root].Transform.translation_);
 	swordPos[0] = bossDir.transform(rotaV[0], bossDir) + targetPos;
 	swordPos[1] = bossDir.transform(rotaV[1], bossDir) + targetPos;
 
-
+	//剣の大きさを4倍に
+	w[0].scale_ = { 4,4,4 };
 }
 
 void BossWarrier::UpdateAtkSwordSwing()
@@ -891,13 +952,14 @@ void BossWarrier::UpdateAtkSwordSwing()
 
 	if (!easeRotArm.GetActive()) {
 		attack = Attack::StandBy;
+		w[0].scale_ = { 1,1,1 };
 	}
 
 
 	//イージング
 	float ease = pow(easeRotArm.GetTimeRate(), 5);
 	rootRot = Lerp(dataRootRot[0], dataRootRot[1], easeRotArm.GetTimeRate());
-	shoulderRotL = Lerp(dataRotShoulderL[0], dataRotShoulderL[1], ease);
+	shoulderRotL = Lerp(dataRotShoulderL[0], dataRotShoulderL[1], easeRotArm.GetTimeRate());
 
 	//角度をセット
 	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
@@ -905,6 +967,19 @@ void BossWarrier::UpdateAtkSwordSwing()
 	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
 
+	//剣の移動と回転
+	Vector3 bossY0;
+	bossY0 = boss2Model[BossWarrierPart::Root].Transform.translation_;
+	bossY0.y = targetPos.y;
+	Vector3 target = targetPos;
+	target.y += 10;
+	swordPos[0].y = target.y;
+	swordPos[1].y = target.y;
+
+
+	w[0].translation_ = LerpBezireQuadratic(swordPos[1],targetPos, swordPos[0], ease);
+	w[0].SetMatRot(CreateMatRot(bossY0,w[0].translation_));
+	w[0].TransferMatrix();
 }
 
 float convertDegreeToRadian(float degree)

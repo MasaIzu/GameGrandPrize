@@ -68,19 +68,20 @@ void BossWarrier::Initialize()
 	//ボスのスケールを5倍に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
 	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,01.57,0 });
 	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
+	//boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -0.2,0,0 };
 	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
+	//boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
 	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -0.2,0,0 };
-	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
+	//boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
 	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-0.5,0 };
 	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-0.5,0 };
@@ -136,7 +137,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 	Matrix4 matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
 
-	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
+	//boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
 
 	for (int i = 0; i < MAXSWROD; i++)
 	{
@@ -205,7 +206,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::After:
 			if (attackEasing.GetActive())
 			{
-				boss2Model[BossWarrierPart::Root].Transform.SetRot({ 0,0,0 });
 
 				Vector3 rotShoulderL = Lerp({ PI / 4,-PI / -6.0f,0 }, StandByShoulderL, attackEasing.GetTimeRate());
 				Vector3 rotElbowL = Lerp({ 0,PI / -6.0f,0 },StandByElbowL, attackEasing.GetTimeRate());
@@ -707,7 +707,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	{
 		bossAttackPhase = BossAttackPhase::After;
 
-		attackEasing.Start(180);
+		attackEasing.Start(30);
 
 		return;
 	}

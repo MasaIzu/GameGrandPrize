@@ -114,6 +114,14 @@ private:
 
 	EasingData attackEasing;
 
+	std::unique_ptr<Model> ModelSpere;
+
+	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
+
+	//•—‚Ì“–‚½‚è”»’è
+	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
+	float BossWarrierRadius = 1.0f;
+
 	//
 
 	//ç¬¬äºŒphaseã®å‰£ã®æŠ•ã’Attackã®å‰£ã®æœ€å¤§æ•°

@@ -53,10 +53,11 @@ public:
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
-
 	void DrawHealth();
-
 	void Reset();
+	void AddUltCount(int count);
+
+	void UltStart();
 
 	void EnemyNotAttackCollision(bool IsPlayerEnemycontact, Vector3 Pos);
 
@@ -102,10 +103,14 @@ private:
 		soukenCombo3,//2
 		soukenCombo4,//3
 		soukenCombo5,//4
-		DamegeAction,//5
-		DeathMotion,//6
-		aruki,//7
-		taiki,//8
+		AwakeningMotion,//5
+		Ult1,//6
+		Ult2,//7
+		DamegeAction,//8
+		DeathMotion,//9
+		aruki,//10
+		taikiBigSowrd,//11
+		taiki,//12
 
 	};
 
@@ -382,6 +387,14 @@ private:
 
 	Sound playerAttackSE;
 	Sound playerAttackSE4;
+
+	bool isPlayerUlt = false;
+
+	bool isAwakening = false;
+
+	int UltGage = 0;
+	int UltMaxGage = 60;
+
 
 	Sound playerDamegeSE;
 };

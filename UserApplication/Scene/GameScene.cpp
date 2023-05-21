@@ -557,6 +557,8 @@ void GameScene::GameUpdate()
 		gameCamera->Collision();
 		player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 		boss->bossFish->Damage(2);
+
+		player->AddUltCount(10);
 	}
 
 	if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -566,6 +568,8 @@ void GameScene::GameUpdate()
 		minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 
 		minifishes[playerAttackHitNumber].OnCollision();
+
+		player->AddUltCount(10);
 	}
 
 

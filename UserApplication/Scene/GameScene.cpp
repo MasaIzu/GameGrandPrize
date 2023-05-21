@@ -31,6 +31,7 @@ void GameScene::Initialize() {
 	sceneManager_ = SceneManager::GetInstance();
 
 	viewProjection_.Initialize();
+	viewProjection_.farZ = 1500;
 	viewProjection_.UpdateMatrix();
 
 	worldTransform_.Initialize();

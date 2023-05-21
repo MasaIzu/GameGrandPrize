@@ -26,9 +26,20 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR", true));
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
+	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
+
 	//ボス第二形態の各部位初期化
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.Initialize();
+
+		modelSpere[i].Initialize();
+
+		// コリジョンマネージャに追加
+		BossWarrier[i] = new SphereCollider(Vector4(0, BossWarrierRadius, 0, 0), BossWarrierRadius);
+		CollisionManager::GetInstance()->AddCollider(BossWarrier[i]);
+		BossWarrier[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+
 	}
 
 	//胸は大本を親に持つ
@@ -76,6 +87,9 @@ void BossWarrier::Initialize()
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.TransferMatrix();
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].TransferMatrix();
 	}
 
 	boss2TornadeModel.reset(Model::CreateFromOBJ("tornadoGame", true));
@@ -315,6 +329,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 	boss2TornadoTransform[1].TransferMatrix();
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		boss2Model[i].Transform.TransferMatrix();
+
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].TransferMatrix();
 	}
 
 	ImGui::Begin("Warrier");
@@ -331,6 +350,8 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		if (boss2Model[i].isDraw == true)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
+
+			ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 
@@ -341,6 +362,12 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 
 	LaunchSwordDraw(viewProMat);
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+
+		ModelSpere->Draw(modelSpere[i], viewProMat);
+	}
+
 }
 
 void BossWarrier::MultiLaunchSword()

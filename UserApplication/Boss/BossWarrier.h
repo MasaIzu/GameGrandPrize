@@ -88,10 +88,6 @@ private:
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ボス第二形態�EモチE��
 
-	WorldTransform boss2TornadoTransform[2];
-	float TornadoRotY[2];
-	float TornadoSpeedRotY = 5;
-	bool isTornado = false;
 	bool isAtkArmSwing = false;
 	int atkStartTime = 0;
 

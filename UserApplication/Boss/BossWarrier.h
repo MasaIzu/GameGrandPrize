@@ -105,6 +105,8 @@ private:
 
 	int atkArmSwingTime=0;
 
+	float swordRad = 0.0f;
+
 	//引数などでもらってくる変数
 	Vector3 targetPos = { 0,0,0 };
 

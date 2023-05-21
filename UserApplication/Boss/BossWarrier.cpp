@@ -68,10 +68,11 @@ void BossWarrier::Initialize()
 	//ボスのスケールを5倍に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	//boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
 	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI/4 });
 	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
@@ -134,17 +135,26 @@ void BossWarrier::Update(const Vector3& targetPos)
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
+	Matrix4 matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+
+	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
+
 	for (int i = 0; i < MAXSWROD; i++)
 	{
 		AttackCollider[i]->SetOldEnemyAttackPos(w[i].matWorld_);
 	}
 
+	Matrix4 bossDir;
 	switch (attack)
 	{
 	case Attack::StandBy:
+		ImGui::Text("attack stand");
+
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
 			InitAtkArmSwing();
+			attackEasing.Start(30);
+			bossAttackPhase = BossAttackPhase::Before;
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
 		{
@@ -162,72 +172,81 @@ void BossWarrier::Update(const Vector3& targetPos)
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
 		}
+		if (Input::GetInstance()->TriggerKey(DIK_0)) {
+			InitAtkSwordSwing();
+		}
+
 		break;
 	case Attack::ArmSwing:
 #pragma region 腕振り攻撃処理(テストキーは8)
 
 		ImGui::Text("boss atack ArmSwing");
 
-		UpdateAtkArmSwing();
+		switch (bossAttackPhase)
+		{
+		case BossAttackPhase::Before:
+			if (attackEasing.GetActive())
+			{
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { PI / 4,PI / -6.0f,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,PI / -6.0f,0 }, attackEasing.GetTimeRate());
 
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 rotShoulderR = Lerp(StandByShoulderR, { PI / 4,-PI / -3.0f,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowR = Lerp(StandByElbowR, { 0,PI / 4.0f * 3.0f,0 }, attackEasing.GetTimeRate());
+
+				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
+				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
+			}
+			else
+			{
+				bossAttackPhase = BossAttackPhase::Attack;
+			}
+			break;
+		case BossAttackPhase::Attack:
+			UpdateAtkArmSwing();
+			break;
+		case BossAttackPhase::After:
+			if (attackEasing.GetActive())
+			{
+
+				Vector3 rotShoulderL = Lerp({ PI / 4,-PI / -6.0f,0 }, StandByShoulderL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,PI / -6.0f,0 }, StandByElbowL, attackEasing.GetTimeRate());
+
+				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
+				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
+
+				Vector3 rotShoulderR = Lerp({ PI / 4,-PI / -3.0f,0 }, StandByShoulderR, attackEasing.GetTimeRate());
+				Vector3 rotElbowR = Lerp({ 0,PI / 4.0f * 3.0f,0 }, StandByElbowR, attackEasing.GetTimeRate());
+
+				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
+				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
+			}
+			else
+			{
+				attack = Attack::StandBy;
+			}
+			break;
+		default:
+			break;
+		}
+		attackEasing.Update();
 #pragma endregion
 		break;
 	case Attack::Tornado:
-#pragma region トルネード処理(テストキーはL)
-		TornadoFlame++;
-		TornadoRotY[0] += 3.14 / 180 * TornadoSpeedRotY;
-		TornadoRotY[1] += 3.14 / 180 * TornadoSpeedRotY;
-
-		if (TornadoFlame <= 100)
+		switch (bossAttackPhase)
 		{
-			if (boss2TornadoTransform[0].scale_.x <= 50)
-			{
-				boss2TornadoTransform[0].scale_.x += 0.5;
-				boss2TornadoTransform[0].scale_.z += 0.5;
-				TornadoRadius += 0.5f;
-			}
-			if (boss2TornadoTransform[1].scale_.x <= 45)
-			{
-				boss2TornadoTransform[1].scale_.x += 0.5;
-				boss2TornadoTransform[1].scale_.z += 0.5;
-			}
+		case BossAttackPhase::Before:
+			break;
+		case BossAttackPhase::Attack:
+			BossTornado();
+			break;
+		case BossAttackPhase::After:
+			break;
+		default:
+			break;
 		}
-		else if (TornadoFlame >= 160)
-		{
-			if (boss2TornadoTransform[0].alpha > 0)
-			{
-				boss2TornadoTransform[0].alpha -= 0.05;
-				boss2TornadoTransform[1].alpha -= 0.05;
-			}
-		}
-		if (boss2TornadoTransform[1].scale_.y <= 50)
-		{
-			boss2TornadoTransform[1].scale_.y += 0.5;
-			boss2TornadoTransform[0].scale_.y += 0.5;
-		}
-
-		boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
-		boss2TornadoTransform[0].TransferMatrix();
-		boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
-		boss2TornadoTransform[1].TransferMatrix();
-		if (TornadoFlame >= 170)
-		{
-			attack = Attack::StandBy;
-			TornadoFlame = 0;
-			boss2TornadoTransform[0].scale_.x = 1;
-			boss2TornadoTransform[0].scale_.z = 1;
-			boss2TornadoTransform[1].scale_.x = 1;
-			boss2TornadoTransform[1].scale_.z = 1;
-			boss2TornadoTransform[1].scale_.y = 10;
-			boss2TornadoTransform[0].scale_.y = 10;
-			TornadoRotY[0] += 0;
-			TornadoRotY[1] += 3.14;
-			boss2TornadoTransform[0].alpha = 0.6;
-			boss2TornadoTransform[1].alpha = 0.6;
-			TornadoRadius = 1.0f;
-		}
-		Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
-#pragma endregion 
 		break;
 	case Attack::MultiLaunchSword:
 		switch (bossAttackPhase)
@@ -309,6 +328,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 		attackEasing.Update();
 		break;
+
+	case Attack::SwordSwing:
+		UpdateAtkSwordSwing();
+		break;
+
 	default:
 		break;
 	}
@@ -560,6 +584,63 @@ void BossWarrier::StartLaunchSword()
 	Rota();
 }
 
+void BossWarrier::BossTornado()
+{
+	TornadoFlame++;
+	TornadoRotY[0] += 3.14 / 180 * TornadoSpeedRotY;
+	TornadoRotY[1] += 3.14 / 180 * TornadoSpeedRotY;
+
+	if (TornadoFlame <= 100)
+	{
+		if (boss2TornadoTransform[0].scale_.x <= 50)
+		{
+			boss2TornadoTransform[0].scale_.x += 0.5;
+			boss2TornadoTransform[0].scale_.z += 0.5;
+			TornadoRadius += 0.5f;
+		}
+		if (boss2TornadoTransform[1].scale_.x <= 45)
+		{
+			boss2TornadoTransform[1].scale_.x += 0.5;
+			boss2TornadoTransform[1].scale_.z += 0.5;
+		}
+	}
+	else if (TornadoFlame >= 160)
+	{
+		if (boss2TornadoTransform[0].alpha > 0)
+		{
+			boss2TornadoTransform[0].alpha -= 0.05;
+			boss2TornadoTransform[1].alpha -= 0.05;
+		}
+	}
+	if (boss2TornadoTransform[1].scale_.y <= 50)
+	{
+		boss2TornadoTransform[1].scale_.y += 0.5;
+		boss2TornadoTransform[0].scale_.y += 0.5;
+	}
+
+	boss2TornadoTransform[0].SetRot({ 0,TornadoRotY[0],0 });
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].SetRot({ 0,TornadoRotY[1],0 });
+	boss2TornadoTransform[1].TransferMatrix();
+	if (TornadoFlame >= 170)
+	{
+		attack = Attack::StandBy;
+		TornadoFlame = 0;
+		boss2TornadoTransform[0].scale_.x = 1;
+		boss2TornadoTransform[0].scale_.z = 1;
+		boss2TornadoTransform[1].scale_.x = 1;
+		boss2TornadoTransform[1].scale_.z = 1;
+		boss2TornadoTransform[1].scale_.y = 10;
+		boss2TornadoTransform[0].scale_.y = 10;
+		TornadoRotY[0] += 0;
+		TornadoRotY[1] += 3.14;
+		boss2TornadoTransform[0].alpha = 0.6;
+		boss2TornadoTransform[1].alpha = 0.6;
+		TornadoRadius = 1.0f;
+	}
+	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
+}
+
 void BossWarrier::LaunchSwordDraw(ViewProjection viewProMat)
 {
 	if (isSat || isSat2)
@@ -581,11 +662,8 @@ void BossWarrier::Rota()
 	{
 		Matrix4 mat;
 		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
-
 		w[i].SetMatRot(mat);
 	}
-
-
 }
 
 void BossWarrier::InitAtkArmSwing()
@@ -597,13 +675,15 @@ void BossWarrier::InitAtkArmSwing()
 
 	dataRotArm[0] = { 0,PI / -3.0f,0 };
 	dataRotArm[1] = { 0,-PI / -3.0f ,0 };
-	dataRotShoulder[0] = { 0,PI / -6.0f,0 };
-	dataRotShoulder[1] = { 0,PI / -3.0f,0 };
+	dataRotShoulder[0] = { PI / 4,PI / -6.0f,0 };
+	dataRotShoulder[1] = { PI / 4,PI / -3.0f,0 };
 	dataRotElbow[0] = { 0,PI / -6.0f,0 };
 	dataRotElbow[1] = { 0,PI / -4.0f * 3.0f,0 };
 	dummyTargetPos = targetPos;
 
 	isLastAtkStart = false;
+
+	atkArmSwingTime = 0;
 }
 
 void BossWarrier::UpdateAtkArmSwing()
@@ -628,10 +708,21 @@ void BossWarrier::UpdateAtkArmSwing()
 	//大本のモデルを移動
 	boss2Model[BossWarrierPart::Root].Transform.translation_ += bossMoveVec;
 
+	if (atkArmSwingTime >= 14)
+	{
+		bossAttackPhase = BossAttackPhase::After;
+
+		attackEasing.Start(30);
+
+		return;
+	}
+
 	//イージングデータ更新
 	easeRotArm.Update();
 	//イージングが終了したら(timeRateが1.0以上)イージングのパラメータを入れ替えてまたイージング開始
 	if (!easeRotArm.GetActive()) {
+		atkArmSwingTime++;
+
 		// それぞれの回転データをスワップ
 		Vector3 data = dataRotArm[0];
 		dataRotArm[0] = dataRotArm[1];
@@ -682,7 +773,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	Vector3 rotArm, rotShoulderL, rotShoulderR, rotElbowL, rotElbowR;
 	rotArm = EaseOutVec3(dataRotArm[0], dataRotArm[1], easeRotArm.GetTimeRate());
 	rotShoulderL = Lerp(dataRotShoulder[1], dataRotShoulder[0], easeRotArm.GetTimeRate());
-	rotShoulderR = Lerp(-dataRotShoulder[0], -dataRotShoulder[1], easeRotArm.GetTimeRate());
+	rotShoulderR = Lerp({ dataRotShoulder[0].x ,-dataRotShoulder[0].y ,-dataRotShoulder[0].z }, { dataRotShoulder[1].x ,-dataRotShoulder[1].y ,-dataRotShoulder[1].z }, easeRotArm.GetTimeRate());
 	rotElbowL = Lerp(dataRotElbow[1], dataRotElbow[0], easeRotArm.GetTimeRate());
 	rotElbowR = Lerp(-dataRotElbow[0], -dataRotElbow[1], easeRotArm.GetTimeRate());
 
@@ -707,4 +798,139 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
+}
+
+void BossWarrier::InitAtkSwordSwing()
+{
+	attack = Attack::SwordSwing;
+	//各部位の回転角を設定
+	//左肩の回転:x180度,y30度,z30度
+	//右肩の回転:x0度,y30度,z95度
+	//右肘の回転:x30度,y20度,z95度
+
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };
+	rootRot = convertDegreeToRadian(rootRot);
+	shoulderRotL = convertDegreeToRadian(shoulderRotL);
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+	atkStartTime = 60;
+	isAfter = false;
+
+	//剣の座標を決める
+	Vector3 rotaV[2];
+	rotaV[0].x = sin(PI / 3.0f);
+	rotaV[0].z = cos(PI / 3.0f);
+	rotaV[0].normalize();
+	rotaV[1].x = -sin(PI / 3.0f);
+	rotaV[1].z = -cos(PI / 3.0f);
+	rotaV[1].normalize();
+	rotaV[0] *= 90.0f;
+	rotaV[1] *= 90.0f;
+
+	Matrix4 bossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+	swordPos[0] = bossDir.transform(rotaV[0], bossDir) + targetPos;
+	swordPos[1] = bossDir.transform(rotaV[1], bossDir) + targetPos;
+
+
+}
+
+void BossWarrier::UpdateAtkSwordSwing()
+{
+	Vector3 rot = boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_;
+	rot = convertRadianToDegree(rot);
+	ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
+	ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotY", &rot.y, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);
+	rot = convertDegreeToRadian(rot);
+
+	//回転に使う角とそれを制御するデータ
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	Vector3 dataRootRot[2], dataRotShoulderL[2];
+
+	dataRootRot[0] = { 0,15,0 };
+	dataRootRot[1] = { 0,-15,0 };
+	dataRotShoulderL[0] = { 180,30,30 };
+	dataRotShoulderL[1] = { 300,230,30 };
+	dataRotShoulderL[1] = { 300,-130,30 };
+	//度数法に変換
+	for (int i = 0; i < 2; i++) {
+		dataRootRot[i] = convertDegreeToRadian(dataRootRot[i]);
+		dataRotShoulderL[i] = convertDegreeToRadian(dataRotShoulderL[i]);
+	}
+
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	//剣振り開始のカウントダウン
+	if (atkStartTime > 0) {
+		atkStartTime--;
+		//角度は剣振り前の形に
+		rootRot = dataRootRot[0];
+		shoulderRotL = dataRotShoulderL[0];
+		easeRotArm.Start(30);
+	}
+	//カウントダウン0で攻撃開始
+	else if (atkStartTime == 0) {
+		easeRotArm.Update();
+	}
+
+	if (!easeRotArm.GetActive()) {
+		attack = Attack::StandBy;
+	}
+
+
+	//イージング
+	float ease = pow(easeRotArm.GetTimeRate(), 5);
+	rootRot = Lerp(dataRootRot[0], dataRootRot[1], easeRotArm.GetTimeRate());
+	shoulderRotL = Lerp(dataRotShoulderL[0], dataRotShoulderL[1], ease);
+
+	//角度をセット
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+}
+
+float convertDegreeToRadian(float degree)
+{
+	return degree * PI / 180.0f;
+}
+
+float convertRadianToDegree(float radian)
+{
+	return radian * 180.0f / PI;
+}
+
+Vector3 convertDegreeToRadian(const Vector3& degree)
+{
+	Vector3 result = degree;
+	result.x = convertDegreeToRadian(result.x);
+	result.y = convertDegreeToRadian(result.y);
+	result.z = convertDegreeToRadian(result.z);
+	return result;
+}
+
+Vector3 convertRadianToDegree(const Vector3& radian)
+{
+	Vector3 result = radian;
+	result.x = convertRadianToDegree(result.x);
+	result.y = convertRadianToDegree(result.y);
+	result.z = convertRadianToDegree(result.z);
+	return result;
 }

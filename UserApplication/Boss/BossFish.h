@@ -7,6 +7,7 @@
 #include"ViewProjection.h"
 #include <BaseCollider.h>
 #include"Sprite.h"
+#include "Sound.h"
 
 struct fish {
 	WorldTransform pos;	//ワールド座標
@@ -260,6 +261,14 @@ private:
 		std::unique_ptr<Model> startModel;
 
 		float SphereRadius = 8.0f;
+
+		// ボス第一形態のSE
+		Sound BossSowrdAttackSE;
+
+		// ボス
+		bool IsBossSowrdSE = false;
+		float sowrdSETimer = 0;
+		float sowrdSETimeMax = 45;
 };
 
 

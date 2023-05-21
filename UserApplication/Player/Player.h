@@ -395,4 +395,6 @@ private:
 	int UltGage = 0;
 	int UltMaxGage = 60;
 
+
+	Sound playerDamegeSE;
 };

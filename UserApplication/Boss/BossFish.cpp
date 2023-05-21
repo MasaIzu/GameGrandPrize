@@ -73,7 +73,7 @@ void BossFish::Initialize()
 	}
 	
 
-	
+	BossSowrdAttackSE.SoundLoadWave("BossSowrdAttack.wav");
 
 	SpriteInitialize();
 
@@ -548,6 +548,9 @@ void BossFish::UpdateAtkSword()
 			//敵中心から剣の位置の中心まで移動する(120f)
 			//毎フレームランダムに魚群から魚を選び、選ばれた魚は10fで剣の中心まで移動する
 
+			// SEのフラグ
+			IsBossSowrdSE = false;
+
 			ImGui::Text("now create!");
 
 			//最初にどの魚を剣まで移動させるか決める
@@ -655,6 +658,19 @@ void BossFish::UpdateAtkSword()
 		else if (bossSwordPhase == BossFishSwordPhase::Attack) {
 
 			ImGui::Text("now attack!");
+
+			sowrdSETimer++;
+
+			if (sowrdSETimer >= sowrdSETimeMax) {
+				if (IsBossSowrdSE == false) {
+					// 攻撃の瞬間にSEを鳴らす
+					BossSowrdAttackSE.SoundPlayWave(false, 1.0f);
+					IsBossSowrdSE = true;
+					sowrdSETimer = 0;
+				}
+			}
+			
+			
 
 			Vector3 beforePos, afterPos;
 
@@ -795,7 +811,6 @@ void BossFish::UpdateAtkSword()
 
 		//タイマー制御
 		nextPhaseInterval--;
-
 	}
 
 	//イージングによるスケールと座標の制御

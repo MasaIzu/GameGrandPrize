@@ -49,6 +49,8 @@ enum class Attack
 	MultiLaunchSword,
 	LaunchSword,
 
+	SwordSwing,
+
 };
 
 enum class BossAttackPhase
@@ -73,6 +75,7 @@ public:
 	void StartMultiLaunchSword();
 	void LaunchSword();
 	void StartLaunchSword();
+	void BossTornado();
 
 	void LaunchSwordDraw(ViewProjection viewProMat);
 
@@ -84,20 +87,11 @@ private:
 	Input* input_ = nullptr;
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//繝懊せ隨ｬ莠悟ｽ｢諷九・繝｢繝・Ν
-	std::unique_ptr<Model> boss2TornadeModel;
 
-	std::unique_ptr<Model> ModelSpere;
-
-	//風の当たり判定
-	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
-	float BossWarrierRadius = 1.0f;
-	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
-
-	WorldTransform boss2TornadoTransform[2];
-	float TornadoRotY[2];
-	float TornadoSpeedRotY = 5;
-	bool isTornado = false;
 	bool isAtkArmSwing = false;
+	int atkStartTime = 0;
+
+	bool isAfter = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
 	bool isLastAtkStart = false;
@@ -107,6 +101,9 @@ private:
 	Vector3 dataRotElbow[2];
 	Vector3 dataRotShoulder[2];
 	Vector3 dummyTargetPos;
+	Vector3 swordPos[2];
+
+	int atkArmSwingTime=0;
 
 	//蠑墓焚縺ｪ縺ｩ縺ｧ繧ゅｉ縺｣縺ｦ縺上ｋ螟画焚
 	Vector3 targetPos = { 0,0,0 };
@@ -116,6 +113,14 @@ private:
 	BossAttackPhase bossAttackPhase = BossAttackPhase::Before;
 
 	EasingData attackEasing;
+
+	std::unique_ptr<Model> ModelSpere;
+
+	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
+
+	//風の当たり判定
+	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
+	float BossWarrierRadius = 1.0f;
 
 	//
 
@@ -143,9 +148,18 @@ private:
 	BaseCollider* AttackCollider[MAXSWROD];
 	float AttackRadius = 4.0f;
 
+
+	std::unique_ptr<Model> boss2TornadeModel;
+	WorldTransform boss2TornadoTransform[2];
+	float TornadoRotY[2];
+	float TornadoSpeedRotY = 5;
+	bool isTornado = false;
+
 	//風の当たり判定
 	BaseCollider* Tornado;
 	float TornadoRadius = 1.0f;
+
+
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 
@@ -158,12 +172,26 @@ private:
 #pragma endregion
 
 private:
-	//閻墓険繧頑判謦・・蛻晄悄蛹・
+	//腕振り攻撃の初期化
 	void InitAtkArmSwing();
 
-	//閻墓険繧頑判謦・・譖ｴ譁ｰ
+	//腕振り攻撃更新
 	void UpdateAtkArmSwing();
+
+	//剣振り攻撃の初期化
+	void InitAtkSwordSwing();
+
+	//剣振り攻撃更新
+	void UpdateAtkSwordSwing();
 
 };
 
 //Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+
+float convertDegreeToRadian(float degree);
+
+float convertRadianToDegree(float radian);
+
+Vector3 convertDegreeToRadian(const Vector3& degree);
+
+Vector3 convertRadianToDegree(const Vector3& radian);

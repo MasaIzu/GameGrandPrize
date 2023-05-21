@@ -639,7 +639,7 @@ void GameScene::GameUpdate()
 	//ParticleMan->Update();
 
 	if (boss->bossFish->GetIsDeathEnd()) {
-		scene = Scene::Result;
+		//scene = Scene::Result;
 	}
 	if (player->GetAlive() == false)
 	{
@@ -864,7 +864,7 @@ void GameScene::PostEffectDraw()
 		player->ParticleDraw(nowViewProjection);
 	}
 
-
+	boss->bossWarrier->DrawParticle(nowViewProjection);
 
 	ParticleManager::PostDraw();
 }

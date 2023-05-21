@@ -70,6 +70,7 @@ struct ViewProjection {
 	/// </summary>
 	void UpdateMatrix();
 
+	Matrix4 GetViewProjection()const;
 
 	float ToRadian(float x) { return x * (PI / 180); }
 };

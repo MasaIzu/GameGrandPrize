@@ -94,3 +94,8 @@ void ViewProjection::UpdateMatrix() {
 	matBillboard.m[2][2] = cameraAxisZ.z;
 
 }
+
+Matrix4 ViewProjection::GetViewProjection() const
+{
+	return matView * matProjection;
+}

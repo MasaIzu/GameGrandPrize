@@ -54,6 +54,8 @@ private:
 	Player* pl = nullptr;
 	BossWarrier* B2 = nullptr;
 
+	bool isBossSpawn = false;
+
 	/// <summary>
 	/// メンバ変数(プライベート)
 	/// </summary>

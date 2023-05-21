@@ -467,7 +467,7 @@ void ParticleManager::Update()
 	}
 }
 
-	void ParticleManager::Draw(ViewProjection view)
+	void ParticleManager::Draw(const ViewProjection& view)
 	{
 		HRESULT result;
 		// 定数バッファへデータ転送

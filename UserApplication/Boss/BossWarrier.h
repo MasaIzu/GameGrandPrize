@@ -50,6 +50,7 @@ enum class Attack
 	LaunchSword,
 
 	SwordSwing,
+	Spawm,
 
 };
 
@@ -66,9 +67,12 @@ class BossWarrier
 public:
 	void Initialize();
 
+	void Spawn();
+
 	void Update(const Vector3& targetPos);
 
 	void Draw(const ViewProjection& viewProMat);
+	void DrawParticle(const ViewProjection& viewProMat);
 	void SetPlayer(Player* player_) { pl = player_; }
 
 	void MultiLaunchSword();
@@ -161,7 +165,8 @@ private:
 	BaseCollider* Tornado;
 	float TornadoRadius = 1.0f;
 
-
+	std::unique_ptr<ParticleManager> spawnParticle;
+	int particleCreateTime = 0;
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 
@@ -185,6 +190,9 @@ private:
 
 	//剣振り攻撃更新
 	void UpdateAtkSwordSwing();
+
+	//スポーン時の更新処理
+	void UpdateSpawn();
 
 };
 

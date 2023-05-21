@@ -128,6 +128,23 @@ void BossWarrier::Initialize()
 	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
 	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
 
+
+	spawnParticle = std::make_unique<ParticleManager>();
+	spawnParticle->Initialize();
+	spawnParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
+
+}
+
+void BossWarrier::Spawn()
+{
+	//フェーズをスポーンに変更
+	attack = Attack::Spawm;
+	//スケールを0に
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
+	//イージング開始
+	easeRotArm.Start(120);
+	//パーティクルの生成数はイージング時間-20に
+	particleCreateTime = 100;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -337,6 +354,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 		UpdateAtkSwordSwing();
 		break;
 
+	case Attack::Spawm:
+		UpdateSpawn();
+		break;
+
 	default:
 		break;
 	}
@@ -388,6 +409,11 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		ModelSpere->Draw(modelSpere[i], viewProMat);
 	}
 
+}
+
+void BossWarrier::DrawParticle(const ViewProjection& viewProMat)
+{
+	spawnParticle->Draw(viewProMat);
 }
 
 void BossWarrier::MultiLaunchSword()
@@ -927,6 +953,32 @@ void BossWarrier::UpdateAtkSwordSwing()
 	w[0].translation_ = LerpBezireQuadratic(swordPos[1],targetPos, swordPos[0], ease);
 	w[0].SetMatRot(CreateMatRot(bossY0,w[0].translation_));
 	w[0].TransferMatrix();
+}
+
+void BossWarrier::UpdateSpawn()
+{
+	//イージング更新
+	easeRotArm.Update();
+
+	//スケールをだんだん大きく
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = Lerp({ 0,0,0 }, { 15,15,15 }, easeRotArm.GetTimeRate());
+
+	Vector3 spawnPos = { Random(-200,200),Random(0,45) ,Random(-200,200) };
+	Vector3 controll = { Random(-45,45),Random(0,45) ,Random(-45,45) };
+	float scale = Random(2.0f, 6.0f);
+
+	if (particleCreateTime > 0) {
+		spawnParticle->Add(ParticleManager::Type::Out, 20, true, spawnPos, controll, boss2Model[BossWarrierPart::Root].Transform.translation_, scale, scale, Vector4(0, 0, 0, 1), Vector4(45.0f / 256.0f, 0, 45.0f / 256.0f, 1));
+		particleCreateTime--;
+	}
+	
+	spawnParticle->Update();
+
+
+	if (!easeRotArm.GetActive()) {
+		attack = Attack::StandBy;
+	}
+
 }
 
 float convertDegreeToRadian(float degree)

@@ -46,6 +46,8 @@ enum class Attack
 	StandBy,
 	ArmSwing,
 	Tornado,
+	SwordSwing,
+
 };
 
 class BossWarrier
@@ -79,6 +81,9 @@ private:
 	float TornadoSpeedRotY = 5;
 	bool isTornado = false;
 	bool isAtkArmSwing = false;
+	int atkStartTime = 0;
+
+	bool isAfter = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
 	bool isLastAtkStart = false;
@@ -88,6 +93,7 @@ private:
 	Vector3 dataRotElbow[2];
 	Vector3 dataRotShoulder[2];
 	Vector3 dummyTargetPos;
+	Vector3 swordPos[2];
 
 	//引数などでもらってくる変数
 	Vector3 targetPos = { 0,0,0 };
@@ -141,3 +147,11 @@ private:
 };
 
 //Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+
+float convertDegreeToRadian(float degree);
+
+float convertRadianToDegree(float radian);
+
+Vector3 convertDegreeToRadian(const Vector3& degree);
+
+Vector3 convertRadianToDegree(const Vector3& radian);

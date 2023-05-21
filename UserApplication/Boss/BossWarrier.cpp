@@ -61,23 +61,23 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::Neck].Transform.translation_ = { 0,3,0 };
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,1.5,0 };
 	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 3,1.5,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 2,0,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -3,1.5,0 };
-	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI/4 });
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -2,0,0 };
 	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 2,0,0 };
 	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 2,0,0 };
 	//boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1,1.5,1.5 };
 	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -2,0,0 };
-	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({0,0,-PI/4});
-	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({0,0,PI/4});
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -2,0,0 };
-	boss2Model[BossWarrierPart::HandR].Transform.SetRot({0,1.57,0});
+	boss2Model[BossWarrierPart::HandR].Transform.SetRot({ 0,1.57,0 });
 	boss2Model[BossWarrierPart::HandL].Transform.SetRot({ 0,1.57,0 });
 	//boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1,1.5,1.5 };
 	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-3,0 };
-	boss2Model[BossWarrierPart::Crotch].Transform.SetRot({0,0,0});
+	boss2Model[BossWarrierPart::Crotch].Transform.SetRot({ 0,0,0 });
 	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-1.5,0 };
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
@@ -108,10 +108,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 {
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
-
+	Matrix4 bossDir;
 	switch (attack)
 	{
 	case Attack::StandBy:
+		ImGui::Text("attack stand");
+
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
 			InitAtkArmSwing();
@@ -120,6 +122,16 @@ void BossWarrier::Update(const Vector3& targetPos)
 		{
 			attack = Attack::Tornado;
 		}
+		if (Input::GetInstance()->TriggerKey(DIK_0)) {
+			InitAtkSwordSwing();
+		}
+
+		//自機に向かせる
+
+		bossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+
+		boss2Model[BossWarrierPart::Root].Transform.SetMatRot(bossDir);
+
 		break;
 	case Attack::ArmSwing:
 #pragma region 腕振り攻撃処理(テストキーは8)
@@ -187,6 +199,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 #pragma endregion 
 		break;
+
+	case Attack::SwordSwing:
+		UpdateAtkSwordSwing();
+		break;
 	default:
 		break;
 	}
@@ -213,84 +229,84 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 void BossWarrier::phase2Attack()
 {
-	
-
-//確認用の攻撃キー
-if (input_->PushKey(DIK_L))
-{
-	//isOn = true;
 
 
-
-	//生成時の座標設定
-	for (int i = 0; i < MAXSWROD; i++)
+	//確認用の攻撃キー
+	if (input_->PushKey(DIK_L))
 	{
+		//isOn = true;
 
-		w[i].translation_ = 
-		{
-			//BOSS第二形態の真ん中の座標
-			//fishParent.pos.translation_.x - interval * 2 + i * interval,
-			//fishParent.pos.translation_.y + 10 ,
-			//fishParent.pos.translation_.z 
-		};
 
-		w[i].TransferMatrix();
-		
-	}
 
-	for (int i = 0; i < MAXSWROD; i++)
-	{
-		//
-		//剣からプレイヤーへのベクトル計算,飛ばす用
-		pPos[i].translation_ = targetPos;
-		num[i].translation_ = pPos[i].translation_ - w[i].translation_;
-		num[i].translation_.normalize();
-		
-		num[i].TransferMatrix();
-		
-
-	}
-		
-
-	t = true;
-	isSat = true;
-	Rota();
-}
-
-//攻撃開始
-if (t)
-{
-	phase2AttackCoolTime--;
-	if (phase2AttackCoolTime <= 0)
-	{
-		//生成した剣を飛ばすシーン
+		//生成時の座標設定
 		for (int i = 0; i < MAXSWROD; i++)
 		{
 
+			w[i].translation_ =
+			{
+				//BOSS第二形態の真ん中の座標
+				//fishParent.pos.translation_.x - interval * 2 + i * interval,
+				//fishParent.pos.translation_.y + 10 ,
+				//fishParent.pos.translation_.z 
+			};
 
-			//
-			// 
-			//計算したベクトル方向に動かす
-			w[i].translation_ += num[i].translation_ * 10;
 			w[i].TransferMatrix();
 
-		
+		}
+
+		for (int i = 0; i < MAXSWROD; i++)
+		{
+			//
+			//剣からプレイヤーへのベクトル計算,飛ばす用
+			pPos[i].translation_ = targetPos;
+			num[i].translation_ = pPos[i].translation_ - w[i].translation_;
+			num[i].translation_.normalize();
+
+			num[i].TransferMatrix();
+
 
 		}
-		//フラグ解除
-		if (phase2AttackCoolTime <= -40)
-		{
-			
-			//t = false;
 
+
+		t = true;
+		isSat = true;
+		Rota();
+	}
+
+	//攻撃開始
+	if (t)
+	{
+		phase2AttackCoolTime--;
+		if (phase2AttackCoolTime <= 0)
+		{
+			//生成した剣を飛ばすシーン
+			for (int i = 0; i < MAXSWROD; i++)
+			{
+
+
+				//
+				// 
+				//計算したベクトル方向に動かす
+				w[i].translation_ += num[i].translation_ * 10;
+				w[i].TransferMatrix();
+
+
+
+			}
+			//フラグ解除
+			if (phase2AttackCoolTime <= -40)
+			{
+
+				//t = false;
+
+			}
 		}
 	}
-}
-else
-{
-	phase2AttackCoolTime = 70;
-	isSat = false;
-}
+	else
+	{
+		phase2AttackCoolTime = 70;
+		isSat = false;
+	}
 
 
 }
@@ -401,7 +417,7 @@ void BossWarrier::phase2AttackP2()
 
 			WorldTransform plWorldTransform;
 
-			plWorldTransform.translation_ =targetPos;
+			plWorldTransform.translation_ = targetPos;
 
 			Matrix4 mat;
 			mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
@@ -433,11 +449,8 @@ void BossWarrier::Rota()
 	{
 		Matrix4 mat;
 		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
-
 		w[i].SetMatRot(mat);
 	}
-
-
 }
 
 void BossWarrier::InitAtkArmSwing()
@@ -546,7 +559,7 @@ void BossWarrier::UpdateAtkArmSwing()
 
 	matBodyRot = CreateMatRot(rotArm);
 
-	matBossRot =  matBossDir*matBodyRot;
+	matBossRot = matBossDir * matBodyRot;
 
 	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossRot);
 	//boss2Model[BossWarrierPart::Root].Transform.translation_.x += 5.0f / 60.0f;
@@ -563,13 +576,135 @@ void BossWarrier::UpdateAtkArmSwing()
 
 void BossWarrier::InitAtkSwordSwing()
 {
+	attack = Attack::SwordSwing;
 	//各部位の回転角を設定
-	//肩の回転について、x軸120度,y軸30度,z軸180+45度
-	boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_ = { PI / 3.0f * 2,PI / 6.0f,PI / 4.0f * 5 };
+	//左肩の回転:x180度,y30度,z30度
+	//右肩の回転:x0度,y30度,z95度
+	//右肘の回転:x30度,y20度,z95度
+
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };
+	rootRot = convertDegreeToRadian(rootRot);
+	shoulderRotL = convertDegreeToRadian(shoulderRotL);
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+	atkStartTime = 60;
+	isAfter = false;
+
+	//剣の座標を決める
+	Vector3 rotaV[2];
+	rotaV[0].x = sin(PI / 3.0f);
+	rotaV[0].z = cos(PI / 3.0f);
+	rotaV[0].normalize();
+	rotaV[1].x = -sin(PI / 3.0f);
+	rotaV[1].z = -cos(PI / 3.0f);
+	rotaV[1].normalize();
+	rotaV[0] *= 90.0f;
+	rotaV[1] *= 90.0f;
+
+	Matrix4 bossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+	swordPos[0] = bossDir.transform(rotaV[0], bossDir) + targetPos;
+	swordPos[1] = bossDir.transform(rotaV[1], bossDir) + targetPos;
 
 
 }
 
 void BossWarrier::UpdateAtkSwordSwing()
 {
+	Vector3 rot = boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_;
+	rot = convertRadianToDegree(rot);
+	ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
+	ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotY", &rot.y, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);
+	rot = convertDegreeToRadian(rot);
+
+	//回転に使う角とそれを制御するデータ
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	Vector3 dataRootRot[2], dataRotShoulderL[2];
+
+	dataRootRot[0] = { 0,15,0 };
+	dataRootRot[1] = { 0,-15,0 };
+	dataRotShoulderL[0] = { 180,30,30 };
+	dataRotShoulderL[1] = { 300,230,30 };
+	dataRotShoulderL[1] = { 300,-130,30 };
+	//度数法に変換
+	for (int i = 0; i < 2; i++) {
+		dataRootRot[i] = convertDegreeToRadian(dataRootRot[i]);
+		dataRotShoulderL[i] = convertDegreeToRadian(dataRotShoulderL[i]);
+	}
+
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };	
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	//剣振り開始のカウントダウン
+	if (atkStartTime > 0) {
+		atkStartTime--;
+		//角度は剣振り前の形に
+		rootRot = dataRootRot[0];
+		shoulderRotL = dataRotShoulderL[0];
+		easeRotArm.Start(30);
+	}
+	//カウントダウン0で攻撃開始
+	else if (atkStartTime == 0) {
+		easeRotArm.Update();
+	}
+
+	if (!easeRotArm.GetActive()) {
+		attack = Attack::StandBy;
+	}
+
+
+	//イージング
+	float ease = pow(easeRotArm.GetTimeRate(), 5);
+	rootRot = Lerp(dataRootRot[0], dataRootRot[1], easeRotArm.GetTimeRate());
+	shoulderRotL = Lerp(dataRotShoulderL[0], dataRotShoulderL[1], ease);
+
+	//角度をセット
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+}
+
+float convertDegreeToRadian(float degree)
+{
+	return degree * PI / 180.0f;
+}
+
+float convertRadianToDegree(float radian)
+{
+	return radian * 180.0f / PI;
+}
+
+Vector3 convertDegreeToRadian(const Vector3& degree)
+{
+	Vector3 result = degree;
+	result.x = convertDegreeToRadian(result.x);
+	result.y = convertDegreeToRadian(result.y);
+	result.z = convertDegreeToRadian(result.z);
+	return result;
+}
+
+Vector3 convertRadianToDegree(const Vector3& radian)
+{
+	Vector3 result = radian;
+	result.x = convertRadianToDegree(result.x);
+	result.y = convertRadianToDegree(result.y);
+	result.z = convertRadianToDegree(result.z);
+	return result;
 }

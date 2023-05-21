@@ -796,7 +796,6 @@ void BossFish::UpdateAtkSword()
 
 		//タイマー制御
 		nextPhaseInterval--;
-
 	}
 
 	//イージングによるスケールと座標の制御

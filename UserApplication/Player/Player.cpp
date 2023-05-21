@@ -153,6 +153,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	playerAttackSE.SoundLoadWave("playerAttack.wav");
 
 	playerAttackSE4.SoundLoadWave("playerAttack4.wav");
+
+	playerDamegeSE.SoundLoadWave("playerDamage.wav");
 }
 
 
@@ -1572,6 +1574,7 @@ void Player::Collision(int damage)
 {
 	if (isKnockBack == false)
 	{
+		playerDamegeSE.SoundPlayWave(false, 0.6f);
 		SetKnockBackCount();
 		HP -= damage;
 		damageFlashFlame = 0;

@@ -382,4 +382,6 @@ private:
 
 	Sound playerAttackSE;
 	Sound playerAttackSE4;
+
+	Sound playerDamegeSE;
 };

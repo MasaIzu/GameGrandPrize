@@ -1508,7 +1508,7 @@ void Player::Attack() {
 				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 
 			}
-			else if (playerNowMotion == PlayerMotion::Ult2) {
+			else if (playerNowMotion == PlayerMotion::Ult2) {//ここやる
 				if (IsCombo == false) {
 					playerAttackMovement = 20.0f;
 					LookingMove = worldTransform_.look - GetWorldPosition();

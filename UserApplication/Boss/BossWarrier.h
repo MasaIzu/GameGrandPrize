@@ -86,10 +86,6 @@ private:
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ãƒœã‚¹ç¬¬äºŒå½¢æ…‹ãEãƒ¢ãƒEƒ«
 
-	WorldTransform boss2TornadoTransform[2];
-	float TornadoRotY[2];
-	float TornadoSpeedRotY = 5;
-	bool isTornado = false;
 	bool isAtkArmSwing = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
@@ -111,6 +107,14 @@ private:
 	BossAttackPhase bossAttackPhase = BossAttackPhase::Before;
 
 	EasingData attackEasing;
+
+	std::unique_ptr<Model> ModelSpere;
+
+	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
+
+	//•—‚Ì“–‚½‚è”»’è
+	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
+	float BossWarrierRadius = 1.0f;
 
 	//
 

@@ -139,9 +139,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 		AttackCollider[i]->SetOldEnemyAttackPos(w[i].matWorld_);
 	}
 
+	Matrix4 bossDir;
 	switch (attack)
 	{
 	case Attack::StandBy:
+		ImGui::Text("attack stand");
+
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
 			InitAtkArmSwing();
@@ -308,6 +311,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 			break;
 		}
 		attackEasing.Update();
+		break;
+
+	case Attack::SwordSwing:
+		UpdateAtkSwordSwing();
 		break;
 	default:
 		break;
@@ -581,11 +588,8 @@ void BossWarrier::Rota()
 	{
 		Matrix4 mat;
 		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
-
 		w[i].SetMatRot(mat);
 	}
-
-
 }
 
 void BossWarrier::InitAtkArmSwing()
@@ -707,4 +711,139 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
+}
+
+void BossWarrier::InitAtkSwordSwing()
+{
+	attack = Attack::SwordSwing;
+	//各部位の回転角を設定
+	//左肩の回転:x180度,y30度,z30度
+	//右肩の回転:x0度,y30度,z95度
+	//右肘の回転:x30度,y20度,z95度
+
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };
+	rootRot = convertDegreeToRadian(rootRot);
+	shoulderRotL = convertDegreeToRadian(shoulderRotL);
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+	atkStartTime = 60;
+	isAfter = false;
+
+	//剣の座標を決める
+	Vector3 rotaV[2];
+	rotaV[0].x = sin(PI / 3.0f);
+	rotaV[0].z = cos(PI / 3.0f);
+	rotaV[0].normalize();
+	rotaV[1].x = -sin(PI / 3.0f);
+	rotaV[1].z = -cos(PI / 3.0f);
+	rotaV[1].normalize();
+	rotaV[0] *= 90.0f;
+	rotaV[1] *= 90.0f;
+
+	Matrix4 bossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+	swordPos[0] = bossDir.transform(rotaV[0], bossDir) + targetPos;
+	swordPos[1] = bossDir.transform(rotaV[1], bossDir) + targetPos;
+
+
+}
+
+void BossWarrier::UpdateAtkSwordSwing()
+{
+	Vector3 rot = boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_;
+	rot = convertRadianToDegree(rot);
+	ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
+	ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotY", &rot.y, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);
+	rot = convertDegreeToRadian(rot);
+
+	//回転に使う角とそれを制御するデータ
+	Vector3 rootRot, shoulderRotL, shoulderRotR, elbowRotR;
+	Vector3 dataRootRot[2], dataRotShoulderL[2];
+
+	dataRootRot[0] = { 0,15,0 };
+	dataRootRot[1] = { 0,-15,0 };
+	dataRotShoulderL[0] = { 180,30,30 };
+	dataRotShoulderL[1] = { 300,230,30 };
+	dataRotShoulderL[1] = { 300,-130,30 };
+	//度数法に変換
+	for (int i = 0; i < 2; i++) {
+		dataRootRot[i] = convertDegreeToRadian(dataRootRot[i]);
+		dataRotShoulderL[i] = convertDegreeToRadian(dataRotShoulderL[i]);
+	}
+
+	rootRot = { 0,15,0 };
+	shoulderRotL = { 180,30,30 };
+	shoulderRotR = { 0,30,95 };
+	elbowRotR = { 30,20,95 };	
+	shoulderRotR = convertDegreeToRadian(shoulderRotR);
+	elbowRotR = convertDegreeToRadian(elbowRotR);
+
+	//剣振り開始のカウントダウン
+	if (atkStartTime > 0) {
+		atkStartTime--;
+		//角度は剣振り前の形に
+		rootRot = dataRootRot[0];
+		shoulderRotL = dataRotShoulderL[0];
+		easeRotArm.Start(30);
+	}
+	//カウントダウン0で攻撃開始
+	else if (atkStartTime == 0) {
+		easeRotArm.Update();
+	}
+
+	if (!easeRotArm.GetActive()) {
+		attack = Attack::StandBy;
+	}
+
+
+	//イージング
+	float ease = pow(easeRotArm.GetTimeRate(), 5);
+	rootRot = Lerp(dataRootRot[0], dataRootRot[1], easeRotArm.GetTimeRate());
+	shoulderRotL = Lerp(dataRotShoulderL[0], dataRotShoulderL[1], ease);
+
+	//角度をセット
+	boss2Model[BossWarrierPart::Root].Transform.SetRot(rootRot);
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(elbowRotR);
+
+}
+
+float convertDegreeToRadian(float degree)
+{
+	return degree * PI / 180.0f;
+}
+
+float convertRadianToDegree(float radian)
+{
+	return radian * 180.0f / PI;
+}
+
+Vector3 convertDegreeToRadian(const Vector3& degree)
+{
+	Vector3 result = degree;
+	result.x = convertDegreeToRadian(result.x);
+	result.y = convertDegreeToRadian(result.y);
+	result.z = convertDegreeToRadian(result.z);
+	return result;
+}
+
+Vector3 convertRadianToDegree(const Vector3& radian)
+{
+	Vector3 result = radian;
+	result.x = convertRadianToDegree(result.x);
+	result.y = convertRadianToDegree(result.y);
+	result.z = convertRadianToDegree(result.z);
+	return result;
 }

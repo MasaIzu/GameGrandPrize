@@ -49,6 +49,8 @@ enum class Attack
 	MultiLaunchSword,
 	LaunchSword,
 
+	SwordSwing,
+
 };
 
 enum class BossAttackPhase
@@ -98,6 +100,9 @@ private:
 	float TornadoSpeedRotY = 5;
 	bool isTornado = false;
 	bool isAtkArmSwing = false;
+	int atkStartTime = 0;
+
+	bool isAfter = false;
 	float rootRotRad = 0;
 	int TornadoFlame = 0;
 	bool isLastAtkStart = false;
@@ -107,6 +112,7 @@ private:
 	Vector3 dataRotElbow[2];
 	Vector3 dataRotShoulder[2];
 	Vector3 dummyTargetPos;
+	Vector3 swordPos[2];
 
 	//å¼•æ•°ãªã©ã§ã‚‚ã‚‰ã£ã¦ãã‚‹å¤‰æ•°
 	Vector3 targetPos = { 0,0,0 };
@@ -158,12 +164,26 @@ private:
 #pragma endregion
 
 private:
-	//è…•æŒ¯ã‚Šæ”»æ’EEåˆæœŸåŒE
+	//˜rU‚èUŒ‚‚Ì‰Šú‰»
 	void InitAtkArmSwing();
 
-	//è…•æŒ¯ã‚Šæ”»æ’EEæ›´æ–°
+	//˜rU‚èUŒ‚XV
 	void UpdateAtkArmSwing();
+
+	//Œ•U‚èUŒ‚‚Ì‰Šú‰»
+	void InitAtkSwordSwing();
+
+	//Œ•U‚èUŒ‚XV
+	void UpdateAtkSwordSwing();
 
 };
 
 //Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);
+
+float convertDegreeToRadian(float degree);
+
+float convertRadianToDegree(float radian);
+
+Vector3 convertDegreeToRadian(const Vector3& degree);
+
+Vector3 convertRadianToDegree(const Vector3& radian);

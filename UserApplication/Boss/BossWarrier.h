@@ -75,6 +75,7 @@ public:
 	void StartMultiLaunchSword();
 	void LaunchSword();
 	void StartLaunchSword();
+	void BossTornado();
 
 	void LaunchSwordDraw(ViewProjection viewProMat);
 
@@ -86,14 +87,6 @@ private:
 	Input* input_ = nullptr;
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//繝懊せ隨ｬ莠悟ｽ｢諷九・繝｢繝・Ν
-	std::unique_ptr<Model> boss2TornadeModel;
-
-	std::unique_ptr<Model> ModelSpere;
-
-	//風の当たり判定
-	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
-	float BossWarrierRadius = 1.0f;
-	WorldTransform modelSpere[BossWarrierPart::Boss2PartMax];
 
 	WorldTransform boss2TornadoTransform[2];
 	float TornadoRotY[2];
@@ -113,6 +106,8 @@ private:
 	Vector3 dataRotShoulder[2];
 	Vector3 dummyTargetPos;
 	Vector3 swordPos[2];
+
+	int atkArmSwingTime=0;
 
 	//蠑墓焚縺ｪ縺ｩ縺ｧ繧ゅｉ縺｣縺ｦ縺上ｋ螟画焚
 	Vector3 targetPos = { 0,0,0 };
@@ -149,9 +144,18 @@ private:
 	BaseCollider* AttackCollider[MAXSWROD];
 	float AttackRadius = 4.0f;
 
+
+	std::unique_ptr<Model> boss2TornadeModel;
+	WorldTransform boss2TornadoTransform[2];
+	float TornadoRotY[2];
+	float TornadoSpeedRotY = 5;
+	bool isTornado = false;
+
 	//風の当たり判定
 	BaseCollider* Tornado;
 	float TornadoRadius = 1.0f;
+
+
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 

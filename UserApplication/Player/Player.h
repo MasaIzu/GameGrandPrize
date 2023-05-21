@@ -270,7 +270,7 @@ private:
 	int attackConbo = 0;
 	bool isPlayMotion = false;
 
-	float receptionTime = 0.0f;
+	int receptionTime = 0;
 	bool conboFlag = false;
 
 	bool isSpace = false;

@@ -220,10 +220,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 					frem += 0.015;
 				}
 				if (playerNowMotion == PlayerMotion::soukenCombo1) {
-					frem += 0.01;
+					frem += 0.015;
 				}
 				else if (playerNowMotion == PlayerMotion::soukenCombo2) {
-					frem += 0.01;
+					frem += 0.015;
 				}
 			}
 			else {
@@ -238,7 +238,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 				}
 			}
 			if (conboFlag == true) {
-				receptionTime += 0.025f;
+				receptionTime += 1;
 			}
 
 		}
@@ -400,7 +400,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	ImGui::Text("worldTransform_.alpha:%f", worldTransform_.alpha);
-	ImGui::Text("isAdmission:%d", isAdmission);
+	ImGui::Text("receptionTime:%d", receptionTime);
 	ImGui::Text("look:%f", worldTransform_.look.x);
 	ImGui::Text("look:%f", worldTransform_.look.y);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -730,12 +730,12 @@ void Player::Attack() {
 					MinimumFrem = 2.0f;
 					MaxFrem = 2.0f;
 					frem = 0.0f;
-					receptionTime = 0.0f;
+					receptionTime = 0;
 					conboFlag = true;
 
 				}
 				if (attackConbo == 1) {
-					if (receptionTime > 0.8f && receptionTime < 1.45f) {
+					if (receptionTime > 19 && receptionTime < 50) {
 						attackConbo = 2;
 						playerNowMotion = PlayerMotion::soukenCombo2;
 
@@ -745,7 +745,7 @@ void Player::Attack() {
 						frem = 0.0f;
 						//AttackWaitTime = 10;
 						//AttackWaitingTime = 10;
-						receptionTime = 0.0f;
+						receptionTime = 0;
 
 						conboFlag = true;
 
@@ -756,36 +756,36 @@ void Player::Attack() {
 					}
 				}
 				else if (attackConbo == 2) {
-					if (receptionTime > 0.5f && receptionTime < 1.4f) {
+					if (receptionTime > 19 && receptionTime < 50) {
 						attackConbo = 3;
 						playerNowMotion = PlayerMotion::soukenCombo3;
 						isPlayMotion = true;
 						MinimumFrem = 1.86f;
 						MaxFrem = 1.88f;
 						frem = 0.0f;
-						receptionTime = 0.0f;
+						receptionTime = 0;
 					}
 				}
 				else if (attackConbo == 3) {
-					if (receptionTime > 0.8f && receptionTime < 1.45f) {
+					if (receptionTime > 30 && receptionTime < 60) {
 						attackConbo = 4;
 						playerNowMotion = PlayerMotion::soukenCombo4;
 						isPlayMotion = true;
 						MinimumFrem = 1.86f;
 						MaxFrem = 1.88f;
 						frem = 0.0f;
-						receptionTime = 0.0f;
+						receptionTime = 0;
 					}
 				}
 				else if (attackConbo == 4) {
-					if (receptionTime > 0.8f && receptionTime < 1.6f) {
+					if (receptionTime > 27 && receptionTime < 70) {
 						attackConbo = 5;
 						playerNowMotion = PlayerMotion::soukenCombo5;
 						isPlayMotion = true;
 						MinimumFrem = 1.86f;
 						MaxFrem = 1.88f;
 						frem = 0.0f;
-						receptionTime = 0.0f;
+						receptionTime = 0;
 					}
 				}
 
@@ -1344,7 +1344,7 @@ void Player::KnockBackUpdate()
 				attackConbo = 0;
 
 				frem = 30.0f;
-				receptionTime = 0.0f;
+				receptionTime = 0;
 
 				SowrdDrowTime = 0;
 				MaxSowrdRotate = 35;
@@ -1794,7 +1794,7 @@ void Player::Reset()
 	attackConbo = 0;
 	isPlayMotion = false;
 
-	receptionTime = 0.0f;
+	receptionTime = 0;
 	conboFlag = false;
 
 	isSpace = false;

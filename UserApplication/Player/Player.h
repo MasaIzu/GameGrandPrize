@@ -405,4 +405,6 @@ private:
 	int UltKenGenerationTime = 0;
 	int UltKenGenerationMaxTime = 110;
 
+	uint32_t AttackCoolTime = 0;
+
 };

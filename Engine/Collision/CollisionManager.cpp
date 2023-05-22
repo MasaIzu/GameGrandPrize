@@ -3,6 +3,7 @@
 #include "Collision.h"
 #include "MeshCollider.h"
 #include <CollisionAttribute.h>
+#include <imgui.h>
 
 using namespace DirectX;
 
@@ -22,6 +23,16 @@ void CollisionManager::CheckAllCollisions()
 	isEnemySwordHit = false;
 	isEnemyReception = false;
 	playerPos = { 0,0,0 };
+
+	if (CoolTime > 0) {
+		CoolTime--;
+	}
+
+	ImGui::Begin("Collision");
+
+	ImGui::Text("CoolTime:%d", static_cast<int>(CoolTime));
+
+	ImGui::End();
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
@@ -51,8 +62,12 @@ void CollisionManager::CheckAllCollisions()
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						HitWorldPos = colB->GetWorldPos();
-						isAttackHit = true;
+						if (CoolTime <= 0) {
+							HitWorldPos = colB->GetWorldPos();
+							isAttackHit = true;
+							CoolTime = SphereB->coolTime;
+						}
+						
 					}
 				}
 				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
@@ -88,8 +103,11 @@ void CollisionManager::CheckAllCollisions()
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						
-						isAttackHit = true;
+						if (CoolTime <= 0) {
+							HitWorldPos = colB->GetWorldPos();
+							isAttackHit = true;
+							CoolTime = SphereB->coolTime;
+						}
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYSOWRDATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {

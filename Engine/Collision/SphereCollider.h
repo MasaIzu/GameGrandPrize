@@ -25,6 +25,8 @@ public:
 	/// </summary>
 	void Update(const Matrix4& worldPos) override;
 	void Update(const Matrix4& worldPos, const float& radius) override;
+	void Update(const Matrix4& worldPos, const uint32_t& Cooltime) override;
+	void Update(const Matrix4& worldPos, const float& radius, const uint32_t& Cooltime) override;
 
 	inline void SetRadius(float radius) { this->radius = radius; }
 
@@ -37,5 +39,9 @@ private:
 	Vector4 offset;
 	// 半径
 	float radius;
+
+	//CoolTime
+	uint32_t coolTime = 0;
+
 };
 

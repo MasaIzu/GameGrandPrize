@@ -452,8 +452,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	ImGui::Text("UltGage:%d", UltGage);
-
-	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
+	ImGui::Text("isPlayMotion:%d", isPlayMotion);
+	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60); 
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
 
 	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
@@ -481,7 +481,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	ImGui::Text("frem:%f", frem);
-	ImGui::Text("UltKenGenerationTime:%d", UltKenGenerationTime);
+	ImGui::Text("AttackCoolTime:%d", AttackCoolTime);
 	ImGui::Text("SowrdDrowTime:%d", SowrdDrowTime);
 	ImGui::Text("MinimumFrem:%f", MinimumFrem);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -850,9 +850,7 @@ void Player::Attack() {
 				if (input_->MouseInputTrigger(1)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
-					isAttack = true;
 					startCount = 0;
-					nowCount = 0;
 					timeRate = 0;
 					startIndex = 1;
 
@@ -875,7 +873,7 @@ void Player::Attack() {
 						frem = 0.0f;
 						receptionTime = 0;
 						conboFlag = true;
-
+						
 					}
 					if (attackConbo == 1) {
 						if (receptionTime > 19 && receptionTime < 50) {
@@ -929,6 +927,7 @@ void Player::Attack() {
 							MaxFrem = 1.88f;
 							frem = 0.0f;
 							receptionTime = 0;
+							
 						}
 					}
 
@@ -937,79 +936,6 @@ void Player::Attack() {
 		}
 
 
-		if (nowCount < maxTime) {
-			nowCount++;
-		}
-		else {
-			if (isAttack == true)
-			{
-				SowrdDFlame = 0;
-				SowrdAFlame = 36;
-			}
-			isAttack = false;
-			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-			}
-		}
-		if (isAttack == true) {
-
-			//補間で使うデータ
-			//start → end を知らん秒で完了させる
-			Vector3 p0(worldTransform_.lookRight);									//スタート地点
-			Vector3 p1((worldTransform_.look + worldTransform_.lookRight) / 2);		//制御点その1
-			Vector3 p2(worldTransform_.look);										//制御点その2
-			Vector3 p3((worldTransform_.look + worldTransform_.lookLeft) / 2);		//制御点その3
-			Vector3 p4(worldTransform_.lookLeft);									//ゴール地点
-
-			p0 = p0 + ((p0 - GetWorldPosition()) * attackDistanceX);
-			p1 = p1 + ((p1 - GetWorldPosition()) * attackDistanceZ);
-			p2 = p2 + ((p2 - GetWorldPosition()) * attackDistanceZ);
-			p3 = p3 + ((p3 - GetWorldPosition()) * attackDistanceZ);
-			p4 = p4 + ((p4 - GetWorldPosition()) * attackDistanceX);
-
-
-			points = { p0,p0,p1,p2,p3,p4,p4 };
-
-			// 落下
-			// スタート地点        ：start
-			// エンド地点        　：end
-			// 経過時間            ：elapsedTime [s]
-			// 移動完了の率(経過時間/全体時間) : timeRate (%)
-			elapsedTime = nowCount - startCount;
-			timeRate = elapsedTime / maxTime;
-
-			if (timeRate >= 1.0f)
-			{
-				if (startIndex < points.size() - 3)
-				{
-					startIndex += 1.0f;
-					timeRate -= 1.0f;
-					startCount = nowCount;
-				}
-				else
-				{
-					timeRate = 1.0f;
-				}
-			}
-			position = splinePosition(points, startIndex, timeRate);
-
-			playerAttackTransform_.translation_ = position;
-
-			float sphereX = position.x - GetWorldPosition().x;
-			float sphereY = position.y - GetWorldPosition().y;
-			float sphereZ = position.z - GetWorldPosition().z;
-
-			Vector3 sphere(sphereX / SphereCount, sphereY / SphereCount, sphereZ / SphereCount);
-
-			for (int i = 0; i < SphereCount; i++) {
-				colliderPos[i] = GetWorldPosition() + sphere * i;
-				worldSpherePos[i] = MyMath::Translation(colliderPos[i]);
-				AttackCollider[i]->Update(worldSpherePos[i]);
-				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
-				playerAttackTransformaaaa_[i].translation_ = colliderPos[i];
-				playerAttackTransformaaaa_[i].TransferMatrix();
-			}
-		}
 		if (isSowrd)
 		{
 			if (SowrdAFlame < 18 && SowrdDFlame>0)
@@ -1100,6 +1026,7 @@ void Player::Attack() {
 					LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 					RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
+					AttackCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1362,6 +1289,8 @@ void Player::Attack() {
 						AttackRotX += 14.0f;
 					}
 				}
+				AttackCoolTime = 120;
+
 				AttackNowPos += PlayerContactPos;
 				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 			}
@@ -1372,6 +1301,7 @@ void Player::Attack() {
 				IsCombo3 = false;
 				IsCombo4 = false;
 				IsCombo5 = false;
+				AttackCoolTime = 0;
 			}
 
 		}
@@ -1426,11 +1356,15 @@ void Player::Attack() {
 			}
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
-
-		if (isAttack == true) {
+		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTime);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			}
+		}
+		else {
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 			}
 		}
 	}
@@ -1441,7 +1375,6 @@ void Player::Attack() {
 				if (input_->MouseInputTrigger(1)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
-					isAttack = true;
 					startCount = 0;
 					nowCount = 0;
 					timeRate = 0;
@@ -1484,21 +1417,6 @@ void Player::Attack() {
 		if (isEnemyDamage == false) {
 			if (playerNowMotion == PlayerMotion::Ult1) {
 
-			}
-		}
-
-		if (nowCount < maxTime * 3) {
-			nowCount++;
-		}
-		else {
-			if (isAttack == true)
-			{
-				SowrdDFlame = 0;
-				SowrdAFlame = 36;
-			}
-			isAttack = false;
-			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 			}
 		}
 
@@ -1655,10 +1573,15 @@ void Player::Attack() {
 			playerAttackTransformaaaa_[i].TransferMatrix();
 		}
 
-		if (isAttack == true) {
+		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
 				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			}
+		}
+		else {
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 			}
 		}
 

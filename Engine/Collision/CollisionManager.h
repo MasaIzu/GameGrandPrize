@@ -74,4 +74,8 @@ private:
 
 	bool isEnemyReception = false;
 
+
+	int CoolTime = 0;
+	int isCoolTime = false;
+
 };

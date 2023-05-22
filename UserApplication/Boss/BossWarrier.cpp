@@ -127,6 +127,22 @@ void BossWarrier::Initialize()
 	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
 	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
 
+
+	// エネルギーの初期化
+	for (int i = 0; i < energyNum; i++) {
+		energy[i].WorldTrans.Initialize();
+		energy[i].WorldTrans.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
+		energy[i].WorldTrans.scale_ = { energyScale,energyScale,energyScale };
+
+		energy[i].model.reset(Model::CreateFromOBJ("sphere", true));
+		energy[i].startTaiming = Random(3, 30);
+	}
+	IsKingDrop = true;
+	IsKingUp = true;
+
+	EnergyVel = createEnergyEndPos - createEnergyStartPos;
+	EnergyVel /= 2;
+	energyVelHozon = EnergyVel;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -325,7 +341,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	}
 
 	// 一旦仮に王のしずくの流れを確認用に
-	IsKingDrop = true;
+
 	KingDropUpdate();
 
 	ImGui::Begin("Warrier");
@@ -360,6 +376,11 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		ModelSpere->Draw(modelSpere[i], viewProMat);
 	}
 
+	if (IsKingDrop == true) {
+		for (int i = 0; i < energyNum; i++) {
+			energy[i].model->Draw(energy[i].WorldTrans, viewProMat);
+		}
+	}
 }
 
 void BossWarrier::MultiLaunchSword()
@@ -717,35 +738,111 @@ void BossWarrier::KingDropUpdate()
 {
 	// 王のしずくだったら
 	if (IsKingDrop == true) {
-		// 体の位置を上げる処理
-		if (bodyUpMaxY > boss2Model[BossWarrierPart::Root].Transform.translation_.y) {
-			boss2Model[BossWarrierPart::Root].Transform.translation_.y += 0.05f;
-		}
-		// 腕を上げる処理---------------Todo
-		if (armUpTimer < armUpTimeMax) {
-			armUpTimer++;
-		}
+		// 体や腕の移動処理
+		if (IsKingUp == true) {
+			// 体の位置を上げる処理
+			if (bodyUpMaxY > boss2Model[BossWarrierPart::Root].Transform.translation_.y) {
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y += 0.05f;
+			}
+			// 腕を上げる処理---------------Todo
+			if (armUpTimer < armUpTimeMax) {
+				armUpTimer++;
+			}
 
-		// 
-		ImGui::Begin("Font");
-		ImGui::SliderFloat3("BossSho L Rot", &shoulderL_RotaEnd.x, -180, 180);
-		ImGui::SliderFloat3("BossElbowL Rot", &elbowL_RotaEnd.x, -180, 180);
-		ImGui::SliderFloat3("Boss L Pos", &zurasi_L_Pos.x, -5, 5);
-		ImGui::End();
+			// 
+			ImGui::Begin("Font");
+			ImGui::SliderFloat3("BossSho L Rot", &shoulderL_RotaEnd.x, -180, 180);
+			ImGui::SliderFloat3("BossElbowL Rot", &elbowL_RotaEnd.x, -180, 180);
+			ImGui::SliderFloat3("Boss L Pos", &zurasi_L_Pos.x, -5, 5);
+			ImGui::End();
 
-		//boss2Model[BossWarrierPart::elbowL].Transform.translation_ = zurasi_L_Pos;
-		//boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(DegreeToRadianVec3(shoulderL_RotaEnd));
-		//boss2Model[BossWarrierPart::elbowL].Transform.SetRot(DegreeToRadianVec3(elbowL_RotaEnd));
+			//boss2Model[BossWarrierPart::elbowL].Transform.translation_ = zurasi_L_Pos;
+			//boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(DegreeToRadianVec3(shoulderL_RotaEnd));
+			//boss2Model[BossWarrierPart::elbowL].Transform.SetRot(DegreeToRadianVec3(elbowL_RotaEnd));
+
+			// イージングで腕を回転と位置を動かす
+			boss2Model[BossWarrierPart::elbowR].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_R_Pos, armUpTimer, armUpTimeMax);
+			boss2Model[BossWarrierPart::elbowL].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_L_Pos, armUpTimer, armUpTimeMax);
+
+			boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(Easing::InOutVec3(StandByShoulderR, DegreeToRadianVec3(shoulderR_RotaEnd), armUpTimer, armUpTimeMax));
+			boss2Model[BossWarrierPart::elbowR].Transform.SetRot(Easing::InOutVec3(StandByElbowR, DegreeToRadianVec3(elbowR_RotaEnd), armUpTimer, armUpTimeMax));
+			boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(Easing::InOutVec3(StandByShoulderL, DegreeToRadianVec3(shoulderL_RotaEnd), armUpTimer, armUpTimeMax));
+			boss2Model[BossWarrierPart::elbowL].Transform.SetRot(Easing::InOutVec3(StandByElbowL, DegreeToRadianVec3(elbowL_RotaEnd), armUpTimer, armUpTimeMax));
+
+			// ボスの位置が上がりきってとイージングが終了したら
+			// エネルギーのフラグをオンにする
+			if (boss2Model[BossWarrierPart::Root].Transform.translation_.y >= bodyUpMaxY &&
+				armUpTimer >= armUpTimeMax) {
+				IsKingEnergy = true;
+
+				
+
+			}
+		}
 		
-		// イージングで腕を回転と位置を動かす
-		boss2Model[BossWarrierPart::elbowR].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_R_Pos, armUpTimer, armUpTimeMax);
-		boss2Model[BossWarrierPart::elbowL].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_L_Pos, armUpTimer, armUpTimeMax);
-		
-		boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(Easing::InOutVec3(StandByShoulderR, DegreeToRadianVec3(shoulderR_RotaEnd), armUpTimer, armUpTimeMax));
-		boss2Model[BossWarrierPart::elbowR].Transform.SetRot(Easing::InOutVec3(StandByElbowR, DegreeToRadianVec3(elbowR_RotaEnd), armUpTimer, armUpTimeMax));
-		boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(Easing::InOutVec3(StandByShoulderL, DegreeToRadianVec3(shoulderL_RotaEnd), armUpTimer, armUpTimeMax));
-		boss2Model[BossWarrierPart::elbowL].Transform.SetRot(Easing::InOutVec3(StandByElbowL, DegreeToRadianVec3(elbowL_RotaEnd), armUpTimer, armUpTimeMax));
-	
+
+		// エネルギーのフラグがオンの時
+		if (IsKingEnergy == true) {
+
+			ImGui::Begin("Energy");
+			ImGui::SliderFloat3("EnergyStart Pos", &createEnergyStartPos.x, -10, 10);
+			ImGui::SliderFloat3("EnergyEnd Pos", &createEnergyEndPos.x, -10, 10);
+			ImGui::InputFloat("energyposZ", &energy[0].WorldTrans.translation_.z);
+			ImGui::InputFloat("energyBallScale", &energyBallScale);
+			ImGui::End();
+			for (int i = 0; i < energyNum; i++) {
+				if (energy[i].IsKingEnergyMoce == false) {
+					// エネルギーの移動するタイミングをずらす
+					if (energy[i].startTimer < energy[i].startTaiming) {
+						energy[i].startTimer++;
+					}
+
+					// エネルギーのずらしタイミングに到達したら
+					// イージングを始める
+					if (energy[i].startTimer >= energy[i].startTaiming) {
+						// イージングのタイマーをプラス
+						if (energy[i].easingTimer < energy[i].easingTimeMax) {
+							energy[i].easingTimer++;
+							energy[i].easingTimeRate = energy[i].easingTimer / energy[i].easingTimeMax;
+						}
+						// 中間点をずらすのを一回行う
+						if (energy[i].IsZurasi == false) {
+							energy[i].IsZurasi = true;
+							energyVelZurasi.x = Random(-1.0f, 1.0f);
+							energyVelZurasi.y = Random(-1.0f, 1.0f);
+							energyVelZurasi.z = Random(-1.0f, 1.0f);
+							EnergyVel = energyVelHozon;
+							EnergyVel += energyVelZurasi;
+							energy[i].colPoint = EnergyVel;
+						}
+
+
+						// ベジエ
+						energy[i].WorldTrans.translation_ = LerpBezireQuadratic(createEnergyStartPos, energy[i].colPoint,createEnergyEndPos, energy[i].easingTimeRate);
+
+						// イージングが完了したらリセットして再度始める準備
+						if (energy[i].easingTimer >= energy[i].easingTimeMax) {
+							energy[i].startTimer = 0;
+							energy[i].easingTimer = 0;
+							energy[i].IsZurasi = false;
+							energy[i].WorldTrans.translation_ = createEnergyStartPos;
+						}
+					}
+				}
+
+				energy[i].WorldTrans.TransferMatrix();
+				//energy[1].WorldTrans.TransferMatrix();
+			}
+			
+			//energy[0].WorldTrans.translation_ = createEnergyStartPos;
+			//energy[1].WorldTrans.translation_ = createEnergyEndPos;
+
+			//energy[0].WorldTrans.scale_ = { energyScale,energyScale ,energyScale };
+			//energy[1].WorldTrans.scale_ = { energyBallScale,energyBallScale ,energyBallScale };
+
+
+
+		}
 	}
 	
 }

@@ -41,6 +41,24 @@ struct BossWarrierModel {
 	bool isDraw;
 };
 
+struct BossKingDropEnergy
+{
+	std::unique_ptr<Model> model;
+	WorldTransform WorldTrans;
+	// 王のしずくのエネルギーが移動するフラグ
+	bool IsKingEnergyMoce = false;
+
+	bool IsZurasi = false;
+
+	float startTaiming;
+	float startTimer = 0;
+
+	float easingTimer = 0;
+	float easingTimeMax = 80;
+	float easingTimeRate = 0;
+	Vector3 colPoint;
+};
+
 enum class Attack
 {
 	StandBy,
@@ -164,15 +182,22 @@ private:
 	bool IsKingUp = false;
 	// 王のしずくのエネルギーを集めるフラグ
 	bool IsKingEnergy = false;
+
 	// 王のしずくの弾を打ち下ろすかどうかのフラグ
 	bool IsKingDown = false;
 
 	// 生成するのに使うエネルギー
-	Model energy[50];
+	int energyNum = 50;
+	float energyScale = 0.05f;
+	float energyBallScale = 2.8f;
+	BossKingDropEnergy energy[50];
 
 	// エネルギー生成の開始位置と終点位置
-	Vector3 createEnergyStartPos;
-	Vector3 createEnergyEndPos;
+	Vector3 createEnergyStartPos = { 0,0.8f,1.85f };
+	Vector3 createEnergyEndPos = { 0,2.96f,3.84f };
+	Vector3 energyVelHozon;
+	Vector3 EnergyVel;
+	Vector3 energyVelZurasi;
 
 	// 体の上昇限界
 	float bodyDefultY = 20;

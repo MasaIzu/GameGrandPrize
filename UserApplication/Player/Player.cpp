@@ -225,11 +225,44 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 		}
 
-		if (UltKenGenerationTime < UltKenGenerationMaxTime) {
-			UltKenGenerationTime++;
-		}
-		else {
-			isUltKenGeneration = true;
+		if (isAwakening == true) {
+			if (UltKenGenerationTime < UltKenGenerationMaxTime) {
+				UltKenGenerationTime++;
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+				SowrdDrowTime = 0;
+			}
+			else {
+				isUltKenGeneration = true;
+
+				if (UltKenGenerationTime < 125) {
+					UltKenGenerationTime++;
+				}
+				else {
+
+					if (attackMoveTimer < MaxAttackMoveTimer) {
+						attackMoveTimer += 1.0;
+						SowrdDrowTime++;
+						NotSowrdDrowTime = 10;
+					}
+					if (SowrdDrowTime < MaxSowrdRotate) {
+						if (SowrdDrowTime < 35) {
+							AttackRotX += (0.0f) / 34.0f;
+							AttackRotY += (-24.0f) / 34.0f;
+							AttackRotZ += (25.0f) / 34.0f;
+						}
+					}
+
+					Matrix4 rooooootttt;
+					rooooootttt *= MyMath::Rotation(Vector3(PlayerRot.x + MyMath::GetAngle(AttackRotX) + MyMath::GetAngle(AttackOnlyLeftRotX), PlayerRot.y, PlayerRot.z), 1);
+					rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ) + MyMath::GetAngle(-AttackOnlyLeftRotZ)), 3);
+					rooooootttt *= MyMath::Rotation(Vector3(0.0f, PlayerRot.y + MyMath::GetAngle(AttackRotY) + MyMath::GetAngle(AttackOnlyLeftRotY), 0.0f), 2);
+
+					ULTKEN.SetMatRot(rooooootttt);
+					ULTKEN.SetLookMatRot(rooooootttt);
+				}
+			}
 		}
 
 		if (isAttckWaiting == false) {
@@ -251,6 +284,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 				else if (playerNowMotion == PlayerMotion::Ult2) {
 					frem -= 0.003f;
 				}
+
 			}
 			else {
 				frem = MinimumFrem;
@@ -417,7 +451,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Begin("player");
 
 
-	ImGui::Text("BoneNum:%d", BoneNum);
+	ImGui::Text("IsCombo:%d", IsCombo);
 
 	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
@@ -447,8 +481,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	ImGui::Text("frem:%f", frem);
-	ImGui::Text("receptionTime:%d", receptionTime);
-	ImGui::Text("MaxFrem:%f", MaxFrem);
+	ImGui::Text("UltKenGenerationTime:%d", UltKenGenerationTime);
+	ImGui::Text("SowrdDrowTime:%d", SowrdDrowTime);
 	ImGui::Text("MinimumFrem:%f", MinimumFrem);
 	ImGui::Text("look:%f", worldTransform_.look.z);
 
@@ -1411,7 +1445,7 @@ void Player::Attack() {
 					nowCount = 0;
 					timeRate = 0;
 					startIndex = 1;
-					IsCombo = false;
+					//IsCombo = false;
 					if (isPlayMotion == false) {
 
 						attackConbo = 1;
@@ -1425,7 +1459,7 @@ void Player::Attack() {
 						isAttckWaiting = false;
 					}
 					if (attackConbo == 1) {
-						if (receptionTime > 25 && receptionTime < 50) {
+						if (receptionTime > 35 && receptionTime < 60) {
 							attackConbo = 2;
 							playerNowMotion = PlayerMotion::Ult2;
 
@@ -1443,6 +1477,12 @@ void Player::Attack() {
 						}
 					}
 				}
+			}
+		}
+
+		if (isEnemyDamage == false) {
+			if (playerNowMotion == PlayerMotion::Ult1) {
+
 			}
 		}
 
@@ -1509,8 +1549,8 @@ void Player::Attack() {
 
 			}
 			else if (playerNowMotion == PlayerMotion::Ult2) {//ここやる
-				if (IsCombo == false) {
-					playerAttackMovement = 20.0f;
+				if (IsCombo2 == false) {
+					playerAttackMovement = 5.0f;
 					LookingMove = worldTransform_.look - GetWorldPosition();
 
 					if (isPlayerEnemycontact == true) {
@@ -1522,8 +1562,8 @@ void Player::Attack() {
 					attackMoveTimer = 0;
 
 					AttackNowPos = worldTransform_.translation_;
-					IsCombo = true;
-					IsCombo2 = false;
+					IsCombo = false;
+					IsCombo2 = true;
 					IsCombo3 = false;
 					IsCombo4 = false;
 					IsCombo5 = false;
@@ -1535,9 +1575,9 @@ void Player::Attack() {
 					OldAttackRotX = 30.0f;
 					OldAttackRotY = -280.0f;
 					OldAttackRotZ = 137.0f;
-					AttackRotX = 0.0f;
-					AttackRotY = -24.0f;
-					AttackRotZ = 25.0f;
+					AttackRotX = 30.0f;
+					AttackRotY = -280.0f;
+					AttackRotZ = 137.0f;
 					AttackOnlyLeftRotX = 0.0f;
 					AttackOnlyLeftRotY = 0.0f;
 					AttackOnlyLeftRotZ = 0.0f;
@@ -1558,9 +1598,9 @@ void Player::Attack() {
 				}
 				if (SowrdDrowTime < MaxSowrdRotate) {
 					if (SowrdDrowTime < 34) {
-						AttackRotX += (30.0f - OldAttackRotX) / 33.0f;
-						AttackRotY += (-280.0f - OldAttackRotY) / 33.0f;
-						AttackRotZ += (137.0f - OldAttackRotZ) / 33.0f;
+						AttackRotX += (0.0f - OldAttackRotX) / 33.0f;
+						AttackRotY += (-24.0f - OldAttackRotY) / 33.0f;
+						AttackRotZ += (25.0f - OldAttackRotZ) / 33.0f;
 					}
 				}
 
@@ -1568,6 +1608,14 @@ void Player::Attack() {
 
 				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
 
+			}
+			else {
+				attackMoveTimer = 0;
+				IsCombo = false;
+				IsCombo2 = false;
+				IsCombo3 = false;
+				IsCombo4 = false;
+				IsCombo5 = false;
 			}
 		}
 

@@ -324,6 +324,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].TransferMatrix();
 	}
 
+	// 一旦仮に王のしずくの流れを確認用に
+	IsKingDrop = true;
+	KingDropUpdate();
+
 	ImGui::Begin("Warrier");
 
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
@@ -707,4 +711,65 @@ void BossWarrier::UpdateAtkArmSwing()
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
+}
+
+void BossWarrier::KingDropUpdate()
+{
+	// 王のしずくだったら
+	if (IsKingDrop == true) {
+		// 体の位置を上げる処理
+		if (bodyUpMaxY > boss2Model[BossWarrierPart::Root].Transform.translation_.y) {
+			boss2Model[BossWarrierPart::Root].Transform.translation_.y += 0.05f;
+		}
+		// 腕を上げる処理---------------Todo
+		if (armUpTimer < armUpTimeMax) {
+			armUpTimer++;
+		}
+
+		// 
+		ImGui::Begin("Font");
+		ImGui::SliderFloat3("BossSho L Rot", &shoulderL_RotaEnd.x, -180, 180);
+		ImGui::SliderFloat3("BossElbowL Rot", &elbowL_RotaEnd.x, -180, 180);
+		ImGui::SliderFloat3("Boss L Pos", &zurasi_L_Pos.x, -5, 5);
+		ImGui::End();
+
+		//boss2Model[BossWarrierPart::elbowL].Transform.translation_ = zurasi_L_Pos;
+		//boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(DegreeToRadianVec3(shoulderL_RotaEnd));
+		//boss2Model[BossWarrierPart::elbowL].Transform.SetRot(DegreeToRadianVec3(elbowL_RotaEnd));
+		
+		// イージングで腕を回転と位置を動かす
+		boss2Model[BossWarrierPart::elbowR].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_R_Pos, armUpTimer, armUpTimeMax);
+		boss2Model[BossWarrierPart::elbowL].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_L_Pos, armUpTimer, armUpTimeMax);
+		
+		boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(Easing::InOutVec3(StandByShoulderR, DegreeToRadianVec3(shoulderR_RotaEnd), armUpTimer, armUpTimeMax));
+		boss2Model[BossWarrierPart::elbowR].Transform.SetRot(Easing::InOutVec3(StandByElbowR, DegreeToRadianVec3(elbowR_RotaEnd), armUpTimer, armUpTimeMax));
+		boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(Easing::InOutVec3(StandByShoulderL, DegreeToRadianVec3(shoulderL_RotaEnd), armUpTimer, armUpTimeMax));
+		boss2Model[BossWarrierPart::elbowL].Transform.SetRot(Easing::InOutVec3(StandByElbowL, DegreeToRadianVec3(elbowL_RotaEnd), armUpTimer, armUpTimeMax));
+	
+	}
+	
+}
+
+void BossWarrier::KingDropInit()
+{
+
+}
+
+float BossWarrier::DegreeToRadian(float degree)
+{
+	float PI = 3.141592f;
+	float result = degree * (PI / 180);
+
+	return result;
+}
+
+Vector3 BossWarrier::DegreeToRadianVec3(Vector3 degree)
+{
+	float PI = 3.141592f;
+	Vector3 result;
+	result.x = degree.x * (PI / 180);
+	result.y = degree.y * (PI / 180);
+	result.z = degree.z * (PI / 180);
+
+	return result;
 }

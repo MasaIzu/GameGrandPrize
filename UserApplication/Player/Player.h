@@ -256,8 +256,8 @@ private:
 	Vector2 avoidGaugeUnderPos = { 1070,412 };
 	Vector2 avoidGaugeUnderSize = { 128,128 };
 	//Fbxモデル
-	std::unique_ptr<FbxModel> fbxmodel;
-	FbxModel* fbxmodel2;
+	//std::unique_ptr<FbxModel> fbxmodel;
+	//FbxModel* fbxmodel2;
 	std::unique_ptr<FbxAnimation> modelAnim;
 	float frem = 0;
 

@@ -157,6 +157,48 @@ private:
 	const Vector3 StandByWaist = { 0,0,0 };
 #pragma endregion
 
+#pragma region 王のしずく関連の変数
+	// 王のしずくを打つか
+	bool IsKingDrop = false;
+	// 王のしずくのポジションに行くまでのフラグ
+	bool IsKingUp = false;
+	// 王のしずくのエネルギーを集めるフラグ
+	bool IsKingEnergy = false;
+	// 王のしずくの弾を打ち下ろすかどうかのフラグ
+	bool IsKingDown = false;
+
+	// 生成するのに使うエネルギー
+	Model energy[50];
+
+	// エネルギー生成の開始位置と終点位置
+	Vector3 createEnergyStartPos;
+	Vector3 createEnergyEndPos;
+
+	// 体の上昇限界
+	float bodyDefultY = 20;
+	float bodyUpMaxY = bodyDefultY + 10;
+
+	// 腕を斜めに上げる時の角度
+	Vector3 diagonalRotaL;
+	Vector3 diagonalRotaR;
+
+	// 腕をポジションずらし
+	Vector3 defuPos = { 0,0,0 };
+	Vector3 zurasi_R_Pos = { -0.875,0,0 };
+	Vector3 zurasi_L_Pos = { 0.875,0,0 };
+	// 腕のイージング
+	float armUpTimer = 0;
+	float armUpTimeMax = 360;
+
+	// 
+	Vector3 shoulderR_RotaEnd = { 0,90,0 };
+	Vector3 elbowR_RotaEnd = { -103.5f,31.5f,-22.5 };
+	Vector3 shoulderL_RotaEnd = { 0,-90,0 };
+	Vector3 elbowL_RotaEnd = { -103.5f,-31.5f,22.5 };
+
+#pragma endregion
+
+
 private:
 	//閻墓険繧頑判謦・・蛻晄悄蛹・
 	void InitAtkArmSwing();
@@ -164,6 +206,17 @@ private:
 	//閻墓険繧頑判謦・・譖ｴ譁ｰ
 	void UpdateAtkArmSwing();
 
+	// 王のしずくの更新処理
+	void KingDropUpdate();
+
+	// 王のしずくの初期化
+	void KingDropInit();
+
+	// 度数からラジアン
+	float DegreeToRadian(float degree);
+
+
+	Vector3 DegreeToRadianVec3(Vector3 degree);
 };
 
 //Matrix4 CreateMatRot(const Vector3& pos, const Vector3& target);

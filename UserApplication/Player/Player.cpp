@@ -451,7 +451,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::Begin("player");
 
 
-	ImGui::Text("IsCombo:%d", IsCombo);
+	ImGui::Text("UltGage:%d", UltGage);
 
 	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
@@ -937,7 +937,7 @@ void Player::Attack() {
 		}
 
 
-		if (nowCount < maxTime * 4) {
+		if (nowCount < maxTime) {
 			nowCount++;
 		}
 		else {
@@ -1441,6 +1441,7 @@ void Player::Attack() {
 				if (input_->MouseInputTrigger(1)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
+					isAttack = true;
 					startCount = 0;
 					nowCount = 0;
 					timeRate = 0;
@@ -1483,6 +1484,21 @@ void Player::Attack() {
 		if (isEnemyDamage == false) {
 			if (playerNowMotion == PlayerMotion::Ult1) {
 
+			}
+		}
+
+		if (nowCount < maxTime * 3) {
+			nowCount++;
+		}
+		else {
+			if (isAttack == true)
+			{
+				SowrdDFlame = 0;
+				SowrdAFlame = 36;
+			}
+			isAttack = false;
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 			}
 		}
 
@@ -1537,9 +1553,9 @@ void Player::Attack() {
 				}
 				if (SowrdDrowTime < MaxSowrdRotate) {
 					if (SowrdDrowTime < 34) {
-						AttackRotX += ( 30.0f - OldAttackRotX) / 33.0f;
-						AttackRotY += ( -280.0f - OldAttackRotY) / 33.0f;
-						AttackRotZ += ( 137.0f - OldAttackRotZ)/ 33.0f;
+						AttackRotX += (30.0f - OldAttackRotX) / 33.0f;
+						AttackRotY += (-280.0f - OldAttackRotY) / 33.0f;
+						AttackRotZ += (137.0f - OldAttackRotZ) / 33.0f;
 					}
 				}
 
@@ -1628,6 +1644,23 @@ void Player::Attack() {
 
 		ULTKEN.SetMatRot(rooooootttt);
 		ULTKEN.SetLookMatRot(rooooootttt);
+
+		Vector3 LBoneLook = ULTKEN.lookUp - ULTKEN.translation_;
+		LBoneLook.normalize();
+		AttackCollisionDistance = 3;
+		for (int i = 0; i < SphereCount; i++) {
+
+			playerAttackTransformaaaa_[i].translation_ = MyMath::GetWorldTransform(matL) + (LBoneLook * i) * AttackCollisionDistance;
+			playerAttackTransformaaaa_[i].scale_ = { AttackRadius,AttackRadius,AttackRadius };
+			playerAttackTransformaaaa_[i].TransferMatrix();
+		}
+
+		if (isAttack == true) {
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_);
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
+			}
+		}
 
 	}
 
@@ -1731,9 +1764,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
 
-	/*for (int i = 0; i < SphereCount; i++) {
+	for (int i = 0; i < SphereCount; i++) {
 		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	}*/
+	}
 
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
@@ -2184,6 +2217,15 @@ void Player::UltStart()
 				UltKenGenerationTime = 0;
 				isUltKenGeneration = false;
 			}
+		}
+	}
+
+	if (isPlayerUlt == true) {
+		if (UltGage > 1) {
+			UltGage--;
+		}
+		else {
+			isPlayerUlt = false;
 		}
 	}
 

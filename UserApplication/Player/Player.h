@@ -206,7 +206,7 @@ private:
 
 	std::vector<Vector3>points;
 
-	float maxTime = 0.1f * 40;				//全体時間[s]
+	float maxTime = 16.0f;				//全体時間[s]
 	float timeRate;						//何％時間が進んだか
 	//球の位置
 	Vector3 position;
@@ -393,7 +393,7 @@ private:
 	bool isAwakening = false;
 
 	int UltGage = 0;
-	int UltMaxGage = 60;
+	int UltMaxGage = 1000;
 
 
 	Sound playerDamegeSE;

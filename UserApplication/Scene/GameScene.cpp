@@ -569,7 +569,7 @@ void GameScene::GameUpdate()
 
 		minifishes[playerAttackHitNumber].OnCollision();
 
-		player->AddUltCount(10);
+		player->AddUltCount(500);
 	}
 
 

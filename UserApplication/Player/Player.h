@@ -405,6 +405,9 @@ private:
 	int UltKenGenerationTime = 0;
 	int UltKenGenerationMaxTime = 110;
 
+	uint32_t* AttackCoolTimeMax = 0;
 	uint32_t AttackCoolTime = 0;
+
+	bool isPorigonFlag = false;
 
 };

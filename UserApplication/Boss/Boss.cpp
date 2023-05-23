@@ -45,7 +45,10 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 void Boss::Draw(const ViewProjection& viewProMat)
 {
-	bossFish->Draw(viewProMat);
+	if (!bossFish->GetIsDeathEnd()) {
+		bossFish->Draw(viewProMat);
+	}
+
 
 	bossWarrier->Draw(viewProMat);
 }

@@ -420,6 +420,7 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
+
 	// 最初のカメラのアップデート
 	FirstCameraUpdate();
 
@@ -1163,9 +1164,13 @@ void GameScene::SceneChageRast()
 }
 
 void GameScene::CheckAllFishLeave() {
+	if (!isTutorialEnd) {
+		return;
+	}
+
 	for (int i = 0; i < 10; i++) {
 		//	minifishes[i].easeMove.Update();
-		if (minifishes[i].easeMove.GetActive()) {
+		if (minifishes[i].easeMove.GetActive() && minifishes[i].GetAlive()) {
 			isAllFishLeave = false;
 			return;
 		}
@@ -1253,6 +1258,9 @@ void GameScene::FirstCameraUpdate()
 				timer = 0;
 				IsEnemySpon = false;
 				IsFirst = false;
+				isTutorialEnd = false;
+				isAllFishLeave = false;
+				isMovie = false;
 			}
 		}
 	}

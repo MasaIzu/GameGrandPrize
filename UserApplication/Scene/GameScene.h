@@ -392,6 +392,9 @@ private://プライベート関数
 	//生きている小魚の数を更新
 	int GetMiniFishAlive();
 
+	//最初のムービー(小魚が10匹程生まれるムービー)の更新処理
+	void FirstMovieUpdate();
+
 	// シーンチェンジ関数
 	void SceneChageFirst();
 

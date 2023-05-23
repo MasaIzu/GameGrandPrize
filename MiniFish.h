@@ -46,7 +46,7 @@ public:
 	EasingData easeMove;
 	void LeaveGayser(Vector3 gayserPos);
 
-	void Initialize(const Vector3& pos, unsigned short attribute);
+	void Initialize(const Vector3& spawnPos, const Vector3& gayserPos,int spawnMoveTime, unsigned short attribute);
 
 	void Update(const Vector3& stagePos,float stageRadius);
 
@@ -64,7 +64,8 @@ public:
 
 	WorldTransform GetWorldTransform()const { return world; }
 
-
+private:
+	void Spawn(const Vector3& beforePos, const Vector3& afterPos, int moveTime);
 
 };
 

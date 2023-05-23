@@ -110,12 +110,12 @@ void GameScene::Initialize() {
 		boss.CreateFish(gayserPos[i % 5]);
 	}*/
 
-	for (int i = 0; i < 10; i++) {
-		Vector3 pos;
-		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
-		pos += stagePos;
-		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
-	}
+	//for (int i = 0; i < 10; i++) {
+	//	Vector3 pos;
+	//	pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
+	//	pos += stagePos;
+	//	minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
+	//}
 
 	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
@@ -423,6 +423,8 @@ void GameScene::GameUpdate()
 	// 最初のカメラのアップデート
 	FirstCameraUpdate();
 
+	FirstMovieUpdate();
+
 	// 最初のボス一のBGM
 	//if (IsBattle01BGM == false && IsBattle02BGM == false) {
 	//	battle01BGM.SoundPlayWave(true, 0.5f);
@@ -441,8 +443,10 @@ void GameScene::GameUpdate()
 		minifishes[randNum].OnCollision();
 	}
 
+
+
 	//生きている小魚の数が5匹以下になったら魚が逃げ出す
-	if (!isTutorialEnd) {
+	if (!isTutorialEnd && !IsFirst) {
 		if (GetMiniFishAlive() < 5) {
 			isTutorialEnd = true;
 			isMovie = true;
@@ -1013,12 +1017,12 @@ void GameScene::Reset()
 
 
 
-	for (int i = 0; i < 10; i++) {
-		Vector3 pos;
-		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
-		pos += stagePos;
-		minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
-	}
+	//for (int i = 0; i < 10; i++) {
+	//	Vector3 pos;
+	//	pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
+	//	pos += stagePos;
+	//	minifishes[i].Initialize(pos, COLLISION_ATTR_WEAKENEMYS1 + i);
+	//}
 
 	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
@@ -1251,6 +1255,26 @@ void GameScene::FirstCameraUpdate()
 				IsFirst = false;
 			}
 		}
+	}
+}
+
+void GameScene::FirstMovieUpdate()
+{
+	//フラグが経ってなければ処理を終了
+	if (!IsFirst) {
+		return;
+	}
+
+	//敵のスポーンタイミング
+	int enemySpawnTiming = timerMax / 10 - 1;
+
+	//最初のカメラの固定時間で10体出す
+	if ((int)timer % enemySpawnTiming == 0 && !IsEnemySpon) {
+		int enemyIndex = timer / enemySpawnTiming -1;
+		Vector3 pos;
+		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
+		pos += stagePos;
+		minifishes[enemyIndex].Initialize(pos, gayserPos[enemyIndex / 5], enemySpawnTiming*2, COLLISION_ATTR_WEAKENEMYS1 + enemyIndex);
 	}
 }
 

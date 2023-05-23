@@ -17,13 +17,11 @@ void MiniFish::LeaveGayser(Vector3 gayserPos)
 	positions[2] += positions[3];
 }
 
-void MiniFish::Initialize(const Vector3& pos, unsigned short attribute)
+void MiniFish::Initialize(const Vector3& spawnPos, const Vector3& gayserPos, int spawnMoveTime, unsigned short attribute)
 {
 	//ワールド変換の初期化
 	world.Initialize();
 	//座標を引数で設定
-	positions[3] = pos;
-	world.translation_ = pos;
 	world.TransferMatrix();
 
 	isAlive = true;
@@ -39,6 +37,9 @@ void MiniFish::Initialize(const Vector3& pos, unsigned short attribute)
 	collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS);
 	collider->SetAttribute(attribute);
 
+	//スポーン処理
+	Spawn(gayserPos, spawnPos,spawnMoveTime);
+
 	//魚のモデル初期化
 	//bodyModel.reset(Model::CreateFromOBJ("FishBody", true));
 	//eyeModel.reset(Model::CreateFromOBJ("FishMedama", true));
@@ -49,8 +50,8 @@ void MiniFish::Update(const Vector3& stagePos, float stageRadius)
 {
 	//死んでいるなら当たり判定をとらない
 	if (!isAlive) {
-		collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS_DEI);
-		collider->SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+
+		return;
 	}
 
 
@@ -174,7 +175,20 @@ void MiniFish::SetAttribute(unsigned short attribute)
 	collider->SetAttribute(attribute);
 }
 
+void MiniFish::Spawn(const Vector3& beforePos, const Vector3& afterPos, int moveTime)
+{
+	easeMove.Start(moveTime);
+	positions[0] = beforePos;
+	positions[3] = afterPos;
+	positions[1] = { Random(-10.0f,10.0f),20.0f,Random(-10.0f,10.0f) };
+	positions[2] = positions[1];
+	positions[1] += beforePos;
+	positions[2] += afterPos;
+}
+
 void MiniFish::OnCollision()
 {
 	isAlive = false;
+	collider->SetAttributeWakeEnemy(COLLISION_ATTR_WEAKENEMYS_DEI);
+	collider->SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 }

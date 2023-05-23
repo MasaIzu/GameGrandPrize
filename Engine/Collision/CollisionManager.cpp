@@ -31,7 +31,7 @@ void CollisionManager::CheckAllCollisions()
 	ImGui::Begin("Collision");
 
 	ImGui::Text("CoolTime:%d", static_cast<int>(CoolTime));
-
+	ImGui::Text("isCoolTime:%d", isCoolTime);
 	ImGui::End();
 
 	std::forward_list<BaseCollider*>::iterator itA;
@@ -62,12 +62,20 @@ void CollisionManager::CheckAllCollisions()
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						if (isCoolTime) {
+							if (SphereB->isChangeCoolTime) {
+								CoolTime = 0;
+								isCoolTime = false;
+							}
+						}
 						if (CoolTime <= 0) {
 							HitWorldPos = colB->GetWorldPos();
 							isAttackHit = true;
 							CoolTime = SphereB->coolTime;
+							isCoolTime = true;
+
 						}
-						
+
 					}
 				}
 				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
@@ -103,11 +111,20 @@ void CollisionManager::CheckAllCollisions()
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						if (isCoolTime) {
+							if (SphereB->isChangeCoolTime) {
+								CoolTime = 0;
+								isCoolTime = false;
+							}
+						}
 						if (CoolTime <= 0) {
 							HitWorldPos = colB->GetWorldPos();
 							isAttackHit = true;
 							CoolTime = SphereB->coolTime;
+							isCoolTime = true;
+
 						}
+
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYSOWRDATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
@@ -310,7 +327,7 @@ bool CollisionManager::DetectCollision(const Sphere& sphereA, const Sphere& sphe
 Vector3 CollisionManager::ResolveCollision(Sphere& sphereA, const Sphere& sphereB) {
 	Vector3 collision_depth_direction;
 	if (DetectCollision(sphereA, sphereB, collision_depth_direction)) {
-		
+
 		isEnemyReception = true;
 
 	}

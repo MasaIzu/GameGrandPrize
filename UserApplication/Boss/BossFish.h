@@ -181,7 +181,7 @@ private:
 		int rushCount = 0;								//突進攻撃の残り回数
 		WorldTransform swordTransform;					//剣のワールド座標
 		
-		int nextDamageInterval = 40;					//次にダメージを受けるまでの時間
+		int nextDamageInterval = 0;					//次にダメージを受けるまでの時間
 		int damageTimer = 0;							//ボスの無敵時間
 
 		// ボスのHP関連

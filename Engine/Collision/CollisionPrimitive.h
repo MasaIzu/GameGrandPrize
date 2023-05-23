@@ -14,6 +14,8 @@ struct Sphere {
 
 	uint32_t coolTime = 0;
 
+	bool isChangeCoolTime = false;
+
 };
 
 struct Plane {

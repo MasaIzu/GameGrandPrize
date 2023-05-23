@@ -76,6 +76,8 @@ private:
 
 
 	int CoolTime = 0;
-	int isCoolTime = false;
+	bool isCoolTime = false;
+
+	bool aaa = false;
 
 };

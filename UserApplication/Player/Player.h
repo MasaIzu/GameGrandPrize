@@ -410,4 +410,6 @@ private:
 
 	bool isPorigonFlag = false;
 
+	bool isCoolTimeRiset = false;
+
 };

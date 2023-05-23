@@ -165,7 +165,7 @@ private: // メンバ変数
 	bool isStartBossBattle = false;
 	bool isMovie = false;
 	bool isActiveChangeEvent = false;
-	EasingData easeCameraEye{};
+//	EasingData easeCameraEye{};
 
 	const float gayserMaxFlame = 240;
 	float gayserFlame = 0;

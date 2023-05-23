@@ -107,6 +107,7 @@ private:
 	Vector3 dummyTargetPos;
 	Vector3 swordPos[2];
 
+	Matrix4 matBossDir;
 	int atkArmSwingTime=0;
 
 	float swordRad = 0.0f;

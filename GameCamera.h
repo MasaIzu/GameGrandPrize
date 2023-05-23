@@ -158,7 +158,7 @@ private:
 
 	float Fov = 45.0f;
 
-
+	float CameraDistanceMinus = 0.0f;
 
 
 };

@@ -210,6 +210,8 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::Begin("camera");
 	ImGui::Text("mouseMovedX : %f", mouseMoved.x);
 	ImGui::Text("mouseMovedY : %f", mouseMoved.y);
+	ImGui::Text("cameraDis : %f", cameraDis);
+	ImGui::Text("CameraDistanceMinus : %f", CameraDistanceMinus);
 
 	ImGui::Text("target : %f,%f,%f", target.x, target.y, target.z);
 	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
@@ -217,12 +219,27 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::End();
 
 	//カメラ制限
-	if (mouseMoved.x < -0.10f) {
-		mouseMoved.x = -0.10f;
+
+
+	if (mouseMoved.x < -0.30f) {
+		mouseMoved.x = -0.30f;
+		if (cameraDis - 10.0f > CameraDistanceMinus) {
+			CameraDistanceMinus -= mouseMoved.x;
+		}
 	}
 	else if (mouseMoved.x > 1.30f) {
 		mouseMoved.x = 1.30f;
 	}
+
+
+	if (mouseMoved.x > -0.30f) {
+		if (CameraDistanceMinus > 0) {
+			//mouseMoved.x = -0.30f;
+			CameraDistanceMinus += -0.80f;
+		}
+	}
+
+
 
 	Vector3 rotation = Vector3(-mouseMoved.x, mouseMoved.y, 0);
 
@@ -237,13 +254,16 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 
 
-	target = easing_->InOutVec3(target, playerPos_ + Vector3(0,8,0), cameraTime, MaxCameraTime);
+	target = easing_->InOutVec3(target, playerPos_ + Vector3(0, 14, 0), cameraTime, MaxCameraTime);
+
 	//ワールド前方ベクトル
 	Vector3 forward(0, 0, playerCameraDistance);
 	//レールカメラの回転を反映
 	forward = MyMath::MatVector(CameraRot, forward);
 
 	forward.normalize();
+
+
 
 	//target = pos;
 	vTargetEye = target + (forward * cameraDis);
@@ -281,7 +301,6 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		eyePos.y *= mag;
 		eyePos.z *= mag;
 
-
 		if (cameraMode_ == 0) {
 			if (cameraModeChangeCountTimer < MAX_CHANGE_TIMER) {
 				cameraModeChangeCountTimer++;
@@ -296,10 +315,12 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		cameraDistance_ = easing_->InOut(MIN_CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
 		cameraHeight_ = easing_->InOut(3, 6, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
 
+		float DISTANCE = cameraDistance_ - CameraDistanceMinus;
+
 		Vector3 primalyCamera =
-		{ playerPos_.x + eyePos.x * cameraDistance_,//自機から引いた位置にカメラをセット
+		{ playerPos_.x + eyePos.x * DISTANCE,//自機から引いた位置にカメラをセット
 		cameraHeight_,
-		playerPos_.z + eyePos.z * cameraDistance_ };
+		playerPos_.z + eyePos.z * DISTANCE };
 
 		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//カメラをずらす際に使われる
 
@@ -329,7 +350,14 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	cameraPos += dVec * cameraSpeed_;
 	Vector3 player_camera = cameraPos - target;
 	player_camera.normalize();
-	cameraPos = target + (player_camera * cameraDis);
+
+	float DISTANCE = cameraDis - CameraDistanceMinus;
+
+	player_camera.x = player_camera.x * DISTANCE;
+	player_camera.y = player_camera.y * (cameraDis - CameraDistanceMinus / 2);
+	player_camera.z = player_camera.z * DISTANCE;
+
+	cameraPos = target + (player_camera);
 
 
 	/*float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
@@ -341,15 +369,15 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));*/
 
 
-	//ImGui::Text("vTargetEye : %f", cameraDis);
-	//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
+		//ImGui::Text("vTargetEye : %f", cameraDis);
+		//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
 
-	/*if (isHit == true) {
-		isHit = false;
-		isShake = true;
-		shakeTime = 10;
+		/*if (isHit == true) {
+			isHit = false;
+			isShake = true;
+			shakeTime = 10;
 
-	}*/
+		}*/
 
 	if (isShake == true) {
 		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);
@@ -398,7 +426,7 @@ void GameCamera::Reset()
 	mouseMoved = { 0,0 };
 	EnemyPos_ = { 0,0,0 };
 
-	angleAroundPlayer=0; // プレイヤーの周りを回転する角度
+	angleAroundPlayer = 0; // プレイヤーの周りを回転する角度
 
 
 	float playerCameraDistance = 5.5f;

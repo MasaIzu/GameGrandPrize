@@ -1028,7 +1028,7 @@ void Player::Attack() {
 					LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 					RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTimeMax = &AttackCoolTime;
+					AttackCoolTimeMax = 60;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1088,7 +1088,7 @@ void Player::Attack() {
 
 					saveRotX = AttackRotX;
 
-					AttackCoolTimeMax = &AttackCoolTime;
+					AttackCoolTimeMax = 0;
 
 					/*Matrix4 rooooootttt;
 					rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
@@ -1163,7 +1163,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = &AttackCoolTime;
+					AttackCoolTimeMax = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1222,7 +1222,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = &AttackCoolTime;
+					AttackCoolTimeMax = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1297,7 +1297,7 @@ void Player::Attack() {
 						AttackRotX += 14.0f;
 					}
 				}
-				AttackCoolTimeMax = &AttackCoolTime;
+				AttackCoolTimeMax = 0;
 
 				AttackNowPos += PlayerContactPos;
 				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
@@ -1366,7 +1366,7 @@ void Player::Attack() {
 		}
 		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, *AttackCoolTimeMax);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, &AttackCoolTimeMax);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
 			}
 		}

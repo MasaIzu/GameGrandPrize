@@ -86,7 +86,7 @@ void GameScene::Initialize() {
 
 
 	//間欠泉の座標設定
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < gayserPos.size(); i++) {
 		float gayserPosRad = 360.0f / 5.0f * i;
 		gayserPos[i].x = sin(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
@@ -120,7 +120,7 @@ void GameScene::Initialize() {
 	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
 	// 間欠泉の初期化
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < gayserModel_.size(); i++) {
 		gayserModel_[i].reset(Model::CreateFromOBJ("geyser", true));
 		gayserW[i].Initialize();
 		gayserW[i].translation_.x = gayserPos[i].x;
@@ -149,7 +149,7 @@ void GameScene::Initialize() {
 
 	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < sceneChageBlack.size(); i++) {
 		sceneChageBlack[i] = Sprite::Create(TextureManager::Load("SceneChageBlack.png"));
 		sceneChageBlack[i].get()->SetAnchorPoint({ 0,0 });
 		sceneChageBlack[i].get()->SetPosition(startPos[i]);
@@ -317,7 +317,7 @@ void GameScene::TitleUpdate()
 		flyTimer[4]++;
 	}
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < flyTimer.size(); i++) {
 		if (flyTimer[i] >= flyMax) {
 			flyTimer[i] = 0;
 		}
@@ -428,8 +428,8 @@ void GameScene::GameUpdate()
 	}
 
 	if (isMovie) {
-// イベントシーンの更新
-		// 最初のカメラと魚の更新
+		// イベントシーンの更新
+				// 最初のカメラと魚の更新
 		FirstCameraUpdate();
 		FirstMovieUpdate();
 
@@ -441,7 +441,7 @@ void GameScene::GameUpdate()
 				fishSpawnCount = 20;
 				isStartBossBattle = true;
 				//小魚を全員殺す
-				for (int i = 0; i < 10; i++) {
+				for (int i = 0; i < minifishes.size(); i++) {
 					minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 					minifishes[i].OnCollision();
 				}
@@ -457,7 +457,8 @@ void GameScene::GameUpdate()
 				fishSpawnInterval = 5;
 				//ボスをスポーンさせる
 				for (int i = 0; i < boss->bossFish->fishMaxCount / 20; i++) {
-					boss->bossFish->CreateFish(gayserPos[i % 5]);
+					int gayserIndex = MinMax(i % 5, 0, gayserPos.size());
+					boss->bossFish->CreateFish(gayserPos[gayserIndex]);
 				}
 			}
 		}
@@ -478,21 +479,27 @@ void GameScene::GameUpdate()
 
 		//小魚スポーンカウントが0でボス戦開始フラグがtrueならムービー終了
 		if (isStartBossBattle && fishSpawnCount == 0) {
-			isMovie = false;
+			if (eventPhase == EventPhase::Boss1Spawn) {
+				isMovie = false;
+			}
 		}
 
+		//ボスの変身のカメラ処理
+		UpdateBossChangeEventCamera();
 
 	}
 	else {
-//ゲーム本編の更新処理
+		//ゲーム本編の更新処理
 
-		//生きている小魚の数が5匹以下になったら魚が逃げ出す
+			//生きている小魚の数が5匹以下になったら魚が逃げ出す
 		if (!isTutorialEnd && !IsFirst) {
 			if (GetMiniFishAlive() < 5) {
 				isTutorialEnd = true;
 				isMovie = true;
-				for (int i = 0; i < 10; i++) {
-					minifishes[i].LeaveGayser(gayserPos[i / 2]);
+				eventPhase = EventPhase::Boss1Spawn;
+				for (int i = 0; i < minifishes.size(); i++) {
+					int gayserIndex = MinMax(i / 2, 0, gayserPos.size());
+					minifishes[i].LeaveGayser(gayserPos[gayserIndex]);
 				}
 			}
 
@@ -539,6 +546,7 @@ void GameScene::GameUpdate()
 		if (collisionManager->GetIsWakeEnemyAttackHit()) {
 			isAttackHit = true;
 			playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
+			playerAttackHitNumber = MinMax(playerAttackHitNumber, 0, minifishes.size());
 
 			minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
 
@@ -550,6 +558,13 @@ void GameScene::GameUpdate()
 		// ボスフェーズ１のHPが０になったら
 		if (boss->bossFish->GetHealth() <= 0) {
 			boss->bossFish->Death();
+
+			//イベントシーンが進んでいなければ進める
+			if (eventPhase == EventPhase::Boss1Spawn) {
+				eventPhase = EventPhase::BossPhaseChange;
+				StartBossChangeEvent();
+			}
+
 		}
 
 		if (boss->bossFish->GetIsDeathEnd()) {
@@ -562,9 +577,9 @@ void GameScene::GameUpdate()
 
 	}
 
-//イベントと本編両方で必要な更新
-	//小魚の更新
-	for (int i = 0; i < 10; i++) {
+	//イベントと本編両方で必要な更新
+		//小魚の更新
+	for (int i = 0; i < minifishes.size(); i++) {
 		minifishes[i].Update(stagePos, stageRadius);
 	}
 
@@ -586,16 +601,6 @@ void GameScene::GameUpdate()
 	player->SetCameraRot(gameCamera->GetCameraRotVec3());
 	player->SetCameraLook(viewProjection_.cameraLook);
 
-	// プレイヤーが生成するのは最初のカメラが終わってから
-	if (IsFirst == false) {
-		player->Update(viewProjection_);
-		nowViewProjection = viewProjection_;
-		gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
-		gameCamera->SetSpaceInput(player->GetSpaceInput());
-		gameCamera->SetCameraPosition(player->GetWorldPosition());
-		gameCamera->Update(&viewProjection_);
-	}
-
 
 	//全ての衝突をチェック
 	collisionManager->CheckAllCollisions();
@@ -607,6 +612,14 @@ void GameScene::GameUpdate()
 	if (isMovie) {
 		movieCamera.UpdateMatrix();
 		nowViewProjection = movieCamera;
+	}
+	else {
+		player->Update(viewProjection_);
+		nowViewProjection = viewProjection_;
+		gameCamera->SetPlayerMoveMent(player->GetPlayerMoveMent());
+		gameCamera->SetSpaceInput(player->GetSpaceInput());
+		gameCamera->SetCameraPosition(player->GetWorldPosition());
+		gameCamera->Update(&viewProjection_);
 	}
 
 	viewProjection_.target = gameCamera->GetTarget();
@@ -789,21 +802,18 @@ void GameScene::PostEffectDraw()
 
 
 		//チュートリアルと最初のムービーでだけ小魚を描画
-		if (gamePhase == GamePhase::GameTutorial || gamePhase == GamePhase::GameMovie1) {
 
-			for (int i = 0; i < 10; i++) {
-				//minifishes[i].Draw(viewProjection_);
-				if (minifishes[i].GetAlive()) {
-					boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-					boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-				}
-			}
-		}
-		for (int i = 0; i < 10; i++) {
+
+		for (int i = 0; i < minifishes.size(); i++) {
+			//minifishes[i].Draw(viewProjection_);
 			if (minifishes[i].GetAlive()) {
+				boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 				model_->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 			}
 		}
+
+
 
 		//ボス出現ムービーとボス変身ムービーの間で描画
 		boss->Draw(nowViewProjection);
@@ -811,7 +821,7 @@ void GameScene::PostEffectDraw()
 		player->Draw(nowViewProjection);
 
 		// 間欠泉の描画
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < gayserModel_.size(); i++) {
 			gayserModel_[i]->Draw(gayserW[i], nowViewProjection);
 		}
 	}
@@ -905,7 +915,7 @@ void GameScene::Draw() {
 
 	// シーンチェンジ用のブラックスライダーの描画
 	if (IsSceneChange == true) {
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < sceneChageBlack.size(); i++) {
 			sceneChageBlack[i].get()->Draw(sceneChagePos[i], { 1,1,1,1 });
 		}
 	}
@@ -935,7 +945,7 @@ void GameScene::Reset()
 		MFontWorld_.TransferMatrix();
 		SFontWorld_.TransferMatrix();
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < flyTimer.size(); i++) {
 			flyTimer[i] = 0;
 		}
 		shiftTimer = 0;
@@ -973,7 +983,7 @@ void GameScene::Reset()
 
 
 	//間欠泉の座標設定
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < gayserPos.size(); i++) {
 		float gayserPosRad = 360.0f / 5.0f * i;
 		gayserPos[i].x = sin(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
 		gayserPos[i].z = cos(gayserPosRad * PI / 180.0f) * stageRadius * 0.8f;
@@ -996,7 +1006,7 @@ void GameScene::Reset()
 	boss->Update({ 0,0,0 }, stagePos, stageRadius);
 
 	// 間欠泉の初期化
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < gayserW.size(); i++) {
 		gayserW[i].translation_.x = gayserPos[i].x;
 		gayserW[i].translation_.y = -1.2f;
 		gayserW[i].translation_.z = gayserPos[i].z;
@@ -1030,7 +1040,7 @@ void GameScene::Finalize()
 
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < minifishes.size(); i++) {
 
 		if (minifishes[i].GetAlive()) {
 			count++;
@@ -1050,7 +1060,7 @@ void GameScene::SceneChageFirst()
 
 			sceneChagePos[0] = { float(Easing::easeOutCubic(startPos[0].x, endPos[0].x, sceneChageTimer[0], sceneChageTimerMax)),startPos[0].y };
 		}
-		for (int i = 1; i < 5; i++) {
+		for (int i = 1; i < sceneChageTimer.size(); i++) {
 			if (sceneChageTimer[i - 1] / sceneChageTimerMax >= 0.5f) {
 				if (sceneChageTimer[i] < sceneChageTimerMax) {
 					sceneChageTimer[i]++;
@@ -1060,7 +1070,7 @@ void GameScene::SceneChageFirst()
 		}
 		// ハーフタイムになったら
 		if (sceneChageTimer[4] / sceneChageTimerMax >= 1.0f) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < sceneChageTimer.size(); i++) {
 				sceneChageTimer[i] = 0;
 			}
 			IsHalf = true;
@@ -1110,7 +1120,7 @@ void GameScene::SceneChageRast()
 			}
 			sceneChagePos[0] = { float(Easing::easeOutCubic(endPos[0].x, startPos[0].x, sceneChageTimer[0], sceneChageTimerMax)),startPos[0].y };
 		}
-		for (int i = 1; i < 5; i++) {
+		for (int i = 1; i < sceneChageTimer.size(); i++) {
 			if (sceneChageTimer[i - 1] / sceneChageTimerMax >= 0.5f) {
 				if (sceneChageTimer[i] < sceneChageTimerMax) {
 					sceneChageTimer[i]++;
@@ -1121,7 +1131,7 @@ void GameScene::SceneChageRast()
 		// スライダーがすべて消えたらフラグをオフ
 		if (sceneChageTimer[4] / sceneChageTimerMax >= 1.0f) {
 			// タイマーのリセット
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < sceneChageTimer.size(); i++) {
 				sceneChageTimer[i] = 0;
 			}
 			// フラグ関連のリセット
@@ -1136,7 +1146,7 @@ void GameScene::CheckAllFishLeave() {
 		return;
 	}
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < minifishes.size(); i++) {
 		//	minifishes[i].easeMove.Update();
 		if (minifishes[i].easeMove.GetActive() && minifishes[i].GetAlive()) {
 			isAllFishLeave = false;
@@ -1172,7 +1182,7 @@ void GameScene::GameOverReset()
 	alphaTimer = 0;
 	IsRetry = false;
 	selectButtonPos = { 250,510 };
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < alpha.size(); i++) {
 		alpha[i] = 0;
 	}
 }
@@ -1206,16 +1216,23 @@ void GameScene::UpdateBossChangeEventCamera() {
 	float cameraRadian = boss->bossWarrier->GetEasingData().GetTimeRate();
 	float cameraDistance = 120.0f;
 
+
 	//注視点はボスに
 	movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
 
 	//カメラ座標をボスのイージングを使って回転させる
-	cameraRadian *= PI * 4;
+	cameraRadian *= 360.0f;
+	cameraRadian -= 90.0f;
+	cameraRadian = convertDegreeToRadian(cameraRadian);
+
+
+	//ImGui::Text("cameraRadian %f", cameraRadian *180 / PI);
+
 	Vector3 eye = movieCamera.eye;
 	eye.y = 20.0f;
-	eye.x = sin(cameraRadian) * cameraDistance;
-	eye.z = cos(cameraRadian) * cameraDistance;
-	//movieCamera.UpdateMatrix();
+	eye.x = sin(cameraRadian) * cameraDistance + stagePos.x;
+	eye.z = cos(cameraRadian) * cameraDistance + stagePos.z;
+	movieCamera.eye = eye;
 
 	if (boss->bossWarrier->GetEasingData().GetTimeRate() >= 1.0f) {
 		isMovie = false;
@@ -1244,7 +1261,7 @@ void GameScene::FirstCameraUpdate()
 			movieCamera.eye = { 0,60,120 };
 			movieCamera.target = { 0,-5,0 };
 
-	
+
 		}
 		else {
 			firstCameraTimer++;
@@ -1278,10 +1295,20 @@ void GameScene::FirstMovieUpdate()
 	//最初のカメラの固定時間で10体出す
 	if ((int)timer % enemySpawnTiming == 0 && !IsEnemySpon) {
 		int enemyIndex = timer / enemySpawnTiming - 1;
+		enemyIndex = MinMax(enemyIndex, 0, minifishes.size());
+		int gayserIndex = MinMax(enemyIndex / 2, 0, gayserPos.size());
+
 		Vector3 pos;
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
-		minifishes[enemyIndex].Initialize(pos, gayserPos[enemyIndex / 5], enemySpawnTiming * 2, COLLISION_ATTR_WEAKENEMYS1 + enemyIndex);
+		minifishes[enemyIndex].Initialize(pos, gayserPos[gayserIndex], enemySpawnTiming * 2, COLLISION_ATTR_WEAKENEMYS1 + enemyIndex);
 	}
 }
 
+int MinMax(int param, int min, int max)
+{
+	if (param > max)return max;
+	else if (param < min)return min;
+
+	return param;
+}

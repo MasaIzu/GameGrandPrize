@@ -31,6 +31,7 @@
 
 #include <objbase.h>
 #include "Sound.h"
+#include<array>
 class TouchableObject;
 
 //struct ground
@@ -41,6 +42,7 @@ class TouchableObject;
 
 #include"MiniFish.h"
 #include"FbxAnimation.h"
+#include"EasingData.h"
 
 enum class Scene {
 	Title,
@@ -49,13 +51,12 @@ enum class Scene {
 	Result
 };
 
-enum class GamePhase {
-	GameTutorial,	//チュートリアル
-	GameMovie1,		//ムービー1(チュートリアル→ボス戦への遷移)
-	GameBoss1,		//ボス戦第一形態
-	GameMovie2,		//ムービー2(ボスの形態変化)
-	GameBoss2,		//ボス戦第二形態
-	GameMovie3,		//ムービー3(ボスが死ぬとき)
+enum class EventPhase {
+
+	MinifishSpawn,
+	Boss1Spawn,
+	BossPhaseChange,
+	Boss2Death,
 };
 
 
@@ -153,16 +154,18 @@ private: // メンバ変数
 
 	int playerAttackHitNumber = 0;
 
-	GamePhase gamePhase = GamePhase::GameTutorial;
+	EventPhase eventPhase = EventPhase::MinifishSpawn;
 
 	//小魚関係(チュートリアル用)
-	MiniFish minifishes[10];
+	static const int miniFishMax = 10;
+	std::array<MiniFish, miniFishMax> minifishes;
 	int deadMinFishCount = 0;	//倒された小魚のカウント
 	std::unique_ptr<ParticleManager> gayserParticle;
 	bool isTutorialEnd = false;
 	bool isStartBossBattle = false;
 	bool isMovie = false;
 	bool isActiveChangeEvent = false;
+	EasingData easeCameraEye{};
 
 	const float gayserMaxFlame = 240;
 	float gayserFlame = 0;
@@ -176,9 +179,10 @@ private: // メンバ変数
 
 
 	// 間欠泉関連
-	Vector3 gayserPos[5];	//小魚が吹き出る間欠泉座標
-	std::unique_ptr<Model> gayserModel_[5];
-	WorldTransform gayserW[5];
+	static const int gayserMax = 5;
+	std::array<Vector3, gayserMax> gayserPos;	//小魚が吹き出る間欠泉座標
+	std::array<std::unique_ptr<Model>, gayserMax> gayserModel_;
+	std::array<WorldTransform, gayserMax> gayserW;
 
 	bool isAllFishLeave = false;
 
@@ -213,53 +217,54 @@ private: // メンバ変数
 
 
 	// シーンチェンジ用のスプライト
-	std::unique_ptr<Sprite> sceneChageBlack[5];
-	Vector2 sceneChagePos[5]= {
-		{1280,0},
-		{1280,144},
-		{1280,288},
-		{1280,432},
-		{1280,576},
+	static const int sceneChangerSpriteMax = 5;
+	std::array<std::unique_ptr<Sprite>, sceneChangerSpriteMax> sceneChageBlack;
+	std::array<Vector2, sceneChangerSpriteMax> sceneChagePos = {
+		Vector2{1280,0},
+		Vector2{1280,144},
+		Vector2{1280,288},
+		Vector2{1280,432},
+		Vector2{1280,576},
 	};
-	float sceneChageTimer[5] = { 0,0,0,0,0 };
+	std::array<float, sceneChangerSpriteMax> sceneChageTimer = { 0,0,0,0,0 };
 	float sceneChageTimerMax = 40;
 	bool IsSceneChange = false;
 	bool IsHalf = false;
-	Vector2 startPos[5] = {
-		{1280,0},
-		{1280,144},
-		{1280,288},
-		{1280,432},
-		{1280,576},
+	std::array< Vector2, sceneChangerSpriteMax> startPos = {
+		Vector2{1280,0},
+		Vector2{1280,144},
+		Vector2{1280,288},
+		Vector2{1280,432},
+		Vector2{1280,576},
 	};
-	Vector2 endPos[5] = {
-		{0,0},
-		{0,144},
-		{0,288},
-		{0,432},
-		{0,576},
+	std::array < Vector2, sceneChangerSpriteMax> endPos = {
+		Vector2{0,0},
+		Vector2{0,144},
+		Vector2{0,288},
+		Vector2{0,432},
+		Vector2{0,576},
 	};
-	Vector2 backStartPos[5] = {
-		{0,0},
-		{0,144},
-		{0,288},
-		{0,432},
-		{0,576},
+	std::array < Vector2, sceneChangerSpriteMax> backStartPos = {
+		Vector2{0,0},
+		Vector2{0,144},
+		Vector2{0,288},
+		Vector2{0,432},
+		Vector2{0,576},
 	};
-	Vector2 backEndPos[5] = {
-		{1280,0},
-		{1280,144},
-		{1280,288},
-		{1280,432},
-		{1280,576},
+	std::array < Vector2, sceneChangerSpriteMax> backEndPos = {
+		Vector2{1280,0},
+		Vector2{1280,144},
+		Vector2{1280,288},
+		Vector2{1280,432},
+		Vector2{1280,576},
 	};
 
 
-	
+
 	// スプライト
 
 
-	
+
 #pragma region タイトルオブジェクト関連
 	// タイトルビュープロジェクション
 	ViewProjection titleView;
@@ -282,7 +287,8 @@ private: // メンバ変数
 	WorldTransform SFontWorld_;
 
 	// タイトルの浮遊に使う変数
-	float flyTimer[5];
+	static const int titleFontMax = 5;
+	std::array<float,titleFontMax> flyTimer;
 	float flyMax = 60 * 4;
 
 	// 浮かせるタイミングをずらすためのタイマー
@@ -312,13 +318,14 @@ private: // メンバ変数
 	// タイトルの背景のスプライト
 	std::unique_ptr <Sprite> titleBackGround;
 
-	int ParticleFlame=0;
+	int ParticleFlame = 0;
 
 #pragma endregion
 
 #pragma region gameOver関連
 	bool IsRetry = false;
-	float alpha[3];
+	static const int gameOverSpriteMax = 3;
+	std::array<float,gameOverSpriteMax> alpha;
 
 	float alphaTimer = 0;
 	float alphaTimeOneSet = 20;
@@ -333,14 +340,14 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> backTitleFont;
 
 	// スプライトのサイズ
-	Vector2 selectButtonSize={40,80};
-	Vector2 replayFontSize={252,92};
-	Vector2 backTitleFontSize={282,100};
+	Vector2 selectButtonSize = { 40,80 };
+	Vector2 replayFontSize = { 252,92 };
+	Vector2 backTitleFontSize = { 282,100 };
 
 	// スプライトのポジション
-	Vector2 selectButtonPos={250,510};
-	Vector2 replayFontPos={400,520};
-	Vector2 backTitleFontPos={900,520};
+	Vector2 selectButtonPos = { 250,510 };
+	Vector2 replayFontPos = { 400,520 };
+	Vector2 backTitleFontPos = { 900,520 };
 #pragma endregion
 
 #pragma region gameStartカメラ関連
@@ -371,7 +378,7 @@ private: // メンバ変数
 
 #pragma endregion
 
-	#pragma region  gameのBGM
+#pragma region  gameのBGM
 	Sound titleBGM;
 	Sound battle01BGM;
 	Sound battle02BGM;
@@ -383,7 +390,7 @@ private: // メンバ変数
 	bool IsBattle02BGM = false;
 	bool IsGameOverBGM = false;
 	bool IsGameClearBGM = false;
-	#pragma endregion
+#pragma endregion
 
 
 private://プライベート関数
@@ -426,3 +433,5 @@ private://プライベート関数
 	//ボスの変身の更新
 	void UpdateBossChangeEventCamera();
 };
+
+int MinMax(int param,int min, int max);

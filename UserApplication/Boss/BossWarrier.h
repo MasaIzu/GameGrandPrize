@@ -87,7 +87,7 @@ public:
 
 	EasingData GetEasingData()const { return easeRotArm; }
 
-	WorldTransform GetRootTransform() const { return boss2Model[BossWarrierPart::Root].Transform; }
+	WorldTransform GetRootTransform() const {return boss2Model[BossWarrierPart::Root].Transform; }
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//蜑｣縺ｮ繝｢繝・Ν繝・・繧ｿ
@@ -95,6 +95,7 @@ private:
 	Input* input_ = nullptr;
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//繝懊せ隨ｬ莠悟ｽ｢諷九・繝｢繝・Ν
+	///EasingData data;
 
 	bool isAtkArmSwing = false;
 	int atkStartTime = 0;

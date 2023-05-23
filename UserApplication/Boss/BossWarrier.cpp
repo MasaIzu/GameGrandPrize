@@ -5,25 +5,43 @@
 #include <CollisionManager.h>
 #include <CollisionAttribute.h>
 
+BossWarrier::~BossWarrier()
+{
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		if (i != BossWarrierPart::HandL && i != BossWarrierPart::HandR)
+		{
+			delete boss2Model[i].model;
+		}
+	}
+}
+
 void BossWarrier::Initialize()
 {
 	swordModel.reset(Model::CreateFromOBJ("BigSowrd", true));
 	input_->GetInstance();
 	//ボス2のモデル初期化
 	//Rootは大本で動かす親用なので空データでOK
-	boss2Model[BossWarrierPart::Chest].model.reset(Model::CreateFromOBJ("Boss_Body", true));
+	boss2Model[BossWarrierPart::Chest].model = Model::CreateFromOBJ("Boss_Body", true);
 	boss2Model[BossWarrierPart::Chest].isDraw = true;
-	boss2Model[BossWarrierPart::Head].model.reset(Model::CreateFromOBJ("Boss_Head", true));
+	boss2Model[BossWarrierPart::Head].model = Model::CreateFromOBJ("Boss_Head", true);
 	boss2Model[BossWarrierPart::Head].isDraw = true;
-	boss2Model[BossWarrierPart::Waist].model.reset(Model::CreateFromOBJ("Boss_Waist", true));
+	boss2Model[BossWarrierPart::Waist].model = Model::CreateFromOBJ("Boss_Waist", true);
 	boss2Model[BossWarrierPart::Waist].isDraw = true;
-	boss2Model[BossWarrierPart::ArmL].model.reset(Model::CreateFromOBJ("Boss_ShoulderL", true));
+	boss2Model[BossWarrierPart::ArmL].model = Model::CreateFromOBJ("Boss_ShoulderL", true);
 	boss2Model[BossWarrierPart::ArmL].isDraw = true;
-	boss2Model[BossWarrierPart::ArmR].model.reset(Model::CreateFromOBJ("Boss_ShoulderR", true));
+	boss2Model[BossWarrierPart::ArmR].model = Model::CreateFromOBJ("Boss_ShoulderR", true);
 	boss2Model[BossWarrierPart::ArmR].isDraw = true;
-	boss2Model[BossWarrierPart::HandL].model.reset(Model::CreateFromOBJ("Boss_ArmL", true));
+
+	bossArmLModel_Gu.reset(Model::CreateFromOBJ("Boss_ArmL_Gu", true));
+	bossArmLModel_Pa.reset(Model::CreateFromOBJ("Boss_ArmL_Pa", true));
+	bossArmLModel.reset(Model::CreateFromOBJ("Boss_ArmL", true));
+	bossArmRModel_Gu.reset(Model::CreateFromOBJ("Boss_ArmR_Gu", true));
+	bossArmRModel_Pa.reset(Model::CreateFromOBJ("Boss_ArmR_Pa", true));
+	bossArmRModel.reset(Model::CreateFromOBJ("Boss_ArmR", true));
+
+	boss2Model[BossWarrierPart::HandL].model = bossArmLModel.get();
 	boss2Model[BossWarrierPart::HandL].isDraw = true;
-	boss2Model[BossWarrierPart::HandR].model.reset(Model::CreateFromOBJ("Boss_ArmR", true));
+	boss2Model[BossWarrierPart::HandR].model = bossArmRModel.get();
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
 	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
@@ -72,7 +90,7 @@ void BossWarrier::Initialize()
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
 	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
-	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI/4 });
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
 	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
@@ -133,6 +151,7 @@ void BossWarrier::Initialize()
 	spawnParticle->Initialize();
 	spawnParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
 
+	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 void BossWarrier::Spawn()
@@ -177,29 +196,38 @@ void BossWarrier::Update(const Vector3& targetPos)
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::ArmSwing;
+			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
+			boss2Model[BossWarrierPart::HandR].model = bossArmRModel_Gu.get();
+
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
 		{
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::Tornado;
+			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_L))
 		{
 			attackEasing.Start(30);
 			attack = Attack::MultiLaunchSword;
 			bossAttackPhase = BossAttackPhase::Before;
+			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+			StartMultiLaunchSword();
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_K))
 		{
 			attack = Attack::LaunchSword;
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
+			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+			StartLaunchSword();
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_0)) {
 			attack = Attack::SwordSwing;
 			attackEasing.Start(30);
 			bossAttackPhase = BossAttackPhase::Before;
+			InitAtkSwordSwing();
 		}
 
 		break;
@@ -252,6 +280,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			else
 			{
 				attack = Attack::StandBy;
+				boss2Model[BossWarrierPart::HandL].model = bossArmLModel.get();
 			}
 			break;
 		default:
@@ -265,14 +294,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::Before:
 			if (attackEasing.GetActive())
 			{
-				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI/2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
 				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
 				Vector3 rotRoot = Lerp({ 0,0,0 }, { 0,100,0 }, attackEasing.GetTimeRate());
-				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
-					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.x,
 							   rotRoot.y ,
-					           boss2Model[BossWarrierPart::Root].Transform.translation_.z },
-							  { targetPos.x,0,targetPos.z }));
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
+					{ targetPos.x,0,targetPos.z }));
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -295,11 +324,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::After:
 			if (attackEasing.GetActive())
 			{
-				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 },StandByShoulderL, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp({ 0,0,0 },StandByElbowL, attackEasing.GetTimeRate());
-				Vector3 rotRoot = Lerp({0,100,0 }, { 0,0,0 }, attackEasing.GetTimeRate());
-				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({ 
-					           boss2Model[BossWarrierPart::Root].Transform.translation_.x,
+				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 }, StandByShoulderL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotRoot = Lerp({ 0,100,0 }, { 0,0,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(CreateMatRot({
+							   boss2Model[BossWarrierPart::Root].Transform.translation_.x,
 							   rotRoot.y ,
 							   boss2Model[BossWarrierPart::Root].Transform.translation_.z },
 					{ targetPos.x,0,targetPos.z }));
@@ -307,12 +336,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 
-				Vector3 boss2Pos = Lerp({ 0,50,0 }, {0,20,0}, attackEasing.GetTimeRate());
-				boss2Model[BossWarrierPart::Root].Transform.translation_.y=boss2Pos.y;
+				Vector3 boss2Pos = Lerp({ 0,50,0 }, { 0,20,0 }, attackEasing.GetTimeRate());
+				boss2Model[BossWarrierPart::Root].Transform.translation_.y = boss2Pos.y;
 			}
 			else
 			{
 				attack = Attack::StandBy;
+				boss2Model[BossWarrierPart::HandL].model = bossArmLModel.get();
 			}
 			break;
 		default:
@@ -325,15 +355,28 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::Before:
 			if (attackEasing.GetActive())
 			{
-				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp(StandByElbowL, { -PI / 2,0,0 }, attackEasing.GetTimeRate());
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
 
+				Vector3 polygonEasing = Lerp({1,0,5},{0,1,1}, attackEasing.GetTimeRate());
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
+
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = polygonEasing.y;
+				}
+				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor});
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 			}
 			else
 			{
-				StartMultiLaunchSword();
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = 1;
+				}
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
+				swordModel->SetPolygonExplosion({ 0,1,polygon._RotationFactor,polygon._PositionFactor });
 				bossAttackPhase = BossAttackPhase::Attack;
 			}
 			break;
@@ -344,7 +387,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			if (attackEasing.GetActive())
 			{
 				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 }, StandByShoulderL, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp({ -PI / 2,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -352,6 +395,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			else
 			{
 				attack = Attack::StandBy;
+				boss2Model[BossWarrierPart::HandL].model = bossArmLModel.get();
 			}
 			break;
 		default:
@@ -364,15 +408,28 @@ void BossWarrier::Update(const Vector3& targetPos)
 		case BossAttackPhase::Before:
 			if (attackEasing.GetActive())
 			{
-				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp(StandByElbowL, { -PI / 2,0,0 }, attackEasing.GetTimeRate());
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
 
+				Vector3 polygonEasing = Lerp({ 1,0,5 }, { 0,1,1 }, attackEasing.GetTimeRate());
+				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
+
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = polygonEasing.y;
+				}
+				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor });
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 			}
 			else
 			{
-				StartLaunchSword();
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = 1;
+				}
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
+				swordModel->SetPolygonExplosion({ 0,1,polygon._RotationFactor,polygon._PositionFactor });
 				bossAttackPhase = BossAttackPhase::Attack;
 			}
 			break;
@@ -383,7 +440,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			if (attackEasing.GetActive())
 			{
 				Vector3 rotShoulderL = Lerp({ 0,-PI / 2,0 }, StandByShoulderL, attackEasing.GetTimeRate());
-				Vector3 rotElbowL = Lerp({ -PI / 2,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
+				Vector3 rotElbowL = Lerp({ 0,0,0 }, StandByElbowL, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
@@ -391,6 +448,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			else
 			{
 				attack = Attack::StandBy;
+				boss2Model[BossWarrierPart::HandL].model = bossArmLModel.get();
 			}
 			break;
 		default:
@@ -412,7 +470,9 @@ void BossWarrier::Update(const Vector3& targetPos)
 				shoulderRotL = convertDegreeToRadian(shoulderRotL);
 				shoulderRotR = convertDegreeToRadian(shoulderRotR);
 				elbowRotR = convertDegreeToRadian(elbowRotR);
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
 
+				Vector3 polygonEasing = Lerp({ 1,0,5 }, { 0,1,1 }, attackEasing.GetTimeRate());
 				shoulderRotL = Lerp(StandByShoulderL, shoulderRotL, attackEasing.GetTimeRate());
 				shoulderRotR = Lerp(StandByShoulderR, shoulderRotR, attackEasing.GetTimeRate());
 				elbowRotR = Lerp(StandByElbowR, elbowRotR, attackEasing.GetTimeRate());
@@ -420,6 +480,11 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 				Matrix4 rotRoot = CreateMatRot(rootRot);
 
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = 1;
+				}
+				swordModel->SetPolygonExplosion({ polygonEasing.x,1,polygon._RotationFactor,polygon._PositionFactor });
 				boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir * rotRoot);
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(shoulderRotL);
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(shoulderRotR);
@@ -427,8 +492,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 			}
 			else
 			{
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					w[i].alpha = 1;
+				}
+				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
+				swordModel->SetPolygonExplosion({0,1, polygon._RotationFactor,polygon._PositionFactor });
 				bossAttackPhase = BossAttackPhase::Attack;
-				InitAtkSwordSwing();
 			}
 			break;
 		case BossAttackPhase::Attack:
@@ -467,7 +537,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 		default:
 			break;
 		}
-		attackEasing.Update();
 		break;
 	case Attack::Spawm:
 		UpdateSpawn();
@@ -476,6 +545,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 	default:
 		break;
 	}
+
+	attackEasing.Update();
 
 	boss2TornadoTransform[0].TransferMatrix();
 	boss2TornadoTransform[1].TransferMatrix();
@@ -487,12 +558,16 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].TransferMatrix();
 	}
+	for (int i = 0; i < MAXSWROD; i++ )
+	{
+		w[i].TransferMatrix();
+	}
 
 	ImGui::Begin("Warrier");
 
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
-	ImGui::Text("BossAttack:%d",attack);
+	ImGui::Text("BossAttack:%d", attack);
 
 	ImGui::End();
 
@@ -593,6 +668,7 @@ void BossWarrier::StartMultiLaunchSword()
 		w[i].TransferMatrix();
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 		AttackCollider[i]->Update(w[i].matWorld_);
+		w[i].alpha = 0;
 	}
 
 	for (int i = 0; i < MAXSWROD; i++)
@@ -607,6 +683,8 @@ void BossWarrier::StartMultiLaunchSword()
 
 
 	}
+	Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
+	swordModel->SetPolygonExplosion({1,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
 
 	t = true;
@@ -974,8 +1052,8 @@ void BossWarrier::InitAtkSwordSwing()
 	rotaV[1].x = -sin(swordRad);
 	rotaV[1].z = -cos(swordRad);
 	rotaV[1].normalize();
-	rotaV[0] *=75.0f;
-	rotaV[1] *=75.0f;
+	rotaV[0] *= 75.0f;
+	rotaV[1] *= 75.0f;
 
 	Matrix4 bossDir = CreateMatRot(targetPos, boss2Model[BossWarrierPart::Root].Transform.translation_);
 	swordPos[0] = bossDir.transform(rotaV[0], bossDir) + targetPos;
@@ -983,6 +1061,21 @@ void BossWarrier::InitAtkSwordSwing()
 
 	//剣の大きさを4倍に
 	w[0].scale_ = { 4,4,4 };
+
+	//剣の移動と回転
+	Vector3 bossY0;
+	bossY0 = boss2Model[BossWarrierPart::Root].Transform.translation_;
+	bossY0.y = targetPos.y;
+	Vector3 target = targetPos;
+	target.y += 10;
+	swordPos[0].y = target.y;
+	swordPos[1].y = target.y;
+
+	float ease = pow(0, 5);
+
+	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
+	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
+	w[0].TransferMatrix();
 }
 
 void BossWarrier::UpdateAtkSwordSwing()
@@ -1060,8 +1153,8 @@ void BossWarrier::UpdateAtkSwordSwing()
 	swordPos[1].y = target.y;
 
 
-	w[0].translation_ = LerpBezireQuadratic(swordPos[1],targetPos, swordPos[0], ease);
-	w[0].SetMatRot(CreateMatRot(bossY0,w[0].translation_));
+	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
+	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
 }
 
@@ -1081,7 +1174,7 @@ void BossWarrier::UpdateSpawn()
 		spawnParticle->Add(ParticleManager::Type::Out, 20, true, spawnPos, controll, boss2Model[BossWarrierPart::Root].Transform.translation_, scale, scale, Vector4(0, 0, 0, 1), Vector4(45.0f / 256.0f, 0, 45.0f / 256.0f, 1));
 		particleCreateTime--;
 	}
-	
+
 	spawnParticle->Update();
 
 

@@ -36,7 +36,7 @@ enum BossWarrierPart {
 };
 
 struct BossWarrierModel {
-	std::unique_ptr<Model> model;
+	Model* model;
 	WorldTransform Transform;
 	bool isDraw;
 };
@@ -65,6 +65,8 @@ class BossWarrier
 {
 
 public:
+	~BossWarrier();
+
 	void Initialize();
 
 	void Spawn();
@@ -95,7 +97,12 @@ private:
 	Input* input_ = nullptr;
 	Player* pl = nullptr;
 	BossWarrierModel boss2Model[BossWarrierPart::Boss2PartMax];	//ボス第二形態�EモチE��
-	///EasingData data;
+	std::unique_ptr<Model> bossArmLModel_Gu;
+	std::unique_ptr<Model> bossArmLModel_Pa;
+	std::unique_ptr<Model> bossArmLModel;
+	std::unique_ptr<Model> bossArmRModel_Gu;
+	std::unique_ptr<Model> bossArmRModel_Pa;
+	std::unique_ptr<Model> bossArmRModel;
 
 	bool isAtkArmSwing = false;
 	int atkStartTime = 0;

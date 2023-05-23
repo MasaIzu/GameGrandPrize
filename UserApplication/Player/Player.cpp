@@ -1169,7 +1169,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 0;
+					AttackCoolTimeMax = 360;
 
 					isCoolTimeRiset = true;
 				}
@@ -1291,6 +1291,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
+					AttackCoolTimeMax = 0;
 					isCoolTimeRiset = true;
 
 				}
@@ -1488,6 +1489,9 @@ void Player::Attack() {
 					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
 					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
+					AttackCoolTimeMax = 360;
+					isCoolTimeRiset = true;
+
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1549,6 +1553,9 @@ void Player::Attack() {
 					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
 					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
+					AttackCoolTimeMax = 360;
+					isCoolTimeRiset = true;
+
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1600,13 +1607,18 @@ void Player::Attack() {
 
 		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTimeMax, isCoolTimeRiset);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
 			}
 		}
 		else {
 			for (int i = 0; i < SphereCount; i++) {
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+			}
+			if (isPorigonFlag == false) {
+				isPorigonFlag = true;
+				SowrdDFlame = 0;
+				SowrdAFlame = 36;
 			}
 		}
 

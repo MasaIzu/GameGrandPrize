@@ -162,6 +162,7 @@ private: // メンバ変数
 	bool isTutorialEnd = false;
 	bool isStartBossBattle = false;
 	bool isMovie = false;
+	bool isActiveChangeEvent = false;
 
 	const float gayserMaxFlame = 240;
 	float gayserFlame = 0;
@@ -418,4 +419,10 @@ private://プライベート関数
 
 	// sin波の動きを作る関数
 	float Sin_ZeroToOne(float pos, float maxCount, float nowCount, float swingWidth);
+
+	//ボスの変身開始関数
+	void StartBossChangeEvent();
+
+	//ボスの変身の更新
+	void UpdateBossChangeEventCamera();
 };

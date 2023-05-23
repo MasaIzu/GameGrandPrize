@@ -84,6 +84,10 @@ public:
 	void LaunchSwordDraw(ViewProjection viewProMat);
 
 	void Rota();
+
+	EasingData GetEasingData()const { return easeRotArm; }
+
+	WorldTransform GetRootTransform() const { return boss2Model[BossWarrierPart::Root].Transform; }
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//蜑｣縺ｮ繝｢繝・Ν繝・・繧ｿ
@@ -168,6 +172,7 @@ private:
 
 	std::unique_ptr<ParticleManager> spawnParticle;
 	int particleCreateTime = 0;
+	int spawnAnimationTime = 120;
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 

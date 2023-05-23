@@ -142,9 +142,9 @@ void BossWarrier::Spawn()
 	//スケールを0に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
 	//イージング開始
-	easeRotArm.Start(120);
+	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
-	particleCreateTime = 100;
+	particleCreateTime = spawnAnimationTime -20;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)

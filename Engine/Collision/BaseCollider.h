@@ -21,8 +21,8 @@ public:
 	/// </summary>
 	virtual void Update(const Matrix4& worldPos) = 0;
 	virtual void Update(const Matrix4& worldPos, const float& radius) = 0;
-	virtual void Update(const Matrix4& worldPos, const uint32_t& Cooltime) = 0;
-	virtual void Update(const Matrix4 & worldPos, const float& radius,const uint32_t& Cooltime) = 0;
+	virtual void Update(const Matrix4& worldPos, const uint32_t* Cooltime) = 0;
+	virtual void Update(const Matrix4 & worldPos, const float& radius,const uint32_t* Cooltime) = 0;
 
 	inline CollisionShapeType GetShapeType() { return shapeType; }
 

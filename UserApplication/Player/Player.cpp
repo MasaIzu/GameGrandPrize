@@ -481,7 +481,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 	ImGui::Text("frem:%f", frem);
-	ImGui::Text("AttackCoolTime:%d", AttackCoolTime);
+	ImGui::Text("AttackCoolTime:%d", AttackCoolTimeMax);
 	ImGui::Text("SowrdDrowTime:%d", SowrdDrowTime);
 	ImGui::Text("MinimumFrem:%f", MinimumFrem);
 	ImGui::Text("look:%f", worldTransform_.look.z);
@@ -854,6 +854,8 @@ void Player::Attack() {
 					timeRate = 0;
 					startIndex = 1;
 
+					isPorigonFlag = false;
+
 					/*if (attackConbo < 3) {
 						attackConbo++;
 					}
@@ -1026,7 +1028,7 @@ void Player::Attack() {
 					LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 					RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTime = 0;
+					AttackCoolTimeMax = &AttackCoolTime;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1085,6 +1087,8 @@ void Player::Attack() {
 					BoneParentRotY = 0.0f;
 
 					saveRotX = AttackRotX;
+
+					AttackCoolTimeMax = &AttackCoolTime;
 
 					/*Matrix4 rooooootttt;
 					rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
@@ -1158,6 +1162,8 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 
 					BoneParentRotY = 0.0f;
+
+					AttackCoolTimeMax = &AttackCoolTime;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1215,6 +1221,8 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 
 					BoneParentRotY = 0.0f;
+
+					AttackCoolTimeMax = &AttackCoolTime;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1289,7 +1297,7 @@ void Player::Attack() {
 						AttackRotX += 14.0f;
 					}
 				}
-				AttackCoolTime = 120;
+				AttackCoolTimeMax = &AttackCoolTime;
 
 				AttackNowPos += PlayerContactPos;
 				AttackMovememt = Easing::InOutVec3(AttackNowPos, AttackNowPos + LookingMove, attackMoveTimer, MaxAttackMoveTimer) - worldTransform_.translation_;
@@ -1358,13 +1366,18 @@ void Player::Attack() {
 		}
 		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTime);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, *AttackCoolTimeMax);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
 			}
 		}
 		else {
 			for (int i = 0; i < SphereCount; i++) {
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+			}
+			if (isPorigonFlag == false) {
+				isPorigonFlag = true;
+				SowrdDFlame = 0;
+				SowrdAFlame = 36;
 			}
 		}
 	}

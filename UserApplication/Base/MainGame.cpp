@@ -9,7 +9,7 @@ void MainGame::Initialize()
 
 	sceneFactory_ = std::make_unique<SceneFactory>();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
-	SceneManager::GetInstance()->ChangeScene("TITLE");
+	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 }
 
 void MainGame::Finalize()
@@ -22,6 +22,11 @@ void MainGame::Update()
 {
 	// 基底クラスの更新処理
 	Framework::Update();
+}
+
+void MainGame::PostEffectDraw()
+{
+	sceneManager_->PostEffectDraw();
 }
 
 void MainGame::Draw()

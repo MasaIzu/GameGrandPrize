@@ -38,14 +38,18 @@ void WorldTransform::Map() {
 
 void WorldTransform::TransferMatrix() {
 
-	Matrix4 matScale, matRot, matTrans;
-	Quaternion QuaternionMatRot = { rotation_.x,rotation_.y,rotation_.z,0 };
+	Matrix4 matScale, matTrans;
 
 	//スケール、回転、平行移動行列の計算
 	matScale = MyMath::Scale(scale_);
-	matRot = MyMath::Initialize();
-	//matRot *= QuaternionMatRot.Rotate();
-	matRot *= MyMath::Rotation(rotation_, 6);
+	
+	//オイラー角で回転しているなら回転用のマトリックスを初期化
+	if (isEuler) {
+		matRot = MyMath::Initialize();
+		//matRot *= MyMath::Rotation(rotation_, 6);
+		matRot = quaternion.Rotate();
+	}
+
 	matTrans = MyMath::Translation(translation_);
 
 	//ワールド行列の合成
@@ -53,6 +57,14 @@ void WorldTransform::TransferMatrix() {
 	matWorld_ *= matScale;//ワールド行列にスケーリングを反映
 	matWorld_ *= matRot;//ワールド行列に回転を反映
 	matWorld_ *= matTrans;//ワールド行列に平行移動を反映
+
+	look = GetLook(worldLookMatRot, Vector3(-1,0,0));
+	lookBack = GetLook(worldLookMatRot, Vector3(1, 0, 0));
+	lookRight = GetLook(worldLookMatRot, Vector3(0, 0, 1));
+	lookLeft = GetLook(worldLookMatRot, Vector3(0, 0, -1));
+
+	lookUp = GetLook(worldLookMatRot, Vector3(0, 1, 0));
+	lookDown = GetLook(worldLookMatRot, Vector3(0, -1, 0));
 
 	//親オブジェクトがあれば
 	if (parent_) {
@@ -62,4 +74,68 @@ void WorldTransform::TransferMatrix() {
 	//定数バッファへのデータ転送
 	constMap->matWorld = matWorld_;
 
+	constMap->alpha = alpha;
+
+}
+
+
+void WorldTransform::SetRot(const Vector3& rot)
+{
+	isEuler = true;
+	rotation_ = rot;
+
+	quaternion.SeTEuler(rotation_);
+}
+
+void WorldTransform::SetMatRot(const Matrix4& mat)
+{
+	//オイラー角の回転フラグをfalseに
+	isEuler = false;
+	matRot = mat;
+}
+
+void WorldTransform::MoveRot(const Vector3& move)
+{
+	rotation_ += move;
+
+	quaternion.SeTEuler(rotation_);
+}
+
+void WorldTransform::SetQuater(const Quaternion& quater)
+{
+	quaternion = quater;
+
+	rotation_ = quaternion.GetEulerAngles();
+}
+
+void WorldTransform::MoveQuater(const Quaternion& move)
+{
+	quaternion += move;
+
+	rotation_ = quaternion.GetEulerAngles();
+}
+
+Quaternion& WorldTransform::GetQuaternion()
+{
+	return quaternion;
+}
+
+Vector3 WorldTransform::GetLook(Matrix4 matRot,Vector3 at)
+{
+	Vector3 Pos = MyMath::GetWorldTransform(matWorld_);
+	Vector3 look_ = MyMath::MatVector(matRot, at);
+
+	return Pos + look_;
+}
+
+void WorldTransform::SetLookRot(const Vector3& rot)
+{
+	//quaterni.SeTEuler(rot);
+
+	//worldLookMatRot = quaterni.Rotate();
+}
+
+void WorldTransform::SetLookMatRot(const Matrix4& mat)
+{
+	worldLookMatRot = mat;
 }

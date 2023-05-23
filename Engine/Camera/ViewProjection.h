@@ -48,6 +48,11 @@ struct ViewProjection {
 	// Ë‰es—ñ
 	Matrix4 matProjection;
 
+	Matrix4 matBillboard;
+
+	//ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚éŒü‚«
+	Vector3 cameraLook = target.norm();
+
 	/// <summary>
 	/// ‰Šú‰»
 	/// </summary>
@@ -65,6 +70,7 @@ struct ViewProjection {
 	/// </summary>
 	void UpdateMatrix();
 
+	Matrix4 GetViewProjection()const;
 
 	float ToRadian(float x) { return x * (PI / 180); }
 };

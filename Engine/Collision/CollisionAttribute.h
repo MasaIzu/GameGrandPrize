@@ -1,5 +1,29 @@
 #pragma once
 
-const unsigned short COLLISION_ATTR_LANDSHAPE = 0b1 << 0;//’nŒ`
-const unsigned short COLLISION_ATTR_ALLIES = 0b1 << 1;//’nŒ`
-const unsigned short COLLISION_ATTR_ENEMYS = 0b1 << 2;//’nŒ`
+const unsigned short COLLISION_ATTR_LANDSHAPE = 0b0;//’nŒ`
+const unsigned short COLLISION_ATTR_ALLIES = 0b1;//–¡•û
+const unsigned short COLLISION_ATTR_ENEMYS = 0b10;//“G
+
+const unsigned short COLLISION_ATTR_ATTACK = 0b11;//UŒ‚
+const unsigned short COLLISION_ATTR_NOTATTACK = 0b100;//UŒ‚”»’è‚È‚µ
+const unsigned short COLLISION_ATTR_INVINCIBLE = 0b101;//–³“G
+
+const unsigned short COLLISION_ATTR_WEAKENEMYS = 0b111;//ŽG‹›“G
+const unsigned short COLLISION_ATTR_WEAKENEMYS1 = 0b1000;//ŽG‹›“G1
+const unsigned short COLLISION_ATTR_WEAKENEMYS2 = 0b1001;//ŽG‹›“G2
+const unsigned short COLLISION_ATTR_WEAKENEMYS3 = 0b1110;//ŽG‹›“G3
+const unsigned short COLLISION_ATTR_WEAKENEMYS4 = 0b1111;//ŽG‹›“G4
+const unsigned short COLLISION_ATTR_WEAKENEMYS5 = 0b10000;//ŽG‹›“G5
+const unsigned short COLLISION_ATTR_WEAKENEMYS6 = 0b10001;//ŽG‹›“G6
+const unsigned short COLLISION_ATTR_WEAKENEMYS7 = 0b10010;//ŽG‹›“G7
+const unsigned short COLLISION_ATTR_WEAKENEMYS8 = 0b10011;//ŽG‹›“G8
+const unsigned short COLLISION_ATTR_WEAKENEMYS9 = 0b10100;//ŽG‹›“G9
+const unsigned short COLLISION_ATTR_WEAKENEMYS10 = 0b10101;//ŽG‹›“G10
+
+const unsigned short COLLISION_ATTR_WEAKENEMYS_DEI = 0b10110;//ŽG‹›“GŽ€–S—p
+
+const unsigned short COLLISION_ATTR_ENEMYBIGSOWRD = 0b10111;//Œ•”»’è—p
+const unsigned short COLLISION_ATTR_ENEMYRECEPTION = 0b11000;//“GUŒ‚‘Ò‹@
+const unsigned short COLLISION_ATTR_ENEMYSOWRDATTACK = 0b11001;//“GŒ•UŒ‚‘Ò‹@
+const unsigned short COLLISION_ATTR_ENEMYTORNADOATTACK = 0b11010;//“G—³ŠªUŒ‚‘Ò‹@
+

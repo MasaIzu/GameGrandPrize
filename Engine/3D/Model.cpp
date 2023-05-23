@@ -20,21 +20,26 @@ UINT Model::sDescriptorHandleIncrementSize_ = 0;
 ID3D12GraphicsCommandList* Model::sCommandList_ = nullptr;
 ComPtr<ID3D12RootSignature> Model::sRootSignature_;
 ComPtr<ID3D12PipelineState> Model::sPipelineState_;
-std::unique_ptr<LightGroup> Model::lightGroup;
 
 void Model::StaticInitialize() {
 
 	// パイプライン初期化
 	InitializeGraphicsPipeline();
 
-	// ライト生成
-	lightGroup.reset(LightGroup::Create());
+}
+
+void Model::StaticFinalize()
+{
+
+	sRootSignature_.Reset();
+	sPipelineState_.Reset();
+
 }
 
 void Model::InitializeGraphicsPipeline() {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob;    // 頂点シェーダオブジェクト
-	ComPtr<ID3DBlob> gsBlob;	// ジオメトリシェーダオブジェクト
+	ComPtr<ID3DBlob> gsBlob;
 	ComPtr<ID3DBlob> psBlob;    // ピクセルシェーダオブジェクト
 	ComPtr<ID3DBlob> errorBlob; // エラーオブジェクト
 
@@ -60,23 +65,21 @@ void Model::InitializeGraphicsPipeline() {
 		exit(1);
 	}
 
-	// ピクセルシェーダの読み込みとコンパイル
+	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/ObjGS.hlsl",	// シェーダファイル名
+		L"Resources/shaders/ObjGS.hlsl", // シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
-		"main", "gs_5_0",	// エントリーポイント名、シェーダーモデル指定
+		"main", "gs_5_0", // エントリーポイント名、シェーダーモデル指定
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0,
-		&gsBlob, &errorBlob);
+		0, &gsBlob, &errorBlob);
 	if (FAILED(result)) {
 		// errorBlobからエラー内容をstring型にコピー
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char*)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
+		std::copy_n(
+			(char*)errorBlob->GetBufferPointer(), errorBlob->GetBufferSize(), errstr.begin());
 		errstr += "\n";
 		// エラー内容を出力ウィンドウに表示
 		OutputDebugStringA(errstr.c_str());
@@ -120,16 +123,15 @@ void Model::InitializeGraphicsPipeline() {
 	// グラフィックスパイプラインの流れを設定
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline{};
 	gpipeline.VS = CD3DX12_SHADER_BYTECODE(vsBlob.Get());
-	gpipeline.GS= CD3DX12_SHADER_BYTECODE(gsBlob.Get());
+	gpipeline.GS = CD3DX12_SHADER_BYTECODE(gsBlob.Get());
 	gpipeline.PS = CD3DX12_SHADER_BYTECODE(psBlob.Get());
 
 	// サンプルマスク
 	gpipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK; // 標準設定
 	// ラスタライザステート
-	//gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;//ポリゴン内塗りつぶし
-	gpipeline.RasterizerState.DepthClipEnable = true;//深度グリッピングを有効に
+	gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	// gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	// gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	//  デプスステンシルステート
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
@@ -159,7 +161,7 @@ void Model::InitializeGraphicsPipeline() {
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
 	gpipeline.NumRenderTargets = 1;                       // 描画対象は1つ
-	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 0～255指定のRGBA
+	gpipeline.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
@@ -282,25 +284,22 @@ void Model::Initialize(const std::string& modelname, bool smoothing) {
 	// テクスチャの読み込み
 	LoadTextures();
 
-	// ヒーププロパティ
-	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	// リソース設定
-	CD3DX12_RESOURCE_DESC resourceDesc =
-		CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataWorldTransform) + 0xff) & ~0xff);
+	lightGroup = std::make_unique<LightGroup>();
 
-	// 定数バッファの生成
-	HRESULT result = DirectXCore::GetInstance()->GetDevice()->CreateCommittedResource(
-		&heapProps, // アップロード可能
-		D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&constBuff_));
-	assert(SUCCEEDED(result));
+	// ライト生成
+	lightGroup->Initialize();
 
-	//定数バッファのマッピング
-	result = constBuff_->Map(0, nullptr, (void**)&constMap);
-	assert(SUCCEEDED(result));
-
-	SetPolygonExplosion({ 0.0f,1.0f,0.0f,0.0f });
-
+	lightGroup->SetPointLightActive(0, false);
+	lightGroup->SetPointLightActive(1, false);
+	lightGroup->SetPointLightActive(2, false);
+	lightGroup->SetDirLightActive(0, false);
+	lightGroup->SetDirLightActive(1, false);
+	lightGroup->SetDirLightActive(2, false);
+	lightGroup->SetSpotLightActive(0, false);
+	lightGroup->SetSpotLightActive(1, false);
+	lightGroup->SetSpotLightActive(2, false);
+	lightGroup->SetCircleShadowActive(0, false);
+	lightGroup->SetAmbientColor({ 1,1,1 });
 }
 
 void Model::LoadModel(const std::string& modelname, bool smoothing) {
@@ -498,6 +497,29 @@ void Model::LoadModel(const std::string& modelname, bool smoothing) {
 	if (smoothing) {
 		mesh->CalculateSmoothedVertexNormals();
 	}
+
+
+	// ヒーププロパティ
+	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	// リソース設定
+	CD3DX12_RESOURCE_DESC resourceDesc =
+		CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataWorldTransform) + 0xff) & ~0xff);
+
+	// 定数バッファの生成
+	HRESULT result = DirectXCore::GetInstance()->GetDevice()->CreateCommittedResource(
+		&heapProps, // アップロード可能
+		D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&constBuff_));
+	assert(SUCCEEDED(result));
+
+	//定数バッファのマッピング
+	result = constBuff_->Map(0, nullptr, (void**)&constMap);
+	assert(SUCCEEDED(result));
+
+	constMap->_Destruction = 0.0f;
+	constMap->_ScaleFactor = 1.0f;
+	constMap->_PositionFactor = 0.0f;
+	constMap->_RotationFactor = 0.0f;
 }
 
 void Model::LoadMaterial(const std::string& directoryPath, const std::string& filename) {
@@ -606,6 +628,7 @@ void Model::LoadTextures() {
 		if (material->textureFilename_.size() > 0) {
 			// マテリアルにテクスチャ読み込み
 			material->LoadTexture(directoryPath);
+			modelTextureHandle = material->GetTextureHadle();
 			textureIndex++;
 		}
 		// テクスチャなし
@@ -617,17 +640,14 @@ void Model::LoadTextures() {
 	}
 }
 
-void Model::SetAlpha(float alpha)
-{
-	for (auto& m : materials_) {
-		m.second->alpha_ = alpha;
-		m.second->Update();
-	}
-}
-
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	if (worldTransform.alpha<=0)
+	{
+		return;
+	}
 
+	lightGroup->TransferConstBuffer();
 
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);
@@ -641,15 +661,17 @@ void Model::Draw(
 	//CBVをセット（ポリゴン爆散）
 	sCommandList_->SetGraphicsRootConstantBufferView(5, constBuff_->GetGPUVirtualAddress());
 
-	// 全メッシュを描画
-	for (auto& mesh : meshes_) {
-		mesh->Draw(sCommandList_, 2, 3);
+	for (int i = 0; i < meshes_.size(); i++) {
+		// 全メッシュを描画
+		meshes_[i]->Draw(sCommandList_, 2, 3, modelTextureHandle);
 	}
 }
 
 void Model::Draw(
 	const WorldTransform& worldTransform, const ViewProjection& viewProjection,
 	uint32_t textureHadle) {
+
+	lightGroup->TransferConstBuffer();
 
 	// ライトの描画
 	lightGroup->Draw(sCommandList_, 4);

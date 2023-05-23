@@ -4,13 +4,15 @@
 ///当たり判定プリミティブ
 /// </summary>
 
-
+#include <stdint.h>
 #include"Vector4.h"
 
 struct Sphere {
 	Vector4 center = { 0,0,0,1 };
 
 	float radius = 1.0f;
+
+	uint32_t coolTime = 0;
 
 };
 

@@ -9,7 +9,7 @@
 
 #include "SceneManager.h"
 #include "FbxModel.h"
-
+#include <FbxLoader.h>
 #include <memory>
 
 class Framework {
@@ -20,6 +20,9 @@ public:
 
 	//更新
 	virtual void Update();
+
+	//ポストエフェクト
+	virtual void PostEffectDraw()=0;
 
 	//描画
 	virtual void Draw() = 0;
@@ -49,7 +52,7 @@ protected:
 	Input* input_ = nullptr;
 	SceneManager* sceneManager_;
 	TextureManager* TextureManager_ = nullptr;
-
+	FbxLoader* fbxLoader_ = nullptr;
 
 	//シングルトン以外
 	std::unique_ptr<ImGuiManager> imGui;

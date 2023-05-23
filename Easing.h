@@ -23,7 +23,12 @@ public:
 
 	static double InOut_Bounce(double start, double end, double time, double max_time);
 
+	static double easeOutCubic(double start, double end, double time, double max_time);
 	static Vector3 InOutVec3(Vector3 start, Vector3 end, double time, double max_time);
+
+	static double easeInCirc(double start, double end, double time, double max_time);
+	static Vector3 easeInCircVec3(Vector3 start, Vector3 end, double time, double max_time);
+
 
 
 };

@@ -12,6 +12,11 @@ public: // メンバ関数
 	void Update();
 
 	/// <summary>
+	/// ポストエフェクをかけるオブジェクトの描画
+	/// </summary>
+	void PostEffectDraw();
+
+	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw();

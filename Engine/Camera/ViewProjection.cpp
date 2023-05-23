@@ -44,8 +44,58 @@ void ViewProjection::UpdateMatrix() {
 	// 透視投影による射影行列の生成
 	matProjection = MyMath::PerspectiveFovLH(fovAngleY, aspectRatio, nearZ, farZ);
 
+	cameraLook = target - eye;
+	cameraLook.y = 0;
+	cameraLook.norm();
+
 	// 定数バッファに書き込み
 	constMap->view = matView;
 	constMap->projection = matProjection;
 	constMap->cameraPos = eye;
+
+	//視点座標
+	Vector3 eyePosition = eye;
+	//注視点座標X
+	Vector3 targetPosition = target;
+	//(仮の)上方向
+	Vector3 upVector = up;
+
+	//カメラZ軸(視点方向)
+	Vector3 cameraAxisZ = targetPosition - eyePosition;
+
+	//ベクトルを正規化
+	cameraAxisZ.normalize();
+
+	//カメラのX軸(右方向)
+	Vector3 cameraAxisX;
+	//X軸は上方向→Z軸の外積で求まる
+	cameraAxisX = upVector.cross(cameraAxisZ);
+	//ベクトルを正規化
+	cameraAxisX.normalize();
+
+	//カメラのY軸(上方向)
+	Vector3 cameraAxisY;
+	//Y軸は上方向→Z軸の外積で求まる
+	cameraAxisY = cameraAxisZ.cross(cameraAxisX);
+	//ベクトルを正規化
+	cameraAxisY.normalize();
+
+	matBillboard = MyMath::MakeIdentity();
+
+	//ビルボード行列
+	matBillboard.m[0][0] = cameraAxisX.x;
+	matBillboard.m[0][1] = cameraAxisX.y;
+	matBillboard.m[0][2] = cameraAxisX.z;
+	matBillboard.m[1][0] = cameraAxisY.x;
+	matBillboard.m[1][1] = cameraAxisY.y;
+	matBillboard.m[1][2] = cameraAxisY.z;
+	matBillboard.m[2][0] = cameraAxisZ.x;
+	matBillboard.m[2][1] = cameraAxisZ.y;
+	matBillboard.m[2][2] = cameraAxisZ.z;
+
+}
+
+Matrix4 ViewProjection::GetViewProjection() const
+{
+	return matView * matProjection;
 }

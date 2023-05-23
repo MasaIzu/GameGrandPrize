@@ -1,7 +1,6 @@
 #include "Collision.h"
 #include <math.h>
 
-
 void Collision::ClosestPtPoint2Triangle(const Vector4& point, const Triangle& triangle, Vector4* closest)
 {
 	// pointがp0の外側の頂点領域の中にあるかどうかチェック
@@ -85,6 +84,8 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB,
 	float radius2 = sphereA.radius + sphereB.radius;
 	radius2 *= radius2;
 
+
+
 	if (dist <= radius2)
 	{
 		if (inter)
@@ -104,6 +105,33 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB,
 		return true;
 	}
 
+	return false;
+}
+
+// 長方形と点の当たり判定
+bool Collision::CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth1, Vector3 rectWidthHeightDepth2, Vector3 sphere, float sphereRadius) {
+	// 長方形の中心点を計算
+	float centerX = rectPos.x;
+	float centerY = rectPos.y;
+	float centerZ = rectPos.z;
+
+	float rectWidthHeightDepth1X = sqrt(rectWidthHeightDepth1.x * rectWidthHeightDepth1.x);
+	float rectWidthHeightDepth2X = sqrt(rectWidthHeightDepth2.x * rectWidthHeightDepth2.x);
+
+	float rectWidthHeightDepth1Y = sqrt(rectWidthHeightDepth1.y * rectWidthHeightDepth1.y);
+	float rectWidthHeightDepth2Y = sqrt(rectWidthHeightDepth2.y * rectWidthHeightDepth2.y);
+
+	float rectWidthHeightDepth1Z = sqrt(rectWidthHeightDepth1.x * rectWidthHeightDepth1.x);
+	float rectWidthHeightDepth2Z = sqrt(rectWidthHeightDepth2.z * rectWidthHeightDepth2.z);
+
+
+	if (centerX - rectWidthHeightDepth1X < sphere.x && sphere.x < centerX + rectWidthHeightDepth2X) {
+		if (centerZ - rectWidthHeightDepth1Z < sphere.z && sphere.z < centerZ + rectWidthHeightDepth2Z) {
+			return true;
+		}
+	}
+
+	// 当たり判定がない場合は、当たっていないと判断する
 	return false;
 }
 

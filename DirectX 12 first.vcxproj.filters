@@ -35,9 +35,6 @@
     <Filter Include="Engine\ヘッダー\GameFunction">
       <UniqueIdentifier>{91af1858-b155-4bb7-8b42-62203f67b5a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ヘッダー\Math">
-      <UniqueIdentifier>{4b35cdcd-550b-4d8e-93da-cbcd6bcd7028}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\ヘッダー\Sound">
       <UniqueIdentifier>{99909a45-d91c-4a1e-8187-ab7935ba3c1a}</UniqueIdentifier>
     </Filter>
@@ -82,9 +79,6 @@
     <Filter Include="ユーザーソース ファイル\Enemy">
       <UniqueIdentifier>{e3b8b230-f642-4f8f-9d57-48e59550326b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ユーザーヘッダー ファイル\Enemy">
-      <UniqueIdentifier>{1dac81ab-cda1-46b0-aa7a-bf312e51348b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ユーザーソース ファイル\Player">
       <UniqueIdentifier>{afe63864-f970-413a-a081-a5d0e58f2a22}</UniqueIdentifier>
     </Filter>
@@ -127,43 +121,76 @@
     <Filter Include="ユーザーヘッダー ファイル\Skydome">
       <UniqueIdentifier>{9cbfaac7-0ca9-439d-8308-4e966b74e7e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ソース ファイル\FBX">
-      <UniqueIdentifier>{3e6217d3-eca6-43a6-b189-2b965ae37a56}</UniqueIdentifier>
+    <Filter Include="Engine\ソース ファイル\PostEffect">
+      <UniqueIdentifier>{612c1759-801c-4802-a343-c6504ba98c3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ヘッダー\FBX">
-      <UniqueIdentifier>{93f4c701-600a-488e-8e14-90678053b895}</UniqueIdentifier>
+    <Filter Include="Engine\ヘッダー\Posteffect">
+      <UniqueIdentifier>{336445ad-a737-450e-8ebf-458ac7359294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\3D">
+      <UniqueIdentifier>{2eee57f1-c4fd-4b4a-a806-51b5bfbc954d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\2D">
+      <UniqueIdentifier>{89b3bc5b-ba97-4595-8305-dabf6e2b36e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PostEfeect">
+      <UniqueIdentifier>{20028598-7302-4e08-a91a-277864a1c778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ソース ファイル\3D\Light">
+      <UniqueIdentifier>{d6f7e8e0-d897-49f9-be83-0b8cf8666179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー\3D\Light">
+      <UniqueIdentifier>{1bdf704f-3116-4232-a91b-6dac59dc3830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー\Math">
+      <UniqueIdentifier>{4b35cdcd-550b-4d8e-93da-cbcd6bcd7028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーヘッダー ファイル\Boss">
+      <UniqueIdentifier>{0a33e27c-eb9d-4ef7-8a55-18cec47daef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーソース ファイル\Boss">
+      <UniqueIdentifier>{4560a0bb-49c1-4eef-b64a-0da6a1806bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ユーザーヘッダー ファイル\Boss\Enemy">
+      <UniqueIdentifier>{1dac81ab-cda1-46b0-aa7a-bf312e51348b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Obj.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\Primitive.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Shape.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Resources\Shaders\Sprite.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\Terrain.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Resources\Shaders\SpriteShaderHeader.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="test.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Sprite.hlsli">
+      <Filter>Shaders\2D</Filter>
+    </None>
+    <None Include="Resources\Shaders\Obj.hlsli">
+      <Filter>Shaders\3D</Filter>
+    </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
+      <Filter>Shaders\3D</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectBlur.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectLuminance.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\PostEffectMixed.hlsli">
+      <Filter>Shaders\PostEfeect</Filter>
+    </None>
+    <None Include="Resources\Shaders\FBX.hlsli">
+      <Filter>Shaders\3D</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ObjVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Resources\Shaders\PrimitivePS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -176,9 +203,6 @@
     <FxCompile Include="Resources\Shaders\ShapeVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpritePS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Resources\Shaders\SpriteVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -188,20 +212,62 @@
     <FxCompile Include="Resources\Shaders\TerrainVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpritePixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SpriteVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="testPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="testVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\SpritePS.hlsl">
+      <Filter>Shaders\2D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
     <FxCompile Include="Resources\Shaders\ObjGS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ObjPS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ObjVS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticlePS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleVS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurHVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurPS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectBlurWVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectLuminancePS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectLuminanceVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectMixedPS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectMixedVS.hlsl">
+      <Filter>Shaders\PostEfeect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
+      <Filter>Shaders\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXGS.hlsl">
+      <Filter>Shaders\3D</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +319,6 @@
     <ClInclude Include="Engine\Base\WinApp.h">
       <Filter>Engine\ヘッダー\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\3D\Light.h">
-      <Filter>Engine\ヘッダー\3D</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\3D\Mesh.h">
       <Filter>Engine\ヘッダー\3D</Filter>
     </ClInclude>
@@ -278,7 +341,7 @@
       <Filter>Engine\ヘッダー\GameFunction</Filter>
     </ClInclude>
     <ClInclude Include="UserApplication\Enemy\Enemy.h">
-      <Filter>ユーザーヘッダー ファイル\Enemy</Filter>
+      <Filter>ユーザーヘッダー ファイル\Boss\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Collision\BaseCollider.h">
       <Filter>Engine\ヘッダー\Collision</Filter>
@@ -352,14 +415,8 @@
     <ClInclude Include="Engine\Math\Quaternion.h">
       <Filter>Engine\ヘッダー\Math</Filter>
     </ClInclude>
-    <ClInclude Include="FbxModel.h">
+    <ClInclude Include="Engine\3D\FbxModel.h">
       <Filter>Engine\ヘッダー\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="FbxLoader.h">
-      <Filter>Engine\ヘッダー\FBX</Filter>
-    </ClInclude>
-    <ClInclude Include="Boss.h">
-      <Filter>ユーザーヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="EasingData.h">
       <Filter>ユーザーヘッダー ファイル</Filter>
@@ -370,8 +427,67 @@
     <ClInclude Include="Easing.h">
       <Filter>Engine\ヘッダー\Math</Filter>
     </ClInclude>
+
     <ClInclude Include="PouseUi.h">
       <Filter>ユーザーヘッダー ファイル\Scene</Filter>
+=======
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="recovery.h">
+      <Filter>ユーザーヘッダー ファイル\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FbxAnimation.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\FbxLoader.h">
+      <Filter>Engine\ヘッダー\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectBlurH.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectBlurW.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectCommon.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectLuminance.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect\PostEffectMixed.h">
+      <Filter>Engine\ヘッダー\Posteffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\LightGroup.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\PointLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\SpotLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\DirectionalLight.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3D\CircleShadow.h">
+      <Filter>Engine\ヘッダー\3D\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\BossFish.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\BossWarrier.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="UserApplication\Boss\Boss.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Sound\Sound.h">
+      <Filter>Engine\ヘッダー\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniFish.h">
+      <Filter>ユーザーヘッダー ファイル\Boss</Filter>
+
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -413,9 +529,6 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\FPS.cpp">
       <Filter>Engine\ソース ファイル\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3D\Light.cpp">
-      <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3D\Mesh.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
@@ -498,14 +611,8 @@
     <ClCompile Include="Engine\Math\Quaternion.cpp">
       <Filter>Engine\ソース ファイル\Math</Filter>
     </ClCompile>
-    <ClCompile Include="FbxModel.cpp">
+    <ClCompile Include="Engine\3D\FbxModel.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="FbxLoader.cpp">
-      <Filter>Engine\ソース ファイル\FBX</Filter>
-    </ClCompile>
-    <ClCompile Include="Boss.cpp">
-      <Filter>ユーザーソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="EasingData.cpp">
       <Filter>ユーザーソース ファイル</Filter>
@@ -516,8 +623,64 @@
     <ClCompile Include="Easing.cpp">
       <Filter>Engine\ソース ファイル\Math</Filter>
     </ClCompile>
+
     <ClCompile Include="PouseUi.cpp">
       <Filter>ユーザーソース ファイル\Scene</Filter>
+=======
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="recovery.cpp">
+      <Filter>ユーザーソース ファイル\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FbxAnimation.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectBlurH.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectBlurW.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectCommon.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectLuminance.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect\PostEffectMixed.cpp">
+      <Filter>Engine\ソース ファイル\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\DirectionalLight.cpp">
+      <Filter>Engine\ソース ファイル\3D\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\LightGroup.cpp">
+      <Filter>Engine\ソース ファイル\3D\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3D\FbxLoader.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\BossFish.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\BossWarrier.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UserApplication\Boss\Boss.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Sound\Sound.cpp">
+      <Filter>Engine\ソース ファイル\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniFish.cpp">
+      <Filter>ユーザーソース ファイル\Boss</Filter>
+
     </ClCompile>
   </ItemGroup>
 </Project>

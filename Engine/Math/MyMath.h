@@ -4,9 +4,14 @@
 #include "WinApp.h"
 #include <DirectXMath.h>
 #include <Vector4.h>
+#include<assimp/scene.h>
+#include "Quaternion.h"
+
 
 //•Ö—˜Œn‚Ü‚Æ‚ß
 namespace MyMath {
+
+	const float PI = 3.141592f;
 
 	Matrix4 Initialize();
 	Matrix4 Scale(const Vector3& scale);
@@ -44,5 +49,17 @@ namespace MyMath {
 
 	Matrix4 Matrix4Orthographic(
 		float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ);
+
+	Matrix4 AssimpMatrix(aiMatrix4x4 mat4);
+
+	Vector3 AssimpVector3(aiVector3D assimpVec3);
+
+	Vector4 AssimpQuaternionVec4(aiQuaternion assimpaiQuaternion);
+	Quaternion AssimpQuaternion(aiQuaternion assimpaiQuaternion);
+
+	Vector4 QuaternionSlerp(aiQuaternion& assimpaiQuaternion, aiQuaternion& assimpaiQuaternion2, float t);
+
+	//“x‚ÌŽž
+	float GetAngle(float angle);
 
 };

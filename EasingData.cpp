@@ -4,6 +4,7 @@
 
 void EasingData::Update()
 {
+
 	if (!isActive) {
 		//アクティブじゃないなら何もしない
 		return;
@@ -29,4 +30,5 @@ void EasingData::Start(float animationFrame)
 	startCount = clock();
 	maxTime = animationFrame;
 	isActive = true;
+	Update();
 }

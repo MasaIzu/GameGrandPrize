@@ -31,6 +31,11 @@ Input::~Input() {
 	if (devKeyboard_) {
 		devKeyboard_->Unacquire();
 	}
+
+	if (dInput_) {
+		dInput_.Reset();
+	}
+
 }
 
 void Input::Destroy()

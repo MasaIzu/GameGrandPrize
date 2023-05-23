@@ -7,8 +7,10 @@ void Skydome::Initialize(Model* model) {
 	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
 	worldTransform_.Initialize();
 
-	worldTransform_.scale_ = Vector3(600, 600, 600);
+	worldTransform_.scale_ = Vector3(800, 800, 800);
+	worldTransform_.SetRot({ 0,1,0 });
 	worldTransform_.matWorld_ *= AffinTrans::Scale(worldTransform_.scale_);
+	worldTransform_.translation_.y = 50;
 	//s—ñ‚Ì“]‘—
 	worldTransform_.TransferMatrix();
 }
@@ -20,4 +22,9 @@ void Skydome::Update() {
 void Skydome::Draw(ViewProjection viewProjection_) {
 	//3Dƒ‚ƒfƒ‹•`‰æ
 	model_->Draw(worldTransform_, viewProjection_);
+}
+
+void Skydome::SetModel(Model* model)
+{
+	model_ = model;
 }

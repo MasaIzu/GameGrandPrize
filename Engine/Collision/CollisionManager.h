@@ -35,6 +35,22 @@ public://メンバ関数
 
 	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, Matrix4* worldPos = nullptr);
 
+	bool DetectCollision(const Sphere& sphereA, const Sphere& sphereB, Vector3& out_collision_depth_direction);
+
+	Vector3 ResolveCollision(Sphere& sphereA, const Sphere& sphereB);
+
+	bool GetIsEnemyHit() { return isEnemyHit; }
+	bool GetIsWakeEnemyHit() { return isWakeEnemyHit; }
+	bool GetIsAttackHit() { return isAttackHit; }
+	bool GetIsWakeEnemyAttackHit() { return isWakeEnemyAttackHit; }
+	int GetHitNumber() { return hitNumber; }
+	bool GetEnemySwordHit() { return isEnemySwordHit; }
+	bool GetIsEnemyReception() { return isEnemyReception; }
+
+	Vector3 GetPlayerPos() { return playerPos; }
+	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
+	Matrix4 GetAttackHitWorldPos() { return HitWorldPos; }
+
 private:
 	CollisionManager() = default;
 	CollisionManager(const CollisionManager&) = delete;
@@ -43,5 +59,23 @@ private:
 
 	//コライダーのリスト
 	std::forward_list<BaseCollider*> colliders;
+
+	bool isEnemyHit = false;
+	bool isWakeEnemyHit = false;
+	bool isAttackHit = false;
+	int hitNumber = 0;
+	bool isWakeEnemyAttackHit = false;
+	Matrix4 EnemyWorldPos;
+	Matrix4 HitWorldPos;
+	Vector3 playerPos;
+
+	bool isEnemySwordHit = false;
+	bool isPlayerAttacking = false;
+
+	bool isEnemyReception = false;
+
+
+	int CoolTime = 0;
+	int isCoolTime = false;
 
 };

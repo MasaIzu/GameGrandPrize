@@ -2,6 +2,8 @@
 #include "BaseCollider.h"
 #include "Collision.h"
 #include "MeshCollider.h"
+#include <CollisionAttribute.h>
+#include <imgui.h>
 
 using namespace DirectX;
 
@@ -13,6 +15,25 @@ CollisionManager* CollisionManager::GetInstance()
 
 void CollisionManager::CheckAllCollisions()
 {
+	isEnemyHit = false;
+	isAttackHit = false;
+	isWakeEnemyHit = false;
+	hitNumber = 0;
+	isWakeEnemyAttackHit = false;
+	isEnemySwordHit = false;
+	isEnemyReception = false;
+	playerPos = { 0,0,0 };
+
+	if (CoolTime > 0) {
+		CoolTime--;
+	}
+
+	ImGui::Begin("Collision");
+
+	ImGui::Text("CoolTime:%d", static_cast<int>(CoolTime));
+
+	ImGui::End();
+
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;
 
@@ -31,11 +52,83 @@ void CollisionManager::CheckAllCollisions()
 				Sphere* SphereA = dynamic_cast<Sphere*>(colA);
 				Sphere* SphereB = dynamic_cast<Sphere*>(colB);
 				Vector4 inter;
-				if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+				if ((colA->attribute == COLLISION_ATTR_ALLIES && colB->attribute == COLLISION_ATTR_ENEMYS) ||
+					(colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ALLIES)) {
 
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemyHit = true;
+					}
 				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						if (CoolTime <= 0) {
+							HitWorldPos = colB->GetWorldPos();
+							isAttackHit = true;
+							CoolTime = SphereB->coolTime;
+						}
+						
+					}
+				}
+				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ALLIES) {
+					for (int i = 0; i < 10; i++) {
+						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ALLIES) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+								EnemyWorldPos = colA->GetWorldPos();
+								isWakeEnemyHit = true;
+							}
+						}
+					}
+				}
+				else if (colA->attributeWakeEnemy == COLLISION_ATTR_WEAKENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
+					int a = 1;
+					for (int i = 0; i < 10; i++) {
+						if (colA->attribute == COLLISION_ATTR_WEAKENEMYS1 + i && colB->attribute == COLLISION_ATTR_ATTACK) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+								hitNumber = i + 1;
+								HitWorldPos = colB->GetWorldPos();
+								isWakeEnemyAttackHit = true;
+							}
+						}
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYBIGSOWRD && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemySwordHit = true;
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ALLIES) {
+					playerPos = ResolveCollision(*SphereA, *SphereB);
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+						if (CoolTime <= 0) {
+							HitWorldPos = colB->GetWorldPos();
+							isAttackHit = true;
+							CoolTime = SphereB->coolTime;
+						}
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYSOWRDATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
+						EnemyWorldPos = colA->GetOldEnemyAttackPos();
+						isEnemyHit = true;
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYTORNADOATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
+						EnemyWorldPos = colA->GetWorldPos();
+						isEnemyHit = true;
+					}
+				}
+				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+				//	//isEnemyHit = true;
+				//}
 			}
-			else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
+			/*else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
 				colB->GetShapeType() == COLLISIONSHAPE_SPHERE) {
 				MeshCollider* meshCollider = dynamic_cast<MeshCollider*>(colA);
 				Sphere* sphere = dynamic_cast<Sphere*>(colB);
@@ -52,7 +145,7 @@ void CollisionManager::CheckAllCollisions()
 				if (meshCollider->CheckCollisionSphere(*sphere, &inter, nullptr)) {
 
 				}
-			}
+			}*/
 		}
 	}
 }
@@ -184,4 +277,43 @@ void CollisionManager::QuerySphere(const Sphere& sphere, QueryCallback* callback
 			}
 		}
 	}
+}
+
+bool CollisionManager::DetectCollision(const Sphere& sphereA, const Sphere& sphereB, Vector3& out_collision_depth_direction)
+{
+	Vector3 a_center = { sphereA.center.x,sphereA.center.y,sphereA.center.z };
+	Vector3 b_center = { sphereB.center.x,sphereB.center.y,sphereB.center.z };
+
+	Vector3 diff = a_center - b_center;
+	float distance = diff.length();
+	float total_radius = sphereA.radius + sphereB.radius;
+
+	// If the distance between the centers of the spheres is less than the sum of their radii, then they are colliding
+	if (distance < total_radius) {
+		// Calculate the collision depth and direction
+		float collision_depth = total_radius - distance;
+		Vector3 collision_direction = diff.norm();
+
+		// Output the collision depth multiplied by the collision direction
+		out_collision_depth_direction = collision_direction * collision_depth;
+
+		out_collision_depth_direction *= -1;
+
+		out_collision_depth_direction.y = 0;
+
+		return true;
+	}
+
+	return false;
+}
+
+Vector3 CollisionManager::ResolveCollision(Sphere& sphereA, const Sphere& sphereB) {
+	Vector3 collision_depth_direction;
+	if (DetectCollision(sphereA, sphereB, collision_depth_direction)) {
+		
+		isEnemyReception = true;
+
+	}
+
+	return collision_depth_direction;
 }

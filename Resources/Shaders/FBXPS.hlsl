@@ -3,7 +3,7 @@
 Texture2D<float4> tex : register(t0);  // 0番スロットに設定されたテクスチャ
 SamplerState smp : register(s0);      // 0番スロットに設定されたサンプラー
 
-float4 main(VSOutput input) : SV_TARGET
+float4 main(GSOutput input) : SV_TARGET
 {
 	// テクスチャマッピング
 	float4 texcolor = tex.Sample(smp, input.uv);
@@ -12,7 +12,9 @@ float4 main(VSOutput input) : SV_TARGET
 	float diffuse = saturate(dot(-light, input.normal));
 	//float brightness = diffuse + 0.3f;
 	float brightness = 1;
-	float4 shadecolor = float4(brightness, brightness, brightness, 1.0f);
+	float4 shadecolor = float4(brightness, brightness, brightness, m_alpha);
 	// 陰影とテクスチャの色を合成
+	//float4 test = (1, 1, 1, 1);
+	//return test;
 	return shadecolor * texcolor;
 }

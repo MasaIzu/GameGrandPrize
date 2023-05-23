@@ -26,6 +26,9 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewProjection_);
 
+	// モデルのセット
+	void SetModel(Model* model);
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;

@@ -41,6 +41,10 @@ public://メンバ関数
 	//バックバッファの数を取得
 	size_t GetBackBufferCount()const { return backBuffers.size(); }
 
+	ID3D12DescriptorHeap* GetdsvHeap() {return dsvHeap.Get(); }
+
+	ID3D12Resource* GetbackBuffers() { return depthBuffer.Get(); }
+
 private://メンバ変数
 
 	// Direct3D関連
@@ -59,7 +63,7 @@ private://メンバ変数
 	int backBufferHeight_ = 0;
 
 	//フェンスの生成
-	Microsoft::WRL::ComPtr < ID3D12Fence> fence;
+	Microsoft::WRL::ComPtr <ID3D12Fence> fence;
 	UINT64 fenceVal = 0;
 
 	HWND hwnd_;
@@ -68,7 +72,7 @@ private://メンバ変数
 
 private://メンバ変数
 	DirectXCore() = default;
-	~DirectXCore() = default;
+	~DirectXCore();
 	DirectXCore(const DirectXCore&) = delete;
 	const DirectXCore& operator=(const DirectXCore&) = delete;
 

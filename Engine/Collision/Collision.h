@@ -1,6 +1,8 @@
 #pragma once
 #include "CollisionPrimitive.h"
 #include "Vector4.h"
+#include "Vector3.h"
+#include <DirectXMath.h>
 
 /// <summary>
 /// 当たり判定ヘルパークラス
@@ -8,6 +10,7 @@
 class Collision
 {
 public:
+
 	/// <summary>
 	/// 点と三角形の最近接点を求める
 	/// </summary>
@@ -46,6 +49,7 @@ public:
 	//static bool CheckSphere2Triangle(const Sphere& sphere, const Triangle& triangle, AliceMathF::Vector4* inter = nullptr);
 	static bool CheckSphere2Triangle(const Sphere& sphere, const Triangle& triangle, Vector4* inter = nullptr, Vector4* reject = nullptr);
 
+	static bool CheckRectSphere(Vector3 rectPos, Vector3 rectWidthHeightDepth1, Vector3 rectWidthHeightDepth2, Vector3 sphere, float sphereRadius);
 
 
 	///// <summary>

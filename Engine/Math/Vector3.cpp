@@ -57,14 +57,11 @@ const Vector3 lerp(const Vector3& start, const Vector3& end, const float t) {
 	return start * (1.0f - t) + end * t;
 }
 
-Vector3 Vector3::operator+() const
-{
-	return Vector3(x, y, z);
+Vector3 Vector3::operator+()const {
+	return *this;
 }
-
-Vector3 Vector3::operator-() const
-{
-	return Vector3(x, y, z);
+Vector3 Vector3::operator-()const {
+	return Vector3(-x, -y, -z);
 }
 
 Vector3& Vector3::operator+=(const Vector3& v)
@@ -88,6 +85,14 @@ Vector3& Vector3::operator*=(float s)
 	this->x *= s;
 	this->y *= s;
 	this->z *= s;
+	return *this;
+}
+
+Vector3& Vector3::operator*=(const Vector3& v)
+{
+	x *= v.x;
+	y *= v.y;
+	z *= v.z;
 	return *this;
 }
 
@@ -132,6 +137,13 @@ const Vector3 operator*(float s, const Vector3& v)
 	temp.y = temp.y * s;
 	temp.z = temp.z * s;
 
+	return temp;
+}
+
+const Vector3 operator*(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 temp = v1;
+	temp *= v2;
 	return temp;
 }
 

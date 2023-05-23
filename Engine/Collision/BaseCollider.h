@@ -20,8 +20,17 @@ public:
 	/// 更新
 	/// </summary>
 	virtual void Update(const Matrix4& worldPos) = 0;
+	virtual void Update(const Matrix4& worldPos, const float& radius) = 0;
+	virtual void Update(const Matrix4& worldPos, const uint32_t* Cooltime) = 0;
+	virtual void Update(const Matrix4 & worldPos, const float& radius,const uint32_t* Cooltime) = 0;
 
 	inline CollisionShapeType GetShapeType() { return shapeType; }
+
+	inline unsigned short GetAttribute() { return attribute; }
+
+	inline Matrix4 GetWorldPos() { return worldPos_; }
+	inline Matrix4 GetOldEnemyAttackPos() { return OldEnemyAttackPos; }
+
 
 	/// <summary>
 	/// 当たり判定属性をセット
@@ -29,6 +38,14 @@ public:
 	/// <param name="attribute">当たり判定属性</param>
 	inline void SetAttribute(unsigned short attribute) {
 		this->attribute = attribute;
+	}
+
+	/// <summary>
+	/// 雑魚敵当たり判定属性をセット
+	/// </summary>
+	/// <param name="attribute">当たり判定属性</param>
+	inline void SetAttributeWakeEnemy(unsigned short attribute) {
+		this->attributeWakeEnemy = attribute;
 	}
 
 	/// <summary>
@@ -47,10 +64,35 @@ public:
 		this->attribute &= !attribute;
 	}
 
+	/// <summary>
+	/// プレイヤーの動いてる方向を求める
+	/// </summary>
+	/// <param name="Movement">動く方向</param>
+	inline void AddPlayerMovement(Vector3 Movement) {
+		this->playerMovement = Movement;
+	}
+
+	/// <summary>
+	/// プレイヤーの動いてる方向を求める
+	/// </summary>
+	/// <param name="Movement">動く方向</param>
+	inline void SetOldEnemyAttackPos(Matrix4 oldEnemyAttackPos) {
+		this->OldEnemyAttackPos = oldEnemyAttackPos;
+	}
+
 protected:
 	// 形状タイプ
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;
 	// 当たり判定属性
 	unsigned short attribute = 0b1111111111111111;
+	// 雑魚的当たり判定属性
+	unsigned short attributeWakeEnemy = 0b1111111111111111;
+
+	//位置
+	Matrix4 worldPos_;
+
+	Vector3 playerMovement;
+
+	Matrix4 OldEnemyAttackPos;
 };
 

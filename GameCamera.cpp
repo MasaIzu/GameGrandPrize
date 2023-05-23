@@ -78,7 +78,7 @@ void GameCamera::InitializeCameraPosition()
 	int yPos_absolute = yPos + windowInfo.rcWindow.top + 31; //ウィンドウのタイトルバーの分（31px）をプラス
 	SetCursorPos(xPos_absolute, yPos_absolute);//移動させる
 
-	target = playerPos_ + Vector3(0, 8, 0);
+	target = playerPos_ + Vector3(0, 14, 0);
 
 	//ワールド前方ベクトル
 	Vector3 forward(0, 0, playerCameraDistance);

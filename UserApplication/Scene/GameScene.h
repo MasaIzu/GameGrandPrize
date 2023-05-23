@@ -358,8 +358,8 @@ private: // メンバ変数
 	Vector3 FirstStartPos = { 0,60,120 };
 	Vector3 FirstStartTarget = { 0,-5,0 };
 	// 最初のエンド位置
-	Vector3 FirstEndPos = { 0,8,195 };
-	Vector3 FirstEndTarget = { 0,8,150 };
+	Vector3 FirstEndPos = { 0,14,195 };
+	Vector3 FirstEndTarget = { 0,14,150 };
 
 	// 仮のタイマー
 	float timer = 0;

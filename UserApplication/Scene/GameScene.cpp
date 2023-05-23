@@ -190,23 +190,23 @@ void GameScene::Initialize() {
 
 	AFontWorld_.Initialize();
 	AFontWorld_.scale_ = { 1,1,1 };
-	AFontWorld_.translation_ = { +7.0f,+10.5f,+180 };
+	AFontWorld_.translation_ = { +7.0f,+16.5f,+180 };
 
 	TFontWorld_.Initialize();
 	TFontWorld_.scale_ = { 1,1,1 };
-	TFontWorld_.translation_ = { +5.8f,+10.5f,+179 };
+	TFontWorld_.translation_ = { +5.8f,+16.5f,+179 };
 
 	OFontWorld_.Initialize();
 	OFontWorld_.scale_ = { 1,1,1 };
-	OFontWorld_.translation_ = { +4.8f,+10.5f,+178 };
+	OFontWorld_.translation_ = { +4.8f,+16.5f,+178 };
 
 	MFontWorld_.Initialize();
 	MFontWorld_.scale_ = { 1,1,1 };
-	MFontWorld_.translation_ = { +3.2f,+10.5f,+177 };
+	MFontWorld_.translation_ = { +3.2f,+16.5f,+177 };
 
 	SFontWorld_.Initialize();
 	SFontWorld_.scale_ = { 1,1,1 };
-	SFontWorld_.translation_ = { +1.6f,+10.5f,+176 };
+	SFontWorld_.translation_ = { +1.6f,+16.5f,+176 };
 
 	AFontWorld_.rotation_.y = DegreeToRadian(rotationY);
 	TFontWorld_.rotation_.y = DegreeToRadian(sowrdRotationY);
@@ -340,12 +340,12 @@ void GameScene::TitleUpdate()
 			const float constPosY = 15;
 			Vector3 pos{};
 			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2;
-			pos.y = -0;
+			pos.y = 6;
 			pos.z = 181;
 
 			Vector3 startPos = pos;
 
-			Vector3 endPos = { pos.x,8.0f,pos.z };
+			Vector3 endPos = { pos.x,14.0f,pos.z };
 
 			//消えるまでの時間
 			const float rndScale = 0.2f;
@@ -358,19 +358,19 @@ void GameScene::TitleUpdate()
 	}
 
 
-	AFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[0], 0.2f);
+	AFontWorld_.translation_.y = Sin_ZeroToOne(16.5f, flyMax, flyTimer[0], 0.2f);
 	AFontWorld_.TransferMatrix();
 
-	TFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[1], 0.2f);
+	TFontWorld_.translation_.y = Sin_ZeroToOne(16.5f, flyMax, flyTimer[1], 0.2f);
 	TFontWorld_.TransferMatrix();
 
-	OFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[2], 0.2f);
+	OFontWorld_.translation_.y = Sin_ZeroToOne(16.5f, flyMax, flyTimer[2], 0.2f);
 	OFontWorld_.TransferMatrix();
 
-	MFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[3], 0.2f);
+	MFontWorld_.translation_.y = Sin_ZeroToOne(16.5f, flyMax, flyTimer[3], 0.2f);
 	MFontWorld_.TransferMatrix();
 
-	SFontWorld_.translation_.y = Sin_ZeroToOne(10.5f, flyMax, flyTimer[4], 0.2f);
+	SFontWorld_.translation_.y = Sin_ZeroToOne(16.5f, flyMax, flyTimer[4], 0.2f);
 	SFontWorld_.TransferMatrix();
 
 	TitileParticle->Update();
@@ -919,11 +919,11 @@ void GameScene::Reset()
 	// タイトルシーンのリセット
 	if (scene == Scene::Title) {
 		skydome_.get()->SetModel(skydomeTitle_.get());
-		AFontWorld_.translation_ = { +7.0f,+10.5f,+180 };
-		TFontWorld_.translation_ = { +5.8f,+10.5f,+179 };
-		OFontWorld_.translation_ = { +4.8f,+10.5f,+178 };
-		MFontWorld_.translation_ = { +3.2f,+10.5f,+177 };
-		SFontWorld_.translation_ = { +1.6f,+10.5f,+176 };
+		AFontWorld_.translation_ = { +7.0f,+16.5f,+180 };
+		TFontWorld_.translation_ = { +5.8f,+16.5f,+179 };
+		OFontWorld_.translation_ = { +4.8f,+16.5f,+178 };
+		MFontWorld_.translation_ = { +3.2f,+16.5f,+177 };
+		SFontWorld_.translation_ = { +1.6f,+16.5f,+176 };
 
 		sowrdRotationY = -35.0f;
 		TFontWorld_.rotation_.y = DegreeToRadian(sowrdRotationY);

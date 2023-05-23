@@ -130,19 +130,41 @@ void BossWarrier::Initialize()
 
 	// エネルギーの初期化
 	for (int i = 0; i < energyNum; i++) {
-		energy[i].WorldTrans.Initialize();
-		energy[i].WorldTrans.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
-		energy[i].WorldTrans.scale_ = { energyScale,energyScale,energyScale };
-
-		energy[i].model.reset(Model::CreateFromOBJ("sphere", true));
-		energy[i].startTaiming = Random(3, 30);
+		energyL[i].WorldTrans.Initialize();
+		energyL[i].WorldTrans.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
+		energyL[i].WorldTrans.scale_ = { energyScale,energyScale,energyScale };
+		energyL[i].WorldTrans.alpha = 0.9f;
+		energyL[i].model.reset(Model::CreateFromOBJ("sphere", true));
+		energyL[i].startTaiming = Random(3, 30);
+	}
+	for (int i = 0; i < energyNum; i++) {
+		energyR[i].WorldTrans.Initialize();
+		energyR[i].WorldTrans.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
+		energyR[i].WorldTrans.scale_ = { energyScale,energyScale,energyScale };
+		energyR[i].WorldTrans.alpha = 0.9f;
+		energyR[i].model.reset(Model::CreateFromOBJ("sphere", true));
+		energyR[i].startTaiming = Random(3, 30);
 	}
 	IsKingDrop = true;
-	IsKingUp = true;
+	//IsKingUp = true;
 
-	EnergyVel = createEnergyEndPos - createEnergyStartPos;
-	EnergyVel /= 2;
-	energyVelHozon = EnergyVel;
+	// エネルギーの弾の生成するときの中間点のベクトルの初期化
+	EnergyVelL = createEnergyEndPos - createEnergyStartLPos;
+	EnergyVelL /= 2;
+	energyVelHozonL = EnergyVelL;
+
+	EnergyVelR = createEnergyEndPos - createEnergyStartRPos;
+	EnergyVelR /= 2;
+	energyVelHozonR = EnergyVelR;
+	// エネルギーの巨大弾の生成するときのポジション
+	energyBallPos = createEnergyEndPos;
+	energyBigBall.model.reset(Model::CreateFromOBJ("sphere", true));
+	energyBigBall.WorldTrans.Initialize();
+	energyBigBall.WorldTrans.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
+	energyBigBall.WorldTrans.translation_ = energyBallPos;
+	energyBigBall.WorldTrans.scale_ = energyBallScale;
+	energyBigBall.WorldTrans.alpha = 0.9f;
+	energyBigBall.WorldTrans.TransferMatrix();
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -376,11 +398,20 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		ModelSpere->Draw(modelSpere[i], viewProMat);
 	}
 
+	// 王のしずくの描画
 	if (IsKingDrop == true) {
-		for (int i = 0; i < energyNum; i++) {
-			energy[i].model->Draw(energy[i].WorldTrans, viewProMat);
+		// 王のしずくのエネルギーの生成の粒の描画
+		if (IsKingEnergy == true) {
+			for (int i = 0; i < energyNum; i++) {
+				energyL[i].model->Draw(energyL[i].WorldTrans, viewProMat);
+				energyR[i].model->Draw(energyR[i].WorldTrans, viewProMat);
+			}
 		}
+		
+		// 王のしずくのエネルギーの巨大弾の描画
+		energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
 	}
+	
 }
 
 void BossWarrier::MultiLaunchSword()
@@ -738,6 +769,42 @@ void BossWarrier::KingDropUpdate()
 {
 	// 王のしずくだったら
 	if (IsKingDrop == true) {
+		// 王のしずくを打つポジションに移動する
+		if (IsKingDropPos == false) {
+			ImGui::Begin("Pos");
+			ImGui::SliderFloat3("Boss Pos", &kingDropPos.x, -250, 180);
+			ImGui::End();
+			if (IsMoveBefor == false) {
+				boss2Model[BossWarrierPart::Chest].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::Head].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::Waist].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::ArmL].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::ArmR].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::HandL].Transform.alpha -= kingDropMoveAlphaM;
+				boss2Model[BossWarrierPart::HandR].Transform.alpha -= kingDropMoveAlphaM;
+
+				if (boss2Model[BossWarrierPart::Chest].Transform.alpha <= 0.0f) {
+					IsMoveBefor = true;
+					boss2Model[BossWarrierPart::Root].Transform.translation_ = kingDropPos;
+					boss2Model[BossWarrierPart::Root].Transform.TransferMatrix();
+				}
+			}
+			if (IsMoveBefor == true) {
+				if (IsMoveAfter == false) {
+					boss2Model[BossWarrierPart::Chest].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::Head].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::Waist].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::ArmL].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::ArmR].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::HandL].Transform.alpha += kingDropMoveAlphaP;
+					boss2Model[BossWarrierPart::HandR].Transform.alpha += kingDropMoveAlphaP;
+				}
+				if (boss2Model[BossWarrierPart::Chest].Transform.alpha >= 1.0f) {
+					IsMoveAfter = true;
+					IsKingUp = true;
+				}
+			}
+		}
 		// 体や腕の移動処理
 		if (IsKingUp == true) {
 			// 体の位置を上げる処理
@@ -749,17 +816,21 @@ void BossWarrier::KingDropUpdate()
 				armUpTimer++;
 			}
 
-			// 
 			ImGui::Begin("Font");
 			ImGui::SliderFloat3("BossSho L Rot", &shoulderL_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("BossElbowL Rot", &elbowL_RotaEnd.x, -180, 180);
+			ImGui::SliderFloat3("BossSho R Rot", &shoulderR_RotaEnd.x, -180, 180);
+			ImGui::SliderFloat3("BossElbowR Rot", &elbowR_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("Boss L Pos", &zurasi_L_Pos.x, -5, 5);
+			ImGui::SliderFloat3("Boss R Pos", &zurasi_R_Pos.x, -5, 5);
 			ImGui::End();
-
+			//boss2Model[BossWarrierPart::elbowR].Transform.translation_ = zurasi_R_Pos;
 			//boss2Model[BossWarrierPart::elbowL].Transform.translation_ = zurasi_L_Pos;
+
+			//boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(DegreeToRadianVec3(shoulderR_RotaEnd));
+			//boss2Model[BossWarrierPart::elbowR].Transform.SetRot(DegreeToRadianVec3(elbowR_RotaEnd));
 			//boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(DegreeToRadianVec3(shoulderL_RotaEnd));
 			//boss2Model[BossWarrierPart::elbowL].Transform.SetRot(DegreeToRadianVec3(elbowL_RotaEnd));
-
 			// イージングで腕を回転と位置を動かす
 			boss2Model[BossWarrierPart::elbowR].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_R_Pos, armUpTimer, armUpTimeMax);
 			boss2Model[BossWarrierPart::elbowL].Transform.translation_ = Easing::InOutVec3(defuPos, zurasi_L_Pos, armUpTimer, armUpTimeMax);
@@ -775,7 +846,7 @@ void BossWarrier::KingDropUpdate()
 				armUpTimer >= armUpTimeMax) {
 				IsKingEnergy = true;
 
-				
+				IsKingUp = false;
 
 			}
 		}
@@ -785,62 +856,127 @@ void BossWarrier::KingDropUpdate()
 		if (IsKingEnergy == true) {
 
 			ImGui::Begin("Energy");
-			ImGui::SliderFloat3("EnergyStart Pos", &createEnergyStartPos.x, -10, 10);
-			ImGui::SliderFloat3("EnergyEnd Pos", &createEnergyEndPos.x, -10, 10);
-			ImGui::InputFloat("energyposZ", &energy[0].WorldTrans.translation_.z);
-			ImGui::InputFloat("energyBallScale", &energyBallScale);
+			ImGui::SliderFloat3("EnergyStartL Pos", &createEnergyStartLPos.x, -10, 10);
+			ImGui::SliderFloat3("EnergyStartR Pos", &createEnergyStartRPos.x, -10, 10);
+			ImGui::SliderFloat3("EnergyEnd Pos", &createEnergyEndPos.x, -250, 250);
+			ImGui::InputFloat("energyposZ", &energyL[0].WorldTrans.translation_.z);
+			ImGui::InputFloat("energyBallScale", &energyBallScale.x);
 			ImGui::End();
 			for (int i = 0; i < energyNum; i++) {
-				if (energy[i].IsKingEnergyMoce == false) {
+				if (energyL[i].IsKingEnergyMoce == false) {
 					// エネルギーの移動するタイミングをずらす
-					if (energy[i].startTimer < energy[i].startTaiming) {
-						energy[i].startTimer++;
+					if (energyL[i].startTimer < energyL[i].startTaiming) {
+						energyL[i].startTimer++;
 					}
 
 					// エネルギーのずらしタイミングに到達したら
 					// イージングを始める
-					if (energy[i].startTimer >= energy[i].startTaiming) {
+					if (energyL[i].startTimer >= energyL[i].startTaiming) {
 						// イージングのタイマーをプラス
-						if (energy[i].easingTimer < energy[i].easingTimeMax) {
-							energy[i].easingTimer++;
-							energy[i].easingTimeRate = energy[i].easingTimer / energy[i].easingTimeMax;
+						if (energyL[i].easingTimer < energyL[i].easingTimeMax) {
+							energyL[i].easingTimer+=1;
+							energyL[i].easingTimeRate = energyL[i].easingTimer / energyL[i].easingTimeMax;
 						}
 						// 中間点をずらすのを一回行う
-						if (energy[i].IsZurasi == false) {
-							energy[i].IsZurasi = true;
-							energyVelZurasi.x = Random(-1.0f, 1.0f);
-							energyVelZurasi.y = Random(-1.0f, 1.0f);
-							energyVelZurasi.z = Random(-1.0f, 1.0f);
-							EnergyVel = energyVelHozon;
-							EnergyVel += energyVelZurasi;
-							energy[i].colPoint = EnergyVel;
+						if (energyL[i].IsZurasi == false) {
+							energyL[i].IsZurasi = true;
+							energyVelZurasi.x = Random(-5.0f, 5.0f);
+							energyVelZurasi.y = Random(-5.0f, 5.0f);
+							energyVelZurasi.z = Random(-5.0f, 5.0f);
+							EnergyVelL = energyVelHozonL;
+							EnergyVelL += energyVelZurasi;
+							energyL[i].colPoint = EnergyVelL;
 						}
 
-
+						//energy[0].WorldTrans.translation_ = createEnergyEndPos;
 						// ベジエ
-						energy[i].WorldTrans.translation_ = LerpBezireQuadratic(createEnergyStartPos, energy[i].colPoint,createEnergyEndPos, energy[i].easingTimeRate);
+						energyL[i].WorldTrans.translation_ = LerpBezireQuadratic(createEnergyStartLPos, energyL[i].colPoint,createEnergyEndPos, energyL[i].easingTimeRate);
 
 						// イージングが完了したらリセットして再度始める準備
-						if (energy[i].easingTimer >= energy[i].easingTimeMax) {
-							energy[i].startTimer = 0;
-							energy[i].easingTimer = 0;
-							energy[i].IsZurasi = false;
-							energy[i].WorldTrans.translation_ = createEnergyStartPos;
+						if (energyL[i].easingTimer >= energyL[i].easingTimeMax) {
+							energyL[i].startTimer = 0;
+							energyL[i].easingTimer = 0;
+							energyL[i].IsZurasi = false;
+							energyL[i].WorldTrans.translation_ = createEnergyStartLPos;
 						}
 					}
 				}
+				if (energyR[i].IsKingEnergyMoce == false) {
+					// エネルギーの移動するタイミングをずらす
+					if (energyR[i].startTimer < energyR[i].startTaiming) {
+						energyR[i].startTimer++;
+					}
 
-				energy[i].WorldTrans.TransferMatrix();
-				//energy[1].WorldTrans.TransferMatrix();
+					// エネルギーのずらしタイミングに到達したら
+					// イージングを始める
+					if (energyR[i].startTimer >= energyR[i].startTaiming) {
+						// イージングのタイマーをプラス
+						if (energyR[i].easingTimer < energyR[i].easingTimeMax) {
+							energyR[i].easingTimer += 1;
+							energyR[i].easingTimeRate = energyR[i].easingTimer / energyR[i].easingTimeMax;
+						}
+						// 中間点をずらすのを一回行う
+						if (energyR[i].IsZurasi == false) {
+							energyR[i].IsZurasi = true;
+							energyVelZurasi.x = Random(-5.0f, 5.0f);
+							energyVelZurasi.y = Random(-5.0f, 5.0f);
+							energyVelZurasi.z = Random(-5.0f, 5.0f);
+							EnergyVelR = energyVelHozonR;
+							EnergyVelR += energyVelZurasi;
+							energyR[i].colPoint = EnergyVelR;
+						}
+
+						//energy[0].WorldTrans.translation_ = createEnergyEndPos;
+						// ベジエ
+						energyR[i].WorldTrans.translation_ = LerpBezireQuadratic(createEnergyStartRPos, energyR[i].colPoint, createEnergyEndPos, energyR[i].easingTimeRate);
+
+						// イージングが完了したらリセットして再度始める準備
+						if (energyR[i].easingTimer >= energyR[i].easingTimeMax) {
+							energyR[i].startTimer = 0;
+							energyR[i].easingTimer = 0;
+							energyR[i].IsZurasi = false;
+							energyR[i].WorldTrans.translation_ = createEnergyStartRPos;
+						}
+					}
+				}
+				energyL[i].WorldTrans.TransferMatrix();
+				energyR[i].WorldTrans.TransferMatrix();
+				
 			}
-			
-			//energy[0].WorldTrans.translation_ = createEnergyStartPos;
-			//energy[1].WorldTrans.translation_ = createEnergyEndPos;
 
-			//energy[0].WorldTrans.scale_ = { energyScale,energyScale ,energyScale };
-			//energy[1].WorldTrans.scale_ = { energyBallScale,energyBallScale ,energyBallScale };
+			// エネルギーの弾を生成する処理
+			if (IsKingEnergyBall == false) {
+				if (ballZurasiTimer < ballZurasiTimeMax) {
+					ballZurasiTimer++;
+				}
+				// 弾のずらしタイマーに達したら
+				if (ballZurasiTimer >= ballZurasiTimeMax) {
+					// スケールを徐々に増やす
+					energyBallScale += energyBallPlusScale;
+					if (energyBallScale.x >= energyBallMaxScale.x) {
+						IsKingEnergyBall = true;
+					}
 
+					// スケールの代入
+					energyBigBall.WorldTrans.scale_ = energyBallScale;
 
+					// 行列の更新
+					energyBigBall.WorldTrans.TransferMatrix();
+				}
+			}
+
+			// エネルギー弾の生成が完了したら小さい弾の処理を止める
+			if (IsKingEnergyBall == true) {
+				// 徐々にエネルギーの粒を消す
+				for (int i = 0; i < energyNum; i++) {
+					//energy[i].WorldTrans.alpha -= 0.05f;
+				}
+				// エネルギーの粒のアルファ値が0以下になったらエネルギーの動く処理を止める
+				if (energyL[24].WorldTrans.alpha <= 0.0f) {
+					IsKingEnergy = false;
+				}
+				
+			}
 
 		}
 	}

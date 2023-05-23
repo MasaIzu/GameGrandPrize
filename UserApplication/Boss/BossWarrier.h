@@ -178,30 +178,67 @@ private:
 #pragma region 王のしずく関連の変数
 	// 王のしずくを打つか
 	bool IsKingDrop = false;
+	// 王のしずくを打つポジションにいるかどうか
+	bool IsKingDropPos = false;
+	// 王のしずくを打つ前のポジション
+	bool IsBeforPos = false;
+	// 移動するときのフラグ
+	bool IsMoveBefor = false;
+	// 移動のあとのフラグ
+	bool IsMoveAfter = false;
 	// 王のしずくのポジションに行くまでのフラグ
 	bool IsKingUp = false;
 	// 王のしずくのエネルギーを集めるフラグ
 	bool IsKingEnergy = false;
-
+	// 王のしずくのエネルギーの弾を生成してるかのフラグ
+	bool IsKingEnergyBall = false;
+	
 	// 王のしずくの弾を打ち下ろすかどうかのフラグ
 	bool IsKingDown = false;
 
+	// 王のしずくを打つ前のポジション
+
+
+	// 王のしずくを打つときのポジション
+	Vector3 kingDropPos = { 0,20,-250 };
+
+	// 王のしずくの移動するときのαのマイナスとプラス
+	float kingDropMoveAlphaM = 0.01;
+	float kingDropMoveAlphaP = 0.01;
+
 	// 生成するのに使うエネルギー
-	int energyNum = 50;
+	int energyNum = 25;
 	float energyScale = 0.05f;
-	float energyBallScale = 2.8f;
-	BossKingDropEnergy energy[50];
+	BossKingDropEnergy energyL[25];
+	BossKingDropEnergy energyR[25];
+	BossKingDropEnergy energyBigBall;
 
 	// エネルギー生成の開始位置と終点位置
-	Vector3 createEnergyStartPos = { 0,0.8f,1.85f };
-	Vector3 createEnergyEndPos = { 0,2.96f,3.84f };
-	Vector3 energyVelHozon;
-	Vector3 EnergyVel;
+	Vector3 createEnergyStartLPos = { 0,0.8f,1.85f };
+	Vector3 createEnergyStartRPos = { 0,0.8f,1.85f };
+	Vector3 createEnergyEndPos = { 0,8.0f,15.84f };
+	Vector3 energyVelHozonL;
+	Vector3 energyVelHozonR;
+	Vector3 EnergyVelL;
+	Vector3 EnergyVelR;
 	Vector3 energyVelZurasi;
+
+	// エネルギーの弾を生成するタイミングをずらすタイマー
+	float ballZurasiTimer = 0;
+	float ballZurasiTimeMax = 90;
+	// エネルギー球のポジション
+	Vector3 energyBallPos;
+	// エネルギーを集めて生成する球のスケール
+	Vector3 energyBallScale = { 0,0,0 };
+	// エネルギー球の生成するときのマックススケール
+	Vector3 energyBallMaxScale = { 2.8f,2.8f, 2.8f };
+	// エネルギーの弾が一フレームに増えるスケールの量
+	Vector3 energyBallPlusScale = {0.005f,0.005f, 0.005f};
+
 
 	// 体の上昇限界
 	float bodyDefultY = 20;
-	float bodyUpMaxY = bodyDefultY + 10;
+	float bodyUpMaxY = bodyDefultY + 20;
 
 	// 腕を斜めに上げる時の角度
 	Vector3 diagonalRotaL;
@@ -209,17 +246,27 @@ private:
 
 	// 腕をポジションずらし
 	Vector3 defuPos = { 0,0,0 };
-	Vector3 zurasi_R_Pos = { -0.875,0,0 };
-	Vector3 zurasi_L_Pos = { 0.875,0,0 };
+	Vector3 zurasi_R_Pos = { -0.875,0.25f,-0.125f };
+	Vector3 zurasi_L_Pos = { 0.875,0.25f,-0.125f };
 	// 腕のイージング
 	float armUpTimer = 0;
 	float armUpTimeMax = 360;
 
-	// 
+	// 腕上げのイージングポジション
 	Vector3 shoulderR_RotaEnd = { 0,90,0 };
-	Vector3 elbowR_RotaEnd = { -103.5f,31.5f,-22.5 };
+	Vector3 elbowR_RotaEnd = { -103.5f,-13.5f,-22.5 };
 	Vector3 shoulderL_RotaEnd = { 0,-90,0 };
-	Vector3 elbowL_RotaEnd = { -103.5f,-31.5f,22.5 };
+	Vector3 elbowL_RotaEnd = { -103.5f,13.5f,22.5 };
+
+	// 腕の下げるときのポジション
+	Vector3 downShoulder_R_RotaEnd;
+	Vector3 downElbow_R_RotaEnd;
+	Vector3 downShoulder_L_RotaEnd;
+	Vector3 downElbow_L_RotaEnd;
+
+#pragma endregion
+
+#pragma region 
 
 #pragma endregion
 

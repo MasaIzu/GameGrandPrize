@@ -1026,7 +1026,7 @@ void Player::Attack() {
 					LSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 					RSowrdModel->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTime = 0;
+					AttackCoolTime = 60;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1085,6 +1085,8 @@ void Player::Attack() {
 					BoneParentRotY = 0.0f;
 
 					saveRotX = AttackRotX;
+
+					AttackCoolTime = 0;
 
 					/*Matrix4 rooooootttt;
 					rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
@@ -1158,6 +1160,8 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 
 					BoneParentRotY = 0.0f;
+
+					AttackCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1215,6 +1219,8 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 
 					BoneParentRotY = 0.0f;
+
+					AttackCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;

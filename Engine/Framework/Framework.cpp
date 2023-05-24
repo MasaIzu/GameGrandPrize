@@ -159,15 +159,9 @@ void Framework::Run()
 
 		PostEffectBlurW::PostDrawScene();
 
-		PostEffectBlurH::PreDrawScene(directXCore_->GetCommandList());
-
-		PostEffectBlurW::Draw();
-
-		PostEffectBlurH::PostDrawScene();
-
 		PostEffectMixed::PreDrawScene(directXCore_->GetCommandList());
 
-		PostEffectBlurH::Draw();
+		PostEffectBlurW::Draw();
 
 		PostEffectMixed::PostDrawScene();
 		// •`‰æŠJŽn

@@ -849,6 +849,8 @@ void GameScene::PostEffectDraw()
 
 	boss->bossWarrier->DrawParticle(nowViewProjection);
 
+	gayserParticle->Draw(nowViewProjection);
+
 	ParticleManager::PostDraw();
 }
 
@@ -1296,12 +1298,27 @@ void GameScene::FirstMovieUpdate()
 	if ((int)timer % enemySpawnTiming == 0 && !IsEnemySpon) {
 		int enemyIndex = timer / enemySpawnTiming - 1;
 		enemyIndex = MinMax(enemyIndex, 0, minifishes.size());
-		int gayserIndex = MinMax(enemyIndex / 2, 0, gayserPos.size());
+		int gayserIndex = MinMax(enemyIndex % 5, 0, gayserPos.size());
 
 		Vector3 pos;
+
+		
+
+
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
 		pos += stagePos;
 		minifishes[enemyIndex].Initialize(pos, gayserPos[gayserIndex], enemySpawnTiming * 2, COLLISION_ATTR_WEAKENEMYS1 + enemyIndex);
+
+		Vector3 particleAfterPos;
+		for (int i = 0; i < 10; i++) {
+			//パーティクルを出す
+			particleAfterPos.x = Random(-10.0f, 10.0f);
+			particleAfterPos.y = Random(12.5f,20.0f);
+			particleAfterPos.z = Random(-10.0f, 10.0f);
+			particleAfterPos += gayserPos[gayserIndex];
+
+			gayserParticle->Add(ParticleManager::Type::Normal, enemySpawnTiming , false, gayserPos[gayserIndex], gayserPos[gayserIndex], particleAfterPos, 0.0f, 10.0f, { 0,0,0,1, }, { 0,0,0,0 });
+		}
 	}
 }
 

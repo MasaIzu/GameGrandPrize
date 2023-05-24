@@ -23,7 +23,7 @@ void Recovery::Initialize()
 
 	pointWorldTransform_.scale_ = { 3,3,3 };
 
-	pointWorldTransform_.translation_ = { 25,-1,25 };
+	pointWorldTransform_.translation_ = { 25,-1.5,25 };
 
 	pointWorldTransform_.TransferMatrix();
 

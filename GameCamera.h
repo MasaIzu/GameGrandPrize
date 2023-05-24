@@ -162,5 +162,9 @@ private:
 
 	float CameraDistanceMinus = 0.0f;
 
+	float CameraMouseMoved = 0.0f;
 
+	float OldMouseMoved = 0.0f;
+
+	Vector2 MovementMous;
 };

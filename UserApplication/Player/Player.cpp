@@ -678,7 +678,7 @@ void Player::Move() {
 		}
 
 		if (playerEvasionTimes > 0) {
-			if (input_->TriggerKey(input_->MouseInputTrigger(1))) {
+			if (input_->MouseInputTrigger(1)) {
 				isSpace = true;
 				if (playerEvasionTimes == playerEvasionMaxTimes) {
 					playerEvasionCoolTime = CoolTime;

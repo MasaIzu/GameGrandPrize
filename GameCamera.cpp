@@ -189,9 +189,9 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	MouseMove = Vector2(0, 0);
 	MouseMove = (Vector2(mousePosition.y, mousePosition.x) - Vector2(windowWH.y, windowWH.x));//座標軸で回転している関係でこうなる(XとYが入れ替え)
 
-	if (input_->PushKey(DIK_LSHIFT) == 0) {
-		mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
-	}
+	MovementMous = Vector2(MouseMove.x, MouseMove.y) / 500;
+	mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
+	
 
 
 	//if (input_->PushKey(DIK_8) == 0) {
@@ -209,11 +209,11 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	ImGui::Begin("camera");
 	ImGui::Text("mouseMovedX : %f", mouseMoved.x);
-	ImGui::Text("mouseMovedY : %f", mouseMoved.y);
+	ImGui::Text("CameraMouseMoved : %f", CameraMouseMoved);
 	ImGui::Text("cameraDis : %f", cameraDis);
 	ImGui::Text("CameraDistanceMinus : %f", CameraDistanceMinus);
 
-	ImGui::Text("target : %f,%f,%f", target.x, target.y, target.z);
+	ImGui::Text("MovementMous : %f,%f", MovementMous.x, MovementMous.y);
 	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
 
 	ImGui::End();
@@ -224,7 +224,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	if (mouseMoved.x < -0.30f) {
 		mouseMoved.x = -0.30f;
 		if (cameraDis - 10.0f > CameraDistanceMinus) {
-			CameraDistanceMinus -= mouseMoved.x;
+			CameraDistanceMinus -= -0.90f;
 		}
 	}
 	else if (mouseMoved.x > 1.30f) {
@@ -232,13 +232,16 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	}
 
 
-	if (mouseMoved.x > -0.30f) {
+	if (mouseMoved.x > -0.30f + CameraMouseMoved) {
 		if (CameraDistanceMinus > 0) {
-			//mouseMoved.x = -0.30f;
-			CameraDistanceMinus += -0.80f;
+			mouseMoved.x = -0.30f + CameraMouseMoved;
+			CameraMouseMoved += 0.003f;
+			CameraDistanceMinus += -MovementMous.x;
+		}
+		else {
+			CameraMouseMoved = 0.0f;
 		}
 	}
-
 
 
 	Vector3 rotation = Vector3(-mouseMoved.x, mouseMoved.y, 0);
@@ -251,9 +254,6 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	rot = rotation;
 	CameraRot = cameraRot;
 
-
-
-
 	target = easing_->InOutVec3(target, playerPos_ + Vector3(0, 14, 0), cameraTime, MaxCameraTime);
 
 	//ワールド前方ベクトル
@@ -263,81 +263,8 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	forward.normalize();
 
-
-
 	//target = pos;
 	vTargetEye = target + (forward * cameraDis);
-
-	if (input_->PushKey(DIK_LSHIFT)) {
-
-		//if (input_->TriggerKey(DIK_F)) {	//カメラのモード切り替え
-		//	if (cameraMode_ == 0) {
-		//		cameraMode_ = 1;
-		//	}
-		//	else if (cameraMode_ == 1) {
-		//		cameraMode_ = 0;
-		//	}
-		//	else {
-		//		cameraMode_ = 0;
-		//	}
-		//}
-
-		//カメラの注視点（仮）
-		target = EnemyPos_;
-
-		//カメラの位置
-		Vector3 eyeVec = playerPos_ - EnemyPos_;
-
-		Vector3 eyePos = eyeVec;
-
-		float mag = 1.0f;
-		float eyeLen = std::sqrt(eyePos.x * eyePos.x + eyePos.y * eyePos.y + eyePos.z * eyePos.z);	//ベクトルの長さ
-
-		if (eyeLen > 1.0f) {	//もし差分のベクトルが単位ベクトルより大きかったら
-			mag = 1.0f / eyeLen; //ベクトルの長さを1にする
-		};
-
-		eyePos.x *= mag;	//magをかけると正規化される
-		eyePos.y *= mag;
-		eyePos.z *= mag;
-
-		if (cameraMode_ == 0) {
-			if (cameraModeChangeCountTimer < MAX_CHANGE_TIMER) {
-				cameraModeChangeCountTimer++;
-			}
-		}
-		else if (cameraMode_ == 1) {
-			if (cameraModeChangeCountTimer > 0) {
-				cameraModeChangeCountTimer--;
-			}
-		}
-
-		cameraDistance_ = easing_->InOut(MIN_CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
-		cameraHeight_ = easing_->InOut(3, 6, cameraModeChangeCountTimer, MAX_CHANGE_TIMER);
-
-		float DISTANCE = cameraDistance_ - CameraDistanceMinus;
-
-		Vector3 primalyCamera =
-		{ playerPos_.x + eyePos.x * DISTANCE,//自機から引いた位置にカメラをセット
-		cameraHeight_,
-		playerPos_.z + eyePos.z * DISTANCE };
-
-		float eyeVecAngle = atan2f(primalyCamera.x - EnemyPos_.x, primalyCamera.z - EnemyPos_.z);//カメラをずらす際に使われる
-
-		float shiftLen = 0.0f;	//ずらす量
-		Vector3 shiftVec = { primalyCamera.x + sinf(eyeVecAngle + PI / 2) * shiftLen,primalyCamera.y,primalyCamera.z + cosf(eyeVecAngle + PI / 2) * shiftLen };
-
-		rot = MyMath::MatVector(viewProjection_->matView, rot);
-
-		vTargetEye = shiftVec;
-	}
-
-	if (input_->PushKey(DIK_UP)) {
-		cameraDis += 0.1f;
-	}
-	if (input_->PushKey(DIK_DOWN)) {
-		cameraDis -= 0.1f;
-	}
 
 	CameraAngle(vTargetEye.z - target.z, vTargetEye.x - target.x);
 
@@ -358,26 +285,6 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	player_camera.z = player_camera.z * DISTANCE;
 
 	cameraPos = target + (player_camera);
-
-
-	/*float distance = sqrt((vTargetEye.x - playerPos_.x) * (vTargetEye.x - playerPos_.x)
-		+ (vTargetEye.y - playerPos_.y) * (vTargetEye.y - playerPos_.y)
-		+ (vTargetEye.z - playerPos_.z) * (vTargetEye.z - playerPos_.z));
-
-	float distance2 = sqrt((cameraPos.x - playerPos_.x) * (cameraPos.x - playerPos_.x)
-		+ (cameraPos.y - playerPos_.y) * (cameraPos.y - playerPos_.y)
-		+ (cameraPos.z - playerPos_.z) * (cameraPos.z - playerPos_.z));*/
-
-
-		//ImGui::Text("vTargetEye : %f", cameraDis);
-		//ImGui::Text("vTargetEye : %f,%f,%f", vTargetEye.x, vTargetEye.y, vTargetEye.z);
-
-		/*if (isHit == true) {
-			isHit = false;
-			isShake = true;
-			shakeTime = 10;
-
-		}*/
 
 	if (isShake == true) {
 		vTargetEye += Vector3(rand() % 4, rand() % 4, rand() % 4);

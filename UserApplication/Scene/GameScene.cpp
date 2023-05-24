@@ -1215,12 +1215,23 @@ void GameScene::UpdateBossChangeEventCamera() {
 		return;
 	}
 
+	
+
 	float cameraRadian = boss->bossWarrier->GetEasingData().GetTimeRate();
 	float cameraDistance = 120.0f;
 
 
 	//注視点はボスに
 	movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
+
+	if (cameraStopTime > 0) {
+		cameraStopTime--;
+		if (cameraStopTime == 0) {
+			isMovie = false;
+			isActiveChangeEvent = false;
+		}
+		return;
+	}
 
 	//カメラ座標をボスのイージングを使って回転させる
 	cameraRadian *= 360.0f;
@@ -1236,10 +1247,14 @@ void GameScene::UpdateBossChangeEventCamera() {
 	eye.z = cos(cameraRadian) * cameraDistance + stagePos.z;
 	movieCamera.eye = eye;
 
+	
+
 	if (boss->bossWarrier->GetEasingData().GetTimeRate() >= 1.0f) {
-		isMovie = false;
-		isActiveChangeEvent = false;
+
+		cameraStopTime = 30;
 	}
+
+
 }
 
 void GameScene::FirstCameraUpdate()

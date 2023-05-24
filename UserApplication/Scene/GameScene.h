@@ -206,6 +206,7 @@ private: // メンバ変数
 	Ground ground;
 
 	ViewProjection movieCamera;
+	int cameraStopTime = 0;
 
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;

@@ -261,6 +261,7 @@ private:
 	Vector2 avoidGaugeUnderPos = { 1070,412 };
 	Vector2 avoidGaugeUnderSize = { 128,128 };
 	//Fbxモデル
+	WorldTransform ModelTrans;
 	std::unique_ptr<FbxModel> fbxmodel;
 	FbxModel* fbxmodel2;
 	std::unique_ptr<FbxAnimation> modelAnim;

@@ -160,6 +160,16 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	playerAttackSE4.SoundLoadWave("playerAttack4.wav");
 
 	playerDamegeSE.SoundLoadWave("playerDamage.wav");
+
+	ModelTrans.Initialize();
+	ModelTrans.translation_ = worldTransform_.translation_;
+	ModelTrans.scale_ = worldTransform_.scale_;
+	ModelTrans.alpha = worldTransform_.alpha;
+	Matrix4 Mattttt;
+	Mattttt *= MyMath::Rotation(PlayerRot, 2);
+	ModelTrans.SetMatRot(Mattttt);
+	ModelTrans.TransferMatrix();
+
 }
 
 
@@ -391,6 +401,11 @@ void Player::Update(const ViewProjection& viewProjection) {
 	playerAttackTransform_.TransferMatrix();
 	BoneParent.TransferMatrix();
 
+	ModelTrans.translation_ = worldTransform_.translation_;
+	ModelTrans.scale_ = worldTransform_.scale_;
+	ModelTrans.alpha = worldTransform_.alpha;
+	ModelTrans.TransferMatrix();
+
 
 	collider->AddPlayerMovement(PlayerMoveMent);
 	collider->Update(worldTransform_.matWorld_);
@@ -525,6 +540,7 @@ void Player::Move() {
 	PlayerMoveX = false;
 	PlayerMoveZ = false;
 	rot = { 0,0,0 };
+	//ALLROT = { 0,0,0 };
 	Avoidance = { 0,0,0 };
 	isPushSenter = false;
 	isPushLeft = false;
@@ -586,7 +602,6 @@ void Player::Move() {
 	cameraLook.normalize();
 
 	root = (worldTransform_.look - worldTransform_.translation_);
-	ALLROT = (worldTransform_.look - worldTransform_.translation_);
 
 	if (spaceInput == false) {
 
@@ -597,12 +612,12 @@ void Player::Move() {
 				isPushSenter = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, -MyMath::GetAngle(angle), 0);
-				ALLROT += Vector3(0, -MyMath::GetAngle(angle), 0);
+				rot = Vector3(0, -MyMath::GetAngle(angle), 0);
 				if (isPlayerUlt == false) {
 					playerNowMotion = PlayerMotion::aruki;
 				}
 				else {
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(20));
 					playerNowMotion = PlayerMotion::taikiBigSowrd;
 				}
 			}
@@ -612,12 +627,12 @@ void Player::Move() {
 				isPushLeft = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
-				ALLROT += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
 				if (isPlayerUlt == false) {
 					playerNowMotion = PlayerMotion::aruki;
 				}
 				else {
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), MyMath::GetAngle(20));
 					playerNowMotion = PlayerMotion::taikiBigSowrd;
 				}
 			}
@@ -627,12 +642,12 @@ void Player::Move() {
 				isPushBack = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
-				ALLROT += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
 				if (isPlayerUlt == false) {
 					playerNowMotion = PlayerMotion::aruki;
 				}
 				else {
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), MyMath::GetAngle(20));
 					playerNowMotion = PlayerMotion::taikiBigSowrd;
 				}
 			}
@@ -642,12 +657,12 @@ void Player::Move() {
 				isPushRight = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
-				ALLROT += Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
 				if (isPlayerUlt == false) {
 					playerNowMotion = PlayerMotion::aruki;
 				}
 				else {
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), MyMath::GetAngle(20));
 					playerNowMotion = PlayerMotion::taikiBigSowrd;
 				}
 			}
@@ -655,23 +670,53 @@ void Player::Move() {
 			{
 				PlayerMoveMent /= 2;
 			}
-			if (isPushSenter == true && isPushLeft == true) {
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
-			}
-			if (isPushSenter == true && isPushRight == true) {
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
-			}
+			if (isPlayerUlt == false) {
+				if (isPushSenter == true && isPushLeft == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+				}
+				if (isPushSenter == true && isPushRight == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
+				}
 
-			if (isPushBack == true && isPushLeft == true) {
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+				if (isPushBack == true && isPushLeft == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+				}
+				if (isPushBack == true && isPushRight == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+				}
 			}
-			if (isPushBack == true && isPushRight == true) {
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+			else {
+				if (isPushSenter == true && isPushLeft == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), MyMath::GetAngle(20));
+				}
+				if (isPushSenter == true && isPushRight == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), MyMath::GetAngle(20));
+				}
+
+				if (isPushBack == true && isPushLeft == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), MyMath::GetAngle(20));
+				}
+				if (isPushBack == true && isPushRight == true) {
+					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), MyMath::GetAngle(20));
+				}
 			}
 
 			if (isInput == true) {
-				PlayerRot = rot;
-				AllRot = ALLROT;
+				if (isPlayerUlt == false) {
+					PlayerRot = rot;
+					AllRot = rot;
+				}
+				else {
+					PlayerRot = rot;
+					AllRot = ALLROT;
+				}
+			}
+			else {
+				AllRot.z = 0.0f;
 			}
 
 		}
@@ -737,11 +782,19 @@ void Player::Move() {
 	roooooot *= MyMath::Rotation(PlayerRot, 3);
 	roooooot *= MyMath::Rotation(PlayerRot, 2);
 
+	Matrix4 rooteee;
+	rooteee *= MyMath::Rotation(AllRot, 1);
+	rooteee *= MyMath::Rotation(AllRot, 3);
+	rooteee *= MyMath::Rotation(AllRot, 2);
+
 	worldTransform_.SetMatRot(roooooot);
 	oldWorldTransform_.SetMatRot(roooooot);
 
 	worldTransform_.SetLookMatRot(roooooot);
 	worldTransform_.TransferMatrix();
+
+	ModelTrans.SetMatRot(rooteee);
+	ModelTrans.TransferMatrix();
 
 	BoneParent.SetMatRot(roooooot);
 
@@ -1236,7 +1289,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 0;
+					AttackCoolTimeMax = 15;
 
 					isCoolTimeRiset = true;
 				}
@@ -1297,7 +1350,7 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 0;
+					AttackCoolTimeMax = 360;
 					isCoolTimeRiset = true;
 
 				}
@@ -1487,10 +1540,10 @@ void Player::Attack() {
 					MaxSowrdRotate = 35;
 					OldAttackRotX = 0.0f;
 					OldAttackRotY = -24.0f;
-					OldAttackRotZ = 25.0f;
+					OldAttackRotZ = 16.0f;
 					AttackRotX = 0.0f;
 					AttackRotY = -24.0f;
-					AttackRotZ = 25.0f;
+					AttackRotZ = 16.0f;
 					AttackOnlyLeftRotX = 0.0f;
 					AttackOnlyLeftRotY = 0.0f;
 					AttackOnlyLeftRotZ = 0.0f;
@@ -1580,7 +1633,7 @@ void Player::Attack() {
 					if (SowrdDrowTime < 34) {
 						AttackRotX += (0.0f - OldAttackRotX) / 33.0f;
 						AttackRotY += (-24.0f - OldAttackRotY) / 33.0f;
-						AttackRotZ += (25.0f - OldAttackRotZ) / 33.0f;
+						AttackRotZ += (16.0f - OldAttackRotZ) / 33.0f;
 					}
 				}
 
@@ -1596,6 +1649,10 @@ void Player::Attack() {
 				IsCombo3 = false;
 				IsCombo4 = false;
 				IsCombo5 = false;
+
+				AttackRotX = 0.0f;
+				AttackRotY = -24.0f;
+				AttackRotZ = 16.0f;
 			}
 		}
 
@@ -1738,9 +1795,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
 
-	for (int i = 0; i < SphereCount; i++) {
-		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	}
+	//for (int i = 0; i < SphereCount; i++) {
+	//	playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
+	//}
 
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
@@ -1767,7 +1824,7 @@ void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 	if (spaceInput == false) {
 		if (isKnockBack == false || damageFlashFlame % 6 == 0)
 		{
-			fbxmodel->Draw(worldTransform_, viewProjection_);
+			fbxmodel->Draw(ModelTrans, viewProjection_);
 		}
 	}
 }

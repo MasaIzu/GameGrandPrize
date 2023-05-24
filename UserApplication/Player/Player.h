@@ -412,4 +412,10 @@ private:
 
 	bool isCoolTimeRiset = false;
 
+
+	Vector3 ALLROT;
+	Vector3 AllRot;
+
+	Matrix4 LooKROT;
+
 };

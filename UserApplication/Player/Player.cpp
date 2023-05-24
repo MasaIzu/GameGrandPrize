@@ -597,7 +597,7 @@ void Player::Move() {
 				isPushSenter = true;
 				isWalk = true;
 				isInput = true;
-				rot += Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(30.0f));
+				rot += Vector3(0, -MyMath::GetAngle(angle), 0);
 				ALLROT += Vector3(0, -MyMath::GetAngle(angle), 0);
 				if (isPlayerUlt == false) {
 					playerNowMotion = PlayerMotion::aruki;

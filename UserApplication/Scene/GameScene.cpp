@@ -1294,6 +1294,7 @@ void GameScene::FirstCameraUpdate()
 				isTutorialEnd = false;
 				isAllFishLeave = false;
 				isMovie = false;
+				gameCamera->MousePositionReset();
 			}
 		}
 	}

@@ -247,10 +247,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 						NotSowrdDrowTime = 10;
 					}
 					if (SowrdDrowTime < MaxSowrdRotate) {
-						if (SowrdDrowTime < 35) {
-							AttackRotX += (0.0f) / 34.0f;
-							AttackRotY += (-24.0f) / 34.0f;
-							AttackRotZ += (25.0f) / 34.0f;
+						if (SowrdDrowTime > 10 && SowrdDrowTime < 35) {
+							AttackRotX += MyMath::GetAngle(100.0f) / 24.0f;
+							AttackRotY += (-24.0f) / 24.0f;
+							AttackRotZ += (25.0f + MyMath::GetAngle(90.0f)) / 24.0f;
 						}
 					}
 
@@ -1317,6 +1317,19 @@ void Player::Attack() {
 			}
 			else {
 				attackMoveTimer = 0;
+
+				AttackRotX = 0.0f;
+				AttackRotY = 0.0f;
+				AttackRotZ = 0.0f;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
 				IsCombo = false;
 				IsCombo2 = false;
 				IsCombo3 = false;
@@ -1588,9 +1601,9 @@ void Player::Attack() {
 
 
 		Matrix4 rooooootttt;
-		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX) + MyMath::GetAngle(AttackOnlyLeftRotX), PlayerRot.y, PlayerRot.z), 1);
-		rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ) + MyMath::GetAngle(-AttackOnlyLeftRotZ)), 3);
-		rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY) + MyMath::GetAngle(AttackOnlyLeftRotY), 0.0f), 2);
+		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
+		rooooootttt *= MyMath::Rotation(Vector3(0.0f, 0.0f, PlayerRot.z + MyMath::GetAngle(-AttackRotZ)), 3);
+		rooooootttt *= MyMath::Rotation(Vector3(0.0f, MyMath::GetAngle(90.0f) + PlayerRot.y + MyMath::GetAngle(AttackRotY), 0.0f), 2);
 
 		ULTKEN.SetMatRot(rooooootttt);
 		ULTKEN.SetLookMatRot(rooooootttt);
@@ -1724,9 +1737,9 @@ void Player::Draw(ViewProjection viewProjection_) {
 	//	//playerModel_->Draw(worldTransform_, viewProjection_);
 	//}
 
-	for (int i = 0; i < SphereCount; i++) {
+	/*for (int i = 0; i < SphereCount; i++) {
 		playerModel_->Draw(playerAttackTransformaaaa_[i], viewProjection_);
-	}
+	}*/
 
 
 	startPointModel->Draw(startPointTrans, viewProjection_);
@@ -2165,17 +2178,18 @@ void Player::AddUltCount(int count)
 
 void Player::UltStart()
 {
-
-	if (input_->TriggerKey(DIK_Q)) {
-		if (isPlayerUlt == false) {
-			if (UltGage >= UltMaxGage) {
-				isAwakening = true;
-				playerNowMotion = PlayerMotion::AwakeningMotion;
-				frem = 0.0f;
-				MinimumFrem = 2.6f;
-				MaxFrem = 2.6f;
-				UltKenGenerationTime = 0;
-				isUltKenGeneration = false;
+	if (isPlayMotion == false) {
+		if (input_->TriggerKey(DIK_Q)) {
+			if (isPlayerUlt == false) {
+				if (UltGage >= UltMaxGage) {
+					isAwakening = true;
+					playerNowMotion = PlayerMotion::AwakeningMotion;
+					frem = 0.0f;
+					MinimumFrem = 2.6f;
+					MaxFrem = 2.6f;
+					UltKenGenerationTime = 0;
+					isUltKenGeneration = false;
+				}
 			}
 		}
 	}

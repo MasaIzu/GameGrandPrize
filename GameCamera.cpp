@@ -488,6 +488,35 @@ void GameCamera::Reset()
 	cameraPos = { 5,5,5 };
 }
 
+void GameCamera::MousePositionReset()
+{
+
+	Vector2 windowWH = Vector2(winWidth / 2, winHeight / 2);
+	POINT mousePosition;
+	//マウス座標(スクリーン座標)を取得する
+	GetCursorPos(&mousePosition);
+
+	//クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->Gethwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	int xPos_absolute, yPos_absolute;
+
+	int xPos = windowWH.x;  //移動させたいｘ座標（ウィンドウ内の相対座標）
+	int yPos = windowWH.y; //移動させたいｙ座標（ウィンドウ内の相対座標）
+
+	WINDOWINFO windowInfo;
+	//ウィンドウの位置を取得
+	windowInfo.cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(hwnd, &windowInfo);
+
+	//マウスの移動先の絶対座標（モニター左上からの座標）
+	xPos_absolute = xPos + windowInfo.rcWindow.left + 8;//なんかずれてるから直す
+	yPos_absolute = yPos + windowInfo.rcWindow.top + 31; //ウィンドウのタイトルバーの分（31px）をプラス
+	SetCursorPos(xPos_absolute, yPos_absolute);//移動させる
+
+}
+
 void GameCamera::PlayerLockOnCamera(ViewProjection* viewProjection_)
 {
 	Vector3 PlayerAndEnemy = (playerPos_ + EnemyPos_) / 2;

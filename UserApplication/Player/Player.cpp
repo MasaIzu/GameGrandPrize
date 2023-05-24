@@ -410,36 +410,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 	collider->AddPlayerMovement(PlayerMoveMent);
 	collider->Update(worldTransform_.matWorld_);
 	recovery->Update();
-	if (input_->PushKey(DIK_P)) {
-		playerNowMotion = PlayerMotion::AwakeningMotion;
-		frem = fremX;
-	}
-	if (input_->PushKey(DIK_I)) {
-		fremX += 0.1;
-	}
-	if (input_->PushKey(DIK_O)) {
-		fremX += 0.01;
-	}
-	if (input_->PushKey(DIK_K)) {
-		fremX += -0.1;
-	}
-	if (input_->PushKey(DIK_L)) {
-		fremX += -0.01;
-	}
-
-	if (input_->TriggerKey(DIK_M)) {
-		BoneNum++;
-	}
-	if (input_->TriggerKey(DIK_N)) {
-		BoneNum--;
-	}
-
-	if (input_->PushKey(DIK_X)) {
-		size += 0.001f;
-	}
-	if (input_->PushKey(DIK_Z)) {
-		size -= 0.001f;
-	}
 
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
 	matL = fbxmodel->GetLeftBonePos() * BoneParent.matWorld_;
@@ -475,25 +445,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::SliderInt("AttackWaitTime", &maxAttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &maxAttackWaitintTime, 0, 60);
 
-
-	//ImGui::SliderFloat("posx", &avoidGaugeUnderPos.x, 0.0f, 1280.0f);
-	//ImGui::SliderFloat("posy", &avoidGaugeUnderPos.y, 0.0f, 720.0f);
-
-	//ImGui::SliderFloat("sizex", &avoidGaugeUnderSize.x, 0.0f, 512.0f);
-	//ImGui::SliderFloat("sizey", &avoidGaugeUnderSize.y, 0.0f, 512.0f);
-
-	//
-	//ImGui::Text("MinimumFrem:%f", MinimumFrem);
-	//ImGui::Text("MaxFrem:%f", MaxFrem);
-	//ImGui::Text("frem:%f", frem);
-
-	//ImGui::Text("root:%f,%f,%f", root.x, root.y, root.z);
-
-	//ImGui::Text("MaxFrem:%f", MaxFrem);
-	//ImGui::Text("MiniFrem:%f", MinimumFrem);
-	//ImGui::Text("attackConbo:%d", attackConbo);
-
-	//ImGui::Text("isPlayMotion:%d", isPlayMotion);
 
 
 	ImGui::Text("frem:%f", frem);

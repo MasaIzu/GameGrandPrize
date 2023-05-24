@@ -727,7 +727,7 @@ void Player::Move() {
 		}
 
 		if (playerEvasionTimes > 0) {
-			if (input_->TriggerKey(DIK_SPACE)) {
+			if (input_->TriggerKey(input_->MouseInputTrigger(1))) {
 				isSpace = true;
 				if (playerEvasionTimes == playerEvasionMaxTimes) {
 					playerEvasionCoolTime = CoolTime;
@@ -908,7 +908,7 @@ void Player::Attack() {
 
 		if (spaceInput == false) {
 			if (isEnemyDamage == false) {
-				if (input_->MouseInputTrigger(1)) {
+				if (input_->MouseInputTrigger(0)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
 					startCount = 0;
@@ -1470,7 +1470,7 @@ void Player::Attack() {
 
 		if (spaceInput == false) {
 			if (isEnemyDamage == false) {
-				if (input_->MouseInputTrigger(1)) {
+				if (input_->MouseInputTrigger(0)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
 					startCount = 0;

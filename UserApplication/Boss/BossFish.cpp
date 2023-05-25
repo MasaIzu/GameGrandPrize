@@ -237,7 +237,7 @@ void BossFish::Draw(const ViewProjection& viewProMat)
 		fishEyeModel->Draw(fishes[i].pos, viewProMat);
 	}
 
-	swordModel->Draw(fishParent.pos, viewProMat);
+	//swordModel->Draw(fishParent.pos, viewProMat);
 
 	
 }
@@ -1073,6 +1073,11 @@ void BossFish::UpdateDeath()
 		// 一匹でもスケールが０以下になったら飛ばす処理を終了する
 		if (deathTimer >= deathTimerMax) {
 			IsDeathEnd = true;
+
+			collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+			for (int i = 0; i < SphereCount; i++) {
+				AttackCollider[i]->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+			}
 		}
 	}
 

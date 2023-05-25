@@ -1263,21 +1263,6 @@ void BossWarrier::reset()
 
 	TornadoRotY[1] = 3.14;
 
-	for (int i = 0; i < MAXSWROD; i++)
-	{
-
-		// コリジョンマネージャに追加
-		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
-		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
-		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-		AttackCollider[i]->Update(w[i].matWorld_);
-	}
-
-	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
-	CollisionManager::GetInstance()->AddCollider(Tornado);
-	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
-	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
-
 
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }

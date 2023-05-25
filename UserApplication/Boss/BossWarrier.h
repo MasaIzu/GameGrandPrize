@@ -92,6 +92,8 @@ public:
 	bool GetAlive() const { return isAlive; }
 
 	void Damage(int damage);
+
+	void reset();
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//剣のモチE��チE�Eタ

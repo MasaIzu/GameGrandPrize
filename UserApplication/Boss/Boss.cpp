@@ -59,4 +59,6 @@ void Boss::DrawHealth()
 void Boss::Reset()
 {
 	bossFish->Reset();
+
+	bossWarrier->reset();
 }

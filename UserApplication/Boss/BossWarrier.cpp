@@ -198,14 +198,10 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 	//イージング開始
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
-<<<<<<< HEAD
 	particleCreateTime = spawnAnimationTime -20;
 	//生存フラグとHPのリセット
 	health = 10;
 	isAlive = true;
-=======
-	particleCreateTime = spawnAnimationTime - 20;
->>>>>>> 繝懊せ縺ｮ謾ｻ謦・歓驕ｸ縺ｨ謾ｻ謦・・繧､繝ｳ繧ｿ繝ｼ繝舌Ν縺ｮ霑ｽ蜉
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -779,9 +775,11 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 			ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
-
-	boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
-	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+	if (attack==Attack::Tornado)
+	{
+		boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
+		boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+	}
 
 	//ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
 
@@ -1098,6 +1096,121 @@ void BossWarrier::Rota()
 void BossWarrier::Damage(int damage)
 {
 	health -= damage;
+}
+
+void BossWarrier::reset()
+{
+	isAtkArmSwing = false;
+	atkStartTime = 0;
+
+	isAfter = false;
+	rootRotRad = 0;
+	TornadoFlame = 0;
+	isLastAtkStart = false;
+	lastAtkCount = 0;
+
+	atkArmSwingTime = 0;
+
+	swordRad = 0.0f;
+
+	intervalFrame = 0;
+	maxIntervalFrame = 120;
+
+	//蠑墓焚縺ｪ縺ｩ縺ｧ繧ゅｉ縺｣縺ｦ縺上ｋ螟画焚
+	targetPos = { 0,0,0 };
+
+	attack = Attack::StandBy;
+
+	oldAttack = Attack::StandBy;
+
+	bossAttackPhase = BossAttackPhase::Before;
+
+	rdi3 = 3.0f;
+	rdi5 = 5.0f;
+	rdi8 = 8.0f;
+
+	//
+
+	phase2AttackCoolTime = 70;
+	interval = 10;
+	moveSpeed = 0.2f;
+	isSat = false;
+	isSat2 = false;
+	isOn = false;
+	shotTime = MAXSHOTTIME;
+
+	TornadoSpeedRotY = 5;
+	isTornado = false;
+
+	particleCreateTime = 0;
+	spawnAnimationTime = 120;
+
+	isAlive = false;
+
+	health = 0;
+
+	//ボスのスケールを5倍に
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	//boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
+	//それぞれの部位の位置をセット
+	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
+	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { 1,1,1 };
+	boss2Model[BossWarrierPart::elbowR].Transform.scale_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
+	boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1,1,1 };
+	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-0.5,0 };
+	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-0.5,0 };
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		boss2Model[i].Transform.TransferMatrix();
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].scale_ = Vector3{ BossWarrierRadius[i],BossWarrierRadius[i] ,BossWarrierRadius[i] };
+		modelSpere[i].TransferMatrix();
+	}
+
+	boss2TornadoTransform[0].scale_ = { 1,10,1 };
+	boss2TornadoTransform[0].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].scale_ = { 1,10,1 };
+	boss2TornadoTransform[1].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[1].TransferMatrix();
+
+	boss2TornadoTransform[0].alpha = 0.6;
+	boss2TornadoTransform[1].alpha = 0.6;
+
+	TornadoRotY[0] = 0;
+
+	TornadoRotY[1] = 3.14;
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+
+		// コリジョンマネージャに追加
+		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+		AttackCollider[i]->Update(w[i].matWorld_);
+	}
+
+	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
+	CollisionManager::GetInstance()->AddCollider(Tornado);
+	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
+	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
+
+
+	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 void BossWarrier::InitAtkArmSwing()

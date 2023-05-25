@@ -216,6 +216,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 		isAlive = false;
 	}
 
+	ImGui::Text("health %d", health);
+
 
 	for (int i = 0; i < MAXSWROD; i++)
 	{
@@ -959,6 +961,11 @@ void BossWarrier::Rota()
 		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
 		w[i].SetMatRot(mat);
 	}
+}
+
+void BossWarrier::Damage(int damage)
+{
+	health -= damage;
 }
 
 void BossWarrier::InitAtkArmSwing()

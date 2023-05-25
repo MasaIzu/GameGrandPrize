@@ -198,6 +198,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 			attack = Attack::ArmSwing;
 			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
 			boss2Model[BossWarrierPart::HandR].model = bossArmRModel_Gu.get();
+			boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1.5,2,2 };
+			boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1.5,2,2 };
+			boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 1,0,0 };
+			boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -1,0,0 };
 
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
@@ -252,6 +256,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
+
+				Vector3 scaleHand= Lerp({1,1,1}, {1.5,2,2 }, attackEasing.GetTimeRate());
+				Vector3 transHandL = Lerp({ 0.7,0,0 }, { 1.0f,0,0 }, attackEasing.GetTimeRate());
+
+				boss2Model[BossWarrierPart::HandL].Transform.scale_=scaleHand;
+				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
+				boss2Model[BossWarrierPart::HandL].Transform.translation_=transHandL;
+				boss2Model[BossWarrierPart::HandR].Transform.translation_=-transHandL;
 			}
 			else
 			{
@@ -276,6 +288,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
+
+				Vector3 scaleHand = Lerp({ 1.5,2,2 } ,{ 1,1,1 }, attackEasing.GetTimeRate());
+				Vector3 transHandL = Lerp({ 1.0f,0,0 } ,{ 0.7,0,0 }, attackEasing.GetTimeRate());
+
+				boss2Model[BossWarrierPart::HandL].Transform.scale_ = scaleHand;
+				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
+				boss2Model[BossWarrierPart::HandL].Transform.translation_ = transHandL;
+				boss2Model[BossWarrierPart::HandR].Transform.translation_ = -transHandL;
 			}
 			else
 			{

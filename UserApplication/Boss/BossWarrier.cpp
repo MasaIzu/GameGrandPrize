@@ -169,14 +169,18 @@ void BossWarrier::Initialize()
 		num[i].Initialize();
 
 		// コリジョンマネージャに追加
-		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
-		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		if (AttackCollider[i] == nullptr) {
+			AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
+			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		}
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
 		AttackCollider[i]->Update(w[i].matWorld_);
 	}
 
-	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
-	CollisionManager::GetInstance()->AddCollider(Tornado);
+	if (Tornado == nullptr) {
+		Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
+		CollisionManager::GetInstance()->AddCollider(Tornado);
+	}
 	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
 	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
 
@@ -1022,6 +1026,7 @@ void BossWarrier::LaunchSword()
 			mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
 
 			w[i].SetMatRot(mat);
+			w[i].SetLookMatRot(mat);
 			w[i].TransferMatrix();
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
 			AttackCollider[i]->Update(w[i].matWorld_,AttackRadius);
@@ -1152,6 +1157,7 @@ void BossWarrier::Rota()
 		Matrix4 mat;
 		mat = CreateMatRot(w[i].translation_, plWorldTransform.translation_);
 		w[i].SetMatRot(mat);
+		w[i].SetLookMatRot(mat);
 	}
 }
 
@@ -1445,6 +1451,7 @@ void BossWarrier::InitAtkSwordSwing()
 
 	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
+	w[0].SetLookMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
 }
 
@@ -1526,6 +1533,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 
 	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
+	w[0].SetLookMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
 }
 

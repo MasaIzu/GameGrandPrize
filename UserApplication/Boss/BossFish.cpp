@@ -131,6 +131,14 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 
 	SwordCollisionUpdate();
 	collider->Update(fishParent.pos.matWorld_);
+
+	if (IsDeathEnd == true) {
+		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+		for (int i = 0; i < SphereCount; i++) {
+			AttackCollider[i]->SetAttribute(COLLISION_ATTR_INVINCIBLE);
+		}
+	}
+
 }
 
 void BossFish::CreateFish(const Vector3& spawnPos)

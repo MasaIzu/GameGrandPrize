@@ -969,7 +969,8 @@ void BossWarrier::KingDropUpdate()
 			if (IsKingEnergyBall == true) {
 				// 徐々にエネルギーの粒を消す
 				for (int i = 0; i < energyNum; i++) {
-					//energy[i].WorldTrans.alpha -= 0.05f;
+					energyL[i].WorldTrans.alpha -= 0.01f;
+					energyR[i].WorldTrans.alpha -= 0.01f;
 				}
 				// エネルギーの粒のアルファ値が0以下になったらエネルギーの動く処理を止める
 				if (energyL[24].WorldTrans.alpha <= 0.0f) {

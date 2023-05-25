@@ -214,8 +214,8 @@ private:
 	BossKingDropEnergy energyBigBall;
 
 	// エネルギー生成の開始位置と終点位置
-	Vector3 createEnergyStartLPos = { 0,0.8f,1.85f };
-	Vector3 createEnergyStartRPos = { 0,0.8f,1.85f };
+	Vector3 createEnergyStartLPos = { 1.120f,1.120f,2.17f };
+	Vector3 createEnergyStartRPos = { -1.120f,1.120f,2.17f };
 	Vector3 createEnergyEndPos = { 0,8.0f,15.84f };
 	Vector3 energyVelHozonL;
 	Vector3 energyVelHozonR;
@@ -231,7 +231,7 @@ private:
 	// エネルギーを集めて生成する球のスケール
 	Vector3 energyBallScale = { 0,0,0 };
 	// エネルギー球の生成するときのマックススケール
-	Vector3 energyBallMaxScale = { 2.8f,2.8f, 2.8f };
+	Vector3 energyBallMaxScale = { 4.8f,4.8f, 4.8f };
 	// エネルギーの弾が一フレームに増えるスケールの量
 	Vector3 energyBallPlusScale = {0.005f,0.005f, 0.005f};
 

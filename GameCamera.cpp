@@ -191,8 +191,19 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 
 	MovementMous = Vector2(MouseMove.x, MouseMove.y) / 500;
 	mouseMoved += Vector2(MouseMove.x, MouseMove.y) / 500;
-	
 
+	if (MovementMous.x > 0) {
+		cameraUp = true;
+		cameraDown = false;
+	}
+	else if (MovementMous.x < 0) {
+		cameraUp = false;
+		cameraDown = true;
+	}
+	else {
+		cameraUp = false;
+		cameraDown = false;
+	}
 
 	//if (input_->PushKey(DIK_8) == 0) {
 	//	cameraDis += 0.1f;
@@ -214,32 +225,56 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::Text("CameraDistanceMinus : %f", CameraDistanceMinus);
 
 	ImGui::Text("MovementMous : %f,%f", MovementMous.x, MovementMous.y);
-	ImGui::Text("cameraPos : %f,%f,%f", cameraPos.x, cameraPos.y, cameraPos.z);
-
+	ImGui::Text("cameraDown : %d", cameraDown);
+	ImGui::Text("cameraDown : %d", cameraUp);
 	ImGui::End();
 
 	//カメラ制限
 
+	if (cameraDown == true) {
+		if (mouseMoved.x < -0.10f + CameraMouseMoved) {
+			mouseMoved.x = -0.10f + CameraMouseMoved;
+			if (cameraDis - 10.0f > CameraDistanceMinus) {
+				CameraDistanceMinus -= MovementMous.x * 40;
+				if (CameraMouseMoved > -0.2f) {
+					CameraMouseMoved += MovementMous.x;
+				}
+				if (cameraDis - 10.0f < CameraDistanceMinus) {
+					CameraDistanceMinus = cameraDis - 10.0f;
+					CameraMouseMoved = -0.2f;
+				}
 
-	if (mouseMoved.x < -0.30f) {
-		mouseMoved.x = -0.30f;
-		if (cameraDis - 10.0f > CameraDistanceMinus) {
-			CameraDistanceMinus -= -0.90f;
-		}
-	}
-	else if (mouseMoved.x > 1.30f) {
-		mouseMoved.x = 1.30f;
-	}
-
-
-	if (mouseMoved.x > -0.30f + CameraMouseMoved) {
-		if (CameraDistanceMinus > 0) {
-			mouseMoved.x = -0.30f + CameraMouseMoved;
-			CameraMouseMoved += 0.003f;
-			CameraDistanceMinus += -MovementMous.x;
+			}
+			else {
+				CameraMouseMoved = -0.2f;
+			}
 		}
 		else {
-			CameraMouseMoved = 0.0f;
+		}
+	}
+
+
+	if (cameraUp == true) {
+
+		if (mouseMoved.x < -0.10f) {
+			mouseMoved.x = -0.10f + CameraMouseMoved;
+		}
+
+		if (CameraDistanceMinus > 0) {
+			CameraDistanceMinus -= MovementMous.x * 60;
+			if (CameraMouseMoved < 0.0f) {
+				CameraMouseMoved += MovementMous.x / 2;
+			}
+			if (CameraDistanceMinus < 0) {
+				CameraDistanceMinus = 0;
+			}
+		}
+		else {
+			CameraMouseMoved = 0;
+		}
+
+		if (mouseMoved.x > 1.30f) {
+			mouseMoved.x = 1.30f;
 		}
 	}
 

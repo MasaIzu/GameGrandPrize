@@ -167,4 +167,7 @@ private:
 	float OldMouseMoved = 0.0f;
 
 	Vector2 MovementMous;
+
+	bool cameraDown = false;
+	bool cameraUp = false;
 };

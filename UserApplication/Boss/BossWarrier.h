@@ -68,7 +68,7 @@ public:
 
 	void Initialize();
 
-	void Spawn();
+	void Spawn(const Vector3& boss1Pos);
 
 	void Update(const Vector3& targetPos);
 

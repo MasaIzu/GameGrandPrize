@@ -187,12 +187,13 @@ void BossWarrier::Initialize()
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
-void BossWarrier::Spawn()
+void BossWarrier::Spawn(const Vector3& boss1Pos)
 {
 	//フェーズをスポーンに変更
 	attack = Attack::Spawm;
 	//スケールを0に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
 	//イージング開始
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
@@ -832,7 +833,7 @@ void BossWarrier::LaunchSword()
 			w[i].SetMatRot(mat);
 			w[i].TransferMatrix();
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-			AttackCollider[i]->Update(w[i].matWorld_);
+			AttackCollider[i]->Update(w[i].matWorld_,AttackRadius);
 		}
 	}
 }
@@ -853,7 +854,7 @@ void BossWarrier::StartLaunchSword()
 
 		w[i].TransferMatrix();
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-		AttackCollider[i]->Update(w[i].matWorld_);
+		AttackCollider[i]->Update(w[i].matWorld_, AttackRadius);
 	}
 
 
@@ -1131,6 +1132,8 @@ void BossWarrier::InitAtkSwordSwing()
 	//剣の大きさを4倍に
 	w[0].scale_ = { 4,4,4 };
 
+	AttackRadius = 16.0f;
+
 	//剣の移動と回転
 	Vector3 bossY0;
 	bossY0 = boss2Model[BossWarrierPart::Root].Transform.translation_;
@@ -1196,6 +1199,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 		attackEasing.Start(30);
 		bossAttackPhase = BossAttackPhase::After;
 		w[0].scale_ = { 1,1,1 };
+		AttackRadius = 4.0f;
 	}
 
 

@@ -429,7 +429,7 @@ void GameScene::GameUpdate()
 
 	if (isMovie) {
 		// イベントシーンの更新
-				// 最初のカメラと魚の更新
+		// 最初のカメラと魚の更新
 		FirstCameraUpdate();
 		FirstMovieUpdate();
 
@@ -689,6 +689,13 @@ void GameScene::GameOverUpdate()
 			oldScene = Scene::GameOver;
 			IsSceneChange = true;
 			IsRetry = true;
+
+			//小魚を全員殺す
+			for (int i = 0; i < minifishes.size(); i++) {
+				minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+				minifishes[i].OnCollision();
+			}
+
 		}
 	}
 	else {

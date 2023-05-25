@@ -2089,6 +2089,7 @@ void Player::Reset()
 	playerAttackTransform_.rotation_ = { 0,0,0 };
 	playerAttackTransform_.scale_ = { 0,0,0 };
 	playerAttackTransform_.TransferMatrix();
+	isPlayerDieMotion = false;
 
 	for (int i = 0; i < SphereCount; i++) {
 		playerAttackTransformaaaa_[i].translation_ = { 0,0,0 };

@@ -1497,6 +1497,7 @@ void BossWarrier::UpdateSpawn()
 
 	if (!easeRotArm.GetActive()) {
 		attack = Attack::StandBy;
+		spawnParticle->AllDelete();
 	}
 
 }

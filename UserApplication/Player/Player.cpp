@@ -393,6 +393,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 			isAlive = false;
 			isPlayerDieMotion2 = false;
 			ParticleMan->AllDelete();
+			LBoneTrans.alpha=0;
+			RBoneTrans.alpha =0 ;
 		}
 	}
 	ParticleMan->Update();

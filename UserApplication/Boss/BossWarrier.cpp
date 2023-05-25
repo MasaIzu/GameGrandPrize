@@ -164,6 +164,9 @@ void BossWarrier::Spawn()
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
 	particleCreateTime = spawnAnimationTime -20;
+	//生存フラグとHPのリセット
+	health = 10;
+	isAlive = true;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -174,6 +177,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 	matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
 
 	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
+
+	if (health <= 0) {
+		//死亡
+		isAlive = false;
+	}
+
 
 	for (int i = 0; i < MAXSWROD; i++)
 	{

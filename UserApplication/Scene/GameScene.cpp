@@ -567,8 +567,8 @@ void GameScene::GameUpdate()
 
 		}
 
-		if (boss->bossFish->GetIsDeathEnd()) {
-			//scene = Scene::Result;
+		if (boss->bossFish->GetIsDeathEnd()&& !boss->bossWarrier->GetAlive()) {
+			scene = Scene::Result;
 		}
 		if (player->GetAlive() == false)
 		{

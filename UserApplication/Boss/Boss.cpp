@@ -61,4 +61,5 @@ void Boss::Reset()
 	bossFish->Reset();
 
 	bossWarrier->reset();
+	isBossSpawn = false;
 }

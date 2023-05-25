@@ -414,6 +414,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 			ParticleMan->AllDelete();
 			LBoneTrans.alpha=0;
 			RBoneTrans.alpha =0 ;
+			LBoneTrans.TransferMatrix();
+			RBoneTrans.TransferMatrix();
 		}
 	}
 	ParticleMan->Update();
@@ -2085,6 +2087,18 @@ void Player::Reset()
 	worldTransform_.alpha = 0;
 	playerAvoidance = 15.0f;
 	moveTime = 300;
+
+	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL);
+	RBoneTrans.translation_ = MyMath::GetWorldTransform(matR);
+
+	LBoneTrans.scale_ = Vector3(5, 5, 5);
+	RBoneTrans.scale_ = Vector3(5, 5, 5);
+
+	LBoneTrans.alpha = 0;
+	RBoneTrans.alpha = 0;;
+
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
 
 
 	//worldTransform_.translation_ = { 0,0,-100 };

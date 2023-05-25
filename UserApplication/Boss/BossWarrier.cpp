@@ -788,7 +788,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
 
-			ModelSpere->Draw(modelSpere[i], viewProMat);
+			//ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 	if (attack==Attack::Tornado)
@@ -808,7 +808,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 
-		ModelSpere->Draw(modelSpere[i], viewProMat);
+		//ModelSpere->Draw(modelSpere[i], viewProMat);
 	}
 
 }
@@ -1220,7 +1220,7 @@ void BossWarrier::reset()
 
 	//ボスのスケールを5倍に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
-	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,50,50 };
 	//boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
@@ -1233,8 +1233,8 @@ void BossWarrier::reset()
 	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
 	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
 	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
-	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { 1,1,1 };
-	boss2Model[BossWarrierPart::elbowR].Transform.scale_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1,1,1 };
+	boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -0.2,0,0 };
 	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
 	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
 	boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1,1,1 };

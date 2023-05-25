@@ -541,6 +541,10 @@ void GameScene::GameUpdate()
 			player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
 			boss->bossFish->Damage(2);
 
+			if (boss->bossWarrier->GetAlive()) {
+				boss->bossWarrier->Damage(2);
+			}
+
 			player->AddUltCount(10);
 		}
 

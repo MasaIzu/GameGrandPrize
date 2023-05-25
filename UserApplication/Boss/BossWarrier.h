@@ -91,6 +91,8 @@ public:
 	WorldTransform GetRootTransform() const {return boss2Model[BossWarrierPart::Root].Transform; }
 
 	bool GetAlive() const { return isAlive; }
+
+	void Damage(int damage);
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//剣のモチE��チE�Eタ

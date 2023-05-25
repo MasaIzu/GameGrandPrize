@@ -76,7 +76,8 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	ParticleMan->SetTextureHandle(TextureManager::Load("effect4.png"));
 
 	PlayerRot = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
-
+	ALLROT = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
+	AllRot = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
 	playerEvasionTimes = 3;
 
 	recovery = std::make_unique<Recovery>();

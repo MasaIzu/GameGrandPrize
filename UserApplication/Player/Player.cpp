@@ -218,6 +218,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 
 			KnockBackUpdate();
+			UltUpdate();
 		}
 		if (playerNowMotion == PlayerMotion::soukenCombo1) {
 			if (AttackWaitTime > 0) {
@@ -279,21 +280,39 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (isAttckWaiting == false) {
 
 			if (frem < MaxFrem) {
-				frem += 0.013f;
-				if (isPlayMotion) {
-					frem += 0.015;
+				if (FinULT == false) {
+					frem += 0.013f;
+					if (isPlayMotion) {
+						frem += 0.015;
+					}
+					if (playerNowMotion == PlayerMotion::soukenCombo1) {
+						frem += 0.015;
+					}
+					else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+						frem += 0.015;
+					}
+					if (playerNowMotion == PlayerMotion::Ult1) {
+						frem -= 0.003f;
+					}
+					else if (playerNowMotion == PlayerMotion::Ult2) {
+						frem -= 0.003f;
+					}
 				}
-				if (playerNowMotion == PlayerMotion::soukenCombo1) {
-					frem += 0.015;
-				}
-				else if (playerNowMotion == PlayerMotion::soukenCombo2) {
-					frem += 0.015;
-				}
-				if (playerNowMotion == PlayerMotion::Ult1) {
-					frem -= 0.003f;
-				}
-				else if (playerNowMotion == PlayerMotion::Ult2) {
-					frem -= 0.003f;
+				else {
+					frem -= 0.013;
+
+					ULTKEN.alpha -= 0.01f;
+
+					if (frem < 1.20f) {
+						isUltKenGeneration = false;
+					}
+					if (frem < 0) {
+						isPlayerUlt = false;
+						FinULT = false;
+						isAwakening = false;
+						ULTKEN.alpha = 1.0f;
+						playerNowMotion = PlayerMotion::taiki;
+					}
 				}
 
 			}
@@ -681,7 +700,7 @@ void Player::Move() {
 		}
 
 		if (playerEvasionTimes > 0) {
-			if (input_->MouseInputTrigger(1)) {
+			if (input_->TriggerKey(DIK_SPACE)) {
 				isSpace = true;
 				if (playerEvasionTimes == playerEvasionMaxTimes) {
 					playerEvasionCoolTime = CoolTime;
@@ -862,7 +881,7 @@ void Player::Attack() {
 
 		if (spaceInput == false) {
 			if (isEnemyDamage == false) {
-				if (input_->MouseInputTrigger(0)) {
+				if (input_->MouseInputTrigger(1)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
 					startCount = 0;
@@ -1425,7 +1444,7 @@ void Player::Attack() {
 
 		if (spaceInput == false) {
 			if (isEnemyDamage == false) {
-				if (input_->MouseInputTrigger(0)) {
+				if (input_->MouseInputTrigger(1)) {
 					//実行前にカウント値を取得
 					//計測開始時間の初期化
 					startCount = 0;
@@ -2211,12 +2230,37 @@ void Player::UltStart()
 		}
 	}
 
+}
+
+void Player::UltUpdate()
+{
+
 	if (isPlayerUlt == true) {
-		if (UltGage > 1) {
+		if (UltGage > 0) {
 			UltGage--;
 		}
 		else {
-			isPlayerUlt = false;
+			playerNowMotion = PlayerMotion::AwakeningMotion;
+			FinULT = true;
+			isAwakening = true;
+			frem = 2.59f;
+			MinimumFrem = 2.6f;
+			MaxFrem = 2.6f;
+
+			AttackRotX = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 0.0f;
+
+			AllRot.z = 0.0f;
+
+			Matrix4 rooteee;
+			rooteee *= MyMath::Rotation(AllRot, 1);
+			rooteee *= MyMath::Rotation(AllRot, 3);
+			rooteee *= MyMath::Rotation(AllRot, 2);
+
+			ModelTrans.SetMatRot(rooteee);
+			ModelTrans.TransferMatrix();
+
 		}
 	}
 

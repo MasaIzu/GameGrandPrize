@@ -82,7 +82,8 @@ public:
 
 	void SetParticlePos(Matrix4 ParticlePos_) { ParticlePos = ParticlePos_; }
 
-	bool GetAlive() {return isAlive ; }
+	bool GetAlive() { return isAlive; }
+	bool GetIsAwakening() { return isAwakening; }
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);

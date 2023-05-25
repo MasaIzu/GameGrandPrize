@@ -510,7 +510,9 @@ void GameScene::GameUpdate()
 			gameCamera->Collision();
 			Matrix4 a = collisionManager->GetEnemyWorldPos();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(10);
+			if (player->GetIsAwakening() == false) {
+				player->Collision(10);
+			}
 
 		}
 
@@ -518,7 +520,9 @@ void GameScene::GameUpdate()
 			gameCamera->Collision();
 			Matrix4 a = collisionManager->GetEnemyWorldPos();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(5);
+			if (player->GetIsAwakening() == false) {
+				player->Collision(5);
+			}
 		}
 		player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(), collisionManager->GetPlayerPos());
 
@@ -545,7 +549,7 @@ void GameScene::GameUpdate()
 				boss->bossWarrier->Damage(2);
 			}
 
-			player->AddUltCount(10);
+			player->AddUltCount(1000);
 		}
 
 		if (collisionManager->GetIsWakeEnemyAttackHit()) {
@@ -557,7 +561,7 @@ void GameScene::GameUpdate()
 
 			minifishes[playerAttackHitNumber].OnCollision();
 
-			player->AddUltCount(500);
+			player->AddUltCount(50);
 		}
 
 		// ボスフェーズ１のHPが０になったら

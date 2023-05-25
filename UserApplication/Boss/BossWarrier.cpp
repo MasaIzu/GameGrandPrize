@@ -167,14 +167,16 @@ void BossWarrier::Initialize()
 	{
 		w[i].Initialize();
 		num[i].Initialize();
-
+		AttackColliderWorldTrans[i].Initialize();
 		// コリジョンマネージャに追加
 		if (AttackCollider[i] == nullptr) {
 			AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
 			CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
 		}
+		AttackColliderWorldTrans[i].matWorld_ = w[i].matWorld_;
+
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-		AttackCollider[i]->Update(w[i].matWorld_);
+		AttackCollider[i]->Update(AttackColliderWorldTrans[i].matWorld_);
 	}
 
 	if (Tornado == nullptr) {
@@ -795,7 +797,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 			//ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
-	if (attack==Attack::Tornado)
+	if (attack == Attack::Tornado)
 	{
 		boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
 		boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
@@ -810,11 +812,10 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	LaunchSwordDraw(viewProMat);
 
-	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+	for (int i = 0; i < 5; i++) {
 
-		//ModelSpere->Draw(modelSpere[i], viewProMat);
+		ModelSpere->Draw(AttackColliderWorldTrans[i], viewProMat);
 	}
-
 }
 
 void BossWarrier::DrawParticle(const ViewProjection& viewProMat)
@@ -1453,6 +1454,27 @@ void BossWarrier::InitAtkSwordSwing()
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].SetLookMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
+
+	Vector3 Pos = w[0].lookRight - w[0].translation_;
+	Pos.normalize();
+
+	AttackColliderWorldTrans[0].translation_ = w[0].translation_;
+	AttackColliderWorldTrans[1].translation_ = w[0].translation_ + (Pos * 8);
+	AttackColliderWorldTrans[2].translation_ = w[0].translation_ + (Pos * 16);
+	AttackColliderWorldTrans[3].translation_ = w[0].translation_ + (Pos * 24);
+	AttackColliderWorldTrans[4].translation_ = w[0].translation_ + (Pos * 32);
+	
+
+	AttackRadius = 12.0f;
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		AttackColliderWorldTrans[i].scale_ = Vector3(AttackRadius, AttackRadius, AttackRadius);
+		AttackColliderWorldTrans[i].TransferMatrix();
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->Update(AttackColliderWorldTrans[i].matWorld_, AttackRadius);
+	}
+
 }
 
 void BossWarrier::UpdateAtkSwordSwing()
@@ -1535,6 +1557,27 @@ void BossWarrier::UpdateAtkSwordSwing()
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].SetLookMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
+
+	Vector3 Pos = w[0].lookRight - w[0].translation_;
+	Pos.normalize();
+
+	AttackColliderWorldTrans[0].translation_ = w[0].translation_;
+	AttackColliderWorldTrans[1].translation_ = w[0].translation_ + (Pos * 8);
+	AttackColliderWorldTrans[2].translation_ = w[0].translation_ + (Pos * 16);
+	AttackColliderWorldTrans[3].translation_ = w[0].translation_ + (Pos * 24);
+	AttackColliderWorldTrans[4].translation_ = w[0].translation_ + (Pos * 32);
+
+
+	AttackRadius = 12.0f;
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		AttackColliderWorldTrans[i].scale_ = Vector3(AttackRadius, AttackRadius, AttackRadius);
+		AttackColliderWorldTrans[i].TransferMatrix();
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->Update(AttackColliderWorldTrans[i].matWorld_, AttackRadius);
+	}
+
 }
 
 void BossWarrier::UpdateSpawn()

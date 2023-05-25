@@ -183,6 +183,9 @@ private:
 
 	//Œ•‚Ì“–‚½‚è”»’è
 	BaseCollider* AttackCollider[MAXSWROD];
+
+	WorldTransform AttackColliderWorldTrans[MAXSWROD];
+
 	float AttackRadius = 4.0f;
 
 

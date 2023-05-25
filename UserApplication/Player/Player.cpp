@@ -2061,7 +2061,7 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 
 void Player::Reset()
 {
-
+	worldTransform_.alpha = 0;
 	playerAvoidance = 15.0f;
 	moveTime = 300;
 
@@ -2077,6 +2077,9 @@ void Player::Reset()
 	worldTransform_.TransferMatrix();
 	collider->Update(worldTransform_.matWorld_);
 
+	ModelTrans.alpha = 0;
+	ModelTrans.TransferMatrix();
+	AllRot = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
 	oldWorldTransform_.translation_ = { 0,0,0 };
 	oldWorldTransform_.rotation_ = { 0,0,0 };
 	oldWorldTransform_.scale_ = { 0,0,0 };
@@ -2142,7 +2145,7 @@ void Player::Reset()
 	attackDistanceX = 8.0f;
 	attackDistanceZ = 20.0f;
 
-	HP = maxHP;
+	HP = 1;
 
 	hpAlfaSize = { 553.0f,25.0f };
 	IsHpAlfa = false;
@@ -2174,7 +2177,7 @@ void Player::Reset()
 	spriteAlpha3 = 1.0f;
 
 	flame = 0;
-
+	
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
 	isInput = false;

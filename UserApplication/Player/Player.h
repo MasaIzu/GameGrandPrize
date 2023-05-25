@@ -233,7 +233,7 @@ private:
 
 	const int maxHP = 100;
 
-	float HP = maxHP;
+	float HP = 1;
 	std::unique_ptr<Sprite> healthSprite;
 	std::unique_ptr<Sprite> healthAlfaSprite;
 

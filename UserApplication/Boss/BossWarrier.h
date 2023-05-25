@@ -20,7 +20,6 @@ enum BossWarrierPart {
 	//enumã®é E•ªã¯å­ã«ãªã‚‹ã«ã¤ã‚Œã¦ä¸‹ã«è¡Œãã‚ˆã†ã«æ±ºã‚ãŸ
 	Root,		//å¤§æœ¬(é–¢ç¯€)
 	Chest,		//èƒ¸(éª¨)
-	Neck,		//é¦Eé–¢ç¯€)
 	Head,		//é ­(éª¨)
 	ShoulderL,	//å·¦è‚©(é–¢ç¯€)
 	ArmL,		//å·¦è…Eéª¨)
@@ -90,6 +89,8 @@ public:
 	EasingData GetEasingData()const { return easeRotArm; }
 
 	WorldTransform GetRootTransform() const {return boss2Model[BossWarrierPart::Root].Transform; }
+
+	bool GetAlive() const { return isAlive; }
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//å‰£ã®ãƒ¢ãƒEƒ«ãƒEEã‚¿
@@ -139,7 +140,11 @@ private:
 
 	//•—‚Ì“–‚½‚è”»’è
 	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
-	float BossWarrierRadius = 1.0f;
+	float BossWarrierRadius[BossWarrierPart::Boss2PartMax];
+
+	float rdi3 = 3.0f;
+	float rdi5 = 5.0f;
+	float rdi8 = 8.0f;
 
 	//
 
@@ -181,6 +186,10 @@ private:
 	std::unique_ptr<ParticleManager> spawnParticle;
 	int particleCreateTime = 0;
 	int spawnAnimationTime = 120;
+
+	bool isAlive = false;;
+
+	int health = 0;
 
 #pragma region ŠZ‚Ì‘Ò‹@ƒ‚[ƒVƒ‡ƒ“Wi‘S‚Ä‚ÌUŒ‚‚Í‚±‚ê‚©‚çn‚Ü‚è‚±‚ê‚ÉI‚í‚é‚æ‚¤‚É“®ì‚ğì‚éj
 

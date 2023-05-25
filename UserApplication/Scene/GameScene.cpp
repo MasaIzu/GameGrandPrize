@@ -511,6 +511,7 @@ void GameScene::GameUpdate()
 			Matrix4 a = collisionManager->GetEnemyWorldPos();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 			player->Collision(10);
+
 		}
 
 		if (collisionManager->GetIsWakeEnemyHit()) {
@@ -567,8 +568,8 @@ void GameScene::GameUpdate()
 
 		}
 
-		if (boss->bossFish->GetIsDeathEnd()) {
-			//scene = Scene::Result;
+		if (boss->bossFish->GetIsDeathEnd()&& !boss->bossWarrier->GetAlive()) {
+			scene = Scene::Result;
 		}
 		if (player->GetAlive() == false)
 		{

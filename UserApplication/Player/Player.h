@@ -59,6 +59,8 @@ public:
 
 	void UltStart();
 
+	void UltUpdate();
+
 	void EnemyNotAttackCollision(bool IsPlayerEnemycontact, Vector3 Pos);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
@@ -233,7 +235,7 @@ private:
 
 	const int maxHP = 100;
 
-	float HP = 1;
+	float HP = 100;
 	std::unique_ptr<Sprite> healthSprite;
 	std::unique_ptr<Sprite> healthAlfaSprite;
 
@@ -418,5 +420,7 @@ private:
 	Vector3 AllRot;
 
 	Matrix4 LooKROT;
+
+	bool FinULT = false;
 
 };

@@ -47,10 +47,9 @@ enum class Attack
 	Tornado,
 	MultiLaunchSword,
 	LaunchSword,
-
 	SwordSwing,
 	Spawm,
-
+	Approach,
 };
 
 enum class BossAttackPhase
@@ -68,7 +67,7 @@ public:
 
 	void Initialize();
 
-	void Spawn();
+	void Spawn(const Vector3& boss1Pos);
 
 	void Update(const Vector3& targetPos);
 
@@ -98,6 +97,8 @@ public:
 	bool GetAlive() const { return isAlive; }
 
 	void Damage(int damage);
+
+	void reset();
 private:
 
 	std::unique_ptr<Model> swordModel = nullptr;	//剣のモチE��チE�Eタ
@@ -132,10 +133,15 @@ private:
 
 	float swordRad = 0.0f;
 
+	float intervalFrame=0;
+	float maxIntervalFrame=120;
+
 	//引数などでもらってくる変数
 	Vector3 targetPos = { 0,0,0 };
 
 	Attack attack=Attack::StandBy;
+
+	Attack oldAttack = Attack::StandBy;
 
 	BossAttackPhase bossAttackPhase = BossAttackPhase::Before;
 

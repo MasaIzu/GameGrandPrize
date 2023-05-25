@@ -4,6 +4,7 @@
 #include"BossFish.h"
 #include <CollisionManager.h>
 #include <CollisionAttribute.h>
+#include<random>
 
 BossWarrier::~BossWarrier()
 {
@@ -203,12 +204,13 @@ void BossWarrier::Initialize()
 	HP_barSprite->SetSize(HP_barSize);
 }
 
-void BossWarrier::Spawn()
+void BossWarrier::Spawn(const Vector3& boss1Pos)
 {
 	//フェーズをスポーンに変更
 	attack = Attack::Spawm;
 	//スケールを0に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
 	//イージング開始
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
@@ -220,6 +222,9 @@ void BossWarrier::Spawn()
 
 void BossWarrier::Update(const Vector3& targetPos)
 {
+	srand(time(NULL));
+	ImGui::Begin("Warrier");
+
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
@@ -245,10 +250,112 @@ void BossWarrier::Update(const Vector3& targetPos)
 	swordRad = convertDegreeToRadian(130);
 
 	Matrix4 bossDir;
+
+	float range = (abs(targetPos.x - boss2Model->Transform.translation_.x) + abs(targetPos.z - boss2Model->Transform.translation_.z)) / 2;
+
+	Vector3 speed;
 	switch (attack)
 	{
 	case Attack::StandBy:
 		ImGui::Text("attack stand");
+
+		if (intervalFrame <= maxIntervalFrame)
+		{
+			intervalFrame++;
+		}
+		else
+		{
+			intervalFrame = 0;
+			int randInterval = rand() % 3;
+			//randAttack %= 100;
+			if (randInterval == 0)
+			{
+				maxIntervalFrame = 60;
+			}
+			if (randInterval == 1)
+			{
+				maxIntervalFrame = 120;
+			}
+			if (randInterval == 2)
+			{
+				maxIntervalFrame = 180;
+			}
+			if (range <= 35)
+			{
+				do
+				{
+					int randAttack = rand() % 3;
+					//randAttack %= 100;
+					if (randAttack == 0)
+					{
+						//初期化処理
+						InitAtkArmSwing();
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						attack = Attack::ArmSwing;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
+						boss2Model[BossWarrierPart::HandR].model = bossArmRModel_Gu.get();
+						boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1.5,2,2 };
+						boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1.5,2,2 };
+						boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 1,0,0 };
+						boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -1,0,0 };
+					}
+					if (randAttack == 1)
+					{
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						attack = Attack::Tornado;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+					}
+					if (randAttack == 2)
+					{
+						attack = Attack::SwordSwing;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						InitAtkSwordSwing();
+					}
+				} while (attack == oldAttack);
+			}
+			else
+			{
+				do
+				{
+					int randAttack = rand() % 5;
+					//randAttack %= 100;
+					if (randAttack == 0)
+					{
+						attack = Attack::LaunchSword;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+						StartLaunchSword();
+					}
+					if (randAttack == 1)
+					{
+						attackEasing.Start(30);
+						attack = Attack::MultiLaunchSword;
+						bossAttackPhase = BossAttackPhase::Before;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+						StartMultiLaunchSword();
+					}
+					if (randAttack == 2)
+					{
+						attack = Attack::SwordSwing;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						InitAtkSwordSwing();
+					}
+					if (randAttack == 3|| randAttack == 4)
+					{
+						attack = Attack::Approach;
+					}
+				} while (attack == oldAttack);
+			}
+		}
+
+		oldAttack = attack;
+		ImGui::Text("%d", attack);
+
 
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
@@ -317,13 +424,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
-				Vector3 scaleHand= Lerp({1,1,1}, {1.5,2,2 }, attackEasing.GetTimeRate());
+				Vector3 scaleHand = Lerp({ 1,1,1 }, { 1.5,2,2 }, attackEasing.GetTimeRate());
 				Vector3 transHandL = Lerp({ 0.7,0,0 }, { 1.0f,0,0 }, attackEasing.GetTimeRate());
 
-				boss2Model[BossWarrierPart::HandL].Transform.scale_=scaleHand;
+				boss2Model[BossWarrierPart::HandL].Transform.scale_ = scaleHand;
 				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
-				boss2Model[BossWarrierPart::HandL].Transform.translation_=transHandL;
-				boss2Model[BossWarrierPart::HandR].Transform.translation_=-transHandL;
+				boss2Model[BossWarrierPart::HandL].Transform.translation_ = transHandL;
+				boss2Model[BossWarrierPart::HandR].Transform.translation_ = -transHandL;
 			}
 			else
 			{
@@ -349,8 +456,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
-				Vector3 scaleHand = Lerp({ 1.5,2,2 } ,{ 1,1,1 }, attackEasing.GetTimeRate());
-				Vector3 transHandL = Lerp({ 1.0f,0,0 } ,{ 0.7,0,0 }, attackEasing.GetTimeRate());
+				Vector3 scaleHand = Lerp({ 1.5,2,2 }, { 1,1,1 }, attackEasing.GetTimeRate());
+				Vector3 transHandL = Lerp({ 1.0f,0,0 }, { 0.7,0,0 }, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::HandL].Transform.scale_ = scaleHand;
 				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
@@ -437,7 +544,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			{
 				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
 
-				Vector3 polygonEasing = Lerp({1,0,5},{0,1,1}, attackEasing.GetTimeRate());
+				Vector3 polygonEasing = Lerp({ 1,0,5 }, { 0,1,1 }, attackEasing.GetTimeRate());
 				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
 				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
 
@@ -445,7 +552,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 				{
 					w[i].alpha = polygonEasing.y;
 				}
-				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor});
+				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor });
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 			}
@@ -577,7 +684,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 					w[i].alpha = 1;
 				}
 				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
-				swordModel->SetPolygonExplosion({0,1, polygon._RotationFactor,polygon._PositionFactor });
+				swordModel->SetPolygonExplosion({ 0,1, polygon._RotationFactor,polygon._PositionFactor });
 				bossAttackPhase = BossAttackPhase::Attack;
 			}
 			break;
@@ -622,7 +729,26 @@ void BossWarrier::Update(const Vector3& targetPos)
 		UpdateSpawn();
 		break;
 
+	case Attack::Approach:
+
+		speed = targetPos - boss2Model->Transform.translation_;
+
+		speed = speed.normalize();
+
+		speed.y = 0;
+
+		boss2Model[BossWarrierPart::Root].Transform.translation_ += speed * 3;
+
+		if (range <= 20)
+		{
+			maxIntervalFrame = 30;
+			attack = Attack::StandBy;
+		}
+
+		break;
+
 	default:
+
 		break;
 	}
 
@@ -638,16 +764,18 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].TransferMatrix();
 	}
-	for (int i = 0; i < MAXSWROD; i++ )
+	for (int i = 0; i < MAXSWROD; i++)
 	{
 		w[i].TransferMatrix();
 	}
 
-	ImGui::Begin("Warrier");
-
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
 	ImGui::Text("BossAttack:%d", attack);
+
+	ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
+
+	ImGui::Text("intervalFrame:%d", intervalFrame);
 
 	ImGui::End();
 
@@ -663,9 +791,11 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 			ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
-
-	boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
-	boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+	if (attack==Attack::Tornado)
+	{
+		boss2TornadeModel->Draw(boss2TornadoTransform[0], viewProMat);
+		boss2TornadeModel->Draw(boss2TornadoTransform[1], viewProMat);
+	}
 
 	//ModelSpere->Draw(boss2TornadoTransform[0], viewProMat);
 
@@ -810,7 +940,7 @@ void BossWarrier::StartMultiLaunchSword()
 
 	}
 	Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
-	swordModel->SetPolygonExplosion({1,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+	swordModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
 
 	t = true;
@@ -894,7 +1024,7 @@ void BossWarrier::LaunchSword()
 			w[i].SetMatRot(mat);
 			w[i].TransferMatrix();
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-			AttackCollider[i]->Update(w[i].matWorld_);
+			AttackCollider[i]->Update(w[i].matWorld_,AttackRadius);
 		}
 	}
 }
@@ -915,7 +1045,7 @@ void BossWarrier::StartLaunchSword()
 
 		w[i].TransferMatrix();
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-		AttackCollider[i]->Update(w[i].matWorld_);
+		AttackCollider[i]->Update(w[i].matWorld_, AttackRadius);
 	}
 
 
@@ -1028,6 +1158,121 @@ void BossWarrier::Rota()
 void BossWarrier::Damage(int damage)
 {
 	health -= damage;
+}
+
+void BossWarrier::reset()
+{
+	isAtkArmSwing = false;
+	atkStartTime = 0;
+
+	isAfter = false;
+	rootRotRad = 0;
+	TornadoFlame = 0;
+	isLastAtkStart = false;
+	lastAtkCount = 0;
+
+	atkArmSwingTime = 0;
+
+	swordRad = 0.0f;
+
+	intervalFrame = 0;
+	maxIntervalFrame = 120;
+
+	//蠑墓焚縺ｪ縺ｩ縺ｧ繧ゅｉ縺｣縺ｦ縺上ｋ螟画焚
+	targetPos = { 0,0,0 };
+
+	attack = Attack::StandBy;
+
+	oldAttack = Attack::StandBy;
+
+	bossAttackPhase = BossAttackPhase::Before;
+
+	rdi3 = 3.0f;
+	rdi5 = 5.0f;
+	rdi8 = 8.0f;
+
+	//
+
+	phase2AttackCoolTime = 70;
+	interval = 10;
+	moveSpeed = 0.2f;
+	isSat = false;
+	isSat2 = false;
+	isOn = false;
+	shotTime = MAXSHOTTIME;
+
+	TornadoSpeedRotY = 5;
+	isTornado = false;
+
+	particleCreateTime = 0;
+	spawnAnimationTime = 120;
+
+	isAlive = false;
+
+	health = 0;
+
+	//ボスのスケールを5倍に
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,20,50 };
+	//boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
+	//それぞれの部位の位置をセット
+	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.translation_ = { 0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::ArmL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.translation_ = { -0.9,0.3,0 };
+	boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::ArmR].Transform.translation_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowL].Transform.SetRot({ 0,0,-PI / 4 });
+	boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
+	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { 1,1,1 };
+	boss2Model[BossWarrierPart::elbowR].Transform.scale_ = { -0.2,0,0 };
+	boss2Model[BossWarrierPart::elbowR].Transform.SetRot({ 0,0,PI / 4 });
+	boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
+	boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1,1,1 };
+	boss2Model[BossWarrierPart::Crotch].Transform.translation_ = { 0,-0.5,0 };
+	boss2Model[BossWarrierPart::Waist].Transform.translation_ = { 0,-0.5,0 };
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		boss2Model[i].Transform.TransferMatrix();
+		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].scale_ = Vector3{ BossWarrierRadius[i],BossWarrierRadius[i] ,BossWarrierRadius[i] };
+		modelSpere[i].TransferMatrix();
+	}
+
+	boss2TornadoTransform[0].scale_ = { 1,10,1 };
+	boss2TornadoTransform[0].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[0].TransferMatrix();
+	boss2TornadoTransform[1].scale_ = { 1,10,1 };
+	boss2TornadoTransform[1].translation_ = { 0,-10,0 };
+	boss2TornadoTransform[1].TransferMatrix();
+
+	boss2TornadoTransform[0].alpha = 0.6;
+	boss2TornadoTransform[1].alpha = 0.6;
+
+	TornadoRotY[0] = 0;
+
+	TornadoRotY[1] = 3.14;
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+
+		// コリジョンマネージャに追加
+		AttackCollider[i] = new SphereCollider(Vector4(0, AttackRadius, 0, 0), AttackRadius);
+		CollisionManager::GetInstance()->AddCollider(AttackCollider[i]);
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+		AttackCollider[i]->Update(w[i].matWorld_);
+	}
+
+	Tornado = new SphereCollider(Vector4(0, TornadoRadius, 0, 0), TornadoRadius);
+	CollisionManager::GetInstance()->AddCollider(Tornado);
+	Tornado->SetAttribute(COLLISION_ATTR_ENEMYTORNADOATTACK);
+	Tornado->Update(boss2TornadoTransform[0].matWorld_, TornadoRadius);
+
+
+	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
 void BossWarrier::InitAtkArmSwing()
@@ -1193,6 +1438,8 @@ void BossWarrier::InitAtkSwordSwing()
 	//剣の大きさを4倍に
 	w[0].scale_ = { 4,4,4 };
 
+	AttackRadius = 16.0f;
+
 	//剣の移動と回転
 	Vector3 bossY0;
 	bossY0 = boss2Model[BossWarrierPart::Root].Transform.translation_;
@@ -1258,6 +1505,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 		attackEasing.Start(30);
 		bossAttackPhase = BossAttackPhase::After;
 		w[0].scale_ = { 1,1,1 };
+		AttackRadius = 4.0f;
 	}
 
 
@@ -1311,6 +1559,7 @@ void BossWarrier::UpdateSpawn()
 
 	if (!easeRotArm.GetActive()) {
 		attack = Attack::StandBy;
+		spawnParticle->AllDelete();
 	}
 
 }

@@ -2146,7 +2146,7 @@ void Player::Reset()
 	attackDistanceX = 8.0f;
 	attackDistanceZ = 20.0f;
 
-	HP = 1;
+	HP = maxHP;
 
 	hpAlfaSize = { 553.0f,25.0f };
 	IsHpAlfa = false;

@@ -185,6 +185,22 @@ void BossWarrier::Initialize()
 	spawnParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
 
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
+
+	Vector2 HP_barSize = { 742.0f ,58.0f };
+
+	//体力の画像読み込み
+	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite->SetAnchorPoint({ 0,0 });
+
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite->SetAnchorPoint({ 0,0 });
+
+	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
+	HP_barSprite->SetAnchorPoint({ 0.5,0.5 });
+
+	// サイズをセットする
+	healthAlfaSprite->SetSize(hpAlfaSize);
+	HP_barSprite->SetSize(HP_barSize);
 }
 
 void BossWarrier::Spawn()
@@ -198,7 +214,7 @@ void BossWarrier::Spawn()
 	//パーティクルの生成数はイージング時間-20に
 	particleCreateTime = spawnAnimationTime -20;
 	//生存フラグとHPのリセット
-	health = 10;
+	health = maxHealth;
 	isAlive = true;
 }
 
@@ -670,6 +686,52 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 void BossWarrier::DrawParticle(const ViewProjection& viewProMat)
 {
 	spawnParticle->Draw(viewProMat);
+}
+
+void BossWarrier::DrawHealth()
+{
+	// HPのセット
+	float nowHp = health / maxHealth;
+	hpSize = { 714.0f * nowHp,27.0f };
+	healthSprite->SetSize(hpSize);
+
+	// Hpの下の部分を減らす処理
+	if (IsHpAlfa) {
+		// 攻撃を受けてから 30 フレーム下のHpは動かない
+		if (hpAlfaTimer < 30) {
+			hpAlfaTimer++;
+		}
+		else {
+			// 赤ゲージよりサイズが大きいなら減らす
+			if (hpSize.x < hpAlfaSize.x) {
+				hpAlfaSize.x -= 2.0f;
+				healthAlfaSprite->SetSize(hpAlfaSize);
+			}
+			// 赤ゲージよりサイズが小さくなったら減らすのをやめ、赤ゲージのサイズに合わせる
+			// 下のゲージのフラグをオフにする
+			else if (hpSize.x >= hpAlfaSize.x) {
+				hpAlfaTimer = 0;
+				healthAlfaSprite->SetSize(hpSize);
+				IsHpAlfa = false;
+			}
+		}
+	}
+
+
+	//Vector2 size = { 48.0f * bossHealth,48.0f };
+
+	Vector2 pos = { WinApp::window_width / 2 - 358,WinApp::window_height / 2 + 236 };
+
+	Vector2 HP_barPos = { WinApp::window_width / 2,WinApp::window_height / 2 + 250 };
+
+	//healthSprite->SetSize(size);
+
+	// スプライト描画
+	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
+
+	healthSprite->Draw(pos, { 1,1,1,1 });
+
+	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
 }
 
 void BossWarrier::MultiLaunchSword()

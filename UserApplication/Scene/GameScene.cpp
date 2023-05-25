@@ -902,6 +902,10 @@ void GameScene::Draw() {
 	{
 		boss->DrawHealth();
 		player->DrawHealth();
+		if (boss->bossFish->GetIsDeathEnd()) {
+			boss->bossWarrier->DrawHealth();
+		}
+
 		//boss->DrawHealth();
 		//player->DrawHealth();
 

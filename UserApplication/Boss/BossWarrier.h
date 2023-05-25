@@ -74,6 +74,11 @@ public:
 
 	void Draw(const ViewProjection& viewProMat);
 	void DrawParticle(const ViewProjection& viewProMat);
+	/// <summary>
+	/// 体力の描画
+	/// </summary>
+	void DrawHealth();
+
 	void SetPlayer(Player* player_) { pl = player_; }
 
 	void MultiLaunchSword();
@@ -189,9 +194,27 @@ private:
 	int particleCreateTime = 0;
 	int spawnAnimationTime = 120;
 
-	bool isAlive = false;;
+	bool isAlive = false;
 
-	int health = 0;
+#pragma region Hpまわりの変数
+	// Hpの上限
+	float maxHealth = 100;
+	// 今のHp
+	float health = maxHealth;
+
+	std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
+	std::unique_ptr<Sprite> healthAlfaSprite;// HPの下の部分のスプライト
+
+	Vector2 hpSize;                       // Hpのスプライトのサイズ
+	Vector2 hpAlfaSize = { 553.0f,25.0f };// Hpの下のスプライトのサイズ
+	bool IsHpAlfa = false;                // Hpの下のものが現れるかどうか
+	int hpAlfaTimer = 0;                  // Hpの下のものが動き出すまでのタイマー
+
+	std::unique_ptr<Sprite> HP_barSprite; // Hpのバーのスプライト
+#pragma endregion
+
+
+	
 
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 

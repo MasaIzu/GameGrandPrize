@@ -186,6 +186,8 @@ void BossWarrier::Initialize()
 	spawnParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
 
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
+
+	sowrdWorld.Initialize();
 }
 
 void BossWarrier::Spawn(const Vector3& boss1Pos)
@@ -753,6 +755,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 		w[i].TransferMatrix();
 	}
 
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->Update(w[i].matWorld_, AttackRadius);
+	}
+
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
 	ImGui::Text("BossAttack:%d", attack);
@@ -785,15 +793,18 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	//Œ•U‚èUŒ‚‚È‚çŒ•‚ðˆê–{•`‰æ
 	if (attack == Attack::SwordSwing) {
-		swordModel->Draw(w[0], viewProMat);
+		//swordModel->Draw(w[0], viewProMat);
 	}
 
 	LaunchSwordDraw(viewProMat);
 
-	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 
-		ModelSpere->Draw(modelSpere[i], viewProMat);
-	}
+	ModelSpere->Draw(w[0], viewProMat);
+	ModelSpere->Draw(w[1], viewProMat);
+	ModelSpere->Draw(w[2], viewProMat);
+	ModelSpere->Draw(w[3], viewProMat);
+	ModelSpere->Draw(w[4], viewProMat);
+	
 
 }
 
@@ -1392,6 +1403,28 @@ void BossWarrier::InitAtkSwordSwing()
 	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
+
+	Vector3 Pos = w[0].look - w[0].translation_;
+	Pos.normalize();
+
+	w[1].translation_ = w[0].translation_ + (Pos * 8);
+	w[2].translation_ = w[0].translation_ + (Pos * 16);
+	w[3].translation_ = w[0].translation_ + (Pos * 24);
+	w[4].translation_ = w[0].translation_ + (Pos * 32);
+	w[1].TransferMatrix();
+	w[2].TransferMatrix();
+	w[3].TransferMatrix();
+	w[4].TransferMatrix();
+
+
+	AttackRadius = 16.0f;
+
+	for (int i = 0; i < MAXSWROD; i++)
+	{
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
+		AttackCollider[i]->Update(w[i].matWorld_, AttackRadius);
+	}
+
 }
 
 void BossWarrier::UpdateAtkSwordSwing()
@@ -1473,6 +1506,19 @@ void BossWarrier::UpdateAtkSwordSwing()
 	w[0].translation_ = LerpBezireQuadratic(swordPos[1], targetPos, swordPos[0], ease);
 	w[0].SetMatRot(CreateMatRot(bossY0, w[0].translation_));
 	w[0].TransferMatrix();
+
+	Vector3 Pos = w[0].look - w[0].translation_;
+	Pos.normalize();
+
+	w[1].translation_ = w[0].translation_ + (Pos * 4);
+	w[2].translation_ = w[0].translation_ + (Pos * 8);
+	w[3].translation_ = w[0].translation_ + (Pos * 12);
+	w[4].translation_ = w[0].translation_ + (Pos * 16);
+	w[1].TransferMatrix();
+	w[2].TransferMatrix();
+	w[3].TransferMatrix();
+	w[4].TransferMatrix();
+
 }
 
 void BossWarrier::UpdateSpawn()

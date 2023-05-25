@@ -199,6 +199,9 @@ private:
 
 	int health = 0;
 
+	WorldTransform sowrdWorld;
+
+
 #pragma region 鎧の待機モーション集（全ての攻撃はこれから始まりこれに終わるように動作を作る）
 
 	const Vector3 StandByNeck = { 0,0,0 };

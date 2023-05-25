@@ -1158,6 +1158,13 @@ void BossWarrier::Rota()
 void BossWarrier::Damage(int damage)
 {
 	health -= damage;
+	IsHpAlfa = true;
+	hpAlfaSize = hpSize;
+
+	if (health < 0)
+	{
+		health = 0;
+	}
 }
 
 void BossWarrier::reset()

@@ -4,6 +4,7 @@
 #include"BossFish.h"
 #include <CollisionManager.h>
 #include <CollisionAttribute.h>
+#include<random>
 
 BossWarrier::~BossWarrier()
 {
@@ -197,14 +198,21 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 	//イージング開始
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
+<<<<<<< HEAD
 	particleCreateTime = spawnAnimationTime -20;
 	//生存フラグとHPのリセット
 	health = 10;
 	isAlive = true;
+=======
+	particleCreateTime = spawnAnimationTime - 20;
+>>>>>>> 繝懊せ縺ｮ謾ｻ謦・歓驕ｸ縺ｨ謾ｻ謦・・繧､繝ｳ繧ｿ繝ｼ繝舌Ν縺ｮ霑ｽ蜉
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
 {
+	srand(time(NULL));
+	ImGui::Begin("Warrier");
+
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
@@ -230,10 +238,112 @@ void BossWarrier::Update(const Vector3& targetPos)
 	swordRad = convertDegreeToRadian(130);
 
 	Matrix4 bossDir;
+
+	float range = (abs(targetPos.x - boss2Model->Transform.translation_.x) + abs(targetPos.z - boss2Model->Transform.translation_.z)) / 2;
+
+	Vector3 speed;
 	switch (attack)
 	{
 	case Attack::StandBy:
 		ImGui::Text("attack stand");
+
+		if (intervalFrame <= maxIntervalFrame)
+		{
+			intervalFrame++;
+		}
+		else
+		{
+			intervalFrame = 0;
+			int randInterval = rand() % 3;
+			//randAttack %= 100;
+			if (randInterval == 0)
+			{
+				maxIntervalFrame = 60;
+			}
+			if (randInterval == 1)
+			{
+				maxIntervalFrame = 120;
+			}
+			if (randInterval == 2)
+			{
+				maxIntervalFrame = 180;
+			}
+			if (range <= 35)
+			{
+				do
+				{
+					int randAttack = rand() % 3;
+					//randAttack %= 100;
+					if (randAttack == 0)
+					{
+						//初期化処理
+						InitAtkArmSwing();
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						attack = Attack::ArmSwing;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
+						boss2Model[BossWarrierPart::HandR].model = bossArmRModel_Gu.get();
+						boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1.5,2,2 };
+						boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1.5,2,2 };
+						boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 1,0,0 };
+						boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -1,0,0 };
+					}
+					if (randAttack == 1)
+					{
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						attack = Attack::Tornado;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+					}
+					if (randAttack == 2)
+					{
+						attack = Attack::SwordSwing;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						InitAtkSwordSwing();
+					}
+				} while (attack == oldAttack);
+			}
+			else
+			{
+				do
+				{
+					int randAttack = rand() % 5;
+					//randAttack %= 100;
+					if (randAttack == 0)
+					{
+						attack = Attack::LaunchSword;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+						StartLaunchSword();
+					}
+					if (randAttack == 1)
+					{
+						attackEasing.Start(30);
+						attack = Attack::MultiLaunchSword;
+						bossAttackPhase = BossAttackPhase::Before;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+						StartMultiLaunchSword();
+					}
+					if (randAttack == 2)
+					{
+						attack = Attack::SwordSwing;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						InitAtkSwordSwing();
+					}
+					if (randAttack == 3|| randAttack == 4)
+					{
+						attack = Attack::Approach;
+					}
+				} while (attack == oldAttack);
+			}
+		}
+
+		oldAttack = attack;
+		ImGui::Text("%d", attack);
+
 
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
@@ -302,13 +412,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
-				Vector3 scaleHand= Lerp({1,1,1}, {1.5,2,2 }, attackEasing.GetTimeRate());
+				Vector3 scaleHand = Lerp({ 1,1,1 }, { 1.5,2,2 }, attackEasing.GetTimeRate());
 				Vector3 transHandL = Lerp({ 0.7,0,0 }, { 1.0f,0,0 }, attackEasing.GetTimeRate());
 
-				boss2Model[BossWarrierPart::HandL].Transform.scale_=scaleHand;
+				boss2Model[BossWarrierPart::HandL].Transform.scale_ = scaleHand;
 				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
-				boss2Model[BossWarrierPart::HandL].Transform.translation_=transHandL;
-				boss2Model[BossWarrierPart::HandR].Transform.translation_=-transHandL;
+				boss2Model[BossWarrierPart::HandL].Transform.translation_ = transHandL;
+				boss2Model[BossWarrierPart::HandR].Transform.translation_ = -transHandL;
 			}
 			else
 			{
@@ -334,8 +444,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::ShoulderR].Transform.SetRot(rotShoulderR);
 				boss2Model[BossWarrierPart::elbowR].Transform.SetRot(rotElbowR);
 
-				Vector3 scaleHand = Lerp({ 1.5,2,2 } ,{ 1,1,1 }, attackEasing.GetTimeRate());
-				Vector3 transHandL = Lerp({ 1.0f,0,0 } ,{ 0.7,0,0 }, attackEasing.GetTimeRate());
+				Vector3 scaleHand = Lerp({ 1.5,2,2 }, { 1,1,1 }, attackEasing.GetTimeRate());
+				Vector3 transHandL = Lerp({ 1.0f,0,0 }, { 0.7,0,0 }, attackEasing.GetTimeRate());
 
 				boss2Model[BossWarrierPart::HandL].Transform.scale_ = scaleHand;
 				boss2Model[BossWarrierPart::HandR].Transform.scale_ = scaleHand;
@@ -422,7 +532,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			{
 				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
 
-				Vector3 polygonEasing = Lerp({1,0,5},{0,1,1}, attackEasing.GetTimeRate());
+				Vector3 polygonEasing = Lerp({ 1,0,5 }, { 0,1,1 }, attackEasing.GetTimeRate());
 				Vector3 rotShoulderL = Lerp(StandByShoulderL, { 0,-PI / 2,0 }, attackEasing.GetTimeRate());
 				Vector3 rotElbowL = Lerp(StandByElbowL, { 0,0,0 }, attackEasing.GetTimeRate());
 
@@ -430,7 +540,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 				{
 					w[i].alpha = polygonEasing.y;
 				}
-				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor});
+				swordModel->SetPolygonExplosion({ polygonEasing.x,polygonEasing.z,polygon._RotationFactor,polygon._PositionFactor });
 				boss2Model[BossWarrierPart::ShoulderL].Transform.SetRot(rotShoulderL);
 				boss2Model[BossWarrierPart::elbowL].Transform.SetRot(rotElbowL);
 			}
@@ -562,7 +672,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 					w[i].alpha = 1;
 				}
 				Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
-				swordModel->SetPolygonExplosion({0,1, polygon._RotationFactor,polygon._PositionFactor });
+				swordModel->SetPolygonExplosion({ 0,1, polygon._RotationFactor,polygon._PositionFactor });
 				bossAttackPhase = BossAttackPhase::Attack;
 			}
 			break;
@@ -607,7 +717,26 @@ void BossWarrier::Update(const Vector3& targetPos)
 		UpdateSpawn();
 		break;
 
+	case Attack::Approach:
+
+		speed = targetPos - boss2Model->Transform.translation_;
+
+		speed = speed.normalize();
+
+		speed.y = 0;
+
+		boss2Model[BossWarrierPart::Root].Transform.translation_ += speed * 3;
+
+		if (range <= 20)
+		{
+			maxIntervalFrame = 30;
+			attack = Attack::StandBy;
+		}
+
+		break;
+
 	default:
+
 		break;
 	}
 
@@ -623,16 +752,18 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].TransferMatrix();
 	}
-	for (int i = 0; i < MAXSWROD; i++ )
+	for (int i = 0; i < MAXSWROD; i++)
 	{
 		w[i].TransferMatrix();
 	}
 
-	ImGui::Begin("Warrier");
-
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
 	ImGui::Text("BossAttack:%d", attack);
+
+	ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
+
+	ImGui::Text("intervalFrame:%d", intervalFrame);
 
 	ImGui::End();
 
@@ -749,7 +880,7 @@ void BossWarrier::StartMultiLaunchSword()
 
 	}
 	Model::ConstBufferPolygonExplosion polygon = swordModel->GetPolygonExplosion();
-	swordModel->SetPolygonExplosion({1,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
+	swordModel->SetPolygonExplosion({ 1,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
 
 	t = true;

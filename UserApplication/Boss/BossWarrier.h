@@ -47,10 +47,9 @@ enum class Attack
 	Tornado,
 	MultiLaunchSword,
 	LaunchSword,
-
 	SwordSwing,
 	Spawm,
-
+	Approach,
 };
 
 enum class BossAttackPhase
@@ -127,10 +126,15 @@ private:
 
 	float swordRad = 0.0f;
 
+	float intervalFrame=0;
+	float maxIntervalFrame=120;
+
 	//引数などでもらってくる変数
 	Vector3 targetPos = { 0,0,0 };
 
 	Attack attack=Attack::StandBy;
+
+	Attack oldAttack = Attack::StandBy;
 
 	BossAttackPhase bossAttackPhase = BossAttackPhase::Before;
 

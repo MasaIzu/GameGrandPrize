@@ -187,12 +187,13 @@ void BossWarrier::Initialize()
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
 
-void BossWarrier::Spawn()
+void BossWarrier::Spawn(const Vector3& boss1Pos)
 {
 	//フェーズをスポーンに変更
 	attack = Attack::Spawm;
 	//スケールを0に
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
 	//イージング開始
 	easeRotArm.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に

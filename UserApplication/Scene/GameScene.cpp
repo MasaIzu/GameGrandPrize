@@ -511,6 +511,7 @@ void GameScene::GameUpdate()
 			Matrix4 a = collisionManager->GetEnemyWorldPos();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 			player->Collision(10);
+
 		}
 
 		if (collisionManager->GetIsWakeEnemyHit()) {

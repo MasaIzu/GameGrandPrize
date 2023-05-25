@@ -52,11 +52,43 @@ void BossWarrier::Initialize()
 
 		modelSpere[i].Initialize();
 
-		// コリジョンマネージャに追加
-		BossWarrier[i] = new SphereCollider(Vector4(0, BossWarrierRadius, 0, 0), BossWarrierRadius);
-		CollisionManager::GetInstance()->AddCollider(BossWarrier[i]);
-		BossWarrier[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
-		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+	}
+
+	{//当たり判定半径
+		//1
+		BossWarrierRadius[BossWarrierPart::Root] = rdi3;
+		//2
+		BossWarrierRadius[BossWarrierPart::Chest] = rdi8 + 4.0f;
+		//3
+		BossWarrierRadius[BossWarrierPart::Head] = rdi3;
+		//4
+		BossWarrierRadius[BossWarrierPart::ShoulderL] = rdi3;
+		//5
+		BossWarrierRadius[BossWarrierPart::ArmL] = rdi3;
+		//6
+		BossWarrierRadius[BossWarrierPart::elbowL] = rdi3;
+		//7
+		BossWarrierRadius[BossWarrierPart::HandL] = rdi8;
+		//8
+		BossWarrierRadius[BossWarrierPart::ShoulderR] = rdi3;
+		//9
+		BossWarrierRadius[BossWarrierPart::ArmR] = rdi3;
+		//10
+		BossWarrierRadius[BossWarrierPart::elbowR] = rdi3;
+		//11
+		BossWarrierRadius[BossWarrierPart::HandR] = rdi8;
+		//12
+		BossWarrierRadius[BossWarrierPart::Crotch] = rdi5;
+		//13
+		BossWarrierRadius[BossWarrierPart::Waist] = rdi8;
+
+
+		for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+			BossWarrier[i] = new SphereCollider(Vector4(0, BossWarrierRadius[i], 0, 0), BossWarrierRadius[i]);
+			CollisionManager::GetInstance()->AddCollider(BossWarrier[i]);
+			BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
+			BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
+		}
 
 	}
 
@@ -108,6 +140,7 @@ void BossWarrier::Initialize()
 		boss2Model[i].Transform.TransferMatrix();
 		BossWarrier[i]->Update(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
+		modelSpere[i].scale_ = Vector3{ BossWarrierRadius[i],BossWarrierRadius[i] ,BossWarrierRadius[i] };
 		modelSpere[i].TransferMatrix();
 	}
 

@@ -20,7 +20,6 @@ enum BossWarrierPart {
 	//enumの頁E��は子になるにつれて下に行くように決めた
 	Root,		//大本(関節)
 	Chest,		//胸(骨)
-	Neck,		//馁E関節)
 	Head,		//頭(骨)
 	ShoulderL,	//左肩(関節)
 	ArmL,		//左腁E骨)
@@ -141,7 +140,11 @@ private:
 
 	//���̓����蔻��
 	BaseCollider* BossWarrier[BossWarrierPart::Boss2PartMax];
-	float BossWarrierRadius = 1.0f;
+	float BossWarrierRadius[BossWarrierPart::Boss2PartMax];
+
+	float rdi3 = 3.0f;
+	float rdi5 = 5.0f;
+	float rdi8 = 8.0f;
 
 	//
 

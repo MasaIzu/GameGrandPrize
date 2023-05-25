@@ -1413,6 +1413,7 @@ void Player::Attack() {
 			}
 			if (isPorigonFlag == false) {
 				isPorigonFlag = true;
+				isSowrd = false;
 				SowrdDFlame = 0;
 				SowrdAFlame = 36;
 			}

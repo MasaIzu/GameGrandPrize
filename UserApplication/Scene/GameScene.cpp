@@ -969,8 +969,6 @@ void GameScene::Reset()
 	// ゲームオーバーのリセット
 	GameOverReset();
 
-	IsFirst = true;
-
 	collisionManager->CheckAllCollisions();
 
 	viewProjection_.eye = { 0,10,-10 };
@@ -1034,8 +1032,14 @@ void GameScene::Reset()
 	viewProjection_.fovAngleY = gameCamera->GetFovAngle();
 	viewProjection_.UpdateMatrix();
 
+	// ゲームのスタート時のカメラリセット
+	IsFirst = true;
+	isMovie = true;
+	//IsFirstCameraEnd = false;
+
 	isTutorialEnd = false;
 	isStartBossBattle = false;
+	isAllFishLeave = false;
 
 	collisionManager->CheckAllCollisions();
 }

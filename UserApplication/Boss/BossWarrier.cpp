@@ -833,7 +833,7 @@ void BossWarrier::LaunchSword()
 			w[i].SetMatRot(mat);
 			w[i].TransferMatrix();
 			AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-			AttackCollider[i]->Update(w[i].matWorld_);
+			AttackCollider[i]->Update(w[i].matWorld_,AttackRadius);
 		}
 	}
 }
@@ -854,7 +854,7 @@ void BossWarrier::StartLaunchSword()
 
 		w[i].TransferMatrix();
 		AttackCollider[i]->SetAttribute(COLLISION_ATTR_ENEMYSOWRDATTACK);
-		AttackCollider[i]->Update(w[i].matWorld_);
+		AttackCollider[i]->Update(w[i].matWorld_, AttackRadius);
 	}
 
 
@@ -1132,6 +1132,8 @@ void BossWarrier::InitAtkSwordSwing()
 	//Œ•‚Ì‘å‚«‚³‚ð4”{‚É
 	w[0].scale_ = { 4,4,4 };
 
+	AttackRadius = 16.0f;
+
 	//Œ•‚ÌˆÚ“®‚Æ‰ñ“]
 	Vector3 bossY0;
 	bossY0 = boss2Model[BossWarrierPart::Root].Transform.translation_;
@@ -1197,6 +1199,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 		attackEasing.Start(30);
 		bossAttackPhase = BossAttackPhase::After;
 		w[0].scale_ = { 1,1,1 };
+		AttackRadius = 4.0f;
 	}
 
 

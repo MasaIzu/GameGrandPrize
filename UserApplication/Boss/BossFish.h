@@ -127,6 +127,11 @@ private:
 	void UpdateAtkSword();
 
 	/// <summary>
+	/// 突進攻撃の前戯処理更新
+	/// </summary>
+	void UpdateAtkRushBeginMotion();
+
+	/// <summary>
 	/// 突進攻撃の更新
 	/// </summary>
 	void UpdateAtkRush();
@@ -269,6 +274,13 @@ private:
 		bool IsBossSowrdSE = false;
 		float sowrdSETimer = 0;
 		float sowrdSETimeMax = 45;
+
+		bool AttackBegin = true;
+		bool AttackNow = false;
+
+		int BackTime = 0;
+		int BackTimeMax = 60;
+
 };
 
 

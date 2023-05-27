@@ -645,6 +645,18 @@ void Player::Move() {
 			{
 				PlayerMoveMent /= 2;
 			}
+			if (isPushLeft == true && isPushRight == true) {
+				PlayerMoveMent = Vector3(0, 0, 0);
+				playerNowMotion = PlayerMotion::taiki;
+			}
+
+			if (isPushSenter == true && isPushBack == true) {
+				playerNowMotion = PlayerMotion::taiki;
+				if (isPushLeft == true || isPushRight == true) {
+					playerNowMotion = PlayerMotion::aruki;
+				}
+			}
+
 			if (isPlayerUlt == false) {
 				if (isPushSenter == true && isPushLeft == true) {
 					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);

@@ -412,8 +412,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 			isAlive = false;
 			isPlayerDieMotion2 = false;
 			ParticleMan->AllDelete();
-			LBoneTrans.alpha=0;
-			RBoneTrans.alpha =0 ;
+			LBoneTrans.alpha = 0;
+			RBoneTrans.alpha = 0;
 			LBoneTrans.TransferMatrix();
 			RBoneTrans.TransferMatrix();
 		}
@@ -578,142 +578,142 @@ void Player::Move() {
 
 	root = (worldTransform_.look - worldTransform_.translation_);
 
-	if (spaceInput == false) {
 
-		if (isPlayMotion == false) {
-			if (input_->PushKey(DIK_W)) {
-				PlayerMoveMent += cameraLook * playerSpeed;
-				PlayerMoveZ = true;
-				isPushSenter = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_A)) {
-				PlayerMoveMent += root.normalize() * playerSpeed;
-				PlayerMoveX = true;
-				isPushLeft = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_S)) {
-				PlayerMoveMent -= cameraLook * playerSpeed;
-				PlayerMoveZ = true;
-				isPushBack = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_D)) {
-				PlayerMoveMent += root.normalize() * playerSpeed;
-				PlayerMoveX = true;
-				isPushRight = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (PlayerMoveZ == true && PlayerMoveX == true)
-			{
-				PlayerMoveMent /= 2;
-			}
-			if (isPushLeft == true && isPushRight == true) {
-				PlayerMoveMent = Vector3(0, 0, 0);
-				playerNowMotion = PlayerMotion::taiki;
-			}
-
-			if (isPushSenter == true && isPushBack == true) {
-				playerNowMotion = PlayerMotion::taiki;
-				if (isPushLeft == true || isPushRight == true) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-			}
-
+	if (isPlayMotion == false) {
+		if (input_->PushKey(DIK_W)) {
+			PlayerMoveMent += cameraLook * playerSpeed;
+			PlayerMoveZ = true;
+			isPushSenter = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle), 0);
 			if (isPlayerUlt == false) {
-				if (isPushSenter == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
-				}
-				if (isPushSenter == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
-				}
-
-				if (isPushBack == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
-				}
-				if (isPushBack == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
-				}
+				playerNowMotion = PlayerMotion::aruki;
 			}
 			else {
-				if (isPushSenter == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), MyMath::GetAngle(20));
-				}
-				if (isPushSenter == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), MyMath::GetAngle(20));
-				}
-
-				if (isPushBack == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), MyMath::GetAngle(20));
-				}
-				if (isPushBack == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), MyMath::GetAngle(20));
-				}
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
 			}
-
-			if (isInput == true) {
-				if (isPlayerUlt == false) {
-					PlayerRot = rot;
-					AllRot = rot;
-				}
-				else {
-					PlayerRot = rot;
-					AllRot = ALLROT;
-				}
+		}
+		if (input_->PushKey(DIK_A)) {
+			PlayerMoveMent += root.normalize() * playerSpeed;
+			PlayerMoveX = true;
+			isPushLeft = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
 			}
 			else {
-				AllRot.z = 0.0f;
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (input_->PushKey(DIK_S)) {
+			PlayerMoveMent -= cameraLook * playerSpeed;
+			PlayerMoveZ = true;
+			isPushBack = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			else {
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (input_->PushKey(DIK_D)) {
+			PlayerMoveMent += root.normalize() * playerSpeed;
+			PlayerMoveX = true;
+			isPushRight = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			else {
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (PlayerMoveZ == true && PlayerMoveX == true)
+		{
+			PlayerMoveMent /= 2;
+		}
+		if (isPushLeft == true && isPushRight == true) {
+			PlayerMoveMent = Vector3(0, 0, 0);
+			playerNowMotion = PlayerMotion::taiki;
+		}
+
+		if (isPushSenter == true && isPushBack == true) {
+			playerNowMotion = PlayerMotion::taiki;
+			if (isPushLeft == true || isPushRight == true) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+		}
+
+		if (isPlayerUlt == false) {
+			if (isPushSenter == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+			}
+			if (isPushSenter == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
 			}
 
+			if (isPushBack == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+			}
+			if (isPushBack == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+			}
 		}
 		else {
+			if (isPushSenter == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), MyMath::GetAngle(20));
+			}
+			if (isPushSenter == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), MyMath::GetAngle(20));
+			}
 
-
-
+			if (isPushBack == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), MyMath::GetAngle(20));
+			}
+			if (isPushBack == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), MyMath::GetAngle(20));
+			}
 		}
 
-		if (playerEvasionTimes > 0) {
+		if (isInput == true) {
+			if (isPlayerUlt == false) {
+				PlayerRot = rot;
+				AllRot = rot;
+			}
+			else {
+				PlayerRot = rot;
+				AllRot = ALLROT;
+			}
+		}
+		else {
+			AllRot.z = 0.0f;
+		}
+
+	}
+	else {
+
+
+
+	}
+
+	if (playerEvasionTimes > 0) {
+		if (spaceInput == false) {
 			if (input_->TriggerKey(DIK_SPACE)) {
 				isSpace = true;
 				if (playerEvasionTimes == playerEvasionMaxTimes) {
@@ -725,9 +725,10 @@ void Player::Move() {
 				collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 				oldWorldTransform_.scale_ = worldTransform_.scale_;
 				oldWorldTransform_.translation_ = worldTransform_.translation_;
-
+				spaceInput = true;
 				if (isPlayerUlt == false) {
-					spaceInput = true;
+					isPlayMotion = false;
+					playerNowMotion = taiki;
 				}
 				else {
 					isPlayMotion = false;
@@ -760,8 +761,9 @@ void Player::Move() {
 				}
 			}
 		}
-
 	}
+
+
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
 	Matrix4 roooooot;
@@ -923,7 +925,7 @@ void Player::Attack() {
 						frem = 0.0f;
 						receptionTime = 0;
 						conboFlag = true;
-						
+
 					}
 					if (attackConbo == 1) {
 						if (receptionTime > 19 && receptionTime < 50) {
@@ -977,7 +979,7 @@ void Player::Attack() {
 							MaxFrem = 1.88f;
 							frem = 0.0f;
 							receptionTime = 0;
-							
+
 						}
 					}
 
@@ -2256,7 +2258,7 @@ void Player::Reset()
 	spriteAlpha3 = 1.0f;
 
 	flame = 0;
-	
+
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
 	isInput = false;

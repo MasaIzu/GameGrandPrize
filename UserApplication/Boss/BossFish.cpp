@@ -87,7 +87,7 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 	//狙う敵の座標更新
 	this->targetPos = targetPos;
 
-	ImGui::Text("health %d", bossHealth);
+	//ImGui::Text("health %d", bossHealth);
 
 	//ダメージのタイマーをセット
 	if (damageTimer > 0) {
@@ -351,7 +351,7 @@ void BossFish::UpdateIdle()
 
 		//魚が特別な移動を行っているときの処理
 		if (fishes[i].easeMove.GetActive()) {
-			ImGui::Text("fish create active");
+			//ImGui::Text("fish create active");
 			fishes[i].pos.parent_ = nullptr;
 			pos = LerpBezireCubic(fishes[i].beforePos, fishes[i].controll1, fishes[i].controll2, fishes[i].afterPos, fishes[i].easeMove.GetTimeRate());
 			Matrix4 matrot;
@@ -423,8 +423,8 @@ void BossFish::UpdateIdle()
 		fishes[i].pos.TransferMatrix();
 
 
-		ImGui::Text("pos[%d]:%f,%f,%f", i, fishes[i].pos.translation_.x, fishes[i].pos.translation_.y, fishes[i].pos.translation_.z);
-		ImGui::Text("after pos[%d]:%f,%f,%f", i, fishes[i].afterPos.x, fishes[i].afterPos.y, fishes[i].afterPos.z);
+		//ImGui::Text("pos[%d]:%f,%f,%f", i, fishes[i].pos.translation_.x, fishes[i].pos.translation_.y, fishes[i].pos.translation_.z);
+		//ImGui::Text("after pos[%d]:%f,%f,%f", i, fishes[i].afterPos.x, fishes[i].afterPos.y, fishes[i].afterPos.z);
 	}
 
 	if (!fishes[fishes.size() - 1].easeMove.GetActive() && !fishes[0].easeMove.GetActive()) {
@@ -477,8 +477,8 @@ void BossFish::UpdateAtkSword()
 	const int moveDelay = 60;			//補間のためのディレイ
 	float distancePtoSword = 90.0f;		//標的と剣の距離(スカラー)
 
-	ImGui::Text("SwordColCube1 : %f,%f,%f", posSwordColCube1.x, posSwordColCube1.y, posSwordColCube1.z);
-	ImGui::Text("SwordColCube2 : %f,%f,%f", posSwordColCube2.x, posSwordColCube2.y, posSwordColCube2.z);
+	//ImGui::Text("SwordColCube1 : %f,%f,%f", posSwordColCube1.x, posSwordColCube1.y, posSwordColCube1.z);
+	//ImGui::Text("SwordColCube2 : %f,%f,%f", posSwordColCube2.x, posSwordColCube2.y, posSwordColCube2.z);
 
 	//モーション開始の瞬間
 	if (nextPhaseInterval <= 0) {
@@ -560,7 +560,7 @@ void BossFish::UpdateAtkSword()
 			// SEのフラグ
 			IsBossSowrdSE = false;
 
-			ImGui::Text("now create!");
+			//ImGui::Text("now create!");
 
 			//最初にどの魚を剣まで移動させるか決める
 			int goFishToSwordIndex = 0;
@@ -612,7 +612,7 @@ void BossFish::UpdateAtkSword()
 		//アニメーション時間が移動した(魚の数+最後に移動した魚の移動時間)より小さくなったなら次のモーション(攻撃開始座標への移動)を開始
 		else if (bossSwordPhase == BossFishSwordPhase::Move) {
 
-			ImGui::Text("now move!");
+			//ImGui::Text("now move!");
 			Vector3 rotaVec;
 			rotaVec.x = sin(PI / 3.0f);
 			rotaVec.z = cos(PI / 3.0f);
@@ -650,9 +650,9 @@ void BossFish::UpdateAtkSword()
 			float angleTargetoFish;
 			angleTargetoFish = acos(targetPos.dot(fishParent.pos.translation_) / (targetPos.length() * fishParent.pos.translation_.length()));
 
-			ImGui::Text("nasukaku:%f", angleTargetoFish / PI * 180);
+			//ImGui::Text("nasukaku:%f", angleTargetoFish / PI * 180);
 			swordRotAngle = easeSwordPos.GetTimeRate() * (/* - (PI / 2.0f) +*/ angleTargetoFish);
-			ImGui::Text("rotAngle:%f", swordRotAngle / PI * 180);
+			//ImGui::Text("rotAngle:%f", swordRotAngle / PI * 180);
 
 			Matrix4 fishMatRot = CreateMatRot(fishParent.pos.translation_, targetPos);
 
@@ -666,7 +666,7 @@ void BossFish::UpdateAtkSword()
 		}
 		else if (bossSwordPhase == BossFishSwordPhase::Attack) {
 
-			ImGui::Text("now attack!");
+			//ImGui::Text("now attack!");
 
 			sowrdSETimer++;
 
@@ -690,10 +690,10 @@ void BossFish::UpdateAtkSword()
 			Vector3 vecBossToTarget = fishParent.pos.translation_ - targetPos;
 			vecBossToTarget = { 1,1,1 };
 
-			ImGui::Text("vecBoss2Target:%f,%f,%f", vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z);
+			//ImGui::Text("vecBoss2Target:%f,%f,%f", vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z);
 			axis = vecBossToTarget.cross({ 1,0,0 });
 			axis.normalize();
-			ImGui::Text("axis:%f,%f,%f", axis.x, axis.y, axis.z);
+			//ImGui::Text("axis:%f,%f,%f", axis.x, axis.y, axis.z);
 			//回転軸のクォータニオン作成
 			Quaternion axisQ = { axis,PI / 3 };
 			Quaternion posQ = (vecBossToTarget.x, vecBossToTarget.y, vecBossToTarget.z, 0);
@@ -707,8 +707,8 @@ void BossFish::UpdateAtkSword()
 			afterPos *= distancePtoSword;
 
 
-			ImGui::Text("before:%f,%f,%f", beforePos.x, beforePos.y, beforePos.z);
-			ImGui::Text("after:%f,%f,%f", afterPos.x, afterPos.y, afterPos.z);
+			//ImGui::Text("before:%f,%f,%f", beforePos.x, beforePos.y, beforePos.z);
+			//ImGui::Text("after:%f,%f,%f", afterPos.x, afterPos.y, afterPos.z);
 
 			Vector3 rotaVec, rotaVecAfter;
 			rotaVec.x = sin(PI / 3.0f);
@@ -746,7 +746,7 @@ void BossFish::UpdateAtkSword()
 			//ベジエ曲線で座標を補完
 			pos = LerpBezireQuadratic(beforePos, targetPos, afterPos, LerpConbertInback(easeSwordPos.GetTimeRate()));
 
-			ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
+			//ImGui::Text("timeRate:%f", easeSwordPos.GetTimeRate());
 
 
 			Matrix4 matrot;
@@ -775,7 +775,7 @@ void BossFish::UpdateAtkSword()
 			//毎フレーム1匹ずつ動かす
 			int fishIndex = swordBreakTime - nextPhaseInterval;
 			if (fishIndex >= moveFishMax)fishIndex = moveFishMax - 1;
-			ImGui::Text("fishIndex:%d", fishIndex);
+			//ImGui::Text("fishIndex:%d", fishIndex);
 
 			//毎フレーム別の魚の移動を開始する
 			Vector3 pos;
@@ -840,10 +840,10 @@ void BossFish::UpdateAtkSword()
 	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
-	ImGui::Text("ParentPosZ:%1.5f", fishParent.pos.translation_.z);
-	ImGui::Text("swordPosX:%1.5f", swordTransform.translation_.x);
-	ImGui::Text("swordPosY:%1.5f", swordTransform.translation_.y);
-	ImGui::Text("swordPosZ:%1.5f", swordTransform.translation_.z);
+	//ImGui::Text("ParentPosZ:%1.5f", fishParent.pos.translation_.z);
+	//ImGui::Text("swordPosX:%1.5f", swordTransform.translation_.x);
+	//ImGui::Text("swordPosY:%1.5f", swordTransform.translation_.y);
+	//ImGui::Text("swordPosZ:%1.5f", swordTransform.translation_.z);
 
 	//剣のワールド行列
 	swordTransform.TransferMatrix();
@@ -898,7 +898,7 @@ void BossFish::UpdateAtkRush()
 
 		easeParentPos.Update();
 
-		ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);
+		//ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);
 
 
 
@@ -907,8 +907,8 @@ void BossFish::UpdateAtkRush()
 			Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 			Vector3 pBeforePos = fishesBeforePos[0];
 			Vector3 pAfterPos = parentAfterPos;
-			ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
-			ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+			//ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+			//ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
 			fishParent.pos.translation_ = pos;
 			fishParent.pos.TransferMatrix();
@@ -996,8 +996,8 @@ void BossFish::UpdateAtkRush()
 			Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
 			Vector3 pBeforePos = fishesBeforePos[0];
 			Vector3 pAfterPos = fishesAfterPos[0];
-			ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
-			ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+			//ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+			//ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 			fishParent.pos.translation_ = pos;
 			fishParent.pos.TransferMatrix();
 		}

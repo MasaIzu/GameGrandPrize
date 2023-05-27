@@ -131,11 +131,11 @@ void Recovery::Update()
 
 	pointWorldTransform_.TransferMatrix();
 
-	ImGui::Begin("recovery");
+	/*ImGui::Begin("recovery");
 
 	ImGui::Text("HP:%f", IntervalFlame);
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Recovery::Draw(ViewProjection view)

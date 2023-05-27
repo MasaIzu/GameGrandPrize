@@ -457,7 +457,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 
-	ImGui::Begin("player");
+	/*ImGui::Begin("player");
 
 
 	ImGui::Text("UltGage:%d", UltGage);
@@ -483,13 +483,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.x);
 	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.y);
-	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.z);
+	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.z);*/
 
 	float endflame = 36;
 
 	float Destruction = 1.0f * (SowrdDFlame / endflame);
 	float a = 1.0f * (SowrdAFlame / endflame);
-	ImGui::Text("a:%f", a);
+	/*ImGui::Text("a:%f", a);
 	ImGui::Text("D:%f", Destruction);
 
 	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
@@ -506,7 +506,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::SliderFloat("BoneParentRotY", &BoneParentRotY, -360.0f, 360.0f);
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Player::Move() {

@@ -229,7 +229,7 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 void BossWarrier::Update(const Vector3& targetPos)
 {
 	srand(time(NULL));
-	ImGui::Begin("Warrier");
+	//ImGui::Begin("Warrier");
 
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
@@ -243,7 +243,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		isAlive = false;
 	}
 
-	ImGui::Text("health %d", health);
+	//ImGui::Text("health %d", health);
 
 
 	for (int i = 0; i < MAXSWROD; i++)
@@ -263,7 +263,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	switch (attack)
 	{
 	case Attack::StandBy:
-		ImGui::Text("attack stand");
+		//ImGui::Text("attack stand");
 
 		if (intervalFrame <= maxIntervalFrame)
 		{
@@ -360,7 +360,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 
 		oldAttack = attack;
-		ImGui::Text("%d", attack);
+		//ImGui::Text("%d", attack);
 
 
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
@@ -411,7 +411,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	case Attack::ArmSwing:
 #pragma region 腕振り攻撃処理(テストキーは8)
 
-		ImGui::Text("boss atack ArmSwing");
+		//ImGui::Text("boss atack ArmSwing");
 
 		switch (bossAttackPhase)
 		{
@@ -775,15 +775,15 @@ void BossWarrier::Update(const Vector3& targetPos)
 		w[i].TransferMatrix();
 	}
 
-	ImGui::Text("TornadoRadius:%f", TornadoRadius);
+	//ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
-	ImGui::Text("BossAttack:%d", attack);
+	//ImGui::Text("BossAttack:%d", attack);
 
-	ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
+	//ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
 
-	ImGui::Text("intervalFrame:%d", intervalFrame);
+	//ImGui::Text("intervalFrame:%d", intervalFrame);
 
-	ImGui::End();
+	//ImGui::End();
 
 }
 
@@ -1310,8 +1310,8 @@ void BossWarrier::UpdateAtkArmSwing()
 	//正規化した移動ベクトルにボス速度を掛け算
 	bossMoveVec *= bossSpdScalar;
 
-	ImGui::Text("bossMoveVec:%f,%f,%f", bossMoveVec.x, bossMoveVec.y, bossMoveVec.z);
-	ImGui::Text("atkCount:%d", lastAtkCount);
+	//ImGui::Text("bossMoveVec:%f,%f,%f", bossMoveVec.x, bossMoveVec.y, bossMoveVec.z);
+	//ImGui::Text("atkCount:%d", lastAtkCount);
 
 	//大本のモデルを移動
 	boss2Model[BossWarrierPart::Root].Transform.translation_ += bossMoveVec;
@@ -1357,7 +1357,7 @@ void BossWarrier::UpdateAtkArmSwing()
 		//ボスの現在の座標と自機座標が近かったら攻撃終了カウント開始
 		Vector3 bossToTarget = boss2Model->Transform.translation_ - targetPos;
 		bossToTarget.y = 0;
-		ImGui::Text("length bossToPlayer:%f", bossToTarget.length());
+		//ImGui::Text("length bossToPlayer:%f", bossToTarget.length());
 		if (bossToTarget.length() <= 25.0f && !isLastAtkStart) {
 			isLastAtkStart = true;
 			//残りの移動回数は合計距離が 攻撃終了カウントの計算に使った距離の二倍になるように
@@ -1481,10 +1481,10 @@ void BossWarrier::UpdateAtkSwordSwing()
 {
 	Vector3 rot = boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_;
 	rot = convertRadianToDegree(rot);
-	ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
+	/*ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
 	ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotY", &rot.y, 0.0f, 360.0f);
-	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);*/
 	rot = convertDegreeToRadian(rot);
 
 	//回転に使う角とそれを制御するデータ

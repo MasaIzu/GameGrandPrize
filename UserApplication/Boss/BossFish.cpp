@@ -300,8 +300,9 @@ void BossFish::Reset()
 	fishParent.radius = 20.0f;
 
 
-
-
+	AttackBegin = true;
+	AttackNow = false;
+	BackTime = 0;
 	if (!fishes.empty()) {
 		fishes.clear();
 	}
@@ -850,133 +851,175 @@ void BossFish::UpdateAtkSword()
 
 }
 
+void BossFish::UpdateAtkRushBeginMotion()
+{
+	if (AttackNow == false) {
+
+		if (AttackBegin == true) {
+
+			if (BackTime < BackTimeMax) {
+				BackTime++;
+
+				Vector3 playerPos_EnemyPos = targetPos - fishParent.pos.translation_;
+				playerPos_EnemyPos.y = 0;
+				playerPos_EnemyPos.normalize();
+
+				fishParent.pos.translation_ -= playerPos_EnemyPos;
+
+				fishParent.pos.TransferMatrix();
+
+				for (int i = 0; i < fishes.size(); i++) {
+					fishes[i].pos.parent_ = &fishParent.pos;
+					fishes[i].pos.TransferMatrix();
+				}
+			}
+			else {
+				AttackBegin = false;
+				AttackNow = true;
+				BackTime = 0;
+			}
+
+		}
+
+	}
+	
+
+}
+
 void BossFish::UpdateAtkRush()
 {
 	const int rushMaxTime = 60;		//突進攻撃の始点から終点までかかる時間
 	const int rushCoolTime = 30;	//次の突進攻撃までのクールタイム
 	const int fishesDispersionRate = 15;
 
-	easeParentPos.Update();
+	UpdateAtkRushBeginMotion();
 
-	ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);
+	if (AttackNow == true) {
 
+		easeParentPos.Update();
 
-
-	if (easeParentPos.GetActive()) {
-		//突進中は始点と終点でイージング
-		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
-		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = parentAfterPos;
-		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
-		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
-
-		fishParent.pos.translation_ = pos;
-		fishParent.pos.TransferMatrix();
+		ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);
 
 
 
-	}
-	else {
-		//突進のクールタイムが終わっている
-		if (nextPhaseInterval <= 0) {
-			//突進の回数が残っている
-			if (rushCount > 0) {
+		if (easeParentPos.GetActive()) {
+			//突進中は始点と終点でイージング
+			Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
+			Vector3 pBeforePos = fishesBeforePos[0];
+			Vector3 pAfterPos = parentAfterPos;
+			ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+			ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
 
-				//突進回数を減らし、クールタイムを設定しておき、挙動を開始
-				rushCount--;
-				nextPhaseInterval = rushCoolTime;
+			fishParent.pos.translation_ = pos;
+			fishParent.pos.TransferMatrix();
 
-				//���̐e����W�I�܂ł̃x�N�g��
-				Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
 
-				vecfishTotarget.y = 0;
-				Vector3 afterVec = vecfishTotarget;
-				afterVec.normalize();
-				afterVec *= fishParent.radius * 3;
 
-				//親座標の始点と終点を決める
-				parentBeforePos = fishParent.pos.translation_;
-				parentAfterPos = parentBeforePos - (vecfishTotarget + afterVec);
-				parentAfterPos.y = parentBeforePos.y;
+		}
+		else {
 
-				float len = vecfishTotarget.length();
-				//挙動に使う座標を設定
-				for (int i = 0; i < fishes.size(); i++) {
+			//突進のクールタイムが終わっている
+			if (nextPhaseInterval <= 0) {
+				//突進の回数が残っている
+				if (rushCount > 0) {
 
-					if (i % fishesDispersionRate == 0) {
-						int easeParam = i / fishesDispersionRate;
-						easePFishToSword[easeParam].Start(rushMaxTime - (i / fishesDispersionRate) /*+ (Random(-(rushMaxTime / 10.0f),rushMaxTime / 10.0f))*/);
+					//突進回数を減らし、クールタイムを設定しておき、挙動を開始
+					rushCount--;
+					nextPhaseInterval = rushCoolTime;
+
+					//���̐e����W�I�܂ł̃x�N�g��
+					Vector3 vecfishTotarget = fishParent.pos.translation_ - targetPos;
+
+					vecfishTotarget.y = 0;
+					Vector3 afterVec = vecfishTotarget;
+					afterVec.normalize();
+					afterVec *= fishParent.radius * 3;
+
+					//親座標の始点と終点を決める
+					parentBeforePos = fishParent.pos.translation_;
+					parentAfterPos = parentBeforePos - (vecfishTotarget + afterVec);
+					parentAfterPos.y = parentBeforePos.y;
+
+					float len = vecfishTotarget.length();
+					//挙動に使う座標を設定
+					for (int i = 0; i < fishes.size(); i++) {
+
+						if (i % fishesDispersionRate == 0) {
+							int easeParam = i / fishesDispersionRate;
+							easePFishToSword[easeParam].Start(rushMaxTime - (i / fishesDispersionRate) /*+ (Random(-(rushMaxTime / 10.0f),rushMaxTime / 10.0f))*/);
+						}
+
+						//移動を親依存にはするけど、親に追従じゃ動かないので親子関係を切る
+						fishes[i].pos.parent_ = nullptr;
+
+						if (rushCount == rushMaxCount - 1) {
+							fishesBeforePos[i] = parentBeforePos + fishes[i].pos.translation_;
+							fishesAfterPos[i] = parentAfterPos + fishes[i].pos.translation_;
+						}
+						else {
+							fishesBeforePos[i] = fishesAfterPos[i];
+							fishesAfterPos[i] -= (vecfishTotarget + afterVec);
+						}
+
+
+						if (i == 9) {
+							easeParentPos.Start(rushMaxTime);
+						}
+
+						/*	fishesAfterPos[i].x = fishesBeforePos[i].x - (vecfishTotarget.x * 2);
+							fishesAfterPos[i].z = fishesBeforePos[i].z - (vecfishTotarget.z * 2);
+							fishesAfterPos[i].y = fishesBeforePos[i].y;*/
 					}
-
-					//移動を親依存にはするけど、親に追従じゃ動かないので親子関係を切る
-					fishes[i].pos.parent_ = nullptr;
-
-					if (rushCount == rushMaxCount - 1) {
-						fishesBeforePos[i] = parentBeforePos + fishes[i].pos.translation_;
-						fishesAfterPos[i] = parentAfterPos + fishes[i].pos.translation_;
+				}
+				else {
+					//突進の回数が残っていないならモーション終わり
+					nextPhaseInterval = attackCooltime;
+					phase1 = BossFishPhase::Idle;
+					for (int i = 0; i < fishes.size(); i++) {
+						fishes[i].pos.parent_ = &fishParent.pos;
 					}
-					else {
-						fishesBeforePos[i] = fishesAfterPos[i];
-						fishesAfterPos[i] -= (vecfishTotarget + afterVec);
-					}
-
-
-					if (i == 9) {
-						easeParentPos.Start(rushMaxTime);
-					}
-
-					/*	fishesAfterPos[i].x = fishesBeforePos[i].x - (vecfishTotarget.x * 2);
-						fishesAfterPos[i].z = fishesBeforePos[i].z - (vecfishTotarget.z * 2);
-						fishesAfterPos[i].y = fishesBeforePos[i].y;*/
+					AttackBegin = true;
+					AttackNow = false;
 				}
 			}
 			else {
-				//突進の回数が残っていないならモーション終わり
-				nextPhaseInterval = attackCooltime;
-				phase1 = BossFishPhase::Idle;
-				for (int i = 0; i < fishes.size(); i++) {
-					fishes[i].pos.parent_ = &fishParent.pos;
-				}
-
+				//突進のクールタイムが終わっていないならタイム減らす
+				nextPhaseInterval--;
 			}
 		}
-		else {
-			//突進のクールタイムが終わっていないならタイム減らす
-			nextPhaseInterval--;
-		}
-	}
 
 
 
-	//親座標の移動処理
-	if (easeParentPos.GetActive()) {
-		//突進中は始点と終点でイージング
-		Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
-		Vector3 pBeforePos = fishesBeforePos[0];
-		Vector3 pAfterPos = fishesAfterPos[0];
-		ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
-		ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
-		fishParent.pos.translation_ = pos;
-		fishParent.pos.TransferMatrix();
-	}
-
-
-	//���Q�̈ړ�����
-	for (int i = 0; i < fishes.size(); i++) {
-		//��ԍŏ��̋��̋������n�܂�Ƃ��ɋ��ƕW�I�̋������狛�̔z�񏇔Ԃ�ύX����
-		if (easePFishToSword[0].GetTimeRate() == 0) {
-			SortFishMin();
+		//親座標の移動処理
+		if (easeParentPos.GetActive()) {
+			//突進中は始点と終点でイージング
+			Vector3 pos = Lerp(parentBeforePos, parentAfterPos, easeParentPos.GetTimeRate());
+			Vector3 pBeforePos = fishesBeforePos[0];
+			Vector3 pAfterPos = fishesAfterPos[0];
+			ImGui::Text("before:%1.3f,%1.3f,%1.3f", pBeforePos.x, pBeforePos.y, pBeforePos.z);
+			ImGui::Text("after:%1.3f,%1.3f,%1.3f", pAfterPos.x, pAfterPos.y, pAfterPos.z);
+			fishParent.pos.translation_ = pos;
+			fishParent.pos.TransferMatrix();
 		}
 
 
+		//���Q�̈ړ�����
+		for (int i = 0; i < fishes.size(); i++) {
+			//��ԍŏ��̋��̋������n�܂�Ƃ��ɋ��ƕW�I�̋������狛�̔z�񏇔Ԃ�ύX����
+			if (easePFishToSword[0].GetTimeRate() == 0) {
+				SortFishMin();
+			}
 
 
-		easePFishToSword[i / fishesDispersionRate].Update();
-		if (easePFishToSword[i / fishesDispersionRate].GetActive()) {
 
-			Vector3 fishPos = Lerp(fishesBeforePos[i], fishesAfterPos[i], easePFishToSword[i / fishesDispersionRate].GetTimeRate());
-			fishes[i].pos.translation_ = fishPos;
-			fishes[i].pos.TransferMatrix();
+
+			easePFishToSword[i / fishesDispersionRate].Update();
+			if (easePFishToSword[i / fishesDispersionRate].GetActive()) {
+
+				Vector3 fishPos = Lerp(fishesBeforePos[i], fishesAfterPos[i], easePFishToSword[i / fishesDispersionRate].GetTimeRate());
+				fishes[i].pos.translation_ = fishPos;
+				fishes[i].pos.TransferMatrix();
+			}
 		}
 	}
 

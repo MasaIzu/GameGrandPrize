@@ -779,6 +779,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 			else
 			{
 				attack = Attack::StandBy;
+
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+				}
+
 			}
 			break;
 		default:

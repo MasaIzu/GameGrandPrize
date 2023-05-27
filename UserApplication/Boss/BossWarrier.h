@@ -40,6 +40,24 @@ struct BossWarrierModel {
 	bool isDraw;
 };
 
+struct BossKingDropEnergy
+{
+	std::unique_ptr<Model> model;
+	WorldTransform WorldTrans;
+	// 王のしずくのエネルギーが移動するフラグ
+	bool IsKingEnergyMoce = false;
+
+	bool IsZurasi = false;
+
+	float startTaiming;
+	float startTimer = 0;
+
+	float easingTimer = 0;
+	float easingTimeMax = 80;
+	float easingTimeRate = 0;
+	Vector3 colPoint;
+};
+
 enum class Attack
 {
 	StandBy,
@@ -235,6 +253,205 @@ private:
 	const Vector3 StandByWaist = { 0,0,0 };
 #pragma endregion
 
+#pragma region 王のしずく関連の変数
+	// 王のしずくを打つか
+	bool IsKingDrop = false;
+	// 王のしずくを打つポジションにいるかどうか
+	bool IsKingDropPos = false;
+	// 王のしずくを打つ前のポジション
+	bool IsBeforPos = false;
+	// 移動するときのフラグ
+	bool IsMoveBefor = false;
+	// 移動のあとのフラグ
+	bool IsMoveAfter = false;
+	// 王のしずくのポジションに行くまでのフラグ
+	bool IsKingUp = false;
+	// 王のしずくのエネルギーを集めるフラグ
+	bool IsKingEnergy = false;
+	// 王のしずくのエネルギーの弾を生成してるかのフラグ
+	bool IsKingEnergyBall = false;
+	
+	// 王のしずくの弾を打ち下ろすかどうかのフラグ
+	bool IsKingDown = false;
+
+	// 王のしずくを打つ前のポジション
+
+
+	// 王のしずくを打つときのポジション
+	Vector3 kingDropPos = { 0,20,-250 };
+
+	// 王のしずくの移動するときのαのマイナスとプラス
+	float kingDropMoveAlphaM = 0.01;
+	float kingDropMoveAlphaP = 0.01;
+
+	// 生成するのに使うエネルギー
+	int energyNum = 25;
+	float energyScale = 0.05f;
+	BossKingDropEnergy energyL[25];
+	BossKingDropEnergy energyR[25];
+	BossKingDropEnergy energyBigBall;
+	// エネルギー弾の中にもう一つのもの
+	BossKingDropEnergy energyBigBallSub;
+
+	// エネルギー生成の開始位置と終点位置
+	Vector3 createEnergyStartLPos = { 1.120f,1.120f,2.17f };
+	Vector3 createEnergyStartRPos = { -1.120f,1.120f,2.17f };
+	Vector3 createEnergyEndPos = { 0,8.0f,15.84f };
+	Vector3 energyVelHozonL;
+	Vector3 energyVelHozonR;
+	Vector3 EnergyVelL;
+	Vector3 EnergyVelR;
+	Vector3 energyVelZurasi;
+
+	// エネルギーの弾を生成するタイミングをずらすタイマー
+	float ballZurasiTimer = 0;
+	float ballZurasiTimeMax = 90;
+	// エネルギー球のポジション
+	Vector3 energyBallPos;
+	// エネルギーを集めて生成する球のスケール
+	Vector3 energyBallScale = { 0,0,0 };
+	// エネルギー球の生成するときのマックススケール
+	Vector3 energyBallMaxScale = { 4.8f,4.8f, 4.8f };
+	// エネルギーの弾が一フレームに増えるスケールの量
+	Vector3 energyBallPlusScale = {0.005f,0.005f, 0.005f};
+
+
+	// 体の上昇限界
+	float bodyDefultY = 20;
+	float bodyUpMaxY = bodyDefultY + 20;
+
+	// 腕を斜めに上げる時の角度
+	Vector3 diagonalRotaL;
+	Vector3 diagonalRotaR;
+
+	// 腕をポジションずらし
+	Vector3 defuPos = { 0,0,0 };
+	Vector3 zurasi_R_Pos = { -0.875,0.25f,-0.125f };
+	Vector3 zurasi_L_Pos = { 0.875,0.25f,-0.125f };
+	// 腕のイージング
+	float armUpTimer = 0;
+	float armUpTimeMax = 360;
+
+	// 腕上げのイージングポジション
+	Vector3 shoulderR_RotaEnd = { 0,90,0 };
+	Vector3 elbowR_RotaEnd = { -103.5f,-13.5f,-22.5 };
+	Vector3 shoulderL_RotaEnd = { 0,-90,0 };
+	Vector3 elbowL_RotaEnd = { -103.5f,13.5f,22.5 };
+
+	// 腕の下げるときのポジション
+	Vector3 downShoulder_R_RotaEnd;
+	Vector3 downElbow_R_RotaEnd;
+	Vector3 downShoulder_L_RotaEnd;
+	Vector3 downElbow_L_RotaEnd;
+
+	#pragma region 腕を振り下ろした後関連の変数
+	// 腕を一瞬広げて、エネルギー弾の大きさも一瞬大きくするフラグ
+	bool IsEnergyBallBig = false;
+
+	// エネルギー弾を圧縮するフラグ（腕も一緒に内側に移動）
+	bool IsEnergyBallCompression = false;
+
+	// 腕を振り上げて、エネルギー弾を落とす準備のフラグ
+	bool IsEnergyBallFallUp = false;
+
+	// 腕を振り下ろして、エネルギー弾を落とすフラグ
+	bool IsEnergyBallFallDown = false;
+
+	// エネルギー弾が落下後にぷにょぷにゅするフラグ
+	bool IsEnergyBallPyupyu = false;
+
+	// エネルギー弾が落下後に大きくなっていくフラグ
+	bool IsEnergyBallFallBig = false;
+
+	// 腕を一瞬大きくするときのポジションと回転
+	Vector3 bigElbowLRot = { -103.5f,31.147f,22.5 };
+	Vector3 bigElbowRRot = { -103.5f,-31.147f,-22.5 };
+	Vector3 bigElbowLPos = { 0.875,0.25f,-0.221f };
+	Vector3 bigElbowRPos = { -0.875,0.25f,-0.221f };
+	float armBigTimer = 0;
+	float armBigTimeMax = 30;
+	Vector3 BigEnergyBallScaleMax = { 5.8f,5.8f, 5.8f };
+	Vector3 BigEnergyBallScale = { 4.8f,4.8f, 4.8f };
+	Vector3 BigEnergyPlusScale;
+	float bigWaitTimer = 0;
+	float bigWaitTimeMax = 60 * 0.5;
+
+	// エネルギーを圧縮する時のもの
+	Vector3 comElbowLRot = { -103.5f,-23.988f,22.5f };
+	Vector3 comElbowRRot = { -103.5f,23.988f,-22.5f };
+	Vector3 comElbowLPos = { 0.875f,0.25f,0.320f };
+	Vector3 comElbowRPos = { -0.875f,0.25f,0.320f };
+	float armCompressionTimer = 0;
+	float armCompressionTimeMax = 60 * 4;
+	Vector3 comEnergyBallScaleMax = { 0.1f,0.1f, 0.1f };
+	Vector3 comEnergyBallScale={ 5.8f,5.8f, 5.8f };
+	Vector3 comEnergyMinusScale;
+
+	// エネルギーの前動作のもの
+	Vector3 fallUpElbowLRot = { -103.5f,-23.988f,63.245f };
+	Vector3 fallUpElbowRRot = { -103.5f,23.988f,-63.245f };
+	Vector3 fallUpElbowLPos = { 0.875f,0.586f,0.320f };
+	Vector3 fallUpElbowRPos = { -0.875f,0.586f,0.320f };
+	float armFallUpTimer = 0;
+	float armFallUpTimeMax = 60 * 1;
+
+	// エネルギー弾をおろす動作のもの
+	Vector3 fallDownElbowLRot = { -103.5f,-23.988f,-41.875f };
+	Vector3 fallDownElbowRRot = { -103.5f,23.988f,41.875f };
+	Vector3 fallDownElbowLPos = { 0.875f,-0.664f,0.320f };
+	Vector3 fallDownElbowRPos = { -0.875f,-0.664f,0.320f };
+	float armFallDownTimer = 0;
+	float armFallDownTimeMax = 60 * 2;
+	float armFallDownTimeRate;
+
+	Vector3 energyBallDownMinus = { 0,-0.05f, 0 };
+	Vector3 energyBallFallDownPos= { 0,-2.65f,15.84f };
+	float energyBallDownTimer = 0;
+	float energyBallDownTimeMax = 60 * 2;
+
+	// エネルギー弾がうにょうにょする動きのもの
+	int energyUnyoUnyoCount = 0;
+	int energyUnyoUnyoCountMax = 2;
+	Vector3 energyFirstTransScale;
+	Vector3 energyUnyoUnyoScaleDefu = { 2,2,2 };
+	Vector3 energyUnyoUnyoScaleKimo = { 1.8f,2.2f,1.8f };
+	float energyBallUnyoTimer = 0;
+	float energyBallFirstTransTimeMax = 60 * 0.5;
+	float energyBallUnyoTimeMax = 10 * 1;
+	bool IsEnergyScaleFirstTrans = false;
+	bool IsEnergyScaleDefu = false;
+	bool IsEnergyScaleKimo = false;
+
+	// エネルギー弾が消えるまでの動きのもの
+	float energyScaleTransTimer = 0;
+	float energyScaleTransTimeMax = 60 * 4;
+	float energyScaleTransTimeRate;
+	Vector3 energyTransScaleToEnd = { 6,6,6 };
+
+	// 第一段階のαを下げるもの
+	float energyAlphaTransTimer = 0;
+	float energyAlphaTransTimeMax = 20;
+	float energyBallAlphaDefu = 0.95f;
+	float energyBallAlphaTrans = 0.3f;
+
+	// 終わりに至るまでのαを下げるもの
+	float energyAlphaEndTimer = 0;
+	float energyAlphaEndTimeMax = 20;
+	float energyBallAlphaInsideEnd = 1.0f;
+	float energyBallAlphaTransEnd = 0.0f;
+
+
+
+	#pragma endregion
+
+
+#pragma endregion
+
+#pragma region 
+
+#pragma endregion
+
+
 private:
 	//腕振り攻撃の初期化
 	void InitAtkArmSwing();
@@ -242,6 +459,17 @@ private:
 	//腕振り攻撃更新
 	void UpdateAtkArmSwing();
 
+	// 王のしずくの更新処理
+	void KingDropUpdate();
+
+	// 王のしずくの初期化
+	void KingDropReset();
+
+	// 度数からラジアン
+	float DegreeToRadian(float degree);
+
+
+	Vector3 DegreeToRadianVec3(Vector3 degree);
 	//剣振り攻撃の初期化
 	void InitAtkSwordSwing();
 

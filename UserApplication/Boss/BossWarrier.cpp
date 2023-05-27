@@ -812,10 +812,10 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	LaunchSwordDraw(viewProMat);
 
-	for (int i = 0; i < 5; i++) {
+	//for (int i = 0; i < 5; i++) {
 
-		ModelSpere->Draw(AttackColliderWorldTrans[i], viewProMat);
-	}
+	//	ModelSpere->Draw(AttackColliderWorldTrans[i], viewProMat);
+	//}
 }
 
 void BossWarrier::DrawParticle(const ViewProjection& viewProMat)

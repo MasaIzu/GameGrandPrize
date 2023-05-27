@@ -1391,7 +1391,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	Matrix4 matBossDir, matBodyRot, matBossRot;
 
 	//進行方向に向かせたいのでダミーの自機を向いてもらう
-	matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, dummyTargetPos);
+	matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z }, {dummyTargetPos.x,0,dummyTargetPos .z} );
 
 	matBodyRot = CreateMatRot(rotArm);
 

@@ -231,6 +231,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 	srand(time(NULL));
 	ImGui::Begin("Warrier");
 
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYS);
+	}
+
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
@@ -412,6 +416,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 #pragma region 腕振り攻撃処理(テストキーは8)
 
 		ImGui::Text("boss atack ArmSwing");
+
+		for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+			BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYS);
+		}
 
 		switch (bossAttackPhase)
 		{

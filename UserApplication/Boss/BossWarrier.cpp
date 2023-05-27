@@ -228,23 +228,6 @@ void BossWarrier::Initialize()
 	// サイズをセットする
 	healthAlfaSprite->SetSize(hpAlfaSize);
 	HP_barSprite->SetSize(HP_barSize);
-}
-
-void BossWarrier::Spawn(const Vector3& boss1Pos)
-{
-	//フェーズをスポーンに変更
-	attack = Attack::Spawm;
-	//スケールを0に
-	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
-	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
-	//イージング開始
-	easeRotArm.Start(spawnAnimationTime);
-	//パーティクルの生成数はイージング時間-20に
-	particleCreateTime = spawnAnimationTime -20;
-	//生存フラグとHPのリセット
-	health = maxHealth;
-	isAlive = true;
-}
 
 	// エネルギーの弾の生成するときの中間点のベクトルの初期化
 	EnergyVelL = createEnergyEndPos - createEnergyStartLPos;
@@ -271,7 +254,22 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 	energyBigBallSub.WorldTrans.scale_ = energyBallScale / 2;
 	energyBigBallSub.WorldTrans.alpha = 1.0f;
 	energyBigBallSub.WorldTrans.TransferMatrix();
+}
 
+void BossWarrier::Spawn(const Vector3& boss1Pos)
+{
+	//フェーズをスポーンに変更
+	attack = Attack::Spawm;
+	//スケールを0に
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
+	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
+	//イージング開始
+	easeRotArm.Start(spawnAnimationTime);
+	//パーティクルの生成数はイージング時間-20に
+	particleCreateTime = spawnAnimationTime -20;
+	//生存フラグとHPのリセット
+	health = maxHealth;
+	isAlive = true;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -882,6 +880,20 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 	//	ModelSpere->Draw(AttackColliderWorldTrans[i], viewProMat);
 	//}
+	// 王のしずくの描画
+	if (IsKingDrop == true) {
+		// 王のしずくのエネルギーの生成の粒の描画
+		if (IsKingEnergy == true) {
+			for (int i = 0; i < energyNum; i++) {
+				energyL[i].model->Draw(energyL[i].WorldTrans, viewProMat);
+				energyR[i].model->Draw(energyR[i].WorldTrans, viewProMat);
+			}
+			// 王のしずくが落ちたら
+			energyBigBallSub.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
+			// 王のしずくのエネルギーの巨大弾の描画
+			energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
+		}
+	}
 }
 
 void BossWarrier::DrawParticle(const ViewProjection& viewProMat)
@@ -918,15 +930,7 @@ void BossWarrier::DrawHealth()
 		}
 	}
 
-	// 王のしずくの描画
-	if (IsKingDrop == true) {
-		// 王のしずくのエネルギーの生成の粒の描画
-		if (IsKingEnergy == true) {
-			for (int i = 0; i < energyNum; i++) {
-				energyL[i].model->Draw(energyL[i].WorldTrans, viewProMat);
-				energyR[i].model->Draw(energyR[i].WorldTrans, viewProMat);
-			}
-		}
+
 
 	//Vector2 size = { 48.0f * bossHealth,48.0f };
 
@@ -945,15 +949,6 @@ void BossWarrier::DrawHealth()
 }
 
 
-
-		// 王のしずくが落ちたら
-		energyBigBallSub.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
-		// 王のしずくのエネルギーの巨大弾の描画
-		energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
-
-	}
-
-}
 
 void BossWarrier::MultiLaunchSword()
 {
@@ -2069,7 +2064,7 @@ Vector3 BossWarrier::DegreeToRadianVec3(Vector3 degree)
 
 	return result;
 }
-}
+
 
 void BossWarrier::InitAtkSwordSwing()
 {

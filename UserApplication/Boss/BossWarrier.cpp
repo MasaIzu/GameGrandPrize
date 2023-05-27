@@ -837,7 +837,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 	KingDropUpdate();
 
-	ImGui::Begin("Warrier");
 
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 

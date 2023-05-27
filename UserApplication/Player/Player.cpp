@@ -188,16 +188,16 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		float scale = (0.2f - 0.0f) * easeOutQuin(flame / endflame);
 
-		/*FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
-		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });*/
+		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
+		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });
 		if (isPlayerDieMotion2 == false) {
 			worldTransform_.alpha = a;
 		}
 		if (flame >= endflame)
 		{
 			isAdmission = false;
-			//worldTransform_.alpha = 1;
-			//fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
+			worldTransform_.alpha = 1;
+			fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
 		}
 	}
 
@@ -355,36 +355,36 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 	if (HP <= 0.0f && isAlive)
 	{
-		//worldTransform_.alpha -= 0.05;
+		worldTransform_.alpha -= 0.05;
 		if (isPlayerDieMotion == false) {
 			isPlayerDieMotion = true;
 			playerNowMotion = PlayerMotion::DeathMotion;
 			frem = 0;
 
-			////スペースキーを押していたら
-			//for (int i = 0; i < 10; i++)
-			//{
-			//	//消えるまでの時間
-			//	const float rnd_life = 10.0f;
-			//	//最低限のライフ
-			//	const float constlife = 10;
-			//	float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+			//スペースキーを押していたら
+			for (int i = 0; i < 10; i++)
+			{
+				//消えるまでの時間
+				const float rnd_life = 10.0f;
+				//最低限のライフ
+				const float constlife = 10;
+				float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
-			//	//XYZの広がる距離
-			//	const float rnd_pos = 30.0f;
-			//	//Y方向には最低限の飛ぶ距離
-			//	const float constPosY = 15;
-			//	Vector3 pos{};
-			//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//	pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
-			//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+				//XYZの広がる距離
+				const float rnd_pos = 30.0f;
+				//Y方向には最低限の飛ぶ距離
+				const float constPosY = 15;
+				Vector3 pos{};
+				pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+				pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
+				pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 
-			//	Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+				Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
 
-			//	Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
-			//	//追加
-			//	ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
-			//}
+				Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+				//追加
+				ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			}
 
 
 

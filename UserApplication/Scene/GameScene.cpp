@@ -239,6 +239,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	// マウスカーソルの表示
+	ShowCursor(FALSE);
 	SceneChageUpdate();
 
 	switch (scene)
@@ -422,6 +424,9 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
+
+	// マウスカーソルの表示
+	ShowCursor(FALSE);
 	/*if (ImGui::Button("break")) {
 		static int a = 0;
 		a++;

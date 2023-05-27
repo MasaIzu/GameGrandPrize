@@ -1,6 +1,6 @@
 #include "BossWarrier.h"
 #include"Input.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include"BossFish.h"
 #include <CollisionManager.h>
 #include <CollisionAttribute.h>

@@ -3,7 +3,7 @@
 #include<random>
 #include"Quaternion.h"
 #include"Affin.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include"Easing.h"
 #include "CollisionManager.h"
 #include <SphereCollider.h>
@@ -837,9 +837,9 @@ void BossFish::UpdateAtkSword()
 	//剣の当たり判定座標の更新
 	SwordColCubeUpdate();
 
-	ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
-	ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
-	ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
+	//ImGui::SliderFloat("rotaX", &swordTransform.rotation_.x, 0.0f, 360.0f);
+	//ImGui::SliderFloat("rotaY", &swordTransform.rotation_.y, 0.0f, 360.0f);
+	//ImGui::SliderFloat("rotaZ", &swordTransform.rotation_.z, 0.0f, 360.0f);
 	//ImGui::Text("ParentPosZ:%1.5f", fishParent.pos.translation_.z);
 	//ImGui::Text("swordPosX:%1.5f", swordTransform.translation_.x);
 	//ImGui::Text("swordPosY:%1.5f", swordTransform.translation_.y);

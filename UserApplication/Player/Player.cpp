@@ -196,7 +196,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (flame >= endflame)
 		{
 			isAdmission = false;
-			worldTransform_.alpha = 1;
+			//worldTransform_.alpha = 1;
 			fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
 		}
 	}
@@ -355,7 +355,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 	if (HP <= 0.0f && isAlive)
 	{
-		worldTransform_.alpha -= 0.05;
+		//worldTransform_.alpha -= 0.05;
 		if (isPlayerDieMotion == false) {
 			isPlayerDieMotion = true;
 			playerNowMotion = PlayerMotion::DeathMotion;
@@ -2137,7 +2137,7 @@ void Player::Reset()
 
 	recovery->Reset();
 
-	//fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
+	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 
 	playerNowMotion = PlayerMotion::taiki;
 	MaxFrem = 2.0f;

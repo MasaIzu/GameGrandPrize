@@ -278,7 +278,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	ImGui::Begin("Warrier");
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
-		BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYS);
+		BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 	}
 
 	//引数をメンバにコピー
@@ -345,13 +345,13 @@ void BossWarrier::Update(const Vector3& targetPos)
 					if (randAttack == 0)
 					{
 						attack = Attack::SwordSwing;
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						bossAttackPhase = BossAttackPhase::Before;
 						InitAtkSwordSwing();
 					}
 					if (randAttack == 1)
 					{
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						bossAttackPhase = BossAttackPhase::Before;
 						attack = Attack::Tornado;
 						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
@@ -360,7 +360,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 					{
 						//初期化処理
 						InitAtkArmSwing();
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						bossAttackPhase = BossAttackPhase::Before;
 						attack = Attack::ArmSwing;
 						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
@@ -381,14 +381,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 					if (randAttack == 0)
 					{
 						attack = Attack::LaunchSword;
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						bossAttackPhase = BossAttackPhase::Before;
 						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
 						StartLaunchSword();
 					}
 					if (randAttack == 1)
 					{
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						attack = Attack::MultiLaunchSword;
 						bossAttackPhase = BossAttackPhase::Before;
 						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
@@ -397,7 +397,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 					if (randAttack == 2)
 					{
 						attack = Attack::SwordSwing;
-						attackEasing.Start(30);
+						attackEasing.Start(60);
 						bossAttackPhase = BossAttackPhase::Before;
 						InitAtkSwordSwing();
 					}
@@ -416,7 +416,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
 			//初期化処理
 			InitAtkArmSwing();
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::ArmSwing;
 			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
@@ -429,14 +429,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_9))
 		{
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			bossAttackPhase = BossAttackPhase::Before;
 			attack = Attack::Tornado;
 			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_L))
 		{
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			attack = Attack::MultiLaunchSword;
 			bossAttackPhase = BossAttackPhase::Before;
 			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
@@ -445,14 +445,14 @@ void BossWarrier::Update(const Vector3& targetPos)
 		if (Input::GetInstance()->TriggerKey(DIK_K))
 		{
 			attack = Attack::LaunchSword;
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			bossAttackPhase = BossAttackPhase::Before;
 			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
 			StartLaunchSword();
 		}
 		if (Input::GetInstance()->TriggerKey(DIK_0)) {
 			attack = Attack::SwordSwing;
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			bossAttackPhase = BossAttackPhase::Before;
 			InitAtkSwordSwing();
 		}
@@ -779,6 +779,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 			else
 			{
 				attack = Attack::StandBy;
+
+				for (int i = 0; i < MAXSWROD; i++)
+				{
+					AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+				}
+
 			}
 			break;
 		default:
@@ -985,7 +991,7 @@ void BossWarrier::MultiLaunchSword()
 	{
 		phase2AttackCoolTime = 70;
 		isSat = false;
-		attackEasing.Start(30);
+		attackEasing.Start(60);
 		bossAttackPhase = BossAttackPhase::After;
 	}
 
@@ -1082,7 +1088,7 @@ void BossWarrier::LaunchSword()
 		{
 			shotTime = 70;
 			t2 = false;
-			attackEasing.Start(30);
+			attackEasing.Start(60);
 			bossAttackPhase = BossAttackPhase::After;
 		}
 
@@ -1199,7 +1205,7 @@ void BossWarrier::BossTornado()
 	if (TornadoFlame >= 170)
 	{
 		bossAttackPhase = BossAttackPhase::After;
-		attackEasing.Start(30);
+		attackEasing.Start(60);
 		TornadoFlame = 0;
 		boss2TornadoTransform[0].scale_.x = 1;
 		boss2TornadoTransform[0].scale_.z = 1;
@@ -1400,7 +1406,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	{
 		bossAttackPhase = BossAttackPhase::After;
 
-		attackEasing.Start(30);
+		attackEasing.Start(60);
 
 		return;
 	}
@@ -1450,7 +1456,7 @@ void BossWarrier::UpdateAtkArmSwing()
 			if (lastAtkCount < 0) {
 				bossAttackPhase = BossAttackPhase::After;
 
-				attackEasing.Start(30);
+				attackEasing.Start(60);
 			}
 		}
 
@@ -2182,7 +2188,7 @@ void BossWarrier::UpdateAtkSwordSwing()
 	}
 
 	if (!easeRotArm.GetActive()) {
-		attackEasing.Start(30);
+		attackEasing.Start(60);
 		bossAttackPhase = BossAttackPhase::After;
 		w[0].scale_ = { 1,1,1 };
 		AttackRadius = 4.0f;

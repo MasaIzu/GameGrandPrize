@@ -284,7 +284,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
-	matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, targetPos);
+	matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z },{ targetPos.x,0,targetPos.z });
 
 	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
 
@@ -340,9 +340,23 @@ void BossWarrier::Update(const Vector3& targetPos)
 			{
 				do
 				{
-					int randAttack = rand() % 3;
+					int randAttack = rand() % 4;
 					//randAttack %= 100;
 					if (randAttack == 0)
+					{
+						attack = Attack::SwordSwing;
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						InitAtkSwordSwing();
+					}
+					if (randAttack == 1)
+					{
+						attackEasing.Start(30);
+						bossAttackPhase = BossAttackPhase::Before;
+						attack = Attack::Tornado;
+						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
+					}
+					if (randAttack == 2|| randAttack == 3)
 					{
 						//初期化処理
 						InitAtkArmSwing();
@@ -355,20 +369,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 						boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1.5,2,2 };
 						boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 1,0,0 };
 						boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -1,0,0 };
-					}
-					if (randAttack == 1)
-					{
-						attackEasing.Start(30);
-						bossAttackPhase = BossAttackPhase::Before;
-						attack = Attack::Tornado;
-						boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
-					}
-					if (randAttack == 2)
-					{
-						attack = Attack::SwordSwing;
-						attackEasing.Start(30);
-						bossAttackPhase = BossAttackPhase::Before;
-						InitAtkSwordSwing();
 					}
 				} while (attack == oldAttack);
 			}
@@ -1449,7 +1449,9 @@ void BossWarrier::UpdateAtkArmSwing()
 			lastAtkCount--;
 			//攻撃終了カウントが0未満ならモーション終了
 			if (lastAtkCount < 0) {
-				attack = Attack::StandBy;
+				bossAttackPhase = BossAttackPhase::After;
+
+				attackEasing.Start(30);
 			}
 		}
 
@@ -1470,7 +1472,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	Matrix4 matBossDir, matBodyRot, matBossRot;
 
 	//進行方向に向かせたいのでダミーの自機を向いてもらう
-	matBossDir = CreateMatRot(boss2Model[BossWarrierPart::Root].Transform.translation_, dummyTargetPos);
+	matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z }, {dummyTargetPos.x,0,dummyTargetPos .z} );
 
 	matBodyRot = CreateMatRot(rotArm);
 

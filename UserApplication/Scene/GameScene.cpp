@@ -1014,7 +1014,7 @@ void GameScene::Reset()
 	//ムービー用カメラの初期化
 	movieCamera.Initialize();
 
-
+	isMovie = false;
 
 	//for (int i = 0; i < 10; i++) {
 	//	Vector3 pos;

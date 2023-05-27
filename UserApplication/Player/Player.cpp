@@ -2109,6 +2109,32 @@ void Player::Reset()
 
 	worldTransform_.alpha = 0.0;
 
+	attackConbo = 0;
+
+	frem = 0.0f;
+	receptionTime = 0;
+
+	SowrdDrowTime = 0;
+	MaxSowrdRotate = 35;
+	AttackRotX = 0.0f;
+	AttackRotY = 0.0f;
+	AttackRotZ = 0.0f;
+
+	AttackOnlyLeftRotX = 0.0f;
+	AttackOnlyLeftRotY = 0.0f;
+	AttackOnlyLeftRotZ = 0.0f;
+
+	AttackOnlyRightRotX = 0.0f;
+	AttackOnlyRightRotY = 0.0f;
+	AttackOnlyRightRotZ = 0.0f;
+
+	BoneParentRotY = 0.0f;
+
+
+	isPlayMotion = false;
+	playerNowMotion = PlayerMotion::taiki;
+	isEnemyDamage = false;
+
 	worldTransform_.TransferMatrix();
 	collider->Update(worldTransform_.matWorld_);
 
@@ -2152,6 +2178,11 @@ void Player::Reset()
 	timer = 0;
 	alpha = 0.0f;
 	MaxMoveTime = 40;
+
+	isPlayerUlt = false;
+
+	spaceInput = false;
+	isEnemyDamage = false;
 
 	x = 0;
 	radius = 5.0f;//当たり判定半径
@@ -2217,6 +2248,13 @@ void Player::Reset()
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
 	isInput = false;
+
+	IsCombo = false;
+	IsCombo2 = false;
+	IsCombo3 = false;
+	IsCombo4 = false;
+	IsCombo5 = false;
+
 }
 
 void Player::AddUltCount(int count)

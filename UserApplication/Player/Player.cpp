@@ -196,7 +196,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (flame >= endflame)
 		{
 			isAdmission = false;
-			worldTransform_.alpha = 1;
+			//worldTransform_.alpha = 1;
 			fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
 		}
 	}
@@ -1795,7 +1795,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 	if (timer > 0) {
 		oldWorldTransform_.alpha = alpha;
-		//fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
+		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
 		if (isKnockBack == false || damageFlashFlame % 6 == 0)

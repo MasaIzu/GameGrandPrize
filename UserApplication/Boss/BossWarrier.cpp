@@ -59,7 +59,7 @@ void BossWarrier::Initialize()
 		//1
 		BossWarrierRadius[BossWarrierPart::Root] = rdi3;
 		//2
-		BossWarrierRadius[BossWarrierPart::Chest] = rdi8 + 4.0f;
+		BossWarrierRadius[BossWarrierPart::Chest] = rdi5;
 		//3
 		BossWarrierRadius[BossWarrierPart::Head] = rdi3;
 		//4
@@ -463,10 +463,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 		ImGui::Text("boss atack ArmSwing");
 
-		for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
-			BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYS);
-		}
-
 		switch (bossAttackPhase)
 		{
 		case BossAttackPhase::Before:
@@ -498,6 +494,9 @@ void BossWarrier::Update(const Vector3& targetPos)
 			}
 			break;
 		case BossAttackPhase::Attack:
+			for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+				BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYS);
+			}
 			UpdateAtkArmSwing();
 			break;
 		case BossAttackPhase::After:
@@ -863,7 +862,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
 
-			//ModelSpere->Draw(modelSpere[i], viewProMat);
+			ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 	if (attack == Attack::Tornado)

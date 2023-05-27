@@ -196,7 +196,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (flame >= endflame)
 		{
 			isAdmission = false;
-			worldTransform_.alpha = 1;
+			//worldTransform_.alpha = 1;
 			fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
 		}
 	}

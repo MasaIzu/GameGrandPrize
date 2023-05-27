@@ -188,8 +188,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 		float scale = (0.2f - 0.0f) * easeOutQuin(flame / endflame);
 
-		FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
-		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });
+		/*FbxModel::ConstBufferPolygonExplosion polygon = fbxmodel->GetPolygonExplosion();
+		fbxmodel->SetPolygonExplosion({ Destruction,scale,polygon._RotationFactor,polygon._PositionFactor });*/
 		if (isPlayerDieMotion2 == false) {
 			worldTransform_.alpha = a;
 		}
@@ -197,7 +197,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		{
 			isAdmission = false;
 			//worldTransform_.alpha = 1;
-			fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
+			//fbxmodel->SetPolygonExplosion({ Destruction,1.0f,polygon._RotationFactor,polygon._PositionFactor });
 		}
 	}
 
@@ -1795,7 +1795,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 void Player::PlayerFbxDraw(ViewProjection viewProjection_) {
 	if (timer > 0) {
 		oldWorldTransform_.alpha = alpha;
-		fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
+		//fbxmodel2->Draw(oldWorldTransform_, viewProjection_);
 	}
 	if (spaceInput == false) {
 		if (isKnockBack == false || damageFlashFlame % 6 == 0)
@@ -2137,7 +2137,7 @@ void Player::Reset()
 
 	recovery->Reset();
 
-	fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
+	//fbxmodel->SetPolygonExplosion({ 1.0f,1.0f,9.42f,600.0f });
 
 	playerNowMotion = PlayerMotion::taiki;
 	MaxFrem = 2.0f;

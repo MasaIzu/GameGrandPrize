@@ -1829,7 +1829,6 @@ void Player::DrawHealth() {
 
 	// Hpの下の部分を減らす処理
 
-
 	if (IsHpAlfa) {
 		// 攻撃を受けてから 30 フレーム下のHpは動かない
 		if (hpAlfaTimer < 30) {
@@ -1852,6 +1851,11 @@ void Player::DrawHealth() {
 	}
 
 
+	// ultのセット
+	float nowUlt = UltGage / UltMaxGage;
+	ultSize = { 480.0f * nowUlt,25.0f };
+	ultSprite->SetSize(ultSize);
+
 
 	Vector2 pos = { 54.5f,35.0f };
 
@@ -1871,6 +1875,8 @@ void Player::DrawHealth() {
 
 	Vector2 HP_barPos = { 330,50 };
 
+	Vector2 ultPos = { 45.5f,55.0f };
+	Vector2 ULT_barPos = { 330,80 };
 	//Vector2 avoidGauge1Pos = { 175,520 };
 
 	//Vector2 avoidGauge2Pos = { 175,520 };
@@ -1882,6 +1888,8 @@ void Player::DrawHealth() {
 
 
 	// スプライト描画
+
+
 	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
 
 	healthSprite->Draw(pos, { 1,1,1,1 });
@@ -1889,6 +1897,11 @@ void Player::DrawHealth() {
 	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
 
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
+
+	ultSprite->Draw(ultPos, { 1,1,1,1 });
+	ultBarSprite->Draw(ULT_barPos, { 1,1,1,1 });
+	
+
 
 	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
 	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha1 });
@@ -2414,6 +2427,12 @@ void Player::SpriteInitialize()
 
 	avoidGauge_under = Sprite::Create(TextureManager::Load("avoidGauge_under.png"));
 	avoidGauge_under->SetAnchorPoint({ 0,0 });
+
+	ultSprite = Sprite::Create(TextureManager::Load("UltGage.png"));
+	ultSprite->SetAnchorPoint({ 0,0 });
+
+	ultBarSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
+	ultBarSprite->SetAnchorPoint({ 0.5,0.5 });
 #pragma endregion
 
 
@@ -2428,7 +2447,7 @@ void Player::SpriteInitialize()
 	Vector2 D_Fontsize = { 32.0f ,28.0f };
 	Vector2 AvoidFontsize = { 259.0f ,43.0f };
 	Vector2 HP_barSize = { 576.0f ,45.0f };
-
+	Vector2 Ult_barSize = { 480.0f ,45.0f };
 
 	avoidGauge1->SetSize(avoidGaugeUnderSize);
 	avoidGauge2->SetSize(avoidGaugeUnderSize);
@@ -2440,6 +2459,8 @@ void Player::SpriteInitialize()
 	healthAlfaSprite->SetSize(hpAlfaSize);
 	MoveFontSprite->SetSize(MoveFontsize);
 	HP_barSprite->SetSize(HP_barSize);
+
+	ultBarSprite->SetSize(Ult_barSize);
 
 	for (int i = 0; i < 2; i++) {
 		AttackFontSprite[i]->SetSize(AttackFontsize);

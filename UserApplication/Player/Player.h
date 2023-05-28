@@ -258,6 +258,17 @@ private:
 	std::unique_ptr<Sprite> D_FontSprite[2];
 	std::unique_ptr<Sprite> AvoidFontSprite[2];
 
+	// ウルトのゲージ用のスプライト
+	float UltGage = 0;
+	const float UltMaxGage = 1000;
+	Vector2 ultPos = { 53.5f,78.0f };
+	Vector2 ULT_barPos = { 284,90 };
+	Vector2 ultSize;
+	float ultSizeX = 465;
+	std::unique_ptr<Sprite> ultSprite;
+	std::unique_ptr<Sprite> ultBarSprite;
+
+	// 回避のゲージのスプライト
 	std::unique_ptr<Sprite> avoidGauge1;
 	std::unique_ptr<Sprite> avoidGauge2;
 	std::unique_ptr<Sprite> avoidGauge3;
@@ -265,6 +276,9 @@ private:
 
 	Vector2 avoidGaugeUnderPos = { 1070,412 };
 	Vector2 avoidGaugeUnderSize = { 128,128 };
+
+
+
 	//Fbxモデル
 	WorldTransform ModelTrans;
 	std::unique_ptr<FbxModel> fbxmodel;
@@ -398,8 +412,7 @@ private:
 
 	bool isAwakening = false;
 
-	int UltGage = 1000;
-	int UltMaxGage = 1000;
+
 
 
 	Sound playerDamegeSE;

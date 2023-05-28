@@ -1574,6 +1574,7 @@ void BossWarrier::KingDropUpdate()
 			if (boss2Model[BossWarrierPart::Chest].Transform.alpha <= 0.0f) {
 				IsMoveBefor = true;
 				boss2Model[BossWarrierPart::Root].Transform.translation_ = kingDropPos;
+				boss2Model[BossWarrierPart::Root].Transform.SetRot({ 0,0,0 });
 				boss2Model[BossWarrierPart::Root].Transform.TransferMatrix();
 			}
 		}

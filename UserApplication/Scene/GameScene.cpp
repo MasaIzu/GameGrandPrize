@@ -733,6 +733,8 @@ void GameScene::ResultUpdate()
 {
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameClearBGM == false) {
+		battle02BGM.StopWave();
+		IsBattle02BGM = false;
 		gameClearBGM.SoundPlayWave(true, 0.5f);
 		IsGameClearBGM = true;
 	}

@@ -35,7 +35,7 @@ public:
 
 	//リセット関数
 	void Reset();
-	
+
 
 	void Destroy();
 
@@ -44,7 +44,7 @@ public:
 	void GameReset();
 
 	void Title();
-	
+
 	void Setting();
 
 	void Exit();
@@ -52,6 +52,10 @@ public:
 	void EasingReset();
 
 	bool GetisPouse() { return isPouse; }
+
+	bool GetGameReset() { return gameReset; }
+
+	bool GetisEnd() { return isEnd; }
 
 	//ゲームシーン移行要
 	Scene scene = Scene::Title;
@@ -103,6 +107,10 @@ private:
 	bool OK = false;
 	bool isPouse = false;
 	bool easingOkX = false;
+	bool isEnd = false;
+	bool isCheck = false;
+	bool gameReset = false;
+	//bool showEnd = false;
 	//テクスチャ
 	//ポーズ画面の背景
 	std::unique_ptr<Sprite> spriteUi_ = nullptr;

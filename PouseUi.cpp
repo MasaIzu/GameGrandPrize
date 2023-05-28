@@ -97,8 +97,6 @@ void PouseUi::DrawEasing()
 	sp3.y = Easing::In(spriteSizeY , printXY3.y, easingYTimer, EASINGMAXTIME_Y);
 	sp4.y = Easing::In(spriteSizeY , printXY4.y, easingYTimer, EASINGMAXTIME_Y);
 	sp5.y = Easing::In(spriteSizeY , printXY5.y, easingYTimer, EASINGMAXTIME_Y);
-	
-
 }
 
 void PouseUi::Select()
@@ -152,28 +150,32 @@ void PouseUi::Process()
 		case 1://ゲームへ戻る0
 			Back();
 			OK = FALSE;
+			isPouse = FALSE;
 			break;
 
 		case 2://リセット1
 			GameReset();
 			OK = FALSE;
+			isPouse = FALSE;
 			break;
 
-		case 3://設定2
-			Setting();
-
-			break;
-
-		case 4://タイトルへ3
+		case 3://タイトルへ
+			
 			Title();
 			Reset();
 			OK = FALSE;
+			isPouse = FALSE;
+			break;
+
+		case 4://設定2
+			Setting();
 			break;
 
 		case 5://ゲーム終了4
 			Exit();
 			Reset();
 			OK = FALSE;
+			isPouse = FALSE;
 			break;
 		}
 	}
@@ -190,7 +192,11 @@ void PouseUi::Draw()
 	spriteSetting_->Draw(sp4, { 1,1,1,1 });
 	spriteExit_->Draw(sp5, { 1,1,1,1 });
 
-	
+	if (isCheck)
+	{
+		//本当に終わってもいいのかを確認する用の画像表示
+
+	}
 	
 
 
@@ -232,7 +238,7 @@ void PouseUi::Load()
 
 void PouseUi::Reset()
 {
-
+	
 }
 
 void PouseUi::Back()
@@ -242,7 +248,7 @@ void PouseUi::Back()
 
 void PouseUi::GameReset()
 {
-
+	gameReset = TRUE;
 }
 
 void PouseUi::Title()
@@ -257,7 +263,22 @@ void PouseUi::Setting()
 
 void PouseUi::Exit()
 {
-	
+	isCheck = TRUE;
+	//YES
+	if (input_->TriggerKey(DIK_Y))
+	{
+		isEnd = TRUE;
+		OK = FALSE;
+		isCheck = FALSE;
+	}
+	//NO
+	if (input_->TriggerKey(DIK_N))
+	{
+		OK = FALSE;
+	}
+
+	//描画で本当に終わらせてもいいのかの確認画像
+
 }
 
 void PouseUi::EasingReset()

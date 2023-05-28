@@ -254,6 +254,7 @@ void GameScene::Update() {
 	case Scene::Game:
 		
 		GameUpdate();
+		
 		break;
 	case Scene::GameOver:
 		GameOverUpdate();
@@ -428,6 +429,17 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
+	//pause用の処理
+	//ゲーム終了
+	if (pouseUi_->GetGameReset())
+	{
+		Reset();
+	}
+	if (pouseUi_->GetisEnd())
+	{
+		//IsBreak();
+	}
+
 	pouseUi_->Update();
 	if (pouseUi_->GetisPouse() == TRUE)
 	{
@@ -1060,7 +1072,7 @@ void GameScene::Finalize()
 
 bool GameScene::IsBreak()
 {
-	return false;
+	return pouseUi_->GetisEnd();
 }
 
 int GameScene::GetMiniFishAlive() {

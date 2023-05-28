@@ -81,7 +81,7 @@ void BossWarrier::Initialize()
 		//12
 		BossWarrierRadius[BossWarrierPart::Crotch] = rdi5;
 		//13
-		BossWarrierRadius[BossWarrierPart::Waist] = rdi8;
+		BossWarrierRadius[BossWarrierPart::Waist] = rdi8 * 2;
 
 
 		for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {

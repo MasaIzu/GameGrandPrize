@@ -62,11 +62,9 @@ void CollisionManager::CheckAllCollisions()
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						if (isCoolTime) {
-							if (SphereB->isChangeCoolTime) {
-								CoolTime = 0;
-								isCoolTime = false;
-							}
+						if (SphereB->isChangeCoolTime == true) {
+							CoolTime = 0;
+							isCoolTime = false;
 						}
 						if (CoolTime <= 0) {
 							HitWorldPos = colB->GetWorldPos();
@@ -112,14 +110,13 @@ void CollisionManager::CheckAllCollisions()
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
-					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						if (isCoolTime) {
-							if (SphereB->isChangeCoolTime) {
-								CoolTime = 0;
-								isCoolTime = false;
-							}
-						}
-						if (CoolTime <= 0) {
+					if (SphereB->isChangeCoolTime == true) {
+						CoolTime = 0;
+						isCoolTime = false;
+					}
+					if (isCoolTime == false) {
+						if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
 							HitWorldPos = colB->GetWorldPos();
 							isAttackHit = true;
 							CoolTime = SphereB->coolTime;

@@ -398,7 +398,7 @@ private:
 
 	bool isAwakening = false;
 
-	int UltGage = 0;
+	int UltGage = 1000;
 	int UltMaxGage = 1000;
 
 

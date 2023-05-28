@@ -244,6 +244,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 				AttackRotY = 0.0f;
 				AttackRotZ = 0.0f;
 				SowrdDrowTime = 0;
+				worldTransform_.alpha = 1.0f;
+				oldWorldTransform_.alpha = 1.0f;
 			}
 			else {
 				isUltKenGeneration = true;
@@ -462,7 +464,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("UltGage:%d", UltGage);
 	ImGui::Text("isPlayMotion:%d", isPlayMotion);
-	ImGui::Text("isPlayMotion:%d", isCoolTimeRiset);
+	ImGui::Text("isCoolTimeRiset:%d", isCoolTimeRiset);
 	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
 
@@ -1542,10 +1544,7 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 					
 					isSowrd = true;
-					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
-					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
-
-					AttackCoolTimeMax = 50;
+					AttackCoolTimeMax = 5000;
 					isCoolTimeRiset = true;
 
 				}
@@ -1605,10 +1604,7 @@ void Player::Attack() {
 					AttackOnlyRightRotZ = 0.0f;
 					
 					isSowrd = true;
-					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
-					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
-
-					AttackCoolTimeMax = 50;
+					AttackCoolTimeMax = 1000;
 					isCoolTimeRiset = true;
 
 				}
@@ -1643,11 +1639,18 @@ void Player::Attack() {
 				AttackRotZ = 16.0f;
 
 				AttackCoolTime = 0;
-				isCoolTimeRiset = true;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+
 			}
 		}
-
-
 
 		Matrix4 rooooootttt;
 		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);

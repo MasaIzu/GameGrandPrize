@@ -47,6 +47,8 @@ public:
 	void Reset();
 	void SetPlayer(Player* player_) { pl = player_; }
 
+	bool GetBossFishIsDeathEnd() { return bossFish->GetIsDeathEnd(); }
+
 	/// <summary>
 	/// メンバ関数(プライベート)
 	/// </summary>

@@ -68,6 +68,7 @@ enum class Attack
 	SwordSwing,
 	Spawm,
 	Approach,
+	KingDrop,
 };
 
 enum class BossAttackPhase
@@ -314,6 +315,8 @@ private:
 	Vector3 energyBallMaxScale = { 4.8f,4.8f, 4.8f };
 	// エネルギーの弾が一フレームに増えるスケールの量
 	Vector3 energyBallPlusScale = {0.005f,0.005f, 0.005f};
+
+	bool isKingDownAfter=false;
 
 
 	// 体の上昇限界

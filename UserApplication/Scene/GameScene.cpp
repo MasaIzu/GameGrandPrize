@@ -594,6 +594,14 @@ void GameScene::GameUpdate()
 
 	boss->Update(player->GetWorldPosition(), stagePos, stageRadius);
 
+	if (boss->GetBossFishIsDeathEnd() && IsBattle02BGM == false && IsBattle01BGM == true)
+	{
+		battle01BGM.StopWave();
+		IsBattle01BGM = false;
+		battle02BGM.SoundPlayWave(true, 0.5);
+		IsBattle02BGM = true;
+	}
+
 
 	if (isTutorialEnd) {
 		ImGui::Text("tutorial end!");
@@ -656,6 +664,8 @@ void GameScene::GameOverUpdate()
 
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameOverBGM == false) {
+		battle02BGM.StopWave();
+		IsBattle02BGM = false;
 		gameOverBGM.SoundPlayWave(true, 0.5f);
 		IsGameOverBGM = true;
 	}
@@ -1108,6 +1118,8 @@ void GameScene::SceneChageFirst()
 				scene = Scene::Game;
 				IsTitleBGM = false;
 				titleBGM.StopWave();
+				battle01BGM.SoundPlayWave(true, 0.5);
+				IsBattle01BGM = true;
 				Reset();
 				break;
 			case Scene::Game:

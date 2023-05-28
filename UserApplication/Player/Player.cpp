@@ -507,6 +507,12 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::SliderFloat("BoneParentRotY", &BoneParentRotY, -360.0f, 360.0f);
 
 	ImGui::End();
+
+	ImGui::Begin("sprite");
+	ImGui::InputFloat2("ult Pos", &ultPos.x);
+	ImGui::InputFloat2("ultBar Pos", &ULT_barPos.x);
+	ImGui::InputFloat("ult SizeX", &ultSizeX);
+	ImGui::End();
 }
 
 void Player::Move() {
@@ -1855,7 +1861,7 @@ void Player::DrawHealth() {
 
 	// ultのセット
 	float nowUlt = UltGage / UltMaxGage;
-	ultSize = { 480.0f * nowUlt,25.0f };
+	ultSize = { ultSizeX * nowUlt,25.0f };
 	ultSprite->SetSize(ultSize);
 
 
@@ -1877,8 +1883,7 @@ void Player::DrawHealth() {
 
 	Vector2 HP_barPos = { 330,50 };
 
-	Vector2 ultPos = { 45.5f,55.0f };
-	Vector2 ULT_barPos = { 330,80 };
+
 	//Vector2 avoidGauge1Pos = { 175,520 };
 
 	//Vector2 avoidGauge2Pos = { 175,520 };

@@ -10,17 +10,6 @@ PouseUi::~PouseUi()
 	
 }
 
-//PouseUi* PouseUi_ = nullptr;
-
-//PouseUi* PouseUi::GetInstance()
-//{
-//	/*if (PouseUi_ == nullptr)
-//	{
-//		PouseUi_ = new PouseUi;
-//	}
-//	return PouseUi_;*/
-//}
-
 void PouseUi::Destroy()
 {
 	//delete PouseUi_;
@@ -30,32 +19,7 @@ void PouseUi::Initialize()
 {
 	input_ = Input::GetInstance();
 
-	//UI背景
-	loserUi_ = TextureManager::Load("UI/UIPouse.png");
-	spriteUi_ = Sprite::Create(loserUi_);
-	//戻る
-	loserBack_ = TextureManager::Load("UI/Back.png");
-	spriteBack_ = Sprite::Create(loserBack_);
-
-	//リセット
-	loserReset_ = TextureManager::Load("UI/Restart.png");
-	spriteReset_ = Sprite::Create(loserReset_);
-
-	//タイトル
-	loserTitle_ = TextureManager::Load("UI/Title.png");
-	spriteTitle_ = Sprite::Create(loserTitle_);
-
-	//設定
-	loserSetting_ = TextureManager::Load("UI/Setting.png");
-	spriteSetting_ = Sprite::Create(loserSetting_);
-
-	//終わる
-	loserExit_ = TextureManager::Load("UI/Exit.png");
-	spriteExit_ = Sprite::Create(loserExit_);
-
-	//SELECT
-	loserSelect_ = TextureManager::Load("UI/Select.png");
-	spriteSelect_ = Sprite::Create(loserSelect_);
+	Load();
 }
 
 void PouseUi::Update()
@@ -69,7 +33,6 @@ void PouseUi::Update()
 		isPouse = FALSE;
 	}
 
-
 	if (isPouse)
 	{
 		Select();
@@ -78,6 +41,12 @@ void PouseUi::Update()
 		Process();
 	}
 	
+}
+
+void PouseUi::DrawEasing()
+{
+	
+
 }
 
 void PouseUi::Select()
@@ -163,11 +132,11 @@ void PouseUi::Draw()
 {
 	//ポーズ画面項目すべて表示
 	//spriteUi_->		Draw({spriteSizeX,spriteSizeY+296},{1,1,1,1});
-	spriteBack_->	Draw({ spriteSizeX,spriteSizeY }, { 1,1,1,1 });
-	spriteReset_->	Draw({ spriteSizeX,spriteSizeY * 2 + size}, { 1,1,1,1 });
-	spriteTitle_->	Draw({ spriteSizeX,spriteSizeY * 3 + size*2}, { 1,1,1,1 });
-	spriteSetting_->Draw({ spriteSizeX,spriteSizeY * 4 + size*3}, { 1,1,1,1 });
-	spriteExit_->	Draw({ spriteSizeX,spriteSizeY * 5 + size*4}, { 1,1,1,1 });
+	spriteBack_->	Draw(printXY, { 1,1,1,1 });
+	spriteReset_->	Draw(printXY2, { 1,1,1,1 });
+	spriteTitle_->	Draw(printXY3, { 1,1,1,1 });
+	spriteSetting_->Draw(printXY4, { 1,1,1,1 });
+	spriteExit_->	Draw(printXY5, { 1,1,1,1 });
 	
 
 
@@ -175,6 +144,36 @@ void PouseUi::Draw()
 	//選択中のものを表示
 	spriteSelect_->Draw({ spriteSizeX,spriteSizeY * select + size * (select-1) }, { 1,1,1,1 });
 
+}
+
+void PouseUi::Load()
+{
+	//UI背景
+	loserUi_ = TextureManager::Load("UI/UIPouse.png");
+	spriteUi_ = Sprite::Create(loserUi_);
+	//戻る
+	loserBack_ = TextureManager::Load("UI/Back.png");
+	spriteBack_ = Sprite::Create(loserBack_);
+
+	//リセット
+	loserReset_ = TextureManager::Load("UI/Restart.png");
+	spriteReset_ = Sprite::Create(loserReset_);
+
+	//タイトル
+	loserTitle_ = TextureManager::Load("UI/Title.png");
+	spriteTitle_ = Sprite::Create(loserTitle_);
+
+	//設定
+	loserSetting_ = TextureManager::Load("UI/Setting.png");
+	spriteSetting_ = Sprite::Create(loserSetting_);
+
+	//終わる
+	loserExit_ = TextureManager::Load("UI/Exit.png");
+	spriteExit_ = Sprite::Create(loserExit_);
+
+	//SELECT
+	loserSelect_ = TextureManager::Load("UI/Select.png");
+	spriteSelect_ = Sprite::Create(loserSelect_);
 }
 
 void PouseUi::Reset()

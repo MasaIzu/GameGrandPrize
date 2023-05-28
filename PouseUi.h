@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Sprite.h"
 #include "TextureManager.h"
+#include "Easing.h"
 enum class Scene {
 	Title,
 	Game,
@@ -21,8 +22,12 @@ public:
 	void Initialize();
 	//処理
 	void Update();
+	//画像のイージング処理
+	void DrawEasing();
 	//描画
 	void Draw();
+
+	void Load();
 
 	void Select();
 
@@ -62,7 +67,19 @@ private:
 	const int MAX = 5;
 	const int SMAX = 3;
 	int select = MIN;
+	//画像の最終座標位置
+	Vector2 printXY = { spriteSizeX,spriteSizeY };//画像最初地点
+	Vector2 printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
+	Vector2 printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
+	Vector2 printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
+	Vector2 printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
 
+	//スプライトの座標を入れる箱
+	Vector2 sp;
+	Vector2 sp2;
+	Vector2 sp3;
+	Vector2 sp4;
+	Vector2 sp5;
 	//決定させたやつを代入
 	int decided = MIN;
 	

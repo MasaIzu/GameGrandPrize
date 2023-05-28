@@ -19,6 +19,19 @@ void PouseUi::Initialize()
 {
 	input_ = Input::GetInstance();
 
+	printXY = { spriteSizeX,spriteSizeY };//画像最初地点
+	printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
+	printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
+	printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
+	printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
+
+	sp = { spriteSizeX,spriteSizeY };
+	sp2 = { spriteSizeX,spriteSizeY };
+	sp3 = { spriteSizeX,spriteSizeY };
+	sp4 = { spriteSizeX,spriteSizeY };
+	sp5 = { spriteSizeX,spriteSizeY };
+	
+	easingXTimer = 0;
 	Load();
 }
 
@@ -35,16 +48,55 @@ void PouseUi::Update()
 
 	if (isPouse)
 	{
+		if (easingOkX == TRUE)
+		{
+			
+			if (easingYTimer >= EASINGMAXTIME_Y)
+			{
+				easingYTimer = EASINGMAXTIME_Y;
+			}
+			else
+			{
+				easingYTimer++;
+			}
+		}
+		
+		
+		if (easingXTimer >= EASINGMAXTIME_X)
+		{
+			easingXTimer = EASINGMAXTIME_X;
+			easingOkX = TRUE;
+		}
+		else
+		{
+			easingXTimer++;
+		}
+
+		DrawEasing();
 		Select();
 		
 		//ポーズ画面決定させたときの処理
 		Process();
 	}
+	else
+	{
+		EasingReset();
+	}
 	
 }
 
 void PouseUi::DrawEasing()
-{
+{//                     最初のところ　　　　　　　　　　止めたいところ　　タイマー　　　最大タイマー
+	sp.x = Easing::In(spriteSizeX - spriteSizeX*2, spriteSizeX, easingXTimer, EASINGMAXTIME_X);
+	sp2.x = Easing::In(spriteSizeX - spriteSizeX*2, spriteSizeX, easingXTimer, EASINGMAXTIME_X);
+	sp3.x = Easing::In(spriteSizeX - spriteSizeX*2, spriteSizeX, easingXTimer, EASINGMAXTIME_X);
+	sp4.x = Easing::In(spriteSizeX - spriteSizeX*2, spriteSizeX, easingXTimer, EASINGMAXTIME_X);
+	sp5.x = Easing::In(spriteSizeX - spriteSizeX*2, spriteSizeX, easingXTimer, EASINGMAXTIME_X);
+
+	sp2.y = Easing::In(spriteSizeY , printXY2.y, easingYTimer, EASINGMAXTIME_Y);
+	sp3.y = Easing::In(spriteSizeY , printXY3.y, easingYTimer, EASINGMAXTIME_Y);
+	sp4.y = Easing::In(spriteSizeY , printXY4.y, easingYTimer, EASINGMAXTIME_Y);
+	sp5.y = Easing::In(spriteSizeY , printXY5.y, easingYTimer, EASINGMAXTIME_Y);
 	
 
 }
@@ -131,12 +183,14 @@ void PouseUi::Process()
 void PouseUi::Draw()
 {
 	//ポーズ画面項目すべて表示
-	//spriteUi_->		Draw({spriteSizeX,spriteSizeY+296},{1,1,1,1});
-	spriteBack_->	Draw(printXY, { 1,1,1,1 });
-	spriteReset_->	Draw(printXY2, { 1,1,1,1 });
-	spriteTitle_->	Draw(printXY3, { 1,1,1,1 });
-	spriteSetting_->Draw(printXY4, { 1,1,1,1 });
-	spriteExit_->	Draw(printXY5, { 1,1,1,1 });
+	//spriteUi_->Draw({spriteSizeX,spriteSizeY},{1,1,1,1});
+	spriteBack_->Draw(sp, { 1,1,1,1 });
+	spriteReset_->Draw(sp2, { 1,1,1,1 });
+	spriteTitle_->Draw(sp3, { 1,1,1,1 });
+	spriteSetting_->Draw(sp4, { 1,1,1,1 });
+	spriteExit_->Draw(sp5, { 1,1,1,1 });
+
+	
 	
 
 
@@ -193,7 +247,7 @@ void PouseUi::GameReset()
 
 void PouseUi::Title()
 {
-
+	scene = Scene::Title;
 }
 
 void PouseUi::Setting()
@@ -203,6 +257,27 @@ void PouseUi::Setting()
 
 void PouseUi::Exit()
 {
+	
+}
+
+void PouseUi::EasingReset()
+{
+	printXY = { spriteSizeX,spriteSizeY };//画像最初地点
+	printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
+	printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
+	printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
+	printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
+
+	sp = { spriteSizeX,spriteSizeY };
+	sp2 = { spriteSizeX,spriteSizeY };
+	sp3 = { spriteSizeX,spriteSizeY };
+	sp4 = { spriteSizeX,spriteSizeY };
+	sp5 = { spriteSizeX,spriteSizeY };
+
+	easingXTimer = 0;
+	easingYTimer = 0;
+	easingOkX = false;
+
 
 }
 

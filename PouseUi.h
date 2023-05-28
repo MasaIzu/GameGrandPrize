@@ -49,6 +49,8 @@ public:
 
 	void Exit();
 
+	void EasingReset();
+
 	bool GetisPouse() { return isPouse; }
 
 	//ゲームシーン移行要
@@ -67,25 +69,40 @@ private:
 	const int MAX = 5;
 	const int SMAX = 3;
 	int select = MIN;
+	float size = 32.0f;
+	float spriteSizeX = 640.0f;
+	float spriteSizeY = 64.0f;
+	
+	int easingXTimer = 0;
+	const int EASINGMAXTIME_X = 30;
+
+	int easingYTimer = 0;
+	int easingYTimer2 = 0;
+	int easingYTimer3 = 0;
+	int easingYTimer4 = 0;
+	int easingYTimer5 = 0;
+	const int EASINGMAXTIME_Y = 25;
+
 	//画像の最終座標位置
-	Vector2 printXY = { spriteSizeX,spriteSizeY };//画像最初地点
-	Vector2 printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
-	Vector2 printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
-	Vector2 printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
-	Vector2 printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
+	Vector2 printXY ;//画像最初地点
+	Vector2 printXY2 ;
+	Vector2 printXY3 ;
+	Vector2 printXY4 ;
+	Vector2 printXY5 ;
 
 	//スプライトの座標を入れる箱
-	Vector2 sp;
-	Vector2 sp2;
-	Vector2 sp3;
-	Vector2 sp4;
-	Vector2 sp5;
+	Vector2 sp = { spriteSizeX,spriteSizeY };
+	Vector2 sp2 = { spriteSizeX,spriteSizeY };
+	Vector2 sp3 = { spriteSizeX,spriteSizeY };
+	Vector2 sp4 = { spriteSizeX,spriteSizeY };
+	Vector2 sp5 = { spriteSizeX,spriteSizeY };
 	//決定させたやつを代入
 	int decided = MIN;
 	
 	//フラグ
 	bool OK = false;
 	bool isPouse = false;
+	bool easingOkX = false;
 	//テクスチャ
 	//ポーズ画面の背景
 	std::unique_ptr<Sprite> spriteUi_ = nullptr;
@@ -109,9 +126,8 @@ private:
 	std::unique_ptr<Sprite> spriteSelect_ = nullptr;
 	uint32_t loserSelect_ = 0;
 
-	float spriteSizeX = 640.0f;
-	float spriteSizeY = 64.0f;
+	
 
-	float size = 32.0f;
+	
 };
 

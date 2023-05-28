@@ -37,7 +37,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 
 	//テスト用
 	if (Input::GetInstance()->TriggerKey(DIK_P)) {
-		bossWarrier->Spawn();
+		//bossWarrier->Spawn();
 	}
 
 	if (bossWarrier->GetAlive()) {

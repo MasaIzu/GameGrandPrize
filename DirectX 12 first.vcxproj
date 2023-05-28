@@ -336,6 +336,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Sound\Sound.h" />
+    <ClInclude Include="PouseUi.h" />
     <ClInclude Include="UserApplication\Boss\Boss.h" />
     <ClInclude Include="UserApplication\Boss\BossWarrier.h" />
     <ClInclude Include="UserApplication\Boss\BossFish.h" />
@@ -409,6 +410,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Sound\Sound.cpp" />
+    <ClCompile Include="PouseUi.cpp" />
     <ClCompile Include="UserApplication\Boss\Boss.cpp" />
     <ClCompile Include="UserApplication\Boss\BossWarrier.cpp" />
     <ClCompile Include="UserApplication\Boss\BossFish.cpp" />

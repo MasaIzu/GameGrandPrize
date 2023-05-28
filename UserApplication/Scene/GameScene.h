@@ -29,6 +29,8 @@
 
 #include "UserApplication/Ground/Ground.h"
 
+#include "PouseUi.h"
+
 #include <objbase.h>
 #include "Sound.h"
 #include<array>
@@ -143,6 +145,9 @@ private: // メンバ変数
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
+
+	//ポーズ
+	PouseUi* pouseUi_ = nullptr;
 
 
 	Boss* boss = nullptr;

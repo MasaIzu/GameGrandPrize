@@ -543,10 +543,17 @@ void GameScene::GameUpdate()
 			isAttackHit = true;
 			gameCamera->Collision();
 			player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
-			boss->bossFish->Damage(2);
-
-			if (boss->bossWarrier->GetAlive()) {
-				boss->bossWarrier->Damage(2);
+			if (player->GetUltState() == false) {
+				boss->bossFish->Damage(2);
+				if (boss->bossWarrier->GetAlive()) {
+					boss->bossWarrier->Damage(2);
+				}
+			}
+			else {
+				boss->bossFish->Damage(4);
+				if (boss->bossWarrier->GetAlive()) {
+					boss->bossWarrier->Damage(4);
+				}
 			}
 
 			player->AddUltCount(60);

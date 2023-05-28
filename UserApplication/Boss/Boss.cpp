@@ -35,9 +35,9 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 		isBossSpawn = true;
 	}
 
-	if (bossWarrier->GetAlive()) {
+//	if (bossWarrier->GetAlive()) {
 		bossWarrier->Update(targetPos);
-	}
+//	}
 }
 
 void Boss::Draw(const ViewProjection& viewProMat)
@@ -46,9 +46,9 @@ void Boss::Draw(const ViewProjection& viewProMat)
 		bossFish->Draw(viewProMat);
 	}
 
-	if (bossWarrier->GetAlive()) {
+	//if (bossWarrier->GetAlive()) {
 		bossWarrier->Draw(viewProMat);
-	}
+	//}
 }
 
 void Boss::DrawHealth()

@@ -1370,6 +1370,30 @@ float LerpConbertOut(float t)
 	return 1 - pow(1 - t, 5);
 }
 
+float LerpConbertOutbounce(float t)
+{
+	const float n1 = 7.5625f;
+	const float d1 = 2.75f;
+
+	if (t < 1 / d1) {
+		return n1 * t * t;
+	}
+	else if (t < 2 / d1) {
+		return n1 * (t -= 1.5 / d1) * t + 0.75;
+	}
+	else if (t < 2.5 / d1) {
+		return n1 * (t -= 2.25 / d1) * t + 0.9375;
+	}
+	else {
+		return n1 * (t -= 2.625 / d1) * t + 0.984375;
+	}
+}
+
+float LerpConbertIn(float t)
+{
+	return t * t * t;
+}
+
 bool IsPercent(float param)
 {
 	return Random(0.0f, 100.0f) < param;

@@ -50,6 +50,7 @@ enum class Attack
 	SwordSwing,
 	Spawm,
 	Approach,
+	Death,
 };
 
 enum class BossAttackPhase
@@ -57,6 +58,25 @@ enum class BossAttackPhase
 	Before,
 	Attack,
 	After,
+};
+
+enum class BossDeathPhase {
+	RiseBody,
+	BreakBody,
+	FallHead,
+	MotionEnd,
+	BossDeathPhaseMax,
+	BossDeathPhaseIncrement = 1,
+};
+
+enum class MovePartIndex {
+	Chest,
+	Waist,
+	ArmL,
+	ArmR,
+	HandL,
+	HandR,
+	MovePartMax,
 };
 
 class BossWarrier
@@ -202,6 +222,12 @@ private:
 	std::unique_ptr<ParticleManager> spawnParticle;
 	int particleCreateTime = 0;
 	int spawnAnimationTime = 120;
+	int deathParticleInterval = 0;
+	const int deathParticleCooltime = 30;
+	EasingData easeBossRoot;
+	EasingData easePart[(int)BossDeathPhase::BossDeathPhaseMax];;
+	BossDeathPhase bossDeathPhase;
+	Vector3 partPos[(int)MovePartIndex::MovePartMax];
 
 	bool isAlive = false;
 
@@ -250,6 +276,15 @@ private:
 
 	//スポーン時の更新処理
 	void UpdateSpawn();
+
+	//死亡モーション初期化
+	void InitDeath();
+
+	//死亡モーション更新
+	void UpdateDeath();
+
+	//各部位の落下地点計算
+	void CalcFallPos();
 
 };
 

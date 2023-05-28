@@ -845,8 +845,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 					boss2Model[BossWarrierPart::elbowL].Transform.SetRot(StandByElbowL);
 					boss2Model[BossWarrierPart::elbowR].Transform.SetRot(StandByElbowR);
 					boss2Model[BossWarrierPart::Waist].Transform.SetRot(StandByWaist);
-					boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 0.7,0,0 };
-					boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -0.7,0,0 };
+					boss2Model[BossWarrierPart::elbowL].Transform.translation_ = { 0.2,0,0 };
+					boss2Model[BossWarrierPart::elbowR].Transform.translation_ = { -0.2,0,0 };
 				}
 			}
 			if (isKingDownAfter == true)
@@ -897,7 +897,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 	{
 		w[i].TransferMatrix();
 	}
-
 
 	ImGui::Text("TornadoRadius:%f", TornadoRadius);
 

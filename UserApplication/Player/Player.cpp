@@ -826,7 +826,7 @@ void Player::Move() {
 		float BR;
 
 		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
-		BR = pow((worldTransform_.scale_.x - recovery->GetScale().x), 2);
+		BR = pow((worldTransform_.scale_.x - 5), 2);
 
 		if (AR <= BR && recovery->GetActive())
 		{

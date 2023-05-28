@@ -549,7 +549,7 @@ void GameScene::GameUpdate()
 				boss->bossWarrier->Damage(2);
 			}
 
-			player->AddUltCount(1000);
+			player->AddUltCount(60);
 		}
 
 		if (collisionManager->GetIsWakeEnemyAttackHit()) {

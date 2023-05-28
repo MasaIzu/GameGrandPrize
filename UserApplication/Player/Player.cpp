@@ -156,9 +156,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 
 	// SEの初期化
-	playerAttackSE.SoundLoadWave("playerAttack.wav");
+	playerAttackSE.SoundLoadWave("playerAttackSE.wav");
 
-	playerAttackSE4.SoundLoadWave("playerAttack4.wav");
+	playerAttackSE4.SoundLoadWave("playerAttackRotaSE.wav");
 
 	playerDamegeSE.SoundLoadWave("playerDamage.wav");
 
@@ -1046,7 +1046,7 @@ void Player::Attack() {
 					attackMoveTimer = 0;
 
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = true;
@@ -1110,7 +1110,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1188,7 +1188,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1249,7 +1249,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE4.SoundPlayWave(false, 0.5f);
+					playerAttackSE4.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1314,7 +1314,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1643,6 +1643,8 @@ void Player::Attack() {
 				AttackRotX = 0.0f;
 				AttackRotY = -24.0f;
 				AttackRotZ = 16.0f;
+
+				AttackCoolTime = 0;
 			}
 		}
 
@@ -2275,6 +2277,9 @@ void Player::AddUltCount(int count)
 {
 	if (UltGage < UltMaxGage) {
 		UltGage += count;
+		if (UltGage > UltMaxGage) {
+			UltGage = UltMaxGage;
+		}
 	}
 }
 

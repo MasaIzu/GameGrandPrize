@@ -107,7 +107,9 @@ void CollisionManager::CheckAllCollisions()
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ALLIES) {
-					playerPos = ResolveCollision(*SphereA, *SphereB);
+					if (isEnemyReception == false) {
+						playerPos = ResolveCollision(*SphereA, *SphereB);
+					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYRECEPTION && colB->attribute == COLLISION_ATTR_ATTACK) {
 					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
@@ -141,9 +143,6 @@ void CollisionManager::CheckAllCollisions()
 						isEnemyHit = true;
 					}
 				}
-				//if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-				//	//isEnemyHit = true;
-				//}
 			}
 			/*else if (colA->GetShapeType() == COLLISIONSHAPE_MESH &&
 				colB->GetShapeType() == COLLISIONSHAPE_SPHERE) {

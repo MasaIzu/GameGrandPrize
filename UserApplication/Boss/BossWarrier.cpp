@@ -947,11 +947,12 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 				energyL[i].model->Draw(energyL[i].WorldTrans, viewProMat);
 				energyR[i].model->Draw(energyR[i].WorldTrans, viewProMat);
 			}
-			// 王のしずくが落ちたら
-			energyBigBallSub.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
-			// 王のしずくのエネルギーの巨大弾の描画
-			energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
+			
 		}
+		// 王のしずくが落ちたら
+		energyBigBallSub.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
+		// 王のしずくのエネルギーの巨大弾の描画
+		energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
 	}
 }
 
@@ -2061,10 +2062,10 @@ void BossWarrier::KingDropReset()
 	// エネルギー弾のパラメータをリセット
 	energyBallScale = { 0,0,0 };
 
-	energyBigBall.WorldTrans.translation_ = energyBallPos;
+	energyBigBall.WorldTrans.translation_ = createEnergyEndPos;
 	energyBigBall.WorldTrans.scale_ = energyBallScale;
 	energyBigBall.WorldTrans.alpha = 0.95f;
-	energyBigBallSub.WorldTrans.translation_ = energyBallPos;
+	energyBigBallSub.WorldTrans.translation_ = createEnergyEndPos;
 	energyBigBallSub.WorldTrans.scale_ = energyBallScale / 2;
 	energyBigBallSub.WorldTrans.alpha = 1.0f;
 

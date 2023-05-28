@@ -33,6 +33,9 @@ public:
 	//終了チェック
 	virtual bool isPlayMyGame();
 
+	//ブレイクするかどうか
+	virtual bool IsBreak() = 0; 
+
 public://デストラクタ
 	virtual ~Framework() = default;
 

@@ -1058,6 +1058,11 @@ void GameScene::Finalize()
 	delete boss;
 }
 
+bool GameScene::IsBreak()
+{
+	return true;
+}
+
 int GameScene::GetMiniFishAlive() {
 	int count = 0;
 	for (int i = 0; i < minifishes.size(); i++) {

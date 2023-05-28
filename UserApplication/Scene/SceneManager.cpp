@@ -47,6 +47,11 @@ void SceneManager::Finalize()
 	delete SceneManager_;
 }
 
+bool SceneManager::IsBreak()
+{
+	return scene_->IsBreak();
+}
+
 void SceneManager::SetSceneFactory(AbstractSceneFactory* sceneFactory)
 {
 	sceneFactory_ = sceneFactory;

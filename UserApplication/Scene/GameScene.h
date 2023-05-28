@@ -116,7 +116,7 @@ public:
 
 	//void CreateGround();
 
-
+	bool IsBreak() override;
 
 
 private: // メンバ変数

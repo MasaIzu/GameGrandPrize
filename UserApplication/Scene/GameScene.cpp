@@ -1060,7 +1060,7 @@ void GameScene::Finalize()
 
 bool GameScene::IsBreak()
 {
-	return true;
+	return false;
 }
 
 int GameScene::GetMiniFishAlive() {

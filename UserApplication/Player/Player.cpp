@@ -1643,6 +1643,8 @@ void Player::Attack() {
 				AttackRotX = 0.0f;
 				AttackRotY = -24.0f;
 				AttackRotZ = 16.0f;
+
+				AttackCoolTime = 0;
 			}
 		}
 
@@ -2275,6 +2277,9 @@ void Player::AddUltCount(int count)
 {
 	if (UltGage < UltMaxGage) {
 		UltGage += count;
+		if (UltGage > UltMaxGage) {
+			UltGage = UltMaxGage;
+		}
 	}
 }
 

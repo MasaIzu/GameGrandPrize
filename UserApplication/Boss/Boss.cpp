@@ -33,6 +33,7 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 	if (bossFish->GetIsDeathEnd() && !isBossSpawn) {
 		bossWarrier->Spawn(bossFish->GetParentPos());
 		isBossSpawn = true;
+
 	}
 
 	if (bossWarrier->GetAlive()) {

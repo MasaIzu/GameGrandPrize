@@ -284,9 +284,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
-	matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z }, { targetPos.x,0,targetPos.z });
+	if (attack!=Attack::KingDrop)
+	{
+		matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z }, { targetPos.x,0,targetPos.z });
 
-	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
+		boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
+	}
 
 	if (health <= 0) {
 		//死亡

@@ -46,6 +46,10 @@ public:
 
 	bool GetisPouse() { return isPouse; }
 
+	//ゲームシーン移行要
+	Scene scene = Scene::Title;
+
+	Scene oldScene = Scene::Title;
 
 
 private:

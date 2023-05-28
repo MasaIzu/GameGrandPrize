@@ -246,7 +246,7 @@ void GameScene::Update() {
 	SceneChageUpdate();
 	
 
-	switch (scene)
+	switch (pouseUi_->scene)
 	{
 	case Scene::Title:
 		TitleUpdate();
@@ -413,7 +413,7 @@ void GameScene::TitleUpdate()
 	// 文字の剣が回転終わった後シーンチェンジ
 	if (IsRotaEnd == true) {
 
-		oldScene = Scene::Title;
+		pouseUi_->oldScene = Scene::Title;
 		IsSceneChange = true;
 		//イベントから始まるのでイベントフラグを立てる
 		isMovie = true;
@@ -421,13 +421,14 @@ void GameScene::TitleUpdate()
 	}
 
 	if (input_->TriggerKey(DIK_K)) {
-		scene = Scene::GameOver;
+		pouseUi_->scene = Scene::GameOver;
 		Reset();
 	}
 }
 
 void GameScene::GameUpdate()
 {
+	pouseUi_->Update();
 	if (pouseUi_->GetisPouse() == TRUE)
 	{
 
@@ -582,11 +583,11 @@ void GameScene::GameUpdate()
 			}
 
 			if (boss->bossFish->GetIsDeathEnd() && !boss->bossWarrier->GetAlive()) {
-				scene = Scene::Result;
+				pouseUi_->scene = Scene::Result;
 			}
 			if (player->GetAlive() == false)
 			{
-				scene = Scene::GameOver;
+				pouseUi_->scene = Scene::GameOver;
 			}
 
 		}
@@ -695,14 +696,14 @@ void GameScene::GameOverUpdate()
 	}
 	if (selectButtonPos.x < 640) {
 		if (input_->TriggerKey(DIK_SPACE)) {
-			oldScene = Scene::GameOver;
+			pouseUi_->oldScene = Scene::GameOver;
 			IsSceneChange = true;
 			IsRetry = true;
 		}
 	}
 	else {
 		if (input_->TriggerKey(DIK_SPACE)) {
-			oldScene = Scene::GameOver;
+			pouseUi_->oldScene = Scene::GameOver;
 			IsSceneChange = true;
 			IsRetry = false;
 		}
@@ -718,7 +719,7 @@ void GameScene::ResultUpdate()
 		IsGameClearBGM = true;
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
-		oldScene = Scene::Result;
+		pouseUi_->oldScene = Scene::Result;
 		IsSceneChange = true;
 
 	}
@@ -727,10 +728,10 @@ void GameScene::ResultUpdate()
 void GameScene::SceneChageUpdate()
 {
 	if (IsSceneChange == true) {
-		switch (scene)
+		switch (pouseUi_->scene)
 		{
 		case Scene::Title:
-			if (oldScene == Scene::Title) {
+			if (pouseUi_->oldScene == Scene::Title) {
 				// 最初のスライダーのイン
 				SceneChageFirst();
 			}
@@ -740,19 +741,19 @@ void GameScene::SceneChageUpdate()
 			}
 			break;
 		case Scene::Game:
-			if (oldScene == Scene::Title || oldScene == Scene::GameOver) {
+			if (pouseUi_->oldScene == Scene::Title || pouseUi_->oldScene == Scene::GameOver) {
 				// 閉じきったら消す、スライダーのアウト
 				SceneChageRast();
 			}
 			break;
 		case Scene::GameOver:
-			if (oldScene == Scene::GameOver) {
+			if (pouseUi_->oldScene == Scene::GameOver) {
 				// 最初のスライダーのイン
 				SceneChageFirst();
 			}
 			break;
 		case Scene::Result:
-			if (oldScene == Scene::Result) {
+			if (pouseUi_->oldScene == Scene::Result) {
 				// 最初のスライダーのイン
 				SceneChageFirst();
 			}
@@ -790,7 +791,7 @@ void GameScene::PostEffectDraw()
 	Model::PreDraw(commandList);
 
 	// タイトルのオブジェクトの描画
-	if (scene == Scene::Title) {
+	if (pouseUi_->scene == Scene::Title) {
 		AFontModel_.get()->Draw(AFontWorld_, nowViewProjection);
 		TFontModel_.get()->Draw(TFontWorld_, nowViewProjection);
 		OFontModel_.get()->Draw(OFontWorld_, nowViewProjection);
@@ -847,16 +848,16 @@ void GameScene::PostEffectDraw()
 
 
 	FbxModel::PreDraw(commandList);
-	if (scene == Scene::Game) {
+	if (pouseUi_->scene == Scene::Game) {
 		player->PlayerFbxDraw(nowViewProjection);
 	}
 	FbxModel::PostDraw();
 
 	ParticleManager::PreDraw(commandList);
-	if (scene == Scene::Title) {
+	if (pouseUi_->scene == Scene::Title) {
 		TitileParticle->Draw(nowViewProjection);
 	}
-	if (scene == Scene::Game) {
+	if (pouseUi_->scene == Scene::Game) {
 
 		player->ParticleDraw(nowViewProjection);
 	}
@@ -874,7 +875,7 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
-	if (scene == Scene::Title) {
+	if (pouseUi_->scene == Scene::Title) {
 
 	}
 
@@ -895,7 +896,7 @@ void GameScene::Draw() {
 
 
 
-	if (scene == Scene::Title) {
+	if (pouseUi_->scene == Scene::Title) {
 
 		//titleStartFont->Draw(titlePos, { 1,1,1,1 });
 		if (IsRotaStart == true) {
@@ -907,7 +908,7 @@ void GameScene::Draw() {
 
 	}
 
-	if (scene == Scene::Game)
+	if (pouseUi_->scene == Scene::Game)
 	{
 		boss->DrawHealth();
 		player->DrawHealth();
@@ -915,10 +916,10 @@ void GameScene::Draw() {
 		//player->DrawHealth();
 
 	}
-	else if (scene == Scene::Result) {
+	else if (pouseUi_->scene == Scene::Result) {
 		gameClearFont->Draw({ 640,300 }, { 1,1,1,1 });
 	}
-	if (scene == Scene::GameOver)
+	if (pouseUi_->scene == Scene::GameOver)
 	{
 		gameoverFont->Draw({ 640,300 }, { 1,1,1,alpha[0] });
 		gameover->Draw({ 640,360 }, { 1,1,1,alpha[1] });
@@ -946,7 +947,7 @@ void GameScene::Draw() {
 void GameScene::Reset()
 {
 	// タイトルシーンのリセット
-	if (scene == Scene::Title) {
+	if (pouseUi_->scene == Scene::Title) {
 		skydome_.get()->SetModel(skydomeTitle_.get());
 		AFontWorld_.translation_ = { +7.0f,+16.5f,+180 };
 		TFontWorld_.translation_ = { +5.8f,+16.5f,+179 };
@@ -974,7 +975,7 @@ void GameScene::Reset()
 		IsRotaEnd = false;
 
 	}
-	if (scene == Scene::Game) {
+	if (pouseUi_->scene == Scene::Game) {
 		skydome_.get()->SetModel(skyModel.get());
 	}
 
@@ -1095,10 +1096,10 @@ void GameScene::SceneChageFirst()
 			IsHalf = true;
 			TitileParticle->AllDelete();
 			// 次がなんのシーンかチェックする
-			switch (scene)
+			switch (pouseUi_->scene)
 			{
 			case Scene::Title:
-				scene = Scene::Game;
+				pouseUi_->scene = Scene::Game;
 				IsTitleBGM = false;
 				titleBGM.StopWave();
 				Reset();
@@ -1108,17 +1109,17 @@ void GameScene::SceneChageFirst()
 				break;
 			case Scene::GameOver:
 				if (IsRetry == false) {
-					scene = Scene::Title;
+					pouseUi_->scene = Scene::Title;
 				}
 				else if (IsRetry == true) {
-					scene = Scene::Game;
+					pouseUi_->scene = Scene::Game;
 				}
 				IsGameOverBGM = false;
 				gameOverBGM.StopWave();
 				Reset();
 				break;
 			case Scene::Result:
-				scene = Scene::Title;
+				pouseUi_->scene = Scene::Title;
 				IsGameClearBGM = false;
 				gameClearBGM.StopWave();
 				Reset();

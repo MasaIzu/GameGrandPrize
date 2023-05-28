@@ -46,12 +46,12 @@ class TouchableObject;
 #include"FbxAnimation.h"
 #include"EasingData.h"
 
-enum class Scene {
-	Title,
-	Game,
-	GameOver,
-	Result
-};
+//enum class Scene {
+//	Title,
+//	Game,
+//	GameOver,
+//	Result
+//};
 
 enum class EventPhase {
 
@@ -216,9 +216,9 @@ private: // メンバ変数
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
 
-	Scene scene = Scene::Title;
+	/*Scene scene = Scene::Title;
 
-	Scene oldScene = Scene::Title;
+	Scene oldScene = Scene::Title;*/
 	std::unique_ptr<Sprite> gameClearFont;
 
 

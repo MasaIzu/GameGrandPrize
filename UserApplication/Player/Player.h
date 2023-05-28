@@ -85,6 +85,8 @@ public:
 	bool GetAlive() { return isAlive; }
 	bool GetIsAwakening() { return isAwakening; }
 
+	bool GetUltState() { return isPlayerUlt; }
+
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
 

@@ -1546,13 +1546,12 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					AttackWaitintTime = maxAttackWaitintTime;
-					AttackWaitTime = maxAttackWaitTime;
+					
 					isSowrd = true;
 					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
 					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTimeMax = 360;
+					AttackCoolTimeMax = 50;
 					isCoolTimeRiset = true;
 
 				}
@@ -1610,13 +1609,12 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					AttackWaitintTime = maxAttackWaitintTime;
-					AttackWaitTime = maxAttackWaitTime;
+					
 					isSowrd = true;
 					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
 					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTimeMax = 360;
+					AttackCoolTimeMax = 50;
 					isCoolTimeRiset = true;
 
 				}
@@ -1651,6 +1649,7 @@ void Player::Attack() {
 				AttackRotZ = 16.0f;
 
 				AttackCoolTime = 0;
+				isCoolTimeRiset = true;
 			}
 		}
 
@@ -1808,7 +1807,12 @@ void Player::Draw(ViewProjection viewProjection_) {
 	RSowrdModel->Draw(RBoneTrans, viewProjection_);
 
 	if (isUltKenGeneration == true) {
-		ModelKEN->Draw(ULTKEN, viewProjection_);
+		if (spaceInput == false) {
+			if (isKnockBack == false || damageFlashFlame % 6 == 0)
+			{
+				ModelKEN->Draw(ULTKEN, viewProjection_);
+			}
+		}
 	}
 	//}
 

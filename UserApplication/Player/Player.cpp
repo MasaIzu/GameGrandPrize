@@ -3,7 +3,7 @@
 #include"MyMath.h"
 #include "CollisionManager.h"
 #include <CollisionAttribute.h>
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include <FbxLoader.h>
 #include "Easing.h"
 
@@ -457,7 +457,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 
-	ImGui::Begin("player");
+	/*ImGui::Begin("player");
 
 
 	ImGui::Text("UltGage:%d", UltGage);
@@ -506,7 +506,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::SliderFloat("BoneParentRotY", &BoneParentRotY, -360.0f, 360.0f);
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Player::Move() {

@@ -1,5 +1,5 @@
 #include "recovery.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 
 void Recovery::Initialize()
 {
@@ -131,11 +131,11 @@ void Recovery::Update()
 
 	pointWorldTransform_.TransferMatrix();
 
-	ImGui::Begin("recovery");
+	/*ImGui::Begin("recovery");
 
 	ImGui::Text("HP:%f", IntervalFlame);
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Recovery::Draw(ViewProjection view)

@@ -4,7 +4,7 @@
 #include <random>
 #include <fstream>
 #include "FbxLoader.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include <CollisionAttribute.h>
 #include "Collision.h"
 #include "Easing.h"
@@ -240,6 +240,8 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	SceneChageUpdate();
+	// マウスカーソルの表示
+	ShowCursor(FALSE);
 
 	switch (scene)
 	{
@@ -265,7 +267,7 @@ void GameScene::TitleUpdate()
 {
 	nowViewProjection = viewProjection_;
 
-	ImGui::Begin("Font");
+	/*ImGui::Begin("Font");
 
 	ImGui::Text("eye:%f,%f,%f", nowViewProjection.eye.x, nowViewProjection.eye.y, nowViewProjection.eye.z);
 	ImGui::Text("target:%f,%f,%f", nowViewProjection.target.x, nowViewProjection.target.y, nowViewProjection.target.z);
@@ -283,12 +285,12 @@ void GameScene::TitleUpdate()
 
 	ImGui::InputFloat3("AFont:%f,%f,%f", &AFontWorld_.translation_.x);
 
-	ImGui::End();
+	ImGui::End();*/
 
 	// BGＭを鳴らす
 	if (IsTitleBGM == false) {
-		titleBGM.SoundPlayWave(true, 0.5f);
-		IsTitleBGM = true;
+		//titleBGM.SoundPlayWave(true, 0.5f);
+		//IsTitleBGM = true;
 	}
 
 	// スプライトの位置調整
@@ -422,10 +424,10 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
-	if (ImGui::Button("break")) {
+	/*if (ImGui::Button("break")) {
 		static int a = 0;
 		a++;
-	}
+	}*/
 
 	if (isMovie) {
 		// イベントシーンの更新
@@ -451,7 +453,7 @@ void GameScene::GameUpdate()
 		fishSpawnInterval--;
 
 		if (isStartBossBattle) {
-			ImGui::Text("boss battle start!");
+			//ImGui::Text("boss battle start!");
 			if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
 				fishSpawnCount--;
 				fishSpawnInterval = 5;
@@ -527,9 +529,9 @@ void GameScene::GameUpdate()
 		player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(), collisionManager->GetPlayerPos());
 
 
-		ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
+		/*ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
 		ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
-		ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
+		ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);*/
 
 		//剣と自機の当たり判定
 		if (collisionManager->GetEnemySwordHit()) {
@@ -596,11 +598,11 @@ void GameScene::GameUpdate()
 
 
 	if (isTutorialEnd) {
-		ImGui::Text("tutorial end!");
+		//ImGui::Text("tutorial end!");
 	}
 
 	if (isAllFishLeave) {
-		ImGui::Text("all fishes leave!");
+		//ImGui::Text("all fishes leave!");
 	}
 
 	player->SetIsEnemyHit(isEnemyHit);
@@ -644,7 +646,7 @@ void GameScene::GameUpdate()
 
 void GameScene::GameOverUpdate()
 {
-	ImGui::Begin("Font");
+	/*ImGui::Begin("Font");
 	ImGui::InputFloat2("selectSize : %f", &selectButtonSize.x);
 	ImGui::InputFloat2("replayFontSize : %f", &replayFontSize.x);
 	ImGui::InputFloat2("backTitleFontSize : %f", &backTitleFontSize.x);
@@ -652,12 +654,12 @@ void GameScene::GameOverUpdate()
 	ImGui::InputFloat2("replayFontPos : %f", &replayFontPos.x);
 	ImGui::InputFloat2("backTitleFontPos : %f", &backTitleFontPos.x);
 
-	ImGui::End();
+	ImGui::End();*/
 
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameOverBGM == false) {
-		gameOverBGM.SoundPlayWave(true, 0.5f);
-		IsGameOverBGM = true;
+		/*gameOverBGM.SoundPlayWave(true, 0.5f);
+		IsGameOverBGM = true;*/
 	}
 
 	// αの出し方
@@ -716,8 +718,8 @@ void GameScene::ResultUpdate()
 {
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameClearBGM == false) {
-		gameClearBGM.SoundPlayWave(true, 0.5f);
-		IsGameClearBGM = true;
+		/*gameClearBGM.SoundPlayWave(true, 0.5f);
+		IsGameClearBGM = true;*/
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		oldScene = Scene::Result;
@@ -1283,12 +1285,12 @@ void GameScene::UpdateBossChangeEventCamera() {
 
 void GameScene::FirstCameraUpdate()
 {
-	ImGui::Begin("camera");
+	/*ImGui::Begin("camera");
 
 	ImGui::InputFloat3("firstEye:%f,%f,%f", &firstCamera.eye.x);
 	ImGui::InputFloat3("firstCamera.target:%f,%f,%f", &firstCamera.target.x);
 
-	ImGui::End();
+	ImGui::End();*/
 
 	// 最初のカメラがオンだったら
 	if (IsFirst == true) {

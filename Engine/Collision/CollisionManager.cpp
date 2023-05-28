@@ -3,7 +3,7 @@
 #include "Collision.h"
 #include "MeshCollider.h"
 #include <CollisionAttribute.h>
-#include <imgui.h>
+//#include <imgui.h>
 
 using namespace DirectX;
 
@@ -28,11 +28,11 @@ void CollisionManager::CheckAllCollisions()
 		CoolTime--;
 	}
 
-	ImGui::Begin("Collision");
+	/*ImGui::Begin("Collision");
 
 	ImGui::Text("CoolTime:%d", static_cast<int>(CoolTime));
 	ImGui::Text("isCoolTime:%d", isCoolTime);
-	ImGui::End();
+	ImGui::End();*/
 
 	std::forward_list<BaseCollider*>::iterator itA;
 	std::forward_list<BaseCollider*>::iterator itB;

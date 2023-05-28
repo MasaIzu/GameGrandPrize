@@ -1,6 +1,6 @@
 #include "BossWarrier.h"
 #include"Input.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include"BossFish.h"
 #include <CollisionManager.h>
 #include <CollisionAttribute.h>
@@ -275,7 +275,7 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 void BossWarrier::Update(const Vector3& targetPos)
 {
 	srand(time(NULL));
-	ImGui::Begin("Warrier");
+	//ImGui::Begin("Warrier");
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
@@ -293,7 +293,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		isAlive = false;
 	}
 
-	ImGui::Text("health %d", health);
+	//ImGui::Text("health %d", health);
 
 
 	for (int i = 0; i < MAXSWROD; i++)
@@ -313,7 +313,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	switch (attack)
 	{
 	case Attack::StandBy:
-		ImGui::Text("attack stand");
+		//ImGui::Text("attack stand");
 
 		if (intervalFrame <= maxIntervalFrame)
 		{
@@ -410,7 +410,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		}
 
 		oldAttack = attack;
-		ImGui::Text("%d", attack);
+		//ImGui::Text("%d", attack);
 
 
 		if (Input::GetInstance()->TriggerKey(DIK_8)) {
@@ -461,7 +461,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 	case Attack::ArmSwing:
 #pragma region 腕振り攻撃処理(テストキーは8)
 
-		ImGui::Text("boss atack ArmSwing");
+		//ImGui::Text("boss atack ArmSwing");
 
 		switch (bossAttackPhase)
 		{
@@ -843,15 +843,15 @@ void BossWarrier::Update(const Vector3& targetPos)
 	KingDropUpdate();
 
 
-	ImGui::Text("TornadoRadius:%f", TornadoRadius);
+	/*ImGui::Text("TornadoRadius:%f", TornadoRadius);
 
 	ImGui::Text("BossAttack:%d", attack);
 
 	ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
 
-	ImGui::Text("intervalFrame:%d", intervalFrame);
+	ImGui::Text("intervalFrame:%d", intervalFrame);*/
 
-	ImGui::End();
+	//ImGui::End();
 
 }
 
@@ -862,7 +862,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
 
-			ModelSpere->Draw(modelSpere[i], viewProMat);
+			//ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 	if (attack == Attack::Tornado)
@@ -1395,8 +1395,8 @@ void BossWarrier::UpdateAtkArmSwing()
 	//正規化した移動ベクトルにボス速度を掛け算
 	bossMoveVec *= bossSpdScalar;
 
-	ImGui::Text("bossMoveVec:%f,%f,%f", bossMoveVec.x, bossMoveVec.y, bossMoveVec.z);
-	ImGui::Text("atkCount:%d", lastAtkCount);
+	/*ImGui::Text("bossMoveVec:%f,%f,%f", bossMoveVec.x, bossMoveVec.y, bossMoveVec.z);
+	ImGui::Text("atkCount:%d", lastAtkCount);*/
 
 	//大本のモデルを移動
 	boss2Model[BossWarrierPart::Root].Transform.translation_ += bossMoveVec;
@@ -1442,7 +1442,7 @@ void BossWarrier::UpdateAtkArmSwing()
 		//ボスの現在の座標と自機座標が近かったら攻撃終了カウント開始
 		Vector3 bossToTarget = boss2Model->Transform.translation_ - targetPos;
 		bossToTarget.y = 0;
-		ImGui::Text("length bossToPlayer:%f", bossToTarget.length());
+		//ImGui::Text("length bossToPlayer:%f", bossToTarget.length());
 		if (bossToTarget.length() <= 25.0f && !isLastAtkStart) {
 			isLastAtkStart = true;
 			//残りの移動回数は合計距離が 攻撃終了カウントの計算に使った距離の二倍になるように
@@ -1501,9 +1501,9 @@ void BossWarrier::KingDropUpdate()
 	if (IsKingDrop == true) {
 		// 王のしずくを打つポジションに移動する
 		if (IsKingDropPos == false) {
-			ImGui::Begin("Pos");
-			ImGui::SliderFloat3("Boss Pos", &kingDropPos.x, -250, 180);
-			ImGui::End();
+			//ImGui::Begin("Pos");
+			//ImGui::SliderFloat3("Boss Pos", &kingDropPos.x, -250, 180);
+			//ImGui::End();
 			if (IsMoveBefor == false) {
 				boss2Model[BossWarrierPart::Chest].Transform.alpha -= kingDropMoveAlphaM;
 				boss2Model[BossWarrierPart::Head].Transform.alpha -= kingDropMoveAlphaM;
@@ -1547,14 +1547,14 @@ void BossWarrier::KingDropUpdate()
 				armUpTimer++;
 			}
 
-			ImGui::Begin("Font");
+			/*ImGui::Begin("Font");
 			ImGui::SliderFloat3("BossSho L Rot", &shoulderL_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("BossElbowL Rot", &elbowL_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("BossSho R Rot", &shoulderR_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("BossElbowR Rot", &elbowR_RotaEnd.x, -180, 180);
 			ImGui::SliderFloat3("Boss L Pos", &zurasi_L_Pos.x, -5, 5);
 			ImGui::SliderFloat3("Boss R Pos", &zurasi_R_Pos.x, -5, 5);
-			ImGui::End();
+			ImGui::End();*/
 			//boss2Model[BossWarrierPart::elbowR].Transform.translation_ = zurasi_R_Pos;
 			//boss2Model[BossWarrierPart::elbowL].Transform.translation_ = zurasi_L_Pos;
 
@@ -2145,10 +2145,10 @@ void BossWarrier::UpdateAtkSwordSwing()
 {
 	Vector3 rot = boss2Model[BossWarrierPart::ShoulderL].Transform.rotation_;
 	rot = convertRadianToDegree(rot);
-	ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
-	ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
+	//ImGui::Text("rot %f %f %f", rot.x, rot.y, rot.z);
+	/*ImGui::SliderFloat("rotX", &rot.x, 0.0f, 360.0f);
 	ImGui::SliderFloat("rotY", &rot.y, 0.0f, 360.0f);
-	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);
+	ImGui::SliderFloat("rotZ", &rot.z, 0.0f, 360.0f);*/
 	rot = convertDegreeToRadian(rot);
 
 	//回転に使う角とそれを制御するデータ

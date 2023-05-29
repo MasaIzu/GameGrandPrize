@@ -1421,7 +1421,6 @@ void GameScene::UpdateBossDeathEvent() {
 	else if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::BreakBody) {
 		movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
 	}
-
 	else if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::FallHead) {
 		movieCamera.target = boss->bossWarrier->GetHeadTransform().translation_;
 	}//モーションの終わり(頭が消えてく)時にtargetを頭→自機に

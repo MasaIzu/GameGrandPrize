@@ -447,7 +447,10 @@ private:
 	float energyBallAlphaInsideEnd = 1.0f;
 	float energyBallAlphaTransEnd = 0.0f;
 
-
+	Sound ArmSwingSE;
+	Sound TornadoSE;
+	Sound LaunchSwordSE;
+	Sound SwordSwingSE;
 
 	#pragma endregion
 

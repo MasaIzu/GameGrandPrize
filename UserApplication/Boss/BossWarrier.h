@@ -285,6 +285,10 @@ private:
 	float kingDropMoveAlphaM = 0.01;
 	float kingDropMoveAlphaP = 0.01;
 
+	//王のしずくの当たり判定
+	BaseCollider* KingsDrop;
+	float KingAttackRadius = 0.5f;
+
 	// 生成するのに使うエネルギー
 	int energyNum = 25;
 	float energyScale = 0.05f;

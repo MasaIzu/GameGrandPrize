@@ -46,6 +46,7 @@ public://ƒƒ“ƒoŠÖ”
 	int GetHitNumber() { return hitNumber; }
 	bool GetEnemySwordHit() { return isEnemySwordHit; }
 	bool GetIsEnemyReception() { return isEnemyReception; }
+	bool GetIsEnemyKingDrop() { return KingDrop; }
 
 	Vector3 GetPlayerPos() { return playerPos; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
@@ -80,4 +81,6 @@ private:
 
 	bool aaa = false;
 
+
+	bool KingDrop = false;
 };

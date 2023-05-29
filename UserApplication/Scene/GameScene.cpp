@@ -534,9 +534,14 @@ void GameScene::GameUpdate()
 		//剣と自機の当たり判定
 		if (collisionManager->GetEnemySwordHit()) {
 			gameCamera->Collision();
-			Matrix4 a = collisionManager->GetEnemyWorldPos();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
 			player->Collision(20);
+		}
+
+		if (collisionManager->GetIsEnemyKingDrop()) {
+			gameCamera->Collision();
+			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+			player->Collision(1,1);
 		}
 
 		if (collisionManager->GetIsAttackHit()) {

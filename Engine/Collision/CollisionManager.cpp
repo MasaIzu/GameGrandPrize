@@ -22,6 +22,7 @@ void CollisionManager::CheckAllCollisions()
 	isWakeEnemyAttackHit = false;
 	isEnemySwordHit = false;
 	isEnemyReception = false;
+	KingDrop = false;
 	playerPos = { 0,0,0 };
 
 	if (CoolTime > 0) {
@@ -138,6 +139,13 @@ void CollisionManager::CheckAllCollisions()
 
 						EnemyWorldPos = colA->GetWorldPos();
 						isEnemyHit = true;
+					}
+				}
+				else if (colA->attribute == COLLISION_ATTR_ENEMYKINGDROPATTACK && colB->attribute == COLLISION_ATTR_ALLIES) {
+					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
+						EnemyWorldPos = colA->GetWorldPos();
+						KingDrop = true;
 					}
 				}
 			}

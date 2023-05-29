@@ -81,7 +81,7 @@ void BossWarrier::Initialize()
 		//12
 		BossWarrierRadius[BossWarrierPart::Crotch] = rdi5;
 		//13
-		BossWarrierRadius[BossWarrierPart::Waist] = rdi8 * 2;
+		BossWarrierRadius[BossWarrierPart::Waist] = rdi8;
 
 
 		for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
@@ -254,6 +254,15 @@ void BossWarrier::Initialize()
 	energyBigBallSub.WorldTrans.scale_ = energyBallScale / 2;
 	energyBigBallSub.WorldTrans.alpha = 1.0f;
 	energyBigBallSub.WorldTrans.TransferMatrix();
+
+	if (KingsDrop == nullptr) {
+		KingsDrop = new SphereCollider(Vector4(0, KingAttackRadius, 0, 0), KingAttackRadius);
+		CollisionManager::GetInstance()->AddCollider(KingsDrop);
+
+		KingsDrop->SetAttribute(COLLISION_ATTR_ENEMYKINGDROPATTACK);
+		KingsDrop->Update(energyBigBall.WorldTrans.matWorld_);
+	}
+
 }
 
 void BossWarrier::Spawn(const Vector3& boss1Pos)
@@ -281,10 +290,12 @@ void BossWarrier::Update(const Vector3& targetPos)
 		BossWarrier[i]->SetAttribute(COLLISION_ATTR_ENEMYRECEPTION);
 	}
 
+	KingsDrop->SetAttribute(COLLISION_ATTR_NOTATTACK);
+
 	//引数をメンバにコピー
 	this->targetPos = targetPos;
 
-	if (attack!=Attack::KingDrop)
+	if (attack != Attack::KingDrop)
 	{
 		matBossDir = CreateMatRot({ boss2Model[BossWarrierPart::Root].Transform.translation_.x,0,boss2Model[BossWarrierPart::Root].Transform.translation_.z }, { targetPos.x,0,targetPos.z });
 
@@ -831,7 +842,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			KingDropUpdate();
 			break;
 		case BossAttackPhase::After:
-			if (isKingDownAfter==false)
+			if (isKingDownAfter == false)
 			{
 				boss2Model[BossWarrierPart::Chest].Transform.alpha -= kingDropMoveAlphaP;
 				boss2Model[BossWarrierPart::Head].Transform.alpha -= kingDropMoveAlphaP;
@@ -889,7 +900,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].TransferMatrix();
 	}
-	if (attack!=Attack::KingDrop) {
+	if (attack != Attack::KingDrop) {
 		if (Input::GetInstance()->TriggerKey(DIK_2)) {
 			health = maxHealth / 2;
 			IsKingDrop = false;
@@ -907,7 +918,9 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 	ImGui::Text("maxintervalFrame:%f", maxIntervalFrame);
 
-	ImGui::Text("intervalFrame:%d", intervalFrame);
+	ImGui::Text("energyBigBall.WorldTrans.scale_:%f", energyBigBall.WorldTrans.scale_.x);
+	ImGui::Text("energyBigBall.WorldTrans.scale_:%f", energyBigBall.WorldTrans.scale_.y);
+	ImGui::Text("energyBigBall.WorldTrans.scale_:%f", energyBigBall.WorldTrans.scale_.z);
 
 	ImGui::End();
 
@@ -943,19 +956,19 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 	//	ModelSpere->Draw(AttackColliderWorldTrans[i], viewProMat);
 	//}
 	// 王のしずくの描画
-	if (attack==Attack::KingDrop) {
+	if (attack == Attack::KingDrop) {
 		// 王のしずくのエネルギーの生成の粒の描画
 		if (IsKingEnergy == true) {
 			for (int i = 0; i < energyNum; i++) {
 				energyL[i].model->Draw(energyL[i].WorldTrans, viewProMat);
 				energyR[i].model->Draw(energyR[i].WorldTrans, viewProMat);
 			}
-			
+
 		}
 		// 王のしずくが落ちたら
-		energyBigBallSub.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
+		ModelSpere->Draw(energyBigBallSub.WorldTrans, viewProMat);
 		// 王のしずくのエネルギーの巨大弾の描画
-		energyBigBall.model->Draw(energyBigBall.WorldTrans, viewProMat);
+		ModelSpere->Draw(energyBigBall.WorldTrans, viewProMat);
 	}
 }
 
@@ -1556,8 +1569,9 @@ void BossWarrier::UpdateAtkArmSwing()
 
 void BossWarrier::KingDropUpdate()
 {
+	KingsDrop->SetAttribute(COLLISION_ATTR_ENEMYKINGDROPATTACK);
 	// 王のしずくだったら
-		// 王のしずくを打つポジションに移動する
+	// 王のしずくを打つポジションに移動する
 	if (IsKingDropPos == false) {
 		ImGui::Begin("Pos");
 		ImGui::SliderFloat3("Boss Pos", &kingDropPos.x, -250, 180);
@@ -1853,6 +1867,7 @@ void BossWarrier::KingDropUpdate()
 		// 行列の更新
 		energyBigBall.WorldTrans.TransferMatrix();
 		energyBigBallSub.WorldTrans.TransferMatrix();
+
 	}
 
 	// エネルギー弾をおろす前動作
@@ -2024,6 +2039,10 @@ void BossWarrier::KingDropUpdate()
 		// 行列の更新
 		energyBigBall.WorldTrans.TransferMatrix();
 		energyBigBallSub.WorldTrans.TransferMatrix();
+
+		KingAttackRadius = 15 * energyBigBall.WorldTrans.scale_.x;
+
+		KingsDrop->Update(energyBigBall.WorldTrans.matWorld_, KingAttackRadius);
 
 		// イージングが終了したら、全ての王のしずくの処理を終了
 		if (energyScaleTransTimer >= energyScaleTransTimeMax) {

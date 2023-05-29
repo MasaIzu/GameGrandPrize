@@ -2055,9 +2055,14 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-void Player::SetPosition(Vector3 pos)
+void Player::SetPosition(const Vector3& pos)
 {
 	worldTransform_.translation_ = pos;
+}
+
+void Player::SetRotation(const Vector3& rot)
+{
+	worldTransform_.SetRot(rot);
 }
 
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)

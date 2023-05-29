@@ -217,12 +217,14 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 0,0,0 };
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = boss1Pos;
 	//イージング開始
-	easeRotArm.Start(spawnAnimationTime);
+	easeBossRoot.Start(spawnAnimationTime);
 	//パーティクルの生成数はイージング時間-20に
 	particleCreateTime = spawnAnimationTime - 20;
 	//生存フラグとHPのリセット
 	health = maxHealth;
+	health = 10;
 	isAlive = true;
+	isDeadEnd = false;
 }
 
 void BossWarrier::Update(const Vector3& targetPos)
@@ -237,9 +239,10 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 	boss2Model[BossWarrierPart::Root].Transform.SetMatRot(matBossDir);
 
-	if (health <= 0) {
+	if (health <= 0 && attack != Attack::Death) {
 		//死亡
-		isAlive = false;
+		InitDeath();
+		isDeadEnd = true;
 	}
 
 	ImGui::Text("health %d", health);
@@ -795,7 +798,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 void BossWarrier::Draw(const ViewProjection& viewProMat)
 {
-	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+	for (int i = BossWarrierPart::Boss2PartMax; i > 0; i--) {
 		if (boss2Model[i].isDraw == true)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
@@ -1589,10 +1592,10 @@ void BossWarrier::UpdateAtkSwordSwing()
 void BossWarrier::UpdateSpawn()
 {
 	//イージング更新
-	easeRotArm.Update();
+	easeBossRoot.Update();
 
 	//スケールをだんだん大きく
-	boss2Model[BossWarrierPart::Root].Transform.scale_ = Lerp({ 0,0,0 }, { 15,15,15 }, easeRotArm.GetTimeRate());
+	boss2Model[BossWarrierPart::Root].Transform.scale_ = Lerp({ 0,0,0 }, { 15,15,15 }, easeBossRoot.GetTimeRate());
 
 	Vector3 spawnPos = { Random(-200,200),Random(0,45) ,Random(-200,200) };
 	Vector3 controll = { Random(-45,45),Random(0,45) ,Random(-45,45) };
@@ -1606,7 +1609,7 @@ void BossWarrier::UpdateSpawn()
 	spawnParticle->Update();
 
 
-	if (!easeRotArm.GetActive()) {
+	if (!easeBossRoot.GetActive()) {
 		attack = Attack::StandBy;
 		spawnParticle->AllDelete();
 	}
@@ -1615,6 +1618,7 @@ void BossWarrier::UpdateSpawn()
 
 void BossWarrier::InitDeath() {
 	attack = Attack::Death;
+	bossDeathPhase = BossDeathPhase::RiseBody;
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 0,0,0 };
 	boss2Model[BossWarrierPart::Root].Transform.rotation_ = { 0,0,0 };
 	//死ぬときに体を少し上昇＋上向きにさせるためイージング開始
@@ -1658,6 +1662,8 @@ void BossWarrier::UpdateDeath() {
 	ImGui::SliderFloat("posY[Chest]    %f", &boss2Model[BossWarrierPart::Chest].Transform.translation_.y, -10.0f, 10.0f);
 	ImGui::SliderFloat("posY[Crotch]   %f", &boss2Model[BossWarrierPart::Crotch].Transform.translation_.y, -10.0f, 10.0f);
 
+
+
 	if (easeBossRoot.GetActive()) {
 
 		//switch文用の変数宣言
@@ -1667,7 +1673,7 @@ void BossWarrier::UpdateDeath() {
 		float currenttimeRate = 0;
 		Vector3 movePartPos[EaseDataMax];
 		Vector3 currentPartPos;
-
+		float alphaTimeRate;
 
 
 		switch (bossDeathPhase)
@@ -1741,8 +1747,46 @@ void BossWarrier::UpdateDeath() {
 
 			break;
 		case BossDeathPhase::FallHead:
+
+			movePartPos[Before] = headPos;
+			movePartPos[After] = headPos;
+			movePartPos[After].y = 0.0f;
+
+			boss2Model[BossWarrierPart::Head].Transform.translation_ = Lerp(movePartPos[Before], movePartPos[After], easeBossRoot.GetTimeRate());
+
+
+			alphaTimeRate = easeBossRoot.GetTimeRate() * 2;
+
+			boss2Model[BossWarrierPart::Chest].Transform.alpha = (1- alphaTimeRate);
+			boss2Model[BossWarrierPart::Waist].Transform.alpha = (1 - alphaTimeRate);
+			boss2Model[BossWarrierPart::HandL].Transform.alpha = (1 - alphaTimeRate);
+			boss2Model[BossWarrierPart::HandR].Transform.alpha = (1 - alphaTimeRate);
+			boss2Model[BossWarrierPart::ArmL].Transform.alpha = (1 - alphaTimeRate);
+			boss2Model[BossWarrierPart::ArmR].Transform.alpha = (1 - alphaTimeRate);
+			//boss2Model[BossWarrierPart::Head].Transform.alpha = (1 - easeBossRoot.GetTimeRate());
+
+			if (boss2Model[BossWarrierPart::Chest].Transform.alpha <= 0.1f) {
+				boss2Model[BossWarrierPart::Chest].Transform.translation_.y = -100.0f;
+				boss2Model[BossWarrierPart::Waist].Transform.translation_.y = -100.0f;
+			}
+
+
 			break;
 		case BossDeathPhase::MotionEnd:
+
+			ImGui::Text("cooltime %d", motionCoolTime);
+
+			if (motionCoolTime > 0) {
+				motionCoolTime--;
+				boss2Model[BossWarrierPart::Head].Transform.alpha = 1.0f;
+				easeBossRoot.Start(60);
+			}
+			else {
+
+
+				//頭のアルファ値を0に
+				boss2Model[BossWarrierPart::Head].Transform.alpha = (1 - easeBossRoot.GetTimeRate());
+			}
 			break;
 		case BossDeathPhase::BossDeathPhaseMax:
 			break;
@@ -1771,6 +1815,7 @@ void BossWarrier::UpdateDeath() {
 			boss2Model[BossWarrierPart::HandR].Transform.parent_ = nullptr;
 			boss2Model[BossWarrierPart::ArmL].Transform.parent_ = nullptr;
 			boss2Model[BossWarrierPart::ArmR].Transform.parent_ = nullptr;
+			boss2Model[BossWarrierPart::Head].Transform.parent_ = nullptr;
 
 			//計算された座標を代入
 			boss2Model[BossWarrierPart::Chest].Transform.translation_ = partPos[(int)MovePartIndex::Chest];
@@ -1779,6 +1824,7 @@ void BossWarrier::UpdateDeath() {
 			boss2Model[BossWarrierPart::HandR].Transform.translation_ = partPos[(int)MovePartIndex::HandR];
 			boss2Model[BossWarrierPart::ArmL].Transform.translation_ = partPos[(int)MovePartIndex::ArmL];
 			boss2Model[BossWarrierPart::ArmR].Transform.translation_ = partPos[(int)MovePartIndex::ArmR];
+			boss2Model[BossWarrierPart::Head].Transform.translation_ = headPos;
 
 			boss2Model[BossWarrierPart::Chest].Transform.scale_ = { 15,15,15 };
 			boss2Model[BossWarrierPart::Waist].Transform.scale_ = { 15,15,15 };
@@ -1786,15 +1832,26 @@ void BossWarrier::UpdateDeath() {
 			boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 15,15,15 };
 			boss2Model[BossWarrierPart::ArmL].Transform.scale_ = { 15,15,15 };
 			boss2Model[BossWarrierPart::ArmR].Transform.scale_ = { 15,15,15 };
+			boss2Model[BossWarrierPart::Head].Transform.scale_ = { 15,15,15 };
 
 
 			break;
 		case BossDeathPhase::BreakBody:
+			//フェーズを頭の落下に変更してイージング再開
+			bossDeathPhase = BossDeathPhase::FallHead;
+			easeBossRoot.Start(120);
 			break;
 		case BossDeathPhase::FallHead:
+			//フェーズをモーション終了に変更。イージング
+			bossDeathPhase = BossDeathPhase::MotionEnd;
+			motionCoolTime = 60;
+			easeBossRoot.Start(60);
 
 			break;
 		case BossDeathPhase::MotionEnd:
+		
+			
+
 			return;
 
 			break;
@@ -1830,6 +1887,9 @@ void BossWarrier::CalcFallPos()
 
 	m = boss2Model[BossWarrierPart::HandR].Transform.matWorld_;
 	partPos[(int)MovePartIndex::HandR] = MyMath::GetWorldTransform(m);
+
+	m = boss2Model[BossWarrierPart::Head].Transform.matWorld_;
+	headPos = MyMath::GetWorldTransform(m);
 
 }
 

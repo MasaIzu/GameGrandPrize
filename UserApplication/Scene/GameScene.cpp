@@ -487,6 +487,9 @@ void GameScene::GameUpdate()
 		//ボスの変身のカメラ処理
 		UpdateBossChangeEventCamera();
 
+		//ボス第二形態死亡のカメラ処理
+		UpdateBossDeathEvent();
+
 	}
 	else {
 		//ゲーム本編の更新処理
@@ -576,8 +579,16 @@ void GameScene::GameUpdate()
 
 		}
 
-		if (boss->bossFish->GetIsDeathEnd()&& !boss->bossWarrier->GetAlive()) {
-			scene = Scene::Result;
+		//テスト用
+		if (Input::GetInstance()->TriggerKey(DIK_H)) {
+			InitBossDeathEvent();
+		}
+
+		if (boss->bossFish->GetIsDeathEnd() && boss->bossWarrier->GetIdDeadEnd()) {
+
+			InitBossDeathEvent();
+
+			//scene = Scene::Result;
 		}
 		if (player->GetAlive() == false)
 		{
@@ -615,6 +626,8 @@ void GameScene::GameUpdate()
 	collisionManager->CheckAllCollisions();
 
 	gayserParticle->Update();
+
+
 
 	//カメラは最後にアプデ
 		//ムービーフラグがオンならカメラをムービー用に
@@ -911,10 +924,18 @@ void GameScene::Draw() {
 
 	if (scene == Scene::Game)
 	{
-		boss->DrawHealth();
-		player->DrawHealth();
-		if (boss->bossFish->GetIsDeathEnd()) {
-			boss->bossWarrier->DrawHealth();
+		if (!isMovie) {
+
+			boss->DrawHealth();
+			player->DrawHealth();
+			if (boss->bossFish->GetIsDeathEnd()) {
+				boss->bossWarrier->DrawHealth();
+			}
+
+		}
+		else {
+			//ここにムービー用の黒の縁の描画を入れる
+
 		}
 
 		//boss->DrawHealth();
@@ -1239,7 +1260,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 		return;
 	}
 
-	
+
 
 	float cameraRadian = boss->bossWarrier->GetEasingData().GetTimeRate();
 	float cameraDistance = 120.0f;
@@ -1271,7 +1292,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 	eye.z = cos(cameraRadian) * cameraDistance + stagePos.z;
 	movieCamera.eye = eye;
 
-	
+
 
 	if (boss->bossWarrier->GetEasingData().GetTimeRate() >= 1.0f) {
 
@@ -1342,7 +1363,7 @@ void GameScene::FirstMovieUpdate()
 
 		Vector3 pos;
 
-		
+
 
 
 		pos = { Random(-stageRadius,  stageRadius) / 2, 0, Random(-stageRadius,  stageRadius) / 2 };
@@ -1353,13 +1374,76 @@ void GameScene::FirstMovieUpdate()
 		for (int i = 0; i < 10; i++) {
 			//パーティクルを出す
 			particleAfterPos.x = Random(-10.0f, 10.0f);
-			particleAfterPos.y = Random(12.5f,20.0f);
+			particleAfterPos.y = Random(12.5f, 20.0f);
 			particleAfterPos.z = Random(-10.0f, 10.0f);
 			particleAfterPos += gayserPos[gayserIndex];
 
-			gayserParticle->Add(ParticleManager::Type::Normal, enemySpawnTiming , false, gayserPos[gayserIndex], gayserPos[gayserIndex], particleAfterPos, 0.0f, 10.0f, { 0,0,0,1, }, { 0,0,0,0 });
+			gayserParticle->Add(ParticleManager::Type::Normal, enemySpawnTiming, false, gayserPos[gayserIndex], gayserPos[gayserIndex], particleAfterPos, 0.0f, 10.0f, { 0,0,0,1, }, { 0,0,0,0 });
 		}
 	}
+}
+
+void GameScene::InitBossDeathEvent() {
+
+	isMovie = true;
+	//ムービーフェーズをボス2死亡に
+	eventPhase = EventPhase::Boss2Death;
+
+	//カメラを指定の位置にセット
+	movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
+
+	player->SetPosition({ 0,0,120 });
+	player->SetRotation({ 0,PI,0 });
+	player->Update(viewProjection_);
+
+}
+
+
+void GameScene::UpdateBossDeathEvent() {
+
+	if (eventPhase != EventPhase::Boss2Death) {
+		return;
+	}
+	float timerate = boss->bossWarrier->GetEasingData().GetTimeRate();
+	Vector3 eyeBefore;
+	Vector3 eyeAfter;
+
+	ImGui::Text("timerate %f", timerate);
+
+	//ボスが上昇するときにカメラも上に上げる
+	if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::RiseBody) {
+		eyeBefore = { 0,0,100 };
+		eyeAfter = { 0,45,100 };
+
+		movieCamera.eye = Lerp(eyeBefore, eyeAfter, timerate);
+		movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
+	}//頭落下のフェーズでtargetは頭に
+	else if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::BreakBody) {
+		movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
+	}
+
+	else if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::FallHead) {
+		movieCamera.target = boss->bossWarrier->GetHeadTransform().translation_;
+	}//モーションの終わり(頭が消えてく)時にtargetを頭→自機に
+	else if (boss->bossWarrier->GetBossDeathPhase() == BossDeathPhase::MotionEnd) {
+		Vector3 afterTarget = player->GetWorldPosition();
+		afterTarget.y += 10.0f;
+
+		movieCamera.target = Lerp(movieCamera.target = boss->bossWarrier->GetHeadTransform().translation_,afterTarget , timerate);
+		eyeBefore = { 0,45,100 };
+		eyeAfter = player->GetWorldPosition();
+		eyeAfter.z += 30;
+		eyeAfter.y += 5;
+		movieCamera.eye = Lerp(eyeBefore, eyeAfter, timerate);
+
+		//イージング終わってるならシーン以降
+		if (timerate >= 1.0f) {
+			scene = Scene::Result;
+		}
+
+	}
+
+
 }
 
 int MinMax(int param, int min, int max)

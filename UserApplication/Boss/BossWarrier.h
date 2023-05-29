@@ -110,11 +110,16 @@ public:
 
 	void Rota();
 
-	EasingData GetEasingData()const { return easeRotArm; }
+	EasingData GetEasingData()const { return easeBossRoot; }
 
 	WorldTransform GetRootTransform() const {return boss2Model[BossWarrierPart::Root].Transform; }
+	WorldTransform GetHeadTransform() const {return boss2Model[BossWarrierPart::Head].Transform; }
+
+	BossDeathPhase GetBossDeathPhase()const { return bossDeathPhase; }
+
 
 	bool GetAlive() const { return isAlive; }
+	bool GetIdDeadEnd()const { return isDeadEnd; }
 
 	void Damage(int damage);
 
@@ -228,8 +233,11 @@ private:
 	EasingData easePart[(int)BossDeathPhase::BossDeathPhaseMax];;
 	BossDeathPhase bossDeathPhase;
 	Vector3 partPos[(int)MovePartIndex::MovePartMax];
+	Vector3 headPos;
+	int motionCoolTime = 0;
 
 	bool isAlive = false;
+	bool isDeadEnd = false;
 
 #pragma region HpÇ‹ÇÌÇËÇÃïœêî
 	// HpÇÃè„å¿

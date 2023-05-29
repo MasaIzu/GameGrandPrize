@@ -237,6 +237,7 @@ void PouseUi::Load()
 }
 
 void PouseUi::Reset()
+
 {
 	
 }

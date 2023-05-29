@@ -254,6 +254,11 @@ void BossWarrier::Initialize()
 	energyBigBallSub.WorldTrans.scale_ = energyBallScale / 2;
 	energyBigBallSub.WorldTrans.alpha = 1.0f;
 	energyBigBallSub.WorldTrans.TransferMatrix();
+
+	ArmSwingSE.SoundLoadWave("bossRush.wav");
+	TornadoSE.SoundLoadWave("BossWind.wav");
+	LaunchSwordSE.SoundLoadWave("BossSowrdFly.wav");
+	SwordSwingSE.SoundLoadWave("BossSowrdAttack.wav");
 }
 
 void BossWarrier::Spawn(const Vector3& boss1Pos)
@@ -569,6 +574,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 			}
 			else
 			{
+				TornadoSE.SoundPlayWave(false,1);
 				bossAttackPhase = BossAttackPhase::Attack;
 			}
 			break;
@@ -1020,6 +1026,10 @@ void BossWarrier::MultiLaunchSword()
 	if (t)
 	{
 		phase2AttackCoolTime--;
+		if (phase2AttackCoolTime == 0)
+		{
+			LaunchSwordSE.SoundPlayWave(false,1);
+		}
 		if (phase2AttackCoolTime <= 0)
 		{
 			//生成した剣を飛ばすシーン
@@ -1112,7 +1122,7 @@ void BossWarrier::LaunchSword()
 			{
 				if (isShot[i] == false)
 				{
-
+					LaunchSwordSE.SoundPlayWave(false,1);
 					isShot[i] = true;
 					//剣からプレイヤーへのベクトル計算,飛ばす用
 					pPos[i].translation_ = targetPos + Vector3(0, 5, 0);
@@ -1474,6 +1484,7 @@ void BossWarrier::UpdateAtkArmSwing()
 	//イージングが終了したら(timeRateが1.0以上)イージングのパラメータを入れ替えてまたイージング開始
 	if (!easeRotArm.GetActive()) {
 		atkArmSwingTime++;
+		ArmSwingSE.SoundPlayWave(false,1);
 
 		// それぞれの回転データをスワップ
 		Vector3 data = dataRotArm[0];
@@ -2241,6 +2252,9 @@ void BossWarrier::UpdateAtkSwordSwing()
 		rootRot = dataRootRot[0];
 		shoulderRotL = dataRotShoulderL[0];
 		easeRotArm.Start(30);
+		if (atkStartTime == 0) {
+			SwordSwingSE.SoundPlayWave(false,1);
+		}
 	}
 	//カウントダウン0で攻撃開始
 	else if (atkStartTime == 0) {

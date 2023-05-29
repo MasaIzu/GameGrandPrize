@@ -275,9 +275,9 @@ void BossWarrier::Initialize()
 		light.SetDirLightActive(1, true);
 		light.SetDirLightActive(2, true);
 
-		light.SetDirLightColor(0, { 1,1,0 });
-		light.SetDirLightColor(1, { 1,1,0 });
-		light.SetDirLightColor(2, { 1,1,0 });
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
 
 		for (int i = 0; i < energyNum; i++) {
 			energyL[i].model->SetLight(light);
@@ -966,9 +966,9 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		light.SetDirLightDir(1, -eye);
 		light.SetDirLightDir(2, eye);
 
-		light.SetDirLightColor(0, { 1,1,0 });
-		light.SetDirLightColor(1, { 1,1,0 });
-		light.SetDirLightColor(2, { 1,1,0 });
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
 
 		energyBigBall.model->SetLight(light);
 		energyBigBallSub.model->SetLight(light);

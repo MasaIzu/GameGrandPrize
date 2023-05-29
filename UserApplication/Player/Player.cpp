@@ -2380,10 +2380,10 @@ void Player::SpriteInitialize()
 	// 画像の読み込み
 
 	//体力の画像読み込み
-	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite = Sprite::Create(TextureManager::Load("playerHp_inside.png"));
 	healthSprite->SetAnchorPoint({ 0,0 });
 
-	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
 	healthAlfaSprite->SetAnchorPoint({ 0,0 });
 
 	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));

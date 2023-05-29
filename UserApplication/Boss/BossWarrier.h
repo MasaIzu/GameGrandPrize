@@ -314,7 +314,7 @@ private:
 	// エネルギー球の生成するときのマックススケール
 	Vector3 energyBallMaxScale = { 4.8f,4.8f, 4.8f };
 	// エネルギーの弾が一フレームに増えるスケールの量
-	Vector3 energyBallPlusScale = {0.005f,0.005f, 0.005f};
+	Vector3 energyBallPlusScale = {0.01f,0.01f, 0.01f};
 
 	bool isKingDownAfter=false;
 
@@ -385,8 +385,8 @@ private:
 	Vector3 comElbowLPos = { 0.875f,0.25f,0.320f };
 	Vector3 comElbowRPos = { -0.875f,0.25f,0.320f };
 	float armCompressionTimer = 0;
-	float armCompressionTimeMax = 60 * 4;
-	Vector3 comEnergyBallScaleMax = { 0.1f,0.1f, 0.1f };
+	float armCompressionTimeMax = 60 * 1;
+	Vector3 comEnergyBallScaleMax = { 0.2f,0.2f, 0.2f };
 	Vector3 comEnergyBallScale={ 5.8f,5.8f, 5.8f };
 	Vector3 comEnergyMinusScale;
 
@@ -410,7 +410,7 @@ private:
 	Vector3 energyBallDownMinus = { 0,-0.05f, 0 };
 	Vector3 energyBallFallDownPos= { 0,-2.65f,15.84f };
 	float energyBallDownTimer = 0;
-	float energyBallDownTimeMax = 60 * 2;
+	float energyBallDownTimeMax = 60 * 3;
 
 	// エネルギー弾がうにょうにょする動きのもの
 	int energyUnyoUnyoCount = 0;
@@ -420,26 +420,35 @@ private:
 	Vector3 energyUnyoUnyoScaleKimo = { 1.8f,2.2f,1.8f };
 	float energyBallUnyoTimer = 0;
 	float energyBallFirstTransTimeMax = 60 * 0.5;
-	float energyBallUnyoTimeMax = 10 * 1;
+	float energyBallUnyoTimeMax = 2 * 1;
 	bool IsEnergyScaleFirstTrans = false;
 	bool IsEnergyScaleDefu = false;
 	bool IsEnergyScaleKimo = false;
 
+	// 一瞬の白い画面のスプライト
+	std::unique_ptr<Sprite> whiteBack;
+	std::unique_ptr<Sprite> whiteStarBack1;
+	std::unique_ptr<Sprite> whiteStarBack2;
+	float whiteTimer = 0;
+	float whiteTimeMax = 2;
+	int whiteCount = 0;
+	Vector4 whiteOutColor = { 0.8f,0.8f,0.8f,0.6f };
+
 	// エネルギー弾が消えるまでの動きのもの
 	float energyScaleTransTimer = 0;
-	float energyScaleTransTimeMax = 60 * 4;
+	float energyScaleTransTimeMax = 60 * 2;
 	float energyScaleTransTimeRate;
 	Vector3 energyTransScaleToEnd = { 6,6,6 };
 
 	// 第一段階のαを下げるもの
 	float energyAlphaTransTimer = 0;
-	float energyAlphaTransTimeMax = 20;
+	float energyAlphaTransTimeMax = 5;
 	float energyBallAlphaDefu = 0.95f;
 	float energyBallAlphaTrans = 0.3f;
 
 	// 終わりに至るまでのαを下げるもの
 	float energyAlphaEndTimer = 0;
-	float energyAlphaEndTimeMax = 20;
+	float energyAlphaEndTimeMax = 5;
 	float energyBallAlphaInsideEnd = 1.0f;
 	float energyBallAlphaTransEnd = 0.0f;
 

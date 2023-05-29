@@ -229,6 +229,19 @@ void BossWarrier::Initialize()
 	healthAlfaSprite->SetSize(hpAlfaSize);
 	HP_barSprite->SetSize(HP_barSize);
 
+	// 白いバックグランドの初期化
+	whiteBack = Sprite::Create(TextureManager::Load("whiteBig90.png"));
+	whiteBack->SetAnchorPoint({0, 0});
+	whiteBack->SetSize({ 1280, 720 });
+
+	whiteStarBack1 = Sprite::Create(TextureManager::Load("whiteBigSter.png"));
+	whiteStarBack1->SetAnchorPoint({ 0, 0 });
+	whiteStarBack1->SetSize({ 1280,720 });
+
+	whiteStarBack2 = Sprite::Create(TextureManager::Load("whiteBigSter2.png"));
+	whiteStarBack2->SetAnchorPoint({ 0, 0 });
+	whiteStarBack2->SetSize({ 1280,720 });
+
 	// エネルギーの弾の生成するときの中間点のベクトルの初期化
 	EnergyVelL = createEnergyEndPos - createEnergyStartLPos;
 	EnergyVelL /= 2;
@@ -909,6 +922,8 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 	ImGui::Text("intervalFrame:%d", intervalFrame);
 
+	ImGui::InputFloat4("whiteOut Color", &whiteOutColor.x);
+
 	ImGui::End();
 
 }
@@ -1009,6 +1024,51 @@ void BossWarrier::DrawHealth()
 	healthSprite->Draw(pos, { 1,1,1,1 });
 
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
+
+	if (IsEnergyBallPyupyu == true) {
+		// 白いバックグランドを一瞬出す
+		if (whiteTimer < whiteTimeMax) {
+			whiteTimer++;
+		}
+
+		switch (whiteCount)
+		{
+		case 0:
+			if (whiteTimer >= whiteTimeMax) {
+				whiteTimer = 0;
+				
+				whiteCount++;
+			}
+			whiteBack->Draw({ 0,0 }, whiteOutColor);
+			break;
+		case 1:
+			if (whiteTimer >= whiteTimeMax) {
+				whiteTimer = 0;
+				
+				whiteCount++;
+			}
+			whiteStarBack1->Draw({ 0,0 }, whiteOutColor);
+			break;
+		case 2:
+			if (whiteTimer >= whiteTimeMax) {
+				whiteTimer = 0;
+				
+				whiteCount++;
+			}
+			whiteBack->Draw({ 0,0 }, whiteOutColor);
+			break;
+		case 3:
+			if (whiteTimer >= whiteTimeMax) {
+				whiteTimer = 0;
+				
+				whiteCount++;
+			}
+			whiteStarBack2->Draw({ 0,0 }, whiteOutColor);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 
@@ -1599,7 +1659,7 @@ void BossWarrier::KingDropUpdate()
 	if (IsKingUp == true) {
 		// 体の位置を上げる処理
 		if (bodyUpMaxY > boss2Model[BossWarrierPart::Root].Transform.translation_.y) {
-			boss2Model[BossWarrierPart::Root].Transform.translation_.y += 0.05f;
+			boss2Model[BossWarrierPart::Root].Transform.translation_.y += 0.1f;
 		}
 		// 腕を上げる処理---------------Todo
 		if (armUpTimer < armUpTimeMax) {
@@ -1921,70 +1981,73 @@ void BossWarrier::KingDropUpdate()
 
 	// エネルギー弾がうにょうにょする動きの処理
 	if (IsEnergyBallPyupyu == true) {
-		// 最初は普通に拡大させる
-		if (IsEnergyScaleFirstTrans == false) {
-			if (energyBallUnyoTimer < energyBallFirstTransTimeMax) {
-				energyBallUnyoTimer++;
-			}
-			energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyFirstTransScale, energyUnyoUnyoScaleDefu, energyBallUnyoTimer, energyBallFirstTransTimeMax);
-			energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
+		//// 最初は普通に拡大させる
+		//if (IsEnergyScaleFirstTrans == false) {
+		//	if (energyBallUnyoTimer < energyBallFirstTransTimeMax) {
+		//		energyBallUnyoTimer++;
+		//	}
+		//	energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyFirstTransScale, energyUnyoUnyoScaleDefu, energyBallUnyoTimer, energyBallFirstTransTimeMax);
+		//	energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
 
-			// 行列の更新
-			energyBigBall.WorldTrans.TransferMatrix();
-			energyBigBallSub.WorldTrans.TransferMatrix();
-			// イージングが終了したらタイマーのリセットして、最初のスケール変形を終了
-			if (energyBallUnyoTimer >= energyBallFirstTransTimeMax) {
-				energyBallUnyoTimer = 0;
-				IsEnergyScaleFirstTrans = true;
-			}
-		}
+		//	// 行列の更新
+		//	energyBigBall.WorldTrans.TransferMatrix();
+		//	energyBigBallSub.WorldTrans.TransferMatrix();
+		//	// イージングが終了したらタイマーのリセットして、最初のスケール変形を終了
+		//	if (energyBallUnyoTimer >= energyBallFirstTransTimeMax) {
+		//		energyBallUnyoTimer = 0;
+		//		IsEnergyScaleFirstTrans = true;
+		//	}
+		//}
 
-		// うにょうにょの動きのカウントがマックスになっていなかったら
-		if (energyUnyoUnyoCount < energyUnyoUnyoCountMax &&
-			IsEnergyScaleFirstTrans == true) {
-			// エネルギー弾の今のスケールを判断して、縮小もしくは拡大
-			// 今のスケールがデフォルトの大きさだったらきもい方にイージング
-			if (IsEnergyScaleKimo == false) {
-				if (energyBallUnyoTimer < energyBallUnyoTimeMax) {
-					energyBallUnyoTimer++;
-				}
-				energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyUnyoUnyoScaleDefu, energyUnyoUnyoScaleKimo, energyBallUnyoTimer, energyBallUnyoTimeMax);
-				energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
+		//// うにょうにょの動きのカウントがマックスになっていなかったら
+		//if (energyUnyoUnyoCount < energyUnyoUnyoCountMax &&
+		//	IsEnergyScaleFirstTrans == true) {
+		//	// エネルギー弾の今のスケールを判断して、縮小もしくは拡大
+		//	// 今のスケールがデフォルトの大きさだったらきもい方にイージング
+		//	if (IsEnergyScaleKimo == false) {
+		//		if (energyBallUnyoTimer < energyBallUnyoTimeMax) {
+		//			energyBallUnyoTimer++;
+		//		}
+		//		energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyUnyoUnyoScaleDefu, energyUnyoUnyoScaleKimo, energyBallUnyoTimer, energyBallUnyoTimeMax);
+		//		energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
 
-				// 行列の更新
-				energyBigBall.WorldTrans.TransferMatrix();
-				energyBigBallSub.WorldTrans.TransferMatrix();
-				// イージングが終了したらタイマーのリセットして、きもい方の動きに変更
-				if (energyBallUnyoTimer >= energyBallUnyoTimeMax) {
-					energyBallUnyoTimer = 0;
-					IsEnergyScaleKimo = true;
-					IsEnergyScaleDefu = false;
-				}
-			}
-			// きもい場合はデフォルトの方にイージング
-			else {
-				if (energyBallUnyoTimer < energyBallUnyoTimeMax) {
-					energyBallUnyoTimer++;
-				}
-				energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyUnyoUnyoScaleKimo, energyUnyoUnyoScaleDefu, energyBallUnyoTimer, energyBallUnyoTimeMax);
-				energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
+		//		// 行列の更新
+		//		energyBigBall.WorldTrans.TransferMatrix();
+		//		energyBigBallSub.WorldTrans.TransferMatrix();
+		//		// イージングが終了したらタイマーのリセットして、きもい方の動きに変更
+		//		if (energyBallUnyoTimer >= energyBallUnyoTimeMax) {
+		//			energyBallUnyoTimer = 0;
+		//			IsEnergyScaleKimo = true;
+		//			IsEnergyScaleDefu = false;
+		//		}
+		//	}
+		//	// きもい場合はデフォルトの方にイージング
+		//	else {
+		//		if (energyBallUnyoTimer < energyBallUnyoTimeMax) {
+		//			energyBallUnyoTimer++;
+		//		}
+		//		energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyUnyoUnyoScaleKimo, energyUnyoUnyoScaleDefu, energyBallUnyoTimer, energyBallUnyoTimeMax);
+		//		energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
 
-				// 行列の更新
-				energyBigBall.WorldTrans.TransferMatrix();
-				energyBigBallSub.WorldTrans.TransferMatrix();
-				// イージングが終了したらタイマーのリセットして、デフォルトの動きに変更
-				if (energyBallUnyoTimer >= energyBallUnyoTimeMax) {
-					energyBallUnyoTimer = 0;
-					IsEnergyScaleKimo = false;
-					IsEnergyScaleDefu = true;
-					// きもい方からデフォルトにイージングした場合、ワンセットとみなしカウントを一つ増やす
-					energyUnyoUnyoCount += 1;
-				}
-			}
-		}
+		//		// 行列の更新
+		//		energyBigBall.WorldTrans.TransferMatrix();
+		//		energyBigBallSub.WorldTrans.TransferMatrix();
+		//		// イージングが終了したらタイマーのリセットして、デフォルトの動きに変更
+		//		if (energyBallUnyoTimer >= energyBallUnyoTimeMax) {
+		//			energyBallUnyoTimer = 0;
+		//			IsEnergyScaleKimo = false;
+		//			IsEnergyScaleDefu = true;
+		//			// きもい方からデフォルトにイージングした場合、ワンセットとみなしカウントを一つ増やす
+		//			energyUnyoUnyoCount += 1;
+		//		}
+		//	}
+		//}
 
+
+
+		energyUnyoUnyoCount = 2;
 		// うにょうにょのセットがマックス以上になったら、拡大の処理に移行
-		if (energyUnyoUnyoCount >= energyUnyoUnyoCountMax) {
+		if (whiteCount >= 4) {
 			IsEnergyScaleFirstTrans = false;
 			IsEnergyBallPyupyu = false;
 			IsEnergyBallFallBig = true;
@@ -2109,7 +2172,9 @@ void BossWarrier::KingDropReset()
 	energyAlphaTransTimer = 0;
 	energyAlphaEndTimer = 0;
 
-
+	// 白いスプライトのリセット
+	whiteTimer = 0;
+	whiteCount = 0;
 
 }
 

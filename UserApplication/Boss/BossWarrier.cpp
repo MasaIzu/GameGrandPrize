@@ -1333,6 +1333,8 @@ void BossWarrier::reset()
 	isAtkArmSwing = false;
 	atkStartTime = 0;
 
+	IsKingDrop = false;
+
 	isAfter = false;
 	rootRotRad = 0;
 	TornadoFlame = 0;

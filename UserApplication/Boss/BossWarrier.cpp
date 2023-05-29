@@ -272,8 +272,8 @@ void BossWarrier::Initialize()
 		LightGroup light = energyBigBall.model->GetLigit();
 
 		light.SetDirLightActive(0, true);
-		light.SetDirLightActive(1, true);
-		light.SetDirLightActive(2, true);
+		light.SetDirLightActive(1, false);
+		light.SetDirLightActive(2, false);
 
 		light.SetDirLightColor(0, { 5,0,5 });
 		light.SetDirLightColor(1, { 5,0,5 });
@@ -987,9 +987,9 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 		}
 		// ‰¤‚Ì‚µ‚¸‚­‚ª—Ž‚¿‚½‚ç
-		ModelSpere->Draw(energyBigBallSub.WorldTrans, viewProMat);
+		energyBigBall.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
 		// ‰¤‚Ì‚µ‚¸‚­‚ÌƒGƒlƒ‹ƒM[‚Ì‹‘å’e‚Ì•`‰æ
-		ModelSpere->Draw(energyBigBall.WorldTrans, viewProMat);
+		energyBigBallSub.model->Draw(energyBigBall.WorldTrans, viewProMat);
 	}
 }
 

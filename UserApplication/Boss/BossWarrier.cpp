@@ -1498,6 +1498,7 @@ void BossWarrier::reset()
 
 	TornadoRotY[1] = 3.14;
 
+	KingsDrop->SetAttribute(COLLISION_ATTR_NOTATTACK);
 
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 }
@@ -2169,6 +2170,9 @@ void BossWarrier::KingDropReset()
 
 	energyBigBall.WorldTrans.TransferMatrix();
 	energyBigBallSub.WorldTrans.TransferMatrix();
+	KingAttackRadius = 0;
+	KingsDrop->Update(energyBigBall.WorldTrans.matWorld_, KingAttackRadius);
+	KingsDrop->SetAttribute(COLLISION_ATTR_NOTATTACK);
 
 	// エネルギーの生成の粒のパラメータリセット
 	for (int i = 0; i < energyNum; i++) {

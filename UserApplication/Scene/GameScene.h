@@ -433,6 +433,12 @@ private://プライベート関数
 
 	//ボスの変身の更新
 	void UpdateBossChangeEventCamera();
+
+	//ボス2の死亡ムービーの初期化(開始)処理
+	void InitBossDeathEvent();
+
+	//ボス２の死亡ムービーの更新処理
+	void UpdateBossDeathEvent();
 };
 
 int MinMax(int param,int min, int max);

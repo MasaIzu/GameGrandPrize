@@ -326,6 +326,10 @@ float LerpConbertInback(float t);
 
 float LerpConbertOut(float t);
 
+float LerpConbertOutbounce(float t);
+
+float LerpConbertIn(float t);
+
 /// <summary>
 /// ˆø”“‚ÌŠm—¦‚Åtrue‚ğ•Ô‚·ŠÖ”
 /// </summary>

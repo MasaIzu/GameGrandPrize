@@ -66,7 +66,8 @@ public:
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
-	void SetPosition(Vector3 pos);
+	void SetPosition(const Vector3& pos);
+	void SetRotation(const Vector3& rot);
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return isSpace; }

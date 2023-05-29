@@ -68,6 +68,7 @@ enum class Attack
 	SwordSwing,
 	Spawm,
 	Approach,
+	Death,
 	KingDrop,
 };
 
@@ -76,6 +77,25 @@ enum class BossAttackPhase
 	Before,
 	Attack,
 	After,
+};
+
+enum class BossDeathPhase {
+	RiseBody,
+	BreakBody,
+	FallHead,
+	MotionEnd,
+	BossDeathPhaseMax,
+	BossDeathPhaseIncrement = 1,
+};
+
+enum class MovePartIndex {
+	Chest,
+	Waist,
+	ArmL,
+	ArmR,
+	HandL,
+	HandR,
+	MovePartMax,
 };
 
 class BossWarrier
@@ -109,11 +129,16 @@ public:
 
 	void Rota();
 
-	EasingData GetEasingData()const { return easeRotArm; }
+	EasingData GetEasingData()const { return easeBossRoot; }
 
 	WorldTransform GetRootTransform() const {return boss2Model[BossWarrierPart::Root].Transform; }
+	WorldTransform GetHeadTransform() const {return boss2Model[BossWarrierPart::Head].Transform; }
+
+	BossDeathPhase GetBossDeathPhase()const { return bossDeathPhase; }
+
 
 	bool GetAlive() const { return isAlive; }
+	bool GetIdDeadEnd()const { return isDeadEnd; }
 
 	void Damage(int damage);
 
@@ -221,8 +246,17 @@ private:
 	std::unique_ptr<ParticleManager> spawnParticle;
 	int particleCreateTime = 0;
 	int spawnAnimationTime = 120;
+	int deathParticleInterval = 0;
+	const int deathParticleCooltime = 30;
+	EasingData easeBossRoot;
+	EasingData easePart[(int)BossDeathPhase::BossDeathPhaseMax];;
+	BossDeathPhase bossDeathPhase;
+	Vector3 partPos[(int)MovePartIndex::MovePartMax];
+	Vector3 headPos;
+	int motionCoolTime = 0;
 
 	bool isAlive = false;
+	bool isDeadEnd = false;
 
 #pragma region Hpまわりの変数
 	// Hpの上限
@@ -497,6 +531,15 @@ private:
 
 	//スポーン時の更新処理
 	void UpdateSpawn();
+
+	//死亡モーション初期化
+	void InitDeath();
+
+	//死亡モーション更新
+	void UpdateDeath();
+
+	//各部位の落下地点計算
+	void CalcFallPos();
 
 };
 

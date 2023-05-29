@@ -267,6 +267,21 @@ void BossWarrier::Initialize()
 	TornadoSE.SoundLoadWave("BossWind.wav");
 	LaunchSwordSE.SoundLoadWave("BossSowrdFly.wav");
 	SwordSwingSE.SoundLoadWave("BossSowrdAttack.wav");
+
+	{
+		LightGroup light = energyBigBall.model->GetLigit();
+
+		light.SetDirLightActive(0, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(2, true);
+
+		light.SetDirLightColor(0, { 5,0,5 });
+		light.SetDirLightColor(1, { 5,0,5 });
+		light.SetDirLightColor(2, { 5,0,5 });
+
+		energyBigBall.model->SetLight(light);
+		energyBigBallSub.model->SetLight(light);
+	}
 }
 
 void BossWarrier::Spawn(const Vector3& boss1Pos)
@@ -933,6 +948,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 void BossWarrier::Draw(const ViewProjection& viewProMat)
 {
+
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		if (boss2Model[i].isDraw == true)
 		{

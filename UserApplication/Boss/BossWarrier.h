@@ -442,7 +442,7 @@ private:
 	float energyScaleTransTimer = 0;
 	float energyScaleTransTimeMax = 60 * 2;
 	float energyScaleTransTimeRate;
-	Vector3 energyTransScaleToEnd = { 6,6,6 };
+	Vector3 energyTransScaleToEnd = { 11,11,11 };
 
 	// ‘æˆê’iŠK‚Ìƒ¿‚ð‰º‚°‚é‚à‚Ì
 	float energyAlphaTransTimer = 0;

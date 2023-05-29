@@ -2089,7 +2089,7 @@ void BossWarrier::KingDropUpdate()
 			energyScaleTransTimeRate = energyScaleTransTimer / energyScaleTransTimeMax;
 		}
 		energyBigBall.WorldTrans.scale_ = Easing::InOutVec3(energyUnyoUnyoScaleDefu, energyTransScaleToEnd, energyScaleTransTimer, energyScaleTransTimeMax);
-		energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 3 * 2;
+		energyBigBallSub.WorldTrans.scale_ = energyBigBall.WorldTrans.scale_ / 5 * 4;
 
 
 		// スケールのタイムレイトが4割に到達したら、外側の球のアルファ値を下げる
@@ -2166,6 +2166,9 @@ void BossWarrier::KingDropReset()
 	energyBigBallSub.WorldTrans.translation_ = createEnergyEndPos;
 	energyBigBallSub.WorldTrans.scale_ = energyBallScale / 2;
 	energyBigBallSub.WorldTrans.alpha = 1.0f;
+
+	energyBigBall.WorldTrans.TransferMatrix();
+	energyBigBallSub.WorldTrans.TransferMatrix();
 
 	// エネルギーの生成の粒のパラメータリセット
 	for (int i = 0; i < energyNum; i++) {

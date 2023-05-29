@@ -53,6 +53,7 @@ public:
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
+	void Collision(int damage,int time);
 	void DrawHealth();
 	void Reset();
 	void AddUltCount(int count);

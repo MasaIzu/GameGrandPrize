@@ -26,4 +26,5 @@ const unsigned short COLLISION_ATTR_ENEMYBIGSOWRD = 0b10111;//剣判定用
 const unsigned short COLLISION_ATTR_ENEMYRECEPTION = 0b11000;//敵攻撃待機
 const unsigned short COLLISION_ATTR_ENEMYSOWRDATTACK = 0b11001;//敵剣攻撃待機
 const unsigned short COLLISION_ATTR_ENEMYTORNADOATTACK = 0b11010;//敵竜巻攻撃待機
+const unsigned short COLLISION_ATTR_ENEMYKINGDROPATTACK = 0b11011;//敵王のしずく攻撃待機
 

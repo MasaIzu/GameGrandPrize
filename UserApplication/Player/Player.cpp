@@ -1548,7 +1548,7 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					
+
 					isSowrd = true;
 					AttackCoolTimeMax = 5000;
 					isCoolTimeRiset = true;
@@ -1608,7 +1608,7 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					
+
 					isSowrd = true;
 					AttackCoolTimeMax = 1000;
 					isCoolTimeRiset = true;
@@ -1717,70 +1717,70 @@ void Player::SetKnockBackCount()
 
 void Player::KnockBackUpdate()
 {
-	if (moveTime < MaxMoveTime) {
-		moveTime++;
-		KnockBack += PlayerMoveMent / 2;
-		KnockBack += Avoidance;
-		KnockBack += AttackMovememt / 2;
-		Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+	if (isEnemyDamage == true) {
+		if (moveTime < MaxMoveTime) {
+			moveTime++;
+			KnockBack += PlayerMoveMent / 2;
+			KnockBack += Avoidance;
+			KnockBack += AttackMovememt / 2;
+			Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 
-		float AR;
-		float BR;
+			float AR;
+			float BR;
 
-		damageFlashFlame++;
+			damageFlashFlame++;
 
-		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
-		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
+			AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
+			BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
 
-		if (AR <= BR)
-		{
-			worldTransform_.translation_ = KnockBackMove;
-		}
-		worldTransform_.TransferMatrix();
-		if (isEnemyDamage == true) {
-
-			if (NotMoveTime < MaxNotMoveTime) {
-				NotMoveTime++;
-				playerNowMotion = PlayerMotion::DamegeAction;
-
-				attackMoveTimer = 0;
-				isPlayMotion = false;
-
-				attackConbo = 0;
-
-				frem = 30.0f;
-				receptionTime = 0;
-
-				SowrdDrowTime = 0;
-				MaxSowrdRotate = 35;
-				AttackRotX = 0.0f;
-				AttackRotY = 0.0f;
-				AttackRotZ = 0.0f;
-
-				AttackOnlyLeftRotX = 0.0f;
-				AttackOnlyLeftRotY = 0.0f;
-				AttackOnlyLeftRotZ = 0.0f;
-
-				AttackOnlyRightRotX = 0.0f;
-				AttackOnlyRightRotY = 0.0f;
-				AttackOnlyRightRotZ = 0.0f;
-
-				BoneParentRotY = 0.0f;
-
-				IsCombo = false;
-				IsCombo2 = false;
-				IsCombo3 = false;
-				IsCombo4 = false;
-				IsCombo5 = false;
-
-				LookingMove = { 0,0,0 };
-				AttackNowPos = worldTransform_.translation_;
+			if (AR <= BR)
+			{
+				worldTransform_.translation_ = KnockBackMove;
 			}
-			else {
-				isEnemyDamage = false;
-			}
-		}
+			worldTransform_.TransferMatrix();
 
+
+
+			NotMoveTime++;
+			playerNowMotion = PlayerMotion::DamegeAction;
+
+			attackMoveTimer = 0;
+			isPlayMotion = false;
+
+			attackConbo = 0;
+
+			frem = 30.0f;
+			receptionTime = 0;
+
+			SowrdDrowTime = 0;
+			MaxSowrdRotate = 35;
+			AttackRotX = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 0.0f;
+
+			AttackOnlyLeftRotX = 0.0f;
+			AttackOnlyLeftRotY = 0.0f;
+			AttackOnlyLeftRotZ = 0.0f;
+
+			AttackOnlyRightRotX = 0.0f;
+			AttackOnlyRightRotY = 0.0f;
+			AttackOnlyRightRotZ = 0.0f;
+
+			BoneParentRotY = 0.0f;
+
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
+
+			LookingMove = { 0,0,0 };
+			AttackNowPos = worldTransform_.translation_;
+
+		}
+		else {
+			isEnemyDamage = false;
+		}
 	}
 	else
 	{
@@ -1914,7 +1914,7 @@ void Player::DrawHealth() {
 
 	ultSprite->Draw(ultPos, { 1,1,1,1 });
 	ultBarSprite->Draw(ULT_barPos, { 1,1,1,1 });
-	
+
 
 
 	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
@@ -1997,6 +1997,65 @@ void Player::Collision(int damage)
 {
 	if (isKnockBack == false)
 	{
+		MaxMoveTime = 20;
+		KnockBackDistance = 30.0f;
+		playerDamegeSE.SoundPlayWave(false, 0.6f);
+		SetKnockBackCount();
+		HP -= damage;
+		damageFlashFlame = 0;
+		if (HP < 0)
+		{
+			HP = 0;
+		}
+
+		int ParticleNumber = 10;
+		if (HP <= 0)
+		{
+			ParticleNumber = 0;
+		}
+		//スペースキーを押していたら
+		for (int i = 0; i < ParticleNumber; i++)
+		{
+			//消えるまでの時間
+			const float rnd_life = 70.0f;
+			//最低限のライフ
+			const float constlife = 10;
+			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+
+			Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+			Vector3 controlPos = { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z };
+
+			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+
+			startPos.y += 10;
+
+			controlPos.y += 10;
+
+			endPos.y += 10;
+			//追加
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 1.0f, 1.0f, { 0.5,0,0,1 }, { 0.5,0,0,1 });
+		}
+		IsHpAlfa = true;
+		hpAlfaSize = hpSize;
+	}
+}
+
+void Player::Collision(int damage, int time)
+{
+	if (isKnockBack == false)
+	{
+		MaxMoveTime = time;
+		KnockBackDistance = 2.0f;
 		playerDamegeSE.SoundPlayWave(false, 0.6f);
 		SetKnockBackCount();
 		HP -= damage;

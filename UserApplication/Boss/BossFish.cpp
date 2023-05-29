@@ -89,14 +89,6 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 
 	ImGui::Text("health %d", bossHealth);
 
-	//ダメージのタイマーをセット
-	if (damageTimer > 0) {
-		damageTimer--;
-	}
-	else {
-		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
-	}
-
 	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
 	if (fishes.empty()) {
 		collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
@@ -114,7 +106,6 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 		break;
 	case BossFishPhase::Atk_Rush:
 		UpdateAtkRush();
-		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 		break;
 	case BossFishPhase::BeginMotion:
 		UpdateBeginMotion();
@@ -895,7 +886,7 @@ void BossFish::UpdateAtkRush()
 	UpdateAtkRushBeginMotion();
 
 	if (AttackNow == true) {
-
+		collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 		easeParentPos.Update();
 
 		ImGui::Text("fish[0].translation:%f,%f,%f", fishes[0].pos.translation_.x, fishes[0].pos.translation_.x, fishes[0].pos.translation_.x);

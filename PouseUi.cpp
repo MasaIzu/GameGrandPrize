@@ -174,8 +174,7 @@ void PouseUi::Process()
 		case 5://ƒQ[ƒ€I—¹4
 			Exit();
 			Reset();
-			OK = FALSE;
-			isPouse = FALSE;
+			
 			break;
 		}
 	}
@@ -271,6 +270,8 @@ void PouseUi::Exit()
 		isEnd = TRUE;
 		OK = FALSE;
 		isCheck = FALSE;
+		isPouse = FALSE;
+		
 	}
 	//NO
 	if (input_->TriggerKey(DIK_N))

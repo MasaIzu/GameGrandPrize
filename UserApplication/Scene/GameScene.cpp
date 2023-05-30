@@ -1303,7 +1303,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 		}
 		return;
 	}
-
+	
 	//カメラ座標をボスのイージングを使って回転させる
 	cameraRadian *= 360.0f;
 	cameraRadian -= 90.0f;

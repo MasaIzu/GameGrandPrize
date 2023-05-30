@@ -289,6 +289,7 @@ void BossFish::DrawHealth() {
 void BossFish::Reset()
 {
 	fishParent.radius = 20.0f;
+	fishParent.pos.translation_ = { 0,16,100 };
 
 
 	AttackBegin = true;

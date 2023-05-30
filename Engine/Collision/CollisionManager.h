@@ -75,7 +75,7 @@ private:
 
 	bool isEnemyReception = false;
 
-
+	int FirstCoolTime = 0;
 	int CoolTime = 0;
 	bool isCoolTime = false;
 

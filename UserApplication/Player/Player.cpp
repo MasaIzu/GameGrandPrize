@@ -1089,6 +1089,7 @@ void Player::Attack() {
 					AttackCoolTimeMax = 360;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 10;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1228,6 +1229,7 @@ void Player::Attack() {
 					AttackCoolTimeMax = 360;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1392,6 +1394,7 @@ void Player::Attack() {
 				IsCombo4 = false;
 				IsCombo5 = false;
 				AttackCoolTime = 0;
+				FirstCoolTime = 0;
 			}
 
 		}
@@ -1448,7 +1451,7 @@ void Player::Attack() {
 		}
 		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTimeMax, isCoolTimeRiset);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTimeMax, FirstCoolTime, isCoolTimeRiset);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
 			}
 		}
@@ -2234,7 +2237,7 @@ void Player::Reset()
 	AttackOnlyRightRotZ = 0.0f;
 
 	BoneParentRotY = 0.0f;
-
+	FirstCoolTime = 0;
 
 	isPlayMotion = false;
 	playerNowMotion = PlayerMotion::taiki;

@@ -547,7 +547,7 @@ void GameScene::GameUpdate()
 		if (collisionManager->GetIsEnemyKingDrop()) {
 			gameCamera->Collision();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(1,1);
+			player->Collision(2,1);
 		}
 
 		if (collisionManager->GetIsAttackHit()) {
@@ -1114,6 +1114,8 @@ void GameScene::Reset()
 	isAllFishLeave = false;
 
 	collisionManager->CheckAllCollisions();
+
+	eventPhase = EventPhase::MinifishSpawn;
 }
 
 void GameScene::Finalize()
@@ -1315,7 +1317,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 		}
 		return;
 	}
-
+	
 	//カメラ座標をボスのイージングを使って回転させる
 	cameraRadian *= 360.0f;
 	cameraRadian -= 90.0f;

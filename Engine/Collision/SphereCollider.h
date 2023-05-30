@@ -26,8 +26,10 @@ public:
 	void Update(const Matrix4& worldPos) override;
 	void Update(const Matrix4& worldPos, const float& radius) override;
 	void Update(const Matrix4& worldPos, const uint32_t& Cooltime, const bool& isCoolTime) override;
+	void Update(const Matrix4& worldPos, const uint32_t& Cooltime, const uint32_t& FirstCoolTime, const bool& isCoolTime) override;
 	void Update(const Matrix4& worldPos, const float& radius, const uint32_t& Cooltime) override;
 	void Update(const Matrix4& worldPos, const float& radius, const uint32_t& Cooltime, const bool& isCoolTime) override;
+	void Update(const Matrix4& worldPos, const float& radius, const uint32_t& Cooltime, const uint32_t& FirstCoolTime, const bool& isCoolTime) override;
 
 	inline void SetRadius(float radius) { this->radius = radius; }
 

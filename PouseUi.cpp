@@ -159,7 +159,7 @@ void PouseUi::Process()
 			isPouse = FALSE;
 			break;
 
-		case 3://タイトルへ
+		case 3://タイトルへ2
 			
 			Title();
 			Reset();
@@ -167,15 +167,17 @@ void PouseUi::Process()
 			isPouse = FALSE;
 			break;
 
-		case 4://設定2
+		case 4://ゲーム終了3
+			Exit();
+			Reset();
+
+			break;
+
+		case 5://設定4
 			Setting();
 			break;
 
-		case 5://ゲーム終了4
-			Exit();
-			Reset();
-			
-			break;
+		
 		}
 	}
 
@@ -184,12 +186,12 @@ void PouseUi::Process()
 void PouseUi::Draw()
 {
 	//ポーズ画面項目すべて表示
-	//spriteUi_->Draw({spriteSizeX,spriteSizeY},{1,1,1,1});
+	spriteUi_->Draw(mdl,{1,1,1,1});
 	spriteBack_->Draw(sp, { 1,1,1,1 });
 	spriteReset_->Draw(sp2, { 1,1,1,1 });
 	spriteTitle_->Draw(sp3, { 1,1,1,1 });
-	spriteSetting_->Draw(sp4, { 1,1,1,1 });
-	spriteExit_->Draw(sp5, { 1,1,1,1 });
+	//spriteSetting_->Draw(sp4, { 1,1,1,1 });
+	spriteExit_->Draw(sp4, { 1,1,1,1 });
 
 	if (isCheck)
 	{
@@ -208,7 +210,7 @@ void PouseUi::Draw()
 void PouseUi::Load()
 {
 	//UI背景
-	loserUi_ = TextureManager::Load("UI/UIPouse.png");
+	loserUi_ = TextureManager::Load("UI/Check01.png");
 	spriteUi_ = Sprite::Create(loserUi_);
 	//戻る
 	loserBack_ = TextureManager::Load("UI/Back.png");
@@ -233,6 +235,17 @@ void PouseUi::Load()
 	//SELECT
 	loserSelect_ = TextureManager::Load("UI/Select.png");
 	spriteSelect_ = Sprite::Create(loserSelect_);
+
+	//CHECK
+	loserCheck_ = TextureManager::Load("UI/Check01.png");
+	spriteCheck_ = Sprite::Create(loserCheck_);
+
+	loserCheckY_ = TextureManager::Load("UI/Check02.png");
+	spriteCheckY_ = Sprite::Create(loserCheckY_);
+
+	loserCheckN_ = TextureManager::Load("UI/Check03.png");
+	spriteCheckN_ = Sprite::Create(loserCheckN_);
+
 }
 
 void PouseUi::Reset()

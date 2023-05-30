@@ -70,7 +70,7 @@ private:
 	Input* input_ = nullptr;
 
 	const int MIN = 1;
-	const int MAX = 5;
+	const int MAX = 4;
 	const int SMAX = 3;
 	int select = MIN;
 	float size = 32.0f;
@@ -100,6 +100,9 @@ private:
 	Vector2 sp3 = { spriteSizeX,spriteSizeY };
 	Vector2 sp4 = { spriteSizeX,spriteSizeY };
 	Vector2 sp5 = { spriteSizeX,spriteSizeY };
+
+	//中心
+	Vector2 mdl = { 1280 / 2, 720 / 2 };
 	//決定させたやつを代入
 	int decided = MIN;
 	
@@ -134,6 +137,15 @@ private:
 	std::unique_ptr<Sprite> spriteSelect_ = nullptr;
 	uint32_t loserSelect_ = 0;
 
+	//ゲーム終了確認
+	std::unique_ptr<Sprite> spriteCheck_ = nullptr;
+	uint32_t loserCheck_ = 0;
+
+	std::unique_ptr<Sprite> spriteCheckY_ = nullptr;
+	uint32_t loserCheckY_ = 0;
+
+	std::unique_ptr<Sprite> spriteCheckN_ = nullptr;
+	uint32_t loserCheckN_ = 0;
 	
 
 	

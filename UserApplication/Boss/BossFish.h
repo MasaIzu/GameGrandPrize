@@ -190,7 +190,7 @@ private:
 		int damageTimer = 0;							//ボスの無敵時間
 
 		// ボスのHP関連
-		const float bossHpMax = 50.0f;
+		const float bossHpMax = 40.0f;
 		float bossHealth = bossHpMax;							//ボスのHP
 
 		std::unique_ptr<Sprite> healthSprite;    // HPのスプライト

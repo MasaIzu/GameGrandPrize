@@ -388,7 +388,7 @@ void GameScene::TitleUpdate()
 		if (titleControlTimer >= titleControlTimeMax) {
 			IsRotaStart = true;
 		}
-		
+
 
 		//scene = Scene::Game;
 	}
@@ -553,7 +553,7 @@ void GameScene::GameUpdate()
 		if (collisionManager->GetIsEnemyKingDrop()) {
 			gameCamera->Collision();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(2,1);
+			player->Collision(2, 1);
 		}
 
 		if (collisionManager->GetIsAttackHit()) {
@@ -592,7 +592,7 @@ void GameScene::GameUpdate()
 		if (boss->bossFish->GetHealth() <= 0) {
 			boss->bossFish->Death();
 
-	
+
 
 		}
 
@@ -970,8 +970,10 @@ void GameScene::Draw() {
 	if (scene == Scene::Game)
 	{
 		if (!isMovie) {
+			if (isStartBossBattle) {
+				boss->DrawHealth();
+			}
 
-			boss->DrawHealth();
 			player->DrawHealth();
 			if (boss->bossFish->GetIsDeathEnd()) {
 				boss->bossWarrier->DrawHealth();
@@ -1019,7 +1021,7 @@ void GameScene::Reset()
 	// タイトルシーンのリセット
 	if (scene == Scene::Title) {
 		titleControlTimer = 0;
-  		skydome_.get()->SetModel(skydomeTitle_.get());
+		skydome_.get()->SetModel(skydomeTitle_.get());
 		AFontWorld_.translation_ = { +7.0f,+16.5f,+180 };
 		TFontWorld_.translation_ = { +5.8f,+16.5f,+179 };
 		OFontWorld_.translation_ = { +4.8f,+16.5f,+178 };
@@ -1325,14 +1327,14 @@ void GameScene::UpdateBossChangeEventCamera() {
 
 		if (cameraStopTime > 0) {
 			cameraStopTime--;
-				if (cameraStopTime == 0) {
-					isMovie = false;
-						isActiveChangeEvent = false;
-				}
+			if (cameraStopTime == 0) {
+				isMovie = false;
+				isActiveChangeEvent = false;
+			}
 			return;
 		}
 	}
-	
+
 	//カメラ座標をボスのイージングを使って回転させる
 	cameraRadian *= 360.0f;
 	cameraRadian -= 90.0f;
@@ -1351,7 +1353,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 
 	if (boss->bossWarrier->GetEasingData().GetTimeRate() >= 1.0f) {
 
-		
+
 	}
 
 
@@ -1485,7 +1487,7 @@ void GameScene::UpdateBossDeathEvent() {
 		Vector3 afterTarget = player->GetWorldPosition();
 		afterTarget.y += 10.0f;
 
-		movieCamera.target = Lerp(movieCamera.target = boss->bossWarrier->GetHeadTransform().translation_,afterTarget , timerate);
+		movieCamera.target = Lerp(movieCamera.target = boss->bossWarrier->GetHeadTransform().translation_, afterTarget, timerate);
 		eyeBefore = { 0,45,100 };
 		eyeAfter = player->GetWorldPosition();
 		eyeAfter.z += 30;

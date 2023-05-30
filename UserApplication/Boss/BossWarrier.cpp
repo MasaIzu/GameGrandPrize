@@ -1586,6 +1586,10 @@ void BossWarrier::reset()
 	KingsDrop->SetAttribute(COLLISION_ATTR_NOTATTACK);
 
 	swordModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
+		BossWarrier[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
 }
 
 void BossWarrier::InitAtkArmSwing()

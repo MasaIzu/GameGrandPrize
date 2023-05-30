@@ -279,6 +279,23 @@ void BossWarrier::Initialize()
 	TornadoSE.SoundLoadWave("BossWind.wav");
 	LaunchSwordSE.SoundLoadWave("BossSowrdFly.wav");
 	SwordSwingSE.SoundLoadWave("BossSowrdAttack.wav");
+
+	{
+		LightGroup light = energyBigBall.model->GetLigit();
+
+		light.SetDirLightActive(0, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(2, true);
+
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
+
+		for (int i = 0; i < energyNum; i++) {
+			energyL[i].model->SetLight(light);
+			energyR[i].model->SetLight(light);
+		}
+	}
 }
 
 void BossWarrier::Spawn(const Vector3& boss1Pos)
@@ -957,7 +974,31 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 void BossWarrier::Draw(const ViewProjection& viewProMat)
 {
-	for (int i = BossWarrierPart::Boss2PartMax; i > 0; i--) {
+
+	{
+		LightGroup light = energyBigBall.model->GetLigit();
+
+		light.SetDirLightActive(0, true);
+		light.SetDirLightActive(1, true);
+		light.SetDirLightActive(2, true);
+
+		Vector3 eye = viewProMat.eye;
+
+		eye = eye.normalize();
+
+		light.SetDirLightDir(0,-eye);
+		light.SetDirLightDir(1, -eye);
+		light.SetDirLightDir(2, eye);
+
+		light.SetDirLightColor(0, { 5,5,0 });
+		light.SetDirLightColor(1, { 5,5,0 });
+		light.SetDirLightColor(2, { 5,5,0 });
+
+		energyBigBall.model->SetLight(light);
+		energyBigBallSub.model->SetLight(light);
+	}
+
+	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
 		if (boss2Model[i].isDraw == true)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
@@ -995,9 +1036,9 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 		}
 		// ‰¤‚Ì‚µ‚¸‚­‚ª—Ž‚¿‚½‚ç
-		ModelSpere->Draw(energyBigBallSub.WorldTrans, viewProMat);
+		energyBigBall.model->Draw(energyBigBallSub.WorldTrans, viewProMat);
 		// ‰¤‚Ì‚µ‚¸‚­‚ÌƒGƒlƒ‹ƒM[‚Ì‹‘å’e‚Ì•`‰æ
-		ModelSpere->Draw(energyBigBall.WorldTrans, viewProMat);
+		energyBigBallSub.model->Draw(energyBigBall.WorldTrans, viewProMat);
 	}
 }
 

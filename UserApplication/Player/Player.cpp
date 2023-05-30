@@ -3,7 +3,7 @@
 #include"MyMath.h"
 #include "CollisionManager.h"
 #include <CollisionAttribute.h>
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include <FbxLoader.h>
 #include "Easing.h"
 
@@ -459,7 +459,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 
 
-	ImGui::Begin("player");
+	/*ImGui::Begin("player");
 
 
 	ImGui::Text("UltGage:%d", UltGage);
@@ -485,13 +485,13 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.x);
 	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.y);
-	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.z);
+	ImGui::Text("PlayerContactPos:%f", PlayerContactPos.z);*/
 
 	float endflame = 36;
 
 	float Destruction = 1.0f * (SowrdDFlame / endflame);
 	float a = 1.0f * (SowrdAFlame / endflame);
-	ImGui::Text("a:%f", a);
+	/*ImGui::Text("a:%f", a);
 	ImGui::Text("D:%f", Destruction);
 
 	ImGui::SliderFloat("AttackRotX", &AttackRotX, -360.0f, 360.0f);
@@ -514,7 +514,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::InputFloat2("ult Pos", &ultPos.x);
 	ImGui::InputFloat2("ultBar Pos", &ULT_barPos.x);
 	ImGui::InputFloat("ult SizeX", &ultSizeX);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Player::Move() {

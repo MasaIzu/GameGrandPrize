@@ -2,7 +2,7 @@
 #include <windef.h>
 #include "WinApp.h"
 #include "MyMath.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 
 
 GameCamera::GameCamera(int window_width, int window_height)
@@ -122,10 +122,10 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 		}*/
 		PlaySceneCamera(viewProjection_);
 
-		ImGui::Text("isShake : %d", isShake);
+		//ImGui::Text("isShake : %d", isShake);
 	}
 	else {
-		ImGui::Begin("camera");
+		/*ImGui::Begin("camera");
 		ImGui::SliderFloat("eye:x", &vTargetEye.x, -100.0f, 100.0f);
 		ImGui::SliderFloat("eye:y", &vTargetEye.y, -100.0f, 700.0f);
 		ImGui::SliderFloat("eye:z", &vTargetEye.z, -100.0f, 100.0f);
@@ -134,7 +134,7 @@ void GameCamera::Update(ViewProjection* viewProjection_) {
 		ImGui::SliderFloat("target:y", &target.y, -100.0f, 100.0f);
 		ImGui::SliderFloat("target:z", &target.z, -100.0f, 100.0f);
 
-		ImGui::End();
+		ImGui::End();*/
 	}
 }
 
@@ -218,7 +218,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	//	Fov += -0.1f;
 	//}
 
-	ImGui::Begin("camera");
+	/*ImGui::Begin("camera");
 	ImGui::Text("mouseMovedX : %f", mouseMoved.x);
 	ImGui::Text("CameraMouseMoved : %f", CameraMouseMoved);
 	ImGui::Text("cameraDis : %f", cameraDis);
@@ -227,7 +227,7 @@ void GameCamera::PlaySceneCamera(ViewProjection* viewProjection_) {
 	ImGui::Text("MovementMous : %f,%f", MovementMous.x, MovementMous.y);
 	ImGui::Text("cameraDown : %d", cameraDown);
 	ImGui::Text("cameraDown : %d", cameraUp);
-	ImGui::End();
+	ImGui::End();*/
 
 	//カメラ制限
 

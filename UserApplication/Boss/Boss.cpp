@@ -3,7 +3,7 @@
 #include<random>
 #include"Quaternion.h"
 #include"Affin.h"
-#include"ImGuiManager.h"
+//#include"ImGuiManager.h"
 #include"Easing.h"
 #include "CollisionManager.h"
 #include <SphereCollider.h>

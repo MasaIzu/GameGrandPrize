@@ -509,12 +509,6 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ImGui::SliderFloat("BoneParentRotY", &BoneParentRotY, -360.0f, 360.0f);
 
 	ImGui::End();
-
-	ImGui::Begin("sprite");
-	ImGui::InputFloat2("ult Pos", &ultPos.x);
-	ImGui::InputFloat2("ultBar Pos", &ULT_barPos.x);
-	ImGui::InputFloat("ult SizeX", &ultSizeX);
-	ImGui::End();
 }
 
 void Player::Move() {
@@ -1870,12 +1864,6 @@ void Player::DrawHealth() {
 	}
 
 
-	// ultのセット
-	float nowUlt = UltGage / UltMaxGage;
-	ultSize = { ultSizeX * nowUlt,25.0f };
-	ultSprite->SetSize(ultSize);
-
-
 	Vector2 pos = { 54.5f,35.0f };
 
 	Vector2 AttackFontpos = { 150,380 };
@@ -1915,10 +1903,6 @@ void Player::DrawHealth() {
 	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
 
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
-
-	ultSprite->Draw(ultPos, { 1,1,1,1 });
-	ultBarSprite->Draw(ULT_barPos, { 1,1,1,1 });
-
 
 
 	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
@@ -2169,6 +2153,18 @@ void Player::SetRotation(const Vector3& rot)
 	worldTransform_.SetRot(rot);
 }
 
+void Player::SetPlayerMotion()
+{
+	frem = 0.0f;
+	playerNowMotion = PlayerMotion::taiki;
+	LBoneTrans.alpha = 0.0f;
+	RBoneTrans.alpha = 0.0f;
+	
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
+}
+
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
 {
 	// 補完すべき点の数
@@ -2388,7 +2384,7 @@ void Player::AddUltCount(int count)
 void Player::UltStart()
 {
 	if (isPlayMotion == false) {
-		if (input_->TriggerKey(DIK_Q)) {
+		/*if (input_->TriggerKey(DIK_Q)) {
 			if (isPlayerUlt == false) {
 				if (UltGage >= UltMaxGage) {
 					isAwakening = true;
@@ -2400,7 +2396,7 @@ void Player::UltStart()
 					isUltKenGeneration = false;
 				}
 			}
-		}
+		}*/
 	}
 
 }
@@ -2521,12 +2517,6 @@ void Player::SpriteInitialize()
 
 	avoidGauge_under = Sprite::Create(TextureManager::Load("avoidGauge_under.png"));
 	avoidGauge_under->SetAnchorPoint({ 0,0 });
-
-	ultSprite = Sprite::Create(TextureManager::Load("UltGage.png"));
-	ultSprite->SetAnchorPoint({ 0,0 });
-
-	ultBarSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
-	ultBarSprite->SetAnchorPoint({ 0.5,0.5 });
 #pragma endregion
 
 
@@ -2553,8 +2543,6 @@ void Player::SpriteInitialize()
 	healthAlfaSprite->SetSize(hpAlfaSize);
 	MoveFontSprite->SetSize(MoveFontsize);
 	HP_barSprite->SetSize(HP_barSize);
-
-	ultBarSprite->SetSize(Ult_barSize);
 
 	for (int i = 0; i < 2; i++) {
 		AttackFontSprite[i]->SetSize(AttackFontsize);

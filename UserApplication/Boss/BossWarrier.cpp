@@ -292,8 +292,8 @@ void BossWarrier::Initialize()
 		light.SetDirLightColor(2, { 5,5,0 });
 
 		for (int i = 0; i < energyNum; i++) {
-			energyL[i].model->SetLight(light);
-			energyR[i].model->SetLight(light);
+			//energyL[i].model->SetLight(light);
+			//energyR[i].model->SetLight(light);
 		}
 	}
 }
@@ -997,6 +997,11 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 
 		energyBigBall.model->SetLight(light);
 		energyBigBallSub.model->SetLight(light);
+
+		for (int i = 0; i < energyNum; i++) {
+			energyL[i].model->SetLight(light);
+			energyR[i].model->SetLight(light);
+		}
 	}
 
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {

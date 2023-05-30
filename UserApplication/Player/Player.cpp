@@ -2372,6 +2372,7 @@ void Player::Reset()
 	PlayerMoveMent = { 0,0,0 };
 	AvoidanceMove = { 0,0,0 };
 	AttackMovememt = { 0,0,0 };
+	AttackNowPos = { 0,0,0 };
 }
 
 void Player::AddUltCount(int count)

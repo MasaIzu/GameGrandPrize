@@ -173,7 +173,7 @@ void Framework::Run()
 
 
 		//ImGui•`‰æ
-		imGui->Draw();
+		//imGui->Draw();
 
 		
 

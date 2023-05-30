@@ -45,7 +45,7 @@ void BossWarrier::Initialize()
 	boss2Model[BossWarrierPart::HandR].model = bossArmRModel.get();
 	boss2Model[BossWarrierPart::HandR].isDraw = true;
 
-	ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
+	//ModelSpere.reset(Model::CreateFromOBJ("sphere", true));
 
 	//ボス第二形態の各部位初期化
 	for (int i = 0; i < BossWarrierPart::Boss2PartMax; i++) {
@@ -311,7 +311,6 @@ void BossWarrier::Spawn(const Vector3& boss1Pos)
 	particleCreateTime = spawnAnimationTime - 20;
 	//生存フラグとHPのリセット
 	health = maxHealth;
-	health = 10;
 	isAlive = true;
 	isDeadEnd = false;
 }
@@ -945,12 +944,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 		modelSpere[i].translation_ = MyMath::GetWorldTransform(boss2Model[i].Transform.matWorld_);
 		modelSpere[i].TransferMatrix();
 	}
-	if (attack != Attack::KingDrop) {
-		if (Input::GetInstance()->TriggerKey(DIK_2)) {
-			health = maxHealth / 2;
-			IsKingDrop = false;
-		}
-	}
 	// 一旦仮に王のしずくの流れを確認用に
 	for (int i = 0; i < MAXSWROD; i++)
 	{
@@ -1009,7 +1002,7 @@ void BossWarrier::Draw(const ViewProjection& viewProMat)
 		{
 			boss2Model[i].model->Draw(boss2Model[i].Transform, viewProMat);
 
-			ModelSpere->Draw(modelSpere[i], viewProMat);
+			//ModelSpere->Draw(modelSpere[i], viewProMat);
 		}
 	}
 	if (attack == Attack::Tornado)
@@ -1507,7 +1500,7 @@ void BossWarrier::reset()
 
 	isAlive = false;
 
-	health = 0;
+	health = maxHealth;
 
 	//胸は大本を親に持つ
  	boss2Model[BossWarrierPart::Chest].Transform.parent_ = &boss2Model[BossWarrierPart::Root].Transform;

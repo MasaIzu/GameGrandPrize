@@ -700,7 +700,7 @@ void GameScene::GameOverUpdate()
 
 	ImGui::End();
 
-	backTitleFontSize = { 282,100 };
+	backTitleFontPos = { 900,520 };
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameOverBGM == false) {
 		battle02BGM.StopWave();
@@ -883,7 +883,7 @@ void GameScene::PostEffectDraw()
 			if (minifishes[i].GetAlive()) {
 				boss->bossFish->fishBodyModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 				boss->bossFish->fishEyeModel->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
-				model_->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
+				//model_->Draw(minifishes[i].GetWorldTransform(), nowViewProjection);
 			}
 		}
 

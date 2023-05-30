@@ -196,6 +196,17 @@ void PouseUi::Draw()
 	if (isCheck)
 	{
 		//本当に終わってもいいのかを確認する用の画像表示
+		spriteCheck_->Draw(mdl, { 1,1,1,1 });
+
+		if (input_->TriggerKey(DIK_Y))
+		{
+			spriteCheckY_->Draw(mdl, { 1,1,1,1 });
+		}
+
+		if (input_->TriggerKey(DIK_N))
+		{
+			spriteCheckN_->Draw(mdl, { 1,1,1,1 });
+		}
 
 	}
 	
@@ -210,7 +221,7 @@ void PouseUi::Draw()
 void PouseUi::Load()
 {
 	//UI背景
-	loserUi_ = TextureManager::Load("UI/Check01.png");
+	loserUi_ = TextureManager::Load("UI/UIPouse.png");
 	spriteUi_ = Sprite::Create(loserUi_);
 	//戻る
 	loserBack_ = TextureManager::Load("UI/Back.png");

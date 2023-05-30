@@ -441,4 +441,6 @@ private:
 
 	bool FinULT = false;
 
+	uint32_t FirstCoolTime = 0;
+
 };

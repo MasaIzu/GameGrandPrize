@@ -13,6 +13,7 @@ struct Sphere {
 	float radius = 1.0f;
 
 	uint32_t coolTime = 0;
+	uint32_t firstCoolTime = 0;
 
 	bool isChangeCoolTime = false;
 

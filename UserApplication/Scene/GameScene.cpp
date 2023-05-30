@@ -544,7 +544,7 @@ void GameScene::GameUpdate()
 		if (collisionManager->GetIsEnemyKingDrop()) {
 			gameCamera->Collision();
 			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(1,1);
+			player->Collision(2,1);
 		}
 
 		if (collisionManager->GetIsAttackHit()) {

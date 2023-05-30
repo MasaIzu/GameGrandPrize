@@ -87,7 +87,9 @@ void BossFish::Update(const Vector3& targetPos, const Vector3 stagePos, float st
 	//狙う敵の座標更新
 	this->targetPos = targetPos;
 
+	ImGui::Begin("enemy");
 	ImGui::Text("health %d", bossHealth);
+	ImGui::End();
 
 	//魚が一匹も存在していないか、HPが0なら判定を無敵にして処理を終わる
 	if (fishes.empty()) {
@@ -322,7 +324,7 @@ void BossFish::Reset()
 	}
 
 	bossHealth = bossHpMax;
-	bossHealth = 1;
+	bossHealth = 50;
 
 	IsDeathEnd = false;              // 死亡後の演出が終わっているか
 	ISDeadCalculation = false;

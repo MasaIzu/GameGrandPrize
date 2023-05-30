@@ -72,7 +72,7 @@ void CollisionManager::CheckAllCollisions()
 						FirstCoolTime = SphereB->firstCoolTime;
 					}
 					if (FirstCoolTime <= 0) {
-						if (isCoolTime == false) {
+						if (CoolTime <= 0) {
 							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 
 								HitWorldPos = colB->GetWorldPos();
@@ -123,7 +123,7 @@ void CollisionManager::CheckAllCollisions()
 						FirstCoolTime = SphereB->firstCoolTime;
 					}
 					if (FirstCoolTime <= 0) {
-						if (isCoolTime == false) {
+						if (CoolTime <= 0) {
 							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
 
 								HitWorldPos = colB->GetWorldPos();

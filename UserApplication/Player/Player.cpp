@@ -1288,10 +1288,10 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 0;
+					AttackCoolTimeMax = 10;
 
 					isCoolTimeRiset = true;
-					FirstCoolTime = 0;
+					FirstCoolTime = 5;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1352,7 +1352,7 @@ void Player::Attack() {
 
 					AttackCoolTimeMax = 360;
 					isCoolTimeRiset = true;
-
+					FirstCoolTime = 10;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;

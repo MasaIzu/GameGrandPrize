@@ -592,12 +592,16 @@ void GameScene::GameUpdate()
 		if (boss->bossFish->GetHealth() <= 0) {
 			boss->bossFish->Death();
 
+	
+
+		}
+
+		if (boss->bossFish->GetIsDeathEnd()) {
 			//イベントシーンが進んでいなければ進める
 			if (eventPhase == EventPhase::Boss1Spawn) {
 				eventPhase = EventPhase::BossPhaseChange;
 				StartBossChangeEvent();
 			}
-
 		}
 
 		//テスト用
@@ -1301,6 +1305,7 @@ void GameScene::StartBossChangeEvent()
 	isActiveChangeEvent = true;
 	isMovie = true;
 	nowViewProjection = movieCamera;
+	cameraStopTime = 30;
 }
 
 void GameScene::UpdateBossChangeEventCamera() {
@@ -1316,14 +1321,16 @@ void GameScene::UpdateBossChangeEventCamera() {
 
 	//注視点はボスに
 	movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
+	if (!boss->bossWarrier->GetEasingData().GetActive()) {
 
-	if (cameraStopTime > 0) {
-		cameraStopTime--;
-		if (cameraStopTime == 0) {
-			isMovie = false;
-			isActiveChangeEvent = false;
+		if (cameraStopTime > 0) {
+			cameraStopTime--;
+				if (cameraStopTime == 0) {
+					isMovie = false;
+						isActiveChangeEvent = false;
+				}
+			return;
 		}
-		return;
 	}
 	
 	//カメラ座標をボスのイージングを使って回転させる
@@ -1344,7 +1351,7 @@ void GameScene::UpdateBossChangeEventCamera() {
 
 	if (boss->bossWarrier->GetEasingData().GetTimeRate() >= 1.0f) {
 
-		cameraStopTime = 30;
+		
 	}
 
 

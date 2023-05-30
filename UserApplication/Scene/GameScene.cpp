@@ -267,6 +267,9 @@ void GameScene::Update() {
 void GameScene::TitleUpdate()
 {
 	nowViewProjection = viewProjection_;
+	if (titleControlTimer < titleControlTimeMax) {
+		titleControlTimer++;
+	}
 
 	ImGui::Begin("Font");
 
@@ -382,7 +385,10 @@ void GameScene::TitleUpdate()
 		IsSceneChange = true;
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
-		IsRotaStart = true;
+		if (titleControlTimer >= titleControlTimeMax) {
+			IsRotaStart = true;
+		}
+		
 
 		//scene = Scene::Game;
 	}
@@ -690,6 +696,7 @@ void GameScene::GameOverUpdate()
 
 	ImGui::End();
 
+	backTitleFontSize = { 282,100 };
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameOverBGM == false) {
 		battle02BGM.StopWave();
@@ -1007,7 +1014,8 @@ void GameScene::Reset()
 {
 	// タイトルシーンのリセット
 	if (scene == Scene::Title) {
-		skydome_.get()->SetModel(skydomeTitle_.get());
+		titleControlTimer = 0;
+  		skydome_.get()->SetModel(skydomeTitle_.get());
 		AFontWorld_.translation_ = { +7.0f,+16.5f,+180 };
 		TFontWorld_.translation_ = { +5.8f,+16.5f,+179 };
 		OFontWorld_.translation_ = { +4.8f,+16.5f,+178 };

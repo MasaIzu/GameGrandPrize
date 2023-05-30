@@ -321,6 +321,9 @@ private: // メンバ変数
 
 	int ParticleFlame = 0;
 
+	// タイトルの連打禁止タイマー
+	float titleControlTimer = 0;
+	float titleControlTimeMax = 60 * 2.5;
 #pragma endregion
 
 #pragma region gameOver関連

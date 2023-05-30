@@ -2157,7 +2157,12 @@ void Player::SetPlayerMotion()
 {
 	frem = 0.0f;
 	playerNowMotion = PlayerMotion::taiki;
+	LBoneTrans.alpha = 0.0f;
+	RBoneTrans.alpha = 0.0f;
+	
 	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
 }
 
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)

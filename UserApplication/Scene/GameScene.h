@@ -214,7 +214,7 @@ private: // メンバ変数
 	Scene scene = Scene::Title;
 
 	Scene oldScene = Scene::Title;
-	std::unique_ptr<Sprite> gameClearFont;
+
 
 
 	// シーンチェンジ用のスプライト
@@ -350,6 +350,18 @@ private: // メンバ変数
 	Vector2 replayFontPos = { 400,520 };
 	Vector2 backTitleFontPos = { 900,520 };
 #pragma endregion
+
+#pragma region gameClear関連
+	float gameClearSpriteAlpha = 0;
+
+	std::unique_ptr<Sprite> gameClearFont;
+	std::unique_ptr<Sprite> spaceKeyFont;
+
+	Vector2 gameClearFontPos = { 650,200 };
+	Vector2 spaceKeyFontPos = { 650,550 };
+
+#pragma endregion
+
 
 #pragma region gameStartカメラ関連
 	// ゲームスタートのカメラになっているかフラグ

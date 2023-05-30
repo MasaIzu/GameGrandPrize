@@ -149,6 +149,9 @@ void GameScene::Initialize() {
 
 	gameClearFont = Sprite::Create(TextureManager::Load("GameClearFont.png"));
 
+	spaceKeyFont = Sprite::Create(TextureManager::Load("spaceKey.png"));
+	spaceKeyFont->SetAnchorPoint({ 0.5f,0.5f });
+
 	for (int i = 0; i < sceneChageBlack.size(); i++) {
 		sceneChageBlack[i] = Sprite::Create(TextureManager::Load("SceneChageBlack.png"));
 		sceneChageBlack[i].get()->SetAnchorPoint({ 0,0 });
@@ -749,6 +752,13 @@ void GameScene::GameOverUpdate()
 
 void GameScene::ResultUpdate()
 {
+
+	backTitleFontPos = { 650,480 };
+	// 徐々にゲームクリアのスプライトを出す処理
+	if (gameClearSpriteAlpha < 1.0f) {
+		gameClearSpriteAlpha += 0.02;
+	}
+
 	// ゲームオーバーのBGMを鳴らす
 	if (IsGameClearBGM == false) {
 		battle02BGM.StopWave();
@@ -967,7 +977,9 @@ void GameScene::Draw() {
 
 	}
 	else if (scene == Scene::Result) {
-		gameClearFont->Draw({ 640,300 }, { 1,1,1,1 });
+		gameClearFont->Draw(gameClearFontPos, { 1,1,1,gameClearSpriteAlpha });
+		spaceKeyFont->Draw(spaceKeyFontPos, { 1,1,1,gameClearSpriteAlpha });
+		backTitleFont->Draw(backTitleFontPos, { 1,1,1,gameClearSpriteAlpha });
 	}
 	if (scene == Scene::GameOver)
 	{

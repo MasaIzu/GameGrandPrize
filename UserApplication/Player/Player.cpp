@@ -2193,6 +2193,11 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 
 void Player::Reset()
 {
+
+	for (int i = 0; i < SphereCount; i++) {
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+
 	worldTransform_.alpha = 0;
 	playerAvoidance = 15.0f;
 	moveTime = 300;

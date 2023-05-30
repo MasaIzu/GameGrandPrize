@@ -263,12 +263,7 @@ private:
 	// ウルトのゲージ用のスプライト
 	float UltGage = 0;
 	const float UltMaxGage = 1000;
-	Vector2 ultPos = { 53.5f,78.0f };
-	Vector2 ULT_barPos = { 284,90 };
-	Vector2 ultSize;
-	float ultSizeX = 465;
-	std::unique_ptr<Sprite> ultSprite;
-	std::unique_ptr<Sprite> ultBarSprite;
+	
 
 	// 回避のゲージのスプライト
 	std::unique_ptr<Sprite> avoidGauge1;

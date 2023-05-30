@@ -66,18 +66,20 @@ void CollisionManager::CheckAllCollisions()
 					}
 				}
 				else if (colA->attribute == COLLISION_ATTR_ENEMYS && colB->attribute == COLLISION_ATTR_ATTACK) {
-					if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
-						if (SphereB->isChangeCoolTime == true) {
-							CoolTime = 0;
-							isCoolTime = false;
-							FirstCoolTime = SphereB->firstCoolTime;
-						}
-						if (FirstCoolTime <= 0) {
-							if (CoolTime <= 0) {
+					if (SphereB->isChangeCoolTime == true) {
+						CoolTime = 0;
+						isCoolTime = false;
+						FirstCoolTime = SphereB->firstCoolTime;
+					}
+					if (FirstCoolTime <= 0) {
+						if (isCoolTime == false) {
+							if (Collision::CheckSphere2Sphere(*SphereA, *SphereB, &inter)) {
+
 								HitWorldPos = colB->GetWorldPos();
 								isAttackHit = true;
 								CoolTime = SphereB->coolTime;
 								isCoolTime = true;
+
 							}
 						}
 					}

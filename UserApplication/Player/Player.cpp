@@ -1288,9 +1288,10 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 15;
+					AttackCoolTimeMax = 0;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -2363,6 +2364,9 @@ void Player::Reset()
 	IsCombo4 = false;
 	IsCombo5 = false;
 
+	PlayerMoveMent = { 0,0,0 };
+	AvoidanceMove = { 0,0,0 };
+	AttackMovememt = { 0,0,0 };
 }
 
 void Player::AddUltCount(int count)

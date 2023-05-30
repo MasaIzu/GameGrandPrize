@@ -47,11 +47,13 @@ void Recovery::Initialize()
 
 		worldTransform_[i].translation_.x = x;
 
-		worldTransform_[i].translation_.y = (rand() % 500) / 100;
+		worldTransform_[i].translation_.y = -5;
 
 		worldTransform_[i].scale_ = { 0.3,0.3,0.3 };
 
 		worldTransform_[i].alpha = 1 - worldTransform_[i].translation_.y * 0.2;
+
+		worldTransform_[i].TransferMatrix();
 	}
 	{
 		LightGroup light = model_->GetLigit();

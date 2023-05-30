@@ -2372,7 +2372,7 @@ void Player::AddUltCount(int count)
 void Player::UltStart()
 {
 	if (isPlayMotion == false) {
-		if (input_->TriggerKey(DIK_Q)) {
+		/*if (input_->TriggerKey(DIK_Q)) {
 			if (isPlayerUlt == false) {
 				if (UltGage >= UltMaxGage) {
 					isAwakening = true;
@@ -2384,7 +2384,7 @@ void Player::UltStart()
 					isUltKenGeneration = false;
 				}
 			}
-		}
+		}*/
 	}
 
 }

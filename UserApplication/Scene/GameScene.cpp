@@ -1102,6 +1102,8 @@ void GameScene::Reset()
 	isAllFishLeave = false;
 
 	collisionManager->CheckAllCollisions();
+
+	eventPhase = EventPhase::MinifishSpawn;
 }
 
 void GameScene::Finalize()

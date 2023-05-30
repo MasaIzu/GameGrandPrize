@@ -63,4 +63,5 @@ void Boss::Reset()
 
 	bossWarrier->reset();
 	isBossSpawn = false;
+	
 }

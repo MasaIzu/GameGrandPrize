@@ -84,6 +84,8 @@ public:
 
 	void SetParticlePos(Matrix4 ParticlePos_) { ParticlePos = ParticlePos_; }
 
+	void SetPlayerMotion();
+
 	bool GetAlive() { return isAlive; }
 	bool GetIsAwakening() { return isAwakening; }
 

@@ -2153,6 +2153,13 @@ void Player::SetRotation(const Vector3& rot)
 	worldTransform_.SetRot(rot);
 }
 
+void Player::SetPlayerMotion()
+{
+	frem = 0.0f;
+	playerNowMotion = PlayerMotion::taiki;
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
+}
+
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
 {
 	// 補完すべき点の数

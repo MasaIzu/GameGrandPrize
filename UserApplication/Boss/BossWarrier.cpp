@@ -915,6 +915,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 				boss2Model[BossWarrierPart::HandR].Transform.alpha += kingDropMoveAlphaP;
 				if (boss2Model[BossWarrierPart::Chest].Transform.alpha >= 1.0f) {
 					attack = Attack::StandBy;
+					isKingDownAfter = false;
 				}
 			}
 
@@ -1504,7 +1505,7 @@ void BossWarrier::reset()
 	health = 0;
 
 	//胸は大本を親に持つ
-	boss2Model[BossWarrierPart::Chest].Transform.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
+ 	boss2Model[BossWarrierPart::Chest].Transform.parent_ = &boss2Model[BossWarrierPart::Root].Transform;
 
 	//親子関係ツリー(親→子)
 	//	→頭
@@ -1530,6 +1531,8 @@ void BossWarrier::reset()
 	boss2Model[BossWarrierPart::Root].Transform.scale_ = { 15,15,15 };
 	boss2Model[BossWarrierPart::Root].Transform.translation_ = { 50,50,50 };
 	//boss2Model[BossWarrierPart::Root].Transform.SetRot({1.57,0,0});
+	 boss2Model[BossWarrierPart::Chest].Transform.translation_ = { 0,0,0 };
+	boss2Model[BossWarrierPart::Chest].Transform.scale_ = { 1,1,1 };
 	//それぞれの部位の位置をセット
 	boss2Model[BossWarrierPart::Head].Transform.translation_ = { 0,0.9,0.5 };
 	boss2Model[BossWarrierPart::Head].Transform.scale_ = { 1,1,1 };

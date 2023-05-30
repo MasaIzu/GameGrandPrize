@@ -1447,6 +1447,8 @@ void GameScene::InitBossDeathEvent() {
 	//カメラを指定の位置にセット
 	movieCamera.target = boss->bossWarrier->GetRootTransform().translation_;
 
+	player->SetPlayerMotion();
+
 	player->SetPosition({ 0,0,120 });
 	player->SetRotation({ 0,PI,0 });
 	player->Update(viewProjection_);

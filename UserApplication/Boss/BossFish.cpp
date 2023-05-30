@@ -322,6 +322,7 @@ void BossFish::Reset()
 	}
 
 	bossHealth = bossHpMax;
+	bossHealth = 1;
 
 	IsDeathEnd = false;              // 死亡後の演出が終わっているか
 	ISDeadCalculation = false;

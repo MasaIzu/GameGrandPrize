@@ -183,7 +183,7 @@ void Framework::Run()
 		//FPSŒÅ’è
 		fps->FpsControlEnd();
 
-		if (input_->TriggerKey(DIK_ESCAPE)) {
+		if (IsBreak()) {
 			break;
 		}
 

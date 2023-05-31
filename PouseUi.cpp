@@ -12,15 +12,18 @@ PouseUi::~PouseUi()
 
 void PouseUi::Destroy()
 {
-	//delete PouseUi_;
+
 }
 
 void PouseUi::Initialize()
 {
+
 	input_ = Input::GetInstance();
 
 	Reset();
 	Load();
+
+	
 }
 
 void PouseUi::Update()
@@ -31,8 +34,14 @@ void PouseUi::Update()
 	}
 	else if (input_->TriggerKey(DIK_ESCAPE) && isPouse == TRUE)
 	{
+		OK = FALSE;
+		isCheck = FALSE;;
 		isPouse = FALSE;
+		waitTimer = 0;
+
 	}
+
+	
 
 	if (isPouse)
 	{
@@ -70,6 +79,7 @@ void PouseUi::Update()
 	{
 		EasingReset();
 		
+		
 	}
 	
 }
@@ -92,7 +102,7 @@ void PouseUi::Select()
 {
 
 	//下選択させる
-	if (input_->TriggerKey(DIK_DOWN))
+	if (input_->TriggerKey(DIK_DOWN) || input_->TriggerKey(DIK_S))
 	{
 		//項目最大値に行ったら最大で止める
 		if (select >= MAX)
@@ -105,7 +115,7 @@ void PouseUi::Select()
 		}
 	}
 	//上に選択させる
-	if (input_->TriggerKey(DIK_UP))
+	if (input_->TriggerKey(DIK_UP) || input_->TriggerKey(DIK_W))
 	{
 		//項目最小値に行ったら最小で止める
 		if (select <= MIN)
@@ -118,11 +128,24 @@ void PouseUi::Select()
 		}
 	}
 
-	//選択中の移動をスムージングする処理
+	if (isCheck)
+	{
+		if (input_->TriggerKey(DIK_A) || input_->TriggerKey(DIK_LEFT))
+		{
+			ent = sPos1;
+			selectCheck = 1;
+		}
+		else if (input_->TriggerKey(DIK_D) || input_->TriggerKey(DIK_RIGHT))
+		{
+			ent = sPos2;
+			selectCheck = 2;
+		}
+
+	}
 
 
 	//決定させる
-	if (input_->TriggerKey(DIK_RETURN))
+	if (input_->TriggerKey(DIK_SPACE)|| input_->TriggerKey(DIK_RETURN))
 	{
 		decided = select;
 		OK = TRUE;
@@ -142,13 +165,7 @@ void PouseUi::Process()
 			isPouse = FALSE;
 			break;
 
-		case 2://リセット1
-			GameReset();
-			OK = FALSE;
-			isPouse = FALSE;
-			break;
-
-		case 3://タイトルへ2
+		case 2://タイトルへ2
 			
 			Title();
 			Reset();
@@ -156,10 +173,16 @@ void PouseUi::Process()
 			isPouse = FALSE;
 			break;
 
-		case 4://ゲーム終了3
+		case 3://ゲーム終了3
 			Exit();
 			Reset();
 
+			break;
+
+		case 4://リセット1
+			GameReset();
+			OK = FALSE;
+			isPouse = FALSE;
 			break;
 
 		case 5://設定4
@@ -180,16 +203,7 @@ void PouseUi::Draw()
 	{
 		//本当に終わってもいいのかを確認する用の画像表示
 		spriteCheck_->Draw(mdl, { 1,1,1,1 });
-
-		if (input_->TriggerKey(DIK_Y))
-		{
-			spriteCheckY_->Draw(mdl, { 1,1,1,1 });
-		}
-
-		if (input_->TriggerKey(DIK_N))
-		{
-			spriteCheckN_->Draw(mdl, { 1,1,1,1 });
-		}
+		spriteSelect2_->Draw(ent, { 1,1,1,1 });
 
 	}
 	else
@@ -197,17 +211,20 @@ void PouseUi::Draw()
 		//ポーズ画面項目すべて表示
 		spriteUi_->Draw(mdl, { 1,1,1,1 });
 		spriteBack_->Draw(sp, { 1,1,1,1 });
-		spriteReset_->Draw(sp2, { 1,1,1,1 });
-		spriteTitle_->Draw(sp3, { 1,1,1,1 });
+		//spriteReset_->Draw(sp4, { 1,1,1,1 });
+		spriteTitle_->Draw(sp2, { 1,1,1,1 });
+		spriteExit_->Draw(sp3, { 1,1,1,1 });
 		//spriteSetting_->Draw(sp4, { 1,1,1,1 });
-		spriteExit_->Draw(sp4, { 1,1,1,1 });
 	}
 	
 
 
 
 	//選択中のものを表示
-	spriteSelect_->Draw({ spriteSizeX,spriteSizeY * select + size * (select-1) }, { 1,1,1,1 });
+	if (!isCheck)
+	{
+		spriteSelect_->Draw({ 40,spriteSizeY * select + size * (select-1) }, { 1,1,1,1 });
+	}
 
 }
 
@@ -237,18 +254,25 @@ void PouseUi::Load()
 	spriteExit_ = Sprite::Create(loserExit_);
 
 	//SELECT
-	loserSelect_ = TextureManager::Load("UI/Select.png");
+	loserSelect_ = TextureManager::Load("selectButton.png");
 	spriteSelect_ = Sprite::Create(loserSelect_);
 
+	spriteSelect_.get()->SetSize(selectButtonSize);
+	spriteSelect_.get()->SetRotation(45);
+
+	//SELECT
+	spriteSelect2_ = Sprite::Create(loserSelect_);
+	spriteSelect2_.get()->SetSize(selectButtonSize);
+	spriteSelect2_.get()->SetRotation(3.14);
 	//CHECK
 	loserCheck_ = TextureManager::Load("UI/Check01.png");
 	spriteCheck_ = Sprite::Create(loserCheck_);
 
-	loserCheckY_ = TextureManager::Load("UI/Check02.png");
+	/*loserCheckY_ = TextureManager::Load("UI/Check02.png");
 	spriteCheckY_ = Sprite::Create(loserCheckY_);
 
 	loserCheckN_ = TextureManager::Load("UI/Check03.png");
-	spriteCheckN_ = Sprite::Create(loserCheckN_);
+	spriteCheckN_ = Sprite::Create(loserCheckN_);*/
 
 }
 
@@ -284,7 +308,7 @@ void PouseUi::GameReset()
 void PouseUi::Title()
 {
 	isTitle = TRUE;
-	oldScene = Scene::Game;
+	//oldScene = Scene::Game;
 	OK = false;
 	isPouse = false;
 }
@@ -298,22 +322,37 @@ void PouseUi::Exit()
 {
 	isCheck = TRUE;
 	//YES
-	if (input_->TriggerKey(DIK_Y))
+	if (isCheck)
 	{
-		isEnd = TRUE;
-		OK = FALSE;
-		isCheck = FALSE;
-		isPouse = FALSE;
 		
-	}
-	//NO
-	if (input_->TriggerKey(DIK_N))
-	{
-		isCheck = FALSE;
-		OK = FALSE;
-		
-	}
+		if (non)
+		{
+			if (input_->TriggerKey(DIK_SPACE) && selectCheck == 1)
+			{
+				isEnd = TRUE;
+				isPouse = FALSE;
+				OK = FALSE;
+				non = FALSE;
+				isCheck = FALSE;
+				selectCheck = 0;
 
+			}
+			//NO
+			if (input_->TriggerKey(DIK_SPACE) && selectCheck == 2)
+			{
+				OK = FALSE;
+				non = FALSE;
+				isCheck = FALSE;
+				selectCheck = 0;
+			}
+			
+		}
+		non = TRUE;
+	}
+	else
+	{
+		
+	}
 	
 
 }

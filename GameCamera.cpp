@@ -105,14 +105,14 @@ void GameCamera::InitializeCameraPosition()
 
 void GameCamera::Update(ViewProjection* viewProjection_) {
 
-	/*if (input_->TriggerKey(DIK_F1)) {
+	if (input_->TriggerKey(DIK_F1)) {
 		if (cameraMode == false) {
 			cameraMode = true;
 		}
 		else {
 			cameraMode = false;
 		}
-	}*/
+	}
 	if (cameraMode == false) {
 		/*if (input_->PushKey(DIK_LSHIFT)) {
 			PlayerLockOnCamera(viewProjection_);

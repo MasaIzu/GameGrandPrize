@@ -383,13 +383,10 @@ void GameScene::TitleUpdate()
 	SFontWorld_.TransferMatrix();
 
 	TitileParticle->Update();
-
-	if (input_->TriggerKey(DIK_Q)) {
-		IsSceneChange = true;
-	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (titleControlTimer >= titleControlTimeMax) {
 			IsRotaStart = true;
+			ShowCursor(FALSE);
 		}
 
 
@@ -424,11 +421,6 @@ void GameScene::TitleUpdate()
 		//イベントから始まるのでイベントフラグを立てる
 		isMovie = true;
 
-	}
-
-	if (input_->TriggerKey(DIK_K)) {
-		scene = Scene::GameOver;
-		Reset();
 	}
 }
 
@@ -608,9 +600,6 @@ void GameScene::GameUpdate()
 		}
 
 		//テスト用
-		if (Input::GetInstance()->TriggerKey(DIK_H)) {
-			InitBossDeathEvent();
-		}
 
 		if (boss->bossFish->GetIsDeathEnd() && boss->bossWarrier->GetIdDeadEnd()) {
 
@@ -621,6 +610,7 @@ void GameScene::GameUpdate()
 		if (player->GetAlive() == false)
 		{
 			scene = Scene::GameOver;
+			ShowCursor(TRUE);
 		}
 
 	}
@@ -1514,6 +1504,7 @@ void GameScene::UpdateBossDeathEvent() {
 		//イージング終わってるならシーン以降
 		if (timerate >= 1.0f) {
 			scene = Scene::Result;
+			ShowCursor(TRUE);
 		}
 
 	}

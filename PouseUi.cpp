@@ -19,19 +19,7 @@ void PouseUi::Initialize()
 {
 	input_ = Input::GetInstance();
 
-	printXY = { spriteSizeX,spriteSizeY };//画像最初地点
-	printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
-	printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
-	printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
-	printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
-
-	sp = { spriteSizeX,spriteSizeY };
-	sp2 = { spriteSizeX,spriteSizeY };
-	sp3 = { spriteSizeX,spriteSizeY };
-	sp4 = { spriteSizeX,spriteSizeY };
-	sp5 = { spriteSizeX,spriteSizeY };
-	
-	easingXTimer = 0;
+	Reset();
 	Load();
 }
 
@@ -185,13 +173,7 @@ void PouseUi::Process()
 
 void PouseUi::Draw()
 {
-	//ポーズ画面項目すべて表示
-	spriteUi_->Draw(mdl,{1,1,1,1});
-	spriteBack_->Draw(sp, { 1,1,1,1 });
-	spriteReset_->Draw(sp2, { 1,1,1,1 });
-	spriteTitle_->Draw(sp3, { 1,1,1,1 });
-	//spriteSetting_->Draw(sp4, { 1,1,1,1 });
-	spriteExit_->Draw(sp4, { 1,1,1,1 });
+	
 
 	if (isCheck)
 	{
@@ -208,6 +190,16 @@ void PouseUi::Draw()
 			spriteCheckN_->Draw(mdl, { 1,1,1,1 });
 		}
 
+	}
+	else
+	{
+		//ポーズ画面項目すべて表示
+		spriteUi_->Draw(mdl, { 1,1,1,1 });
+		spriteBack_->Draw(sp, { 1,1,1,1 });
+		spriteReset_->Draw(sp2, { 1,1,1,1 });
+		spriteTitle_->Draw(sp3, { 1,1,1,1 });
+		//spriteSetting_->Draw(sp4, { 1,1,1,1 });
+		spriteExit_->Draw(sp4, { 1,1,1,1 });
 	}
 	
 
@@ -259,10 +251,23 @@ void PouseUi::Load()
 
 }
 
-void PouseUi::Reset()
+void PouseUi::Reset()//ポーズのリセット
 
 {
-	
+	printXY = { spriteSizeX,spriteSizeY };//画像最初地点
+	printXY2 = { spriteSizeX,spriteSizeY * 2 + size };
+	printXY3 = { spriteSizeX,spriteSizeY * 3 + size * 2 };
+	printXY4 = { spriteSizeX,spriteSizeY * 4 + size * 3 };
+	printXY5 = { spriteSizeX,spriteSizeY * 5 + size * 4 };
+
+	sp = { spriteSizeX,spriteSizeY };
+	sp2 = { spriteSizeX,spriteSizeY };
+	sp3 = { spriteSizeX,spriteSizeY };
+	sp4 = { spriteSizeX,spriteSizeY };
+	sp5 = { spriteSizeX,spriteSizeY };
+
+	easingXTimer = 0;
+
 }
 
 void PouseUi::Back()
@@ -277,7 +282,8 @@ void PouseUi::GameReset()
 
 void PouseUi::Title()
 {
-	scene = Scene::Title;
+	isTitle = TRUE;
+	//scene = Scene::Title;
 }
 
 void PouseUi::Setting()
@@ -300,10 +306,12 @@ void PouseUi::Exit()
 	//NO
 	if (input_->TriggerKey(DIK_N))
 	{
+		isCheck = FALSE;
 		OK = FALSE;
+		
 	}
 
-	//描画で本当に終わらせてもいいのかの確認画像
+	
 
 }
 
@@ -324,7 +332,5 @@ void PouseUi::EasingReset()
 	easingXTimer = 0;
 	easingYTimer = 0;
 	easingOkX = false;
-
-
 }
 

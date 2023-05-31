@@ -430,20 +430,25 @@ void GameScene::TitleUpdate()
 void GameScene::GameUpdate()
 {
 	//pause用の処理
-	//ゲーム終了
+	
 	if (pouseUi_->GetGameReset())
 	{
 		Reset();
+
 	}
-	if (pouseUi_->GetisEnd())
+	
+	
+	if (pouseUi_->GetisTitle())
 	{
-		//IsBreak();
+		Reset();
+		pouseUi_->oldScene = Scene::Title;
+		IsSceneChange = true;
 	}
 
 	pouseUi_->Update();
 	if (pouseUi_->GetisPouse() == TRUE)
 	{
-
+		
 	}
 	else
 	{

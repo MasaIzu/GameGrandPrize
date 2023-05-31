@@ -36,6 +36,11 @@ public: // ƒƒ“ƒoŠÖ”
 	/// </summary>
 	void Finalize() override;
 
+	/// <summary>
+	/// I—¹‚·‚é‚©‚Ç‚¤‚©
+	/// </summary>
+	bool IsBreak() override;
+
 private:
 	Input* input = nullptr;
 	SceneManager* sceneManager_ = nullptr;

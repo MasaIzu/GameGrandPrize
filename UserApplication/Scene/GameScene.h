@@ -29,6 +29,8 @@
 
 #include "UserApplication/Ground/Ground.h"
 
+#include "PouseUi.h"
+
 #include <objbase.h>
 #include "Sound.h"
 #include<array>
@@ -44,12 +46,12 @@ class TouchableObject;
 #include"FbxAnimation.h"
 #include"EasingData.h"
 
-enum class Scene {
-	Title,
-	Game,
-	GameOver,
-	Result
-};
+//enum class Scene {
+//	Title,
+//	Game,
+//	GameOver,
+//	Result
+//};
 
 enum class EventPhase {
 
@@ -114,7 +116,7 @@ public:
 
 	//void CreateGround();
 
-
+	bool IsBreak() override;
 
 
 private: // メンバ変数
@@ -143,6 +145,9 @@ private: // メンバ変数
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
+
+	//ポーズ
+	PouseUi* pouseUi_ = nullptr;
 
 
 	Boss* boss = nullptr;
@@ -211,9 +216,14 @@ private: // メンバ変数
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
 
-	Scene scene = Scene::Title;
+	/*Scene scene = Scene::Title;
 
-	Scene oldScene = Scene::Title;
+
+	//Scene oldScene = Scene::Title;*/
+	std::unique_ptr<Sprite> gameClearFont;
+=======
+	//Scene oldScene = Scene::Title;
+
 
 
 
@@ -406,6 +416,8 @@ private: // メンバ変数
 	bool IsBattle02BGM = false;
 	bool IsGameOverBGM = false;
 	bool IsGameClearBGM = false;
+
+	bool one = FALSE;
 #pragma endregion
 
 

@@ -26,6 +26,12 @@ public: // メンバ関数
 	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// 終了させるかどうか
+	/// </summary>
+	bool IsBreak();
+
+
 	// 次のシーン予約
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory);
 	void ChangeScene(const std::string& sceneName);

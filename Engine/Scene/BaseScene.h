@@ -23,6 +23,9 @@ public:
 	//描画
 	virtual void Finalize() = 0;
 
+	//ブレイクするかどうか
+	virtual bool IsBreak() = 0;
+
 public://メンバ関数
 
 	virtual ~BaseScene() = default;

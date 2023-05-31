@@ -30,3 +30,8 @@ void TitleScene::Draw()
 void TitleScene::Finalize()
 {
 }
+
+bool TitleScene::IsBreak()
+{
+	return false;
+}

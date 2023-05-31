@@ -187,6 +187,9 @@ void GameScene::Initialize() {
 
 	TitileParticle->SetTextureHandle(TextureManager::Load("effect4.png"));
 
+	escMenuSprite = Sprite::Create(TextureManager::Load("menu_Font.png"));
+	escMenuSprite->SetAnchorPoint({ 0.5f, 0.5f });
+	escMenuSprite->SetSize({ 200,50 });
 	// タイトルのオブジェクトのワールドトランスフォームの初期化
 	rotationY = -35.0f;
 	sowrdRotationY = -35.0f;
@@ -685,7 +688,10 @@ void GameScene::GameUpdate()
 	//ParticleMan->Update();
 
 
+	ImGui::Begin("sprite");
+	ImGui::InputFloat2("menuPos", &menuPos.x);
 
+	ImGui::End();
 }
 
 void GameScene::GameOverUpdate()
@@ -756,6 +762,12 @@ void GameScene::GameOverUpdate()
 			oldScene = Scene::GameOver;
 			IsSceneChange = true;
 			IsRetry = false;
+
+			//小魚を全員殺す
+			for (int i = 0; i < minifishes.size(); i++) {
+				minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+				minifishes[i].OnCollision();
+			}
 		}
 	}
 
@@ -978,7 +990,7 @@ void GameScene::Draw() {
 			if (boss->bossFish->GetIsDeathEnd()) {
 				boss->bossWarrier->DrawHealth();
 			}
-
+			escMenuSprite->Draw(menuPos, { 1,1,1,1 });
 		}
 		else {
 			//ここにムービー用の黒の縁の描画を入れる

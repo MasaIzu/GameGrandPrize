@@ -263,8 +263,8 @@ private: // メンバ変数
 
 
 	// スプライト
-
-
+	std::unique_ptr<Sprite>escMenuSprite;
+	Vector2 menuPos = { 1100,50 };
 
 #pragma region タイトルオブジェクト関連
 	// タイトルビュープロジェクション

@@ -380,10 +380,6 @@ void GameScene::TitleUpdate()
 	SFontWorld_.TransferMatrix();
 
 	TitileParticle->Update();
-
-	if (input_->TriggerKey(DIK_Q)) {
-		IsSceneChange = true;
-	}
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (titleControlTimer >= titleControlTimeMax) {
 			IsRotaStart = true;
@@ -423,10 +419,6 @@ void GameScene::TitleUpdate()
 
 	}
 
-	if (input_->TriggerKey(DIK_K)) {
-		scene = Scene::GameOver;
-		Reset();
-	}
 }
 
 void GameScene::GameUpdate()

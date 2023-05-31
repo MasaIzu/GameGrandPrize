@@ -287,9 +287,9 @@ void BossWarrier::Initialize()
 		light.SetDirLightActive(1, true);
 		light.SetDirLightActive(2, true);
 
-		light.SetDirLightColor(0, { 5,5,0 });
-		light.SetDirLightColor(1, { 5,5,0 });
-		light.SetDirLightColor(2, { 5,5,0 });
+		light.SetDirLightColor(0, { 5,5,5 });
+		light.SetDirLightColor(1, { 5,5,5 });
+		light.SetDirLightColor(2, { 5,5,5 });
 
 		for (int i = 0; i < energyNum; i++) {
 			//energyL[i].model->SetLight(light);
@@ -343,10 +343,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 	}
 
 	ImGui::Text("health %d", health);
-
-	if (Input::GetInstance()->TriggerKey(DIK_H)) {
-		InitDeath();
-	}
 
 
 	for (int i = 0; i < MAXSWROD; i++)
@@ -473,51 +469,6 @@ void BossWarrier::Update(const Vector3& targetPos)
 
 		oldAttack = attack;
 		ImGui::Text("%d", attack);
-
-
-		if (Input::GetInstance()->TriggerKey(DIK_8)) {
-			//‰Šú‰»ˆ—
-			InitAtkArmSwing();
-			attackEasing.Start(60);
-			bossAttackPhase = BossAttackPhase::Before;
-			attack = Attack::ArmSwing;
-			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Gu.get();
-			boss2Model[BossWarrierPart::HandR].model = bossArmRModel_Gu.get();
-			boss2Model[BossWarrierPart::HandL].Transform.scale_ = { 1.5,2,2 };
-			boss2Model[BossWarrierPart::HandR].Transform.scale_ = { 1.5,2,2 };
-			boss2Model[BossWarrierPart::HandL].Transform.translation_ = { 1,0,0 };
-			boss2Model[BossWarrierPart::HandR].Transform.translation_ = { -1,0,0 };
-
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_9))
-		{
-			attackEasing.Start(60);
-			bossAttackPhase = BossAttackPhase::Before;
-			attack = Attack::Tornado;
-			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_L))
-		{
-			attackEasing.Start(60);
-			attack = Attack::MultiLaunchSword;
-			bossAttackPhase = BossAttackPhase::Before;
-			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
-			StartMultiLaunchSword();
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_K))
-		{
-			attack = Attack::LaunchSword;
-			attackEasing.Start(60);
-			bossAttackPhase = BossAttackPhase::Before;
-			boss2Model[BossWarrierPart::HandL].model = bossArmLModel_Pa.get();
-			StartLaunchSword();
-		}
-		if (Input::GetInstance()->TriggerKey(DIK_0)) {
-			attack = Attack::SwordSwing;
-			attackEasing.Start(60);
-			bossAttackPhase = BossAttackPhase::Before;
-			InitAtkSwordSwing();
-		}
 
 		break;
 	case Attack::ArmSwing:

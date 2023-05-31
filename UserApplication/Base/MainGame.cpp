@@ -34,3 +34,9 @@ void MainGame::Draw()
 	// ƒQ[ƒ€ƒV[ƒ“‚Ì•`‰æ
 	sceneManager_->Draw();
 }
+
+bool MainGame::IsBreak()
+{
+	// ƒQ[ƒ€ƒV[ƒ“‚Ì•`‰æ
+	return sceneManager_->IsBreak();
+}

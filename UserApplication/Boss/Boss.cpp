@@ -29,10 +29,11 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 {
 	bossFish->Update(targetPos, stagePos, stageRadius);
 
-	//���`�Ԃ����񂾂���`�Ԃ̃X�|�[��������
+	//第一形態が死んだら第二形態のスポーン処理へ
 	if (bossFish->GetIsDeathEnd() && !isBossSpawn) {
 		bossWarrier->Spawn({ 0,16,0 });
 		isBossSpawn = true;
+
 
 	}
 

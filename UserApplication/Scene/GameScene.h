@@ -29,6 +29,8 @@
 
 #include "UserApplication/Ground/Ground.h"
 
+//#include "PouseUi.h"
+
 #include <objbase.h>
 #include "Sound.h"
 #include<array>
@@ -114,7 +116,7 @@ public:
 
 	//void CreateGround();
 
-
+	bool IsBreak() override;
 
 
 private: // メンバ変数
@@ -143,6 +145,9 @@ private: // メンバ変数
 
 	//シーンマネージャー
 	SceneManager* sceneManager_ = nullptr;
+
+	//ポーズ
+	//PouseUi* pouseUi_ = nullptr;
 
 
 	Boss* boss = nullptr;
@@ -213,7 +218,11 @@ private: // メンバ変数
 
 	Scene scene = Scene::Title;
 
+
 	Scene oldScene = Scene::Title;
+	/*std::unique_ptr<Sprite> gameClearFont;*/
+	//Scene oldScene = Scene::Title;
+
 
 
 
@@ -406,6 +415,8 @@ private: // メンバ変数
 	bool IsBattle02BGM = false;
 	bool IsGameOverBGM = false;
 	bool IsGameClearBGM = false;
+
+	bool one = FALSE;
 #pragma endregion
 
 

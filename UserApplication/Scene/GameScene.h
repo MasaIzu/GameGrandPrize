@@ -29,7 +29,7 @@
 
 #include "UserApplication/Ground/Ground.h"
 
-#include "PouseUi.h"
+//#include "PouseUi.h"
 
 #include <objbase.h>
 #include "Sound.h"
@@ -46,12 +46,12 @@ class TouchableObject;
 #include"FbxAnimation.h"
 #include"EasingData.h"
 
-//enum class Scene {
-//	Title,
-//	Game,
-//	GameOver,
-//	Result
-//};
+enum class Scene {
+	Title,
+	Game,
+	GameOver,
+	Result
+};
 
 enum class EventPhase {
 
@@ -147,7 +147,7 @@ private: // メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 
 	//ポーズ
-	PouseUi* pouseUi_ = nullptr;
+	//PouseUi* pouseUi_ = nullptr;
 
 
 	Boss* boss = nullptr;
@@ -216,12 +216,11 @@ private: // メンバ変数
 	//現在使っているビュープロ
 	ViewProjection nowViewProjection;
 
-	/*Scene scene = Scene::Title;
+	Scene scene = Scene::Title;
 
 
-	//Scene oldScene = Scene::Title;*/
-	std::unique_ptr<Sprite> gameClearFont;
-=======
+	Scene oldScene = Scene::Title;
+	/*std::unique_ptr<Sprite> gameClearFont;*/
 	//Scene oldScene = Scene::Title;
 
 

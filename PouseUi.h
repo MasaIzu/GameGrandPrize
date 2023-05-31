@@ -65,15 +65,18 @@ public:
 	Scene oldScene = Scene::Title;
 
 	bool isTitle = false;
+	bool gameReset = false;
 
 private:
 
+
+	Vector2 selectButtonSize = { 40,80 };
 	//static PouseUi* PouseUi_;
 	//シーン選択用
 	Input* input_ = nullptr;
 
 	const int MIN = 1;
-	const int MAX = 4;
+	const int MAX = 3;
 	const int SMAX = 3;
 	int select = MIN;
 	float size = 32.0f;
@@ -104,6 +107,14 @@ private:
 	Vector2 sp4 = { spriteSizeX,spriteSizeY };
 	Vector2 sp5 = { spriteSizeX,spriteSizeY };
 
+	Vector2 mdlPos = { 650,520 };
+	Vector2 sPos1 = { 400, 520 };
+	Vector2 sPos2 = { 870,520 };
+	Vector2 ent = mdlPos;
+	int selectCheck = 1;
+	int waitTimer = 0;
+	CONST INT WAITMAXTIME = 40;
+
 	//中心
 	Vector2 mdl = { 1280 / 2, 720 / 2 };
 	//決定させたやつを代入
@@ -115,7 +126,8 @@ private:
 	bool easingOkX = false;
 	bool isEnd = false;
 	bool isCheck = false;
-	bool gameReset = false;
+	bool non = FALSE;
+	
 	//bool isTitle = false;
 
 	//bool showEnd = false;
@@ -142,17 +154,15 @@ private:
 	std::unique_ptr<Sprite> spriteSelect_ = nullptr;
 	uint32_t loserSelect_ = 0;
 
+	//セレクト
+	std::unique_ptr<Sprite> spriteSelect2_ = nullptr;
+
 	//ゲーム終了確認
 	std::unique_ptr<Sprite> spriteCheck_ = nullptr;
 	uint32_t loserCheck_ = 0;
-
-	std::unique_ptr<Sprite> spriteCheckY_ = nullptr;
-	uint32_t loserCheckY_ = 0;
-
-	std::unique_ptr<Sprite> spriteCheckN_ = nullptr;
-	uint32_t loserCheckN_ = 0;
 	
-
+	
+	
 	
 };
 

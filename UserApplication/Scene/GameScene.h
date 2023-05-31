@@ -396,6 +396,8 @@ private: // メンバ変数
 	bool IsBattle02BGM = false;
 	bool IsGameOverBGM = false;
 	bool IsGameClearBGM = false;
+
+	bool one = FALSE;
 #pragma endregion
 
 

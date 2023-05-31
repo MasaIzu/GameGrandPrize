@@ -246,6 +246,11 @@ void GameScene::Update() {
 	SceneChageUpdate();
 	
 
+	pouseUi_->Update();
+
+	
+
+
 	switch (pouseUi_->scene)
 	{
 	case Scene::Title:
@@ -254,6 +259,12 @@ void GameScene::Update() {
 	case Scene::Game:
 		
 		GameUpdate();
+		//pause用の処理
+		if (pouseUi_->isTitle && one == FALSE)
+		{
+			Reset();
+			one = true;
+		}
 		
 		break;
 	case Scene::GameOver:
@@ -429,26 +440,13 @@ void GameScene::TitleUpdate()
 
 void GameScene::GameUpdate()
 {
-	//pause用の処理
-	
-	if (pouseUi_->GetGameReset())
-	{
-		Reset();
-
-	}
-	
-	
-	if (pouseUi_->GetisTitle())
-	{
-		Reset();
-		pouseUi_->oldScene = Scene::Title;
-		IsSceneChange = true;
-	}
-
-	pouseUi_->Update();
 	if (pouseUi_->GetisPouse() == TRUE)
 	{
 		
+	}
+	if (pouseUi_->isTitle)
+	{
+		IsSceneChange = true;
 	}
 	else
 	{
@@ -459,7 +457,7 @@ void GameScene::GameUpdate()
 			a++;
 		}
 
-		if (isMovie) {
+  		if (isMovie) {
 			// イベントシーンの更新
 					// 最初のカメラと魚の更新
 			FirstCameraUpdate();
@@ -758,6 +756,11 @@ void GameScene::SceneChageUpdate()
 			}
 			break;
 		case Scene::Game:
+			if (pouseUi_->oldScene == Scene::Game)
+			{
+				// 最初のスライダーのイン
+				SceneChageFirst();
+			}
 			if (pouseUi_->oldScene == Scene::Title || pouseUi_->oldScene == Scene::GameOver) {
 				// 閉じきったら消す、スライダーのアウト
 				SceneChageRast();
@@ -1125,9 +1128,22 @@ void GameScene::SceneChageFirst()
 				IsTitleBGM = false;
 				titleBGM.StopWave();
 				Reset();
+				one = false;
+				pouseUi_->isTitle = FALSE;
 				break;
 			case Scene::Game:
 
+				if (pouseUi_->isTitle)
+				{
+					pouseUi_->scene = Scene::Title;
+					IsBattle01BGM = false;
+					IsBattle02BGM = false;
+
+					
+					
+				}
+
+				Reset();
 				break;
 			case Scene::GameOver:
 				if (IsRetry == false) {

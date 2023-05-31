@@ -57,13 +57,14 @@ public:
 
 	bool GetisEnd() { return isEnd; }
 
-	bool GetisTitle() { return isTitle; }
+	//bool GetisTitle() { return isTitle; }
 
 	//ゲームシーン移行要
 	Scene scene = Scene::Title;
 
 	Scene oldScene = Scene::Title;
 
+	bool isTitle = false;
 
 private:
 
@@ -115,7 +116,7 @@ private:
 	bool isEnd = false;
 	bool isCheck = false;
 	bool gameReset = false;
-	bool isTitle = false;
+	//bool isTitle = false;
 
 	//bool showEnd = false;
 	//テクスチャ

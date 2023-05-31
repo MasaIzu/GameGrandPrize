@@ -25,11 +25,11 @@ void PouseUi::Initialize()
 
 void PouseUi::Update()
 {
-	if (input_->TriggerKey(DIK_P) && isPouse == FALSE)
+	if (input_->TriggerKey(DIK_ESCAPE) && isPouse == FALSE)
 	{
 		isPouse = TRUE;
 	}
-	else if (input_->TriggerKey(DIK_P) && isPouse == TRUE)
+	else if (input_->TriggerKey(DIK_ESCAPE) && isPouse == TRUE)
 	{
 		isPouse = FALSE;
 	}
@@ -69,6 +69,7 @@ void PouseUi::Update()
 	else
 	{
 		EasingReset();
+		
 	}
 	
 }
@@ -283,7 +284,9 @@ void PouseUi::GameReset()
 void PouseUi::Title()
 {
 	isTitle = TRUE;
-	//scene = Scene::Title;
+	oldScene = Scene::Game;
+	OK = false;
+	isPouse = false;
 }
 
 void PouseUi::Setting()

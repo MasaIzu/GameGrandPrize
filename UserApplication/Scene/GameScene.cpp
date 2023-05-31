@@ -403,7 +403,7 @@ void GameScene::TitleUpdate()
 	SFontWorld_.TransferMatrix();
 
 	TitileParticle->Update();
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_SPACE)&&pouseUi_->GetisPouse()==false) {
 		if (titleControlTimer >= titleControlTimeMax) {
 			IsRotaStart = true;
 			ShowCursor(FALSE);
@@ -469,191 +469,191 @@ void GameScene::GameUpdate()
 	else
 	{
 
-	
-
-	if (isMovie) {
-		// イベントシーンの更新
-		// 最初のカメラと魚の更新
-		FirstCameraUpdate();
-		FirstMovieUpdate();
 
 
-		//チュートリアルが終了かつ、魚が間欠泉に逃げ終わっているなら
-		if (!isStartBossBattle) {
-			if (isTutorialEnd && isAllFishLeave) {
-				//ボスの生成を開始
-				fishSpawnCount = 20;
-				isStartBossBattle = true;
-				//小魚を全員殺す
-				for (int i = 0; i < minifishes.size(); i++) {
-					minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
-					minifishes[i].OnCollision();
-				}
-			}
-		}
+		if (isMovie) {
+			// イベントシーンの更新
+			// 最初のカメラと魚の更新
+			FirstCameraUpdate();
+			FirstMovieUpdate();
 
-		fishSpawnInterval--;
 
-		if (isStartBossBattle) {
-			ImGui::Text("boss battle start!");
-			if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
-				fishSpawnCount--;
-				fishSpawnInterval = 5;
-				//ボスをスポーンさせる
-				for (int i = 0; i < boss->bossFish->fishMaxCount / 20; i++) {
-					int gayserIndex = MinMax(i % 5, 0, gayserPos.size());
-					boss->bossFish->CreateFish(gayserPos[gayserIndex]);
-				}
-			}
-		}
-
-		//魚がすべて間欠泉に逃げたかチェック
-		CheckAllFishLeave();
-
-		//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
-		if (isTutorialEnd && !isAllFishLeave) {
-			movieCamera.eye = { 0,125,-150 };
-			movieCamera.target = { 0,0,0 };
-		}
-
-		//ボス生成フェーズになったらカメラをボスに向ける
-		if (isStartBossBattle) {
-			movieCamera.target = boss->bossFish->GetParentPos();
-		}
-
-		//小魚スポーンカウントが0でボス戦開始フラグがtrueならムービー終了
-		if (isStartBossBattle && fishSpawnCount == 0) {
-			if (eventPhase == EventPhase::Boss1Spawn) {
-				isMovie = false;
-			}
-		}
-
-		//ボスの変身のカメラ処理
-		UpdateBossChangeEventCamera();
-
-		//ボス第二形態死亡のカメラ処理
-		UpdateBossDeathEvent();
-
-	}
-	else {
-		//ゲーム本編の更新処理
-
-			//生きている小魚の数が5匹以下になったら魚が逃げ出す
-		if (!isTutorialEnd && !IsFirst) {
-			if (GetMiniFishAlive() < 5) {
-				isTutorialEnd = true;
-				isMovie = true;
-				eventPhase = EventPhase::Boss1Spawn;
-				for (int i = 0; i < minifishes.size(); i++) {
-					int gayserIndex = MinMax(i / 2, 0, gayserPos.size());
-					minifishes[i].LeaveGayser(gayserPos[gayserIndex]);
+			//チュートリアルが終了かつ、魚が間欠泉に逃げ終わっているなら
+			if (!isStartBossBattle) {
+				if (isTutorialEnd && isAllFishLeave) {
+					//ボスの生成を開始
+					fishSpawnCount = 20;
+					isStartBossBattle = true;
+					//小魚を全員殺す
+					for (int i = 0; i < minifishes.size(); i++) {
+						minifishes[i].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+						minifishes[i].OnCollision();
+					}
 				}
 			}
 
-		}
+			fishSpawnInterval--;
 
-		//各当たり判定とそのコールバック
-		if (collisionManager->GetIsEnemyHit()) {
-			gameCamera->Collision();
-			Matrix4 a = collisionManager->GetEnemyWorldPos();
-			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			if (player->GetIsAwakening() == false) {
-				player->Collision(10);
-			}
-
-		}
-
-		if (collisionManager->GetIsWakeEnemyHit()) {
-			gameCamera->Collision();
-			Matrix4 a = collisionManager->GetEnemyWorldPos();
-			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			if (player->GetIsAwakening() == false) {
-				player->Collision(5);
-			}
-		}
-		player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(), collisionManager->GetPlayerPos());
-
-
-		ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
-		ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
-		ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
-
-		//剣と自機の当たり判定
-		if (collisionManager->GetEnemySwordHit()) {
-			gameCamera->Collision();
-			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(20);
-		}
-
-		if (collisionManager->GetIsEnemyKingDrop()) {
-			gameCamera->Collision();
-			player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
-			player->Collision(2, 1);
-		}
-
-		if (collisionManager->GetIsAttackHit()) {
-			isAttackHit = true;
-			gameCamera->Collision();
-			player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
-			if (player->GetUltState() == false) {
-				boss->bossFish->Damage(2);
-				if (boss->bossWarrier->GetAlive()) {
-					boss->bossWarrier->Damage(2);
-				}
-			}
-			else {
-				boss->bossFish->Damage(4);
-				if (boss->bossWarrier->GetAlive()) {
-					boss->bossWarrier->Damage(4);
+			if (isStartBossBattle) {
+				ImGui::Text("boss battle start!");
+				if (fishSpawnCount > 0 && fishSpawnInterval <= 0) {
+					fishSpawnCount--;
+					fishSpawnInterval = 5;
+					//ボスをスポーンさせる
+					for (int i = 0; i < boss->bossFish->fishMaxCount / 20; i++) {
+						int gayserIndex = MinMax(i % 5, 0, gayserPos.size());
+						boss->bossFish->CreateFish(gayserPos[gayserIndex]);
+					}
 				}
 			}
 
-			player->AddUltCount(60);
-		}
+			//魚がすべて間欠泉に逃げたかチェック
+			CheckAllFishLeave();
 
-		if (collisionManager->GetIsWakeEnemyAttackHit()) {
-			isAttackHit = true;
-			playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
-			playerAttackHitNumber = MinMax(playerAttackHitNumber, 0, minifishes.size());
-
-			minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
-
-			minifishes[playerAttackHitNumber].OnCollision();
-
-			player->AddUltCount(50);
-		}
-
-		// ボスフェーズ１のHPが０になったら
-		if (boss->bossFish->GetHealth() <= 0) {
-			boss->bossFish->Death();
-
-
-
-		}
-
-		if (boss->bossFish->GetIsDeathEnd()) {
-			//イベントシーンが進んでいなければ進める
-			if (eventPhase == EventPhase::Boss1Spawn) {
-				eventPhase = EventPhase::BossPhaseChange;
-				StartBossChangeEvent();
+			//チュートリアルが終わっていて、魚が移動し終わっていないならカメラを上からの見下ろしに
+			if (isTutorialEnd && !isAllFishLeave) {
+				movieCamera.eye = { 0,125,-150 };
+				movieCamera.target = { 0,0,0 };
 			}
+
+			//ボス生成フェーズになったらカメラをボスに向ける
+			if (isStartBossBattle) {
+				movieCamera.target = boss->bossFish->GetParentPos();
+			}
+
+			//小魚スポーンカウントが0でボス戦開始フラグがtrueならムービー終了
+			if (isStartBossBattle && fishSpawnCount == 0) {
+				if (eventPhase == EventPhase::Boss1Spawn) {
+					isMovie = false;
+				}
+			}
+
+			//ボスの変身のカメラ処理
+			UpdateBossChangeEventCamera();
+
+			//ボス第二形態死亡のカメラ処理
+			UpdateBossDeathEvent();
+
 		}
+		else {
+			//ゲーム本編の更新処理
 
-		//テスト用
+				//生きている小魚の数が5匹以下になったら魚が逃げ出す
+			if (!isTutorialEnd && !IsFirst) {
+				if (GetMiniFishAlive() < 5) {
+					isTutorialEnd = true;
+					isMovie = true;
+					eventPhase = EventPhase::Boss1Spawn;
+					for (int i = 0; i < minifishes.size(); i++) {
+						int gayserIndex = MinMax(i / 2, 0, gayserPos.size());
+						minifishes[i].LeaveGayser(gayserPos[gayserIndex]);
+					}
+				}
 
-		if (boss->bossFish->GetIsDeathEnd() && boss->bossWarrier->GetIdDeadEnd()) {
+			}
 
-			InitBossDeathEvent();
+			//各当たり判定とそのコールバック
+			if (collisionManager->GetIsEnemyHit()) {
+				gameCamera->Collision();
+				Matrix4 a = collisionManager->GetEnemyWorldPos();
+				player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+				if (player->GetIsAwakening() == false) {
+					player->Collision(10);
+				}
 
-			//scene = Scene::Result;
+			}
+
+			if (collisionManager->GetIsWakeEnemyHit()) {
+				gameCamera->Collision();
+				Matrix4 a = collisionManager->GetEnemyWorldPos();
+				player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+				if (player->GetIsAwakening() == false) {
+					player->Collision(5);
+				}
+			}
+			player->EnemyNotAttackCollision(collisionManager->GetIsEnemyReception(), collisionManager->GetPlayerPos());
+
+
+			ImGui::Text("EnemyWorldPosX : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).x);
+			ImGui::Text("EnemyWorldPosY : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).y);
+			ImGui::Text("EnemyWorldPosZ : %f", MyMath::GetWorldTransform(collisionManager->GetEnemyWorldPos()).z);
+
+			//剣と自機の当たり判定
+			if (collisionManager->GetEnemySwordHit()) {
+				gameCamera->Collision();
+				player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+				player->Collision(20);
+			}
+
+			if (collisionManager->GetIsEnemyKingDrop()) {
+				gameCamera->Collision();
+				player->SetEnemyPos(collisionManager->GetEnemyWorldPos());
+				player->Collision(2, 1);
+			}
+
+			if (collisionManager->GetIsAttackHit()) {
+				isAttackHit = true;
+				gameCamera->Collision();
+				player->SetParticlePos(collisionManager->GetAttackHitWorldPos());
+				if (player->GetUltState() == false) {
+					boss->bossFish->Damage(2);
+					if (boss->bossWarrier->GetAlive()) {
+						boss->bossWarrier->Damage(2);
+					}
+				}
+				else {
+					boss->bossFish->Damage(4);
+					if (boss->bossWarrier->GetAlive()) {
+						boss->bossWarrier->Damage(4);
+					}
+				}
+
+				player->AddUltCount(60);
+			}
+
+			if (collisionManager->GetIsWakeEnemyAttackHit()) {
+				isAttackHit = true;
+				playerAttackHitNumber = collisionManager->GetHitNumber() - 1;
+				playerAttackHitNumber = MinMax(playerAttackHitNumber, 0, minifishes.size());
+
+				minifishes[playerAttackHitNumber].SetAttribute(COLLISION_ATTR_WEAKENEMYS_DEI);
+
+				minifishes[playerAttackHitNumber].OnCollision();
+
+				player->AddUltCount(50);
+			}
+
+			// ボスフェーズ１のHPが０になったら
+			if (boss->bossFish->GetHealth() <= 0) {
+				boss->bossFish->Death();
+
+
+
+			}
+
+			if (boss->bossFish->GetIsDeathEnd()) {
+				//イベントシーンが進んでいなければ進める
+				if (eventPhase == EventPhase::Boss1Spawn) {
+					eventPhase = EventPhase::BossPhaseChange;
+					StartBossChangeEvent();
+				}
+			}
+
+			//テスト用
+
+			if (boss->bossFish->GetIsDeathEnd() && boss->bossWarrier->GetIdDeadEnd()) {
+
+				InitBossDeathEvent();
+
+				//scene = Scene::Result;
+			}
+			if (player->GetAlive() == false)
+			{
+				pouseUi_->scene = Scene::GameOver;
+				ShowCursor(TRUE);
+			}
+
 		}
-		if (player->GetAlive() == false)
-		{
-			pouseUi_->scene = Scene::GameOver;
-			scene = Scene::GameOver;
-			ShowCursor(TRUE);
-		}
-
 	}
 
 	//イベントと本編両方で必要な更新
@@ -1571,7 +1571,6 @@ void GameScene::UpdateBossDeathEvent() {
 
 		//イージング終わってるならシーン以降
 		if (timerate >= 1.0f) {
-			scene = Scene::Result;
 			ShowCursor(TRUE);
 			pouseUi_->scene = Scene::Result;
 		}

@@ -311,6 +311,7 @@ void PouseUi::Title()
 	//oldScene = Scene::Game;
 	OK = false;
 	isPouse = false;
+	ShowCursor(TRUE);
 }
 
 void PouseUi::Setting()

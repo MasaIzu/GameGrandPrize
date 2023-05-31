@@ -408,7 +408,7 @@ void BossWarrier::Update(const Vector3& targetPos)
 				{
 					do
 					{
-						int randAttack = rand() % 1;
+						int randAttack = rand() % 4;
 						//randAttack %= 100;
 						if (randAttack == 0)
 						{

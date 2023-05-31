@@ -34,7 +34,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 	float grayScale = col.r * 0.299 + col.g * 0.587+ col.b * 0.114;
 
-	float extract = smoothstep(1.0, 2.0, grayScale);
+	float extract = step(1.1, grayScale);
 	col *= extract;
 	return col;
 }

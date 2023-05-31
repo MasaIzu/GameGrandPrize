@@ -156,9 +156,9 @@ void Player::Initialize(Model* model, float WindowWidth, float WindowHeight) {
 	RSowrdModel->SetPolygonExplosion({ 0.0f,1.0f,6.28,600.0f });
 
 	// SEの初期化
-	playerAttackSE.SoundLoadWave("playerAttack.wav");
+	playerAttackSE.SoundLoadWave("playerAttackSE.wav");
 
-	playerAttackSE4.SoundLoadWave("playerAttack4.wav");
+	playerAttackSE4.SoundLoadWave("playerAttackRotaSE.wav");
 
 	playerDamegeSE.SoundLoadWave("playerDamage.wav");
 
@@ -218,6 +218,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 			}
 
 			KnockBackUpdate();
+			UltUpdate();
 		}
 		if (playerNowMotion == PlayerMotion::soukenCombo1) {
 			if (AttackWaitTime > 0) {
@@ -243,6 +244,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 				AttackRotY = 0.0f;
 				AttackRotZ = 0.0f;
 				SowrdDrowTime = 0;
+				worldTransform_.alpha = 1.0f;
+				oldWorldTransform_.alpha = 1.0f;
 			}
 			else {
 				isUltKenGeneration = true;
@@ -279,21 +282,39 @@ void Player::Update(const ViewProjection& viewProjection) {
 		if (isAttckWaiting == false) {
 
 			if (frem < MaxFrem) {
-				frem += 0.013f;
-				if (isPlayMotion) {
-					frem += 0.015;
+				if (FinULT == false) {
+					frem += 0.013f;
+					if (isPlayMotion) {
+						frem += 0.015;
+					}
+					if (playerNowMotion == PlayerMotion::soukenCombo1) {
+						frem += 0.015;
+					}
+					else if (playerNowMotion == PlayerMotion::soukenCombo2) {
+						frem += 0.015;
+					}
+					if (playerNowMotion == PlayerMotion::Ult1) {
+						frem -= 0.003f;
+					}
+					else if (playerNowMotion == PlayerMotion::Ult2) {
+						frem -= 0.003f;
+					}
 				}
-				if (playerNowMotion == PlayerMotion::soukenCombo1) {
-					frem += 0.015;
-				}
-				else if (playerNowMotion == PlayerMotion::soukenCombo2) {
-					frem += 0.015;
-				}
-				if (playerNowMotion == PlayerMotion::Ult1) {
-					frem -= 0.003f;
-				}
-				else if (playerNowMotion == PlayerMotion::Ult2) {
-					frem -= 0.003f;
+				else {
+					frem -= 0.013;
+
+					ULTKEN.alpha -= 0.01f;
+
+					if (frem < 1.20f) {
+						isUltKenGeneration = false;
+					}
+					if (frem < 0) {
+						isPlayerUlt = false;
+						FinULT = false;
+						isAwakening = false;
+						ULTKEN.alpha = 1.0f;
+						playerNowMotion = PlayerMotion::taiki;
+					}
 				}
 
 			}
@@ -342,30 +363,30 @@ void Player::Update(const ViewProjection& viewProjection) {
 			playerNowMotion = PlayerMotion::DeathMotion;
 			frem = 0;
 
-			////スペースキーを押していたら
-			//for (int i = 0; i < 10; i++)
-			//{
-			//	//消えるまでの時間
-			//	const float rnd_life = 10.0f;
-			//	//最低限のライフ
-			//	const float constlife = 10;
-			//	float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+			//スペースキーを押していたら
+			for (int i = 0; i < 10; i++)
+			{
+				//消えるまでの時間
+				const float rnd_life = 10.0f;
+				//最低限のライフ
+				const float constlife = 10;
+				float life = (float)rand() / RAND_MAX * rnd_life + constlife;
 
-			//	//XYZの広がる距離
-			//	const float rnd_pos = 30.0f;
-			//	//Y方向には最低限の飛ぶ距離
-			//	const float constPosY = 15;
-			//	Vector3 pos{};
-			//	pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
-			//	pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
-			//	pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+				//XYZの広がる距離
+				const float rnd_pos = 30.0f;
+				//Y方向には最低限の飛ぶ距離
+				const float constPosY = 15;
+				Vector3 pos{};
+				pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+				pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 100;
+				pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
 
-			//	Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+				Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
 
-			//	Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
-			//	//追加
-			//	ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
-			//}
+				Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+				//追加
+				ParticleMan->Add(ParticleManager::Type::Normal, life, false, startPos, { 0,0,0 }, endPos, 0.5f, 0.5f, { 0,0,0,1 }, { 0,0,0,1 });
+			}
 
 
 
@@ -393,6 +414,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 			isAlive = false;
 			isPlayerDieMotion2 = false;
 			ParticleMan->AllDelete();
+			LBoneTrans.alpha = 0;
+			RBoneTrans.alpha = 0;
+			LBoneTrans.TransferMatrix();
+			RBoneTrans.TransferMatrix();
 		}
 	}
 	ParticleMan->Update();
@@ -439,7 +464,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	ImGui::Text("UltGage:%d", UltGage);
 	ImGui::Text("isPlayMotion:%d", isPlayMotion);
-	ImGui::Text("isPlayMotion:%d", isCoolTimeRiset);
+	ImGui::Text("isCoolTimeRiset:%d", isCoolTimeRiset);
 	ImGui::SliderInt("AttackWaitTime", &AttackWaitTime, 0, 60);
 	ImGui::SliderInt("AttackWaitintTime", &AttackWaitintTime, 0, 60);
 
@@ -555,131 +580,143 @@ void Player::Move() {
 
 	root = (worldTransform_.look - worldTransform_.translation_);
 
-	if (spaceInput == false) {
 
-		if (isPlayMotion == false) {
-			if (input_->PushKey(DIK_W)) {
-				PlayerMoveMent += cameraLook * playerSpeed;
-				PlayerMoveZ = true;
-				isPushSenter = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_A)) {
-				PlayerMoveMent += root.normalize() * playerSpeed;
-				PlayerMoveX = true;
-				isPushLeft = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_S)) {
-				PlayerMoveMent -= cameraLook * playerSpeed;
-				PlayerMoveZ = true;
-				isPushBack = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (input_->PushKey(DIK_D)) {
-				PlayerMoveMent += root.normalize() * playerSpeed;
-				PlayerMoveX = true;
-				isPushRight = true;
-				isWalk = true;
-				isInput = true;
-				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
-				if (isPlayerUlt == false) {
-					playerNowMotion = PlayerMotion::aruki;
-				}
-				else {
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), MyMath::GetAngle(20));
-					playerNowMotion = PlayerMotion::taikiBigSowrd;
-				}
-			}
-			if (PlayerMoveZ == true && PlayerMoveX == true)
-			{
-				PlayerMoveMent /= 2;
-			}
+	if (isPlayMotion == false) {
+		if (input_->PushKey(DIK_W)) {
+			PlayerMoveMent += cameraLook * playerSpeed;
+			PlayerMoveZ = true;
+			isPushSenter = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle), 0);
 			if (isPlayerUlt == false) {
-				if (isPushSenter == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
-				}
-				if (isPushSenter == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
-				}
-
-				if (isPushBack == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
-				}
-				if (isPushBack == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
-				}
+				playerNowMotion = PlayerMotion::aruki;
 			}
 			else {
-				if (isPushSenter == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), MyMath::GetAngle(20));
-				}
-				if (isPushSenter == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), MyMath::GetAngle(20));
-				}
-
-				if (isPushBack == true && isPushLeft == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), MyMath::GetAngle(20));
-				}
-				if (isPushBack == true && isPushRight == true) {
-					rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
-					ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), MyMath::GetAngle(20));
-				}
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
 			}
-
-			if (isInput == true) {
-				if (isPlayerUlt == false) {
-					PlayerRot = rot;
-					AllRot = rot;
-				}
-				else {
-					PlayerRot = rot;
-					AllRot = ALLROT;
-				}
+		}
+		if (input_->PushKey(DIK_A)) {
+			PlayerMoveMent += root.normalize() * playerSpeed;
+			PlayerMoveX = true;
+			isPushLeft = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
 			}
 			else {
-				AllRot.z = 0.0f;
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-90), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (input_->PushKey(DIK_S)) {
+			PlayerMoveMent -= cameraLook * playerSpeed;
+			PlayerMoveZ = true;
+			isPushBack = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			else {
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(180), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (input_->PushKey(DIK_D)) {
+			PlayerMoveMent += root.normalize() * playerSpeed;
+			PlayerMoveX = true;
+			isPushRight = true;
+			isWalk = true;
+			isInput = true;
+			rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), 0);
+			if (isPlayerUlt == false) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+			else {
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(90), MyMath::GetAngle(20));
+				playerNowMotion = PlayerMotion::taikiBigSowrd;
+			}
+		}
+		if (PlayerMoveZ == true && PlayerMoveX == true)
+		{
+			PlayerMoveMent /= 2;
+		}
+		if (isPushLeft == true && isPushRight == true) {
+			PlayerMoveMent = Vector3(0, 0, 0);
+			playerNowMotion = PlayerMotion::taiki;
+		}
+
+		if (isPushSenter == true && isPushBack == true) {
+			playerNowMotion = PlayerMotion::taiki;
+			if (isPushLeft == true || isPushRight == true) {
+				playerNowMotion = PlayerMotion::aruki;
+			}
+		}
+
+		if (isPlayerUlt == false) {
+			if (isPushSenter == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+			}
+			if (isPushSenter == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
 			}
 
+			if (isPushBack == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+			}
+			if (isPushBack == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+			}
 		}
 		else {
+			if (isPushSenter == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-45.0f), MyMath::GetAngle(20));
+			}
+			if (isPushSenter == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(45.0f), MyMath::GetAngle(20));
+			}
 
-
-
+			if (isPushBack == true && isPushLeft == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(-135.0f), MyMath::GetAngle(20));
+			}
+			if (isPushBack == true && isPushRight == true) {
+				rot = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), 0.0f);
+				ALLROT = Vector3(0, -MyMath::GetAngle(angle) + MyMath::GetAngle(135.0f), MyMath::GetAngle(20));
+			}
 		}
 
-		if (playerEvasionTimes > 0) {
-			if (input_->MouseInputTrigger(1)) {
+		if (isInput == true) {
+			if (isPlayerUlt == false) {
+				PlayerRot = rot;
+				AllRot = rot;
+			}
+			else {
+				PlayerRot = rot;
+				AllRot = ALLROT;
+			}
+		}
+		else {
+			AllRot.z = 0.0f;
+		}
+
+	}
+	else {
+
+
+
+	}
+
+	if (playerEvasionTimes > 0) {
+		if (spaceInput == false) {
+			if (input_->TriggerKey(DIK_SPACE)) {
 				isSpace = true;
 				if (playerEvasionTimes == playerEvasionMaxTimes) {
 					playerEvasionCoolTime = CoolTime;
@@ -690,9 +727,10 @@ void Player::Move() {
 				collider->SetAttribute(COLLISION_ATTR_INVINCIBLE);
 				oldWorldTransform_.scale_ = worldTransform_.scale_;
 				oldWorldTransform_.translation_ = worldTransform_.translation_;
-
+				spaceInput = true;
 				if (isPlayerUlt == false) {
-					spaceInput = true;
+					isPlayMotion = false;
+					playerNowMotion = taiki;
 				}
 				else {
 					isPlayMotion = false;
@@ -725,8 +763,9 @@ void Player::Move() {
 				}
 			}
 		}
-
 	}
+
+
 
 	//worldTransform_.SetRot({ MyMath::GetAngle(rot.x),-MyMath::GetAngle(angle) + MyMath::GetAngle(rot.y), MyMath::GetAngle(rot.z) });
 	Matrix4 roooooot;
@@ -789,7 +828,7 @@ void Player::Move() {
 		float BR;
 
 		AR = pow((worldTransform_.translation_.x + allMove.x) - recovery->GetWorldPosition().x, 2) + pow((0 + worldTransform_.translation_.z + allMove.z) - recovery->GetWorldPosition().z, 2);
-		BR = pow((worldTransform_.scale_.x - recovery->GetScale().x), 2);
+		BR = pow((worldTransform_.scale_.x - 5), 2);
 
 		if (AR <= BR && recovery->GetActive())
 		{
@@ -888,7 +927,7 @@ void Player::Attack() {
 						frem = 0.0f;
 						receptionTime = 0;
 						conboFlag = true;
-						
+
 					}
 					if (attackConbo == 1) {
 						if (receptionTime > 19 && receptionTime < 50) {
@@ -942,7 +981,7 @@ void Player::Attack() {
 							MaxFrem = 1.88f;
 							frem = 0.0f;
 							receptionTime = 0;
-							
+
 						}
 					}
 
@@ -1009,7 +1048,7 @@ void Player::Attack() {
 					attackMoveTimer = 0;
 
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = true;
@@ -1044,6 +1083,7 @@ void Player::Attack() {
 					AttackCoolTimeMax = 360;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 10;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1073,7 +1113,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1151,7 +1191,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1183,6 +1223,7 @@ void Player::Attack() {
 					AttackCoolTimeMax = 360;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 0;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1212,7 +1253,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE4.SoundPlayWave(false, 0.5f);
+					playerAttackSE4.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1241,9 +1282,10 @@ void Player::Attack() {
 
 					BoneParentRotY = 0.0f;
 
-					AttackCoolTimeMax = 15;
+					AttackCoolTimeMax = 10;
 
 					isCoolTimeRiset = true;
+					FirstCoolTime = 5;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1277,7 +1319,7 @@ void Player::Attack() {
 					}
 					attackMoveTimer = 0;
 					// 音を鳴らす
-					playerAttackSE.SoundPlayWave(false, 0.5f);
+					playerAttackSE.SoundPlayWave(false, 1.0f);
 
 					AttackNowPos = worldTransform_.translation_;
 					IsCombo = false;
@@ -1304,7 +1346,7 @@ void Player::Attack() {
 
 					AttackCoolTimeMax = 360;
 					isCoolTimeRiset = true;
-
+					FirstCoolTime = 10;
 				}
 				if (attackMoveTimer < MaxAttackMoveTimer) {
 					attackMoveTimer += 1.0;
@@ -1347,6 +1389,7 @@ void Player::Attack() {
 				IsCombo4 = false;
 				IsCombo5 = false;
 				AttackCoolTime = 0;
+				FirstCoolTime = 0;
 			}
 
 		}
@@ -1403,7 +1446,7 @@ void Player::Attack() {
 		}
 		if (isPlayMotion == true) {
 			for (int i = 0; i < SphereCount; i++) {
-				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTimeMax, isCoolTimeRiset);
+				AttackCollider[i]->Update(playerAttackTransformaaaa_[i].matWorld_, AttackCoolTimeMax, FirstCoolTime, isCoolTimeRiset);
 				AttackCollider[i]->SetAttribute(COLLISION_ATTR_ATTACK);
 			}
 		}
@@ -1503,13 +1546,9 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					AttackWaitintTime = maxAttackWaitintTime;
-					AttackWaitTime = maxAttackWaitTime;
-					isSowrd = true;
-					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
-					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTimeMax = 360;
+					isSowrd = true;
+					AttackCoolTimeMax = 5000;
 					isCoolTimeRiset = true;
 
 				}
@@ -1567,13 +1606,9 @@ void Player::Attack() {
 					AttackOnlyRightRotX = 0.0f;
 					AttackOnlyRightRotY = 0.0f;
 					AttackOnlyRightRotZ = 0.0f;
-					AttackWaitintTime = maxAttackWaitintTime;
-					AttackWaitTime = maxAttackWaitTime;
-					isSowrd = true;
-					Model::ConstBufferPolygonExplosion polygon = ModelKEN->GetPolygonExplosion();
-					ModelKEN->SetPolygonExplosion({ 0,polygon._ScaleFactor,polygon._RotationFactor,polygon._PositionFactor });
 
-					AttackCoolTimeMax = 360;
+					isSowrd = true;
+					AttackCoolTimeMax = 1000;
 					isCoolTimeRiset = true;
 
 				}
@@ -1606,10 +1641,20 @@ void Player::Attack() {
 				AttackRotX = 0.0f;
 				AttackRotY = -24.0f;
 				AttackRotZ = 16.0f;
+
+				AttackCoolTime = 0;
+
+				AttackOnlyLeftRotX = 0.0f;
+				AttackOnlyLeftRotY = 0.0f;
+				AttackOnlyLeftRotZ = 0.0f;
+
+				AttackOnlyRightRotX = 0.0f;
+				AttackOnlyRightRotY = 0.0f;
+				AttackOnlyRightRotZ = 0.0f;
+
+
 			}
 		}
-
-
 
 		Matrix4 rooooootttt;
 		rooooootttt *= MyMath::Rotation(Vector3(MyMath::GetAngle(100.0f) + PlayerRot.x + MyMath::GetAngle(AttackRotX), PlayerRot.y, PlayerRot.z), 1);
@@ -1670,70 +1715,70 @@ void Player::SetKnockBackCount()
 
 void Player::KnockBackUpdate()
 {
-	if (moveTime < MaxMoveTime) {
-		moveTime++;
-		KnockBack += PlayerMoveMent / 2;
-		KnockBack += Avoidance;
-		KnockBack += AttackMovememt / 2;
-		Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
+	if (isEnemyDamage == true) {
+		if (moveTime < MaxMoveTime) {
+			moveTime++;
+			KnockBack += PlayerMoveMent / 2;
+			KnockBack += Avoidance;
+			KnockBack += AttackMovememt / 2;
+			Vector3 KnockBackMove = easing_->InOutVec3(MyMath::GetWorldTransform(worldTransform_.matWorld_), KnockBack, moveTime, MaxMoveTime);
 
-		float AR;
-		float BR;
+			float AR;
+			float BR;
 
-		damageFlashFlame++;
+			damageFlashFlame++;
 
-		AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
-		BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
+			AR = pow((KnockBackMove.x) - 0, 2) + pow((KnockBackMove.z) - 0, 2);
+			BR = pow((satgeSize - worldTransform_.scale_.x * 2), 2);
 
-		if (AR <= BR)
-		{
-			worldTransform_.translation_ = KnockBackMove;
-		}
-		worldTransform_.TransferMatrix();
-		if (isEnemyDamage == true) {
-
-			if (NotMoveTime < MaxNotMoveTime) {
-				NotMoveTime++;
-				playerNowMotion = PlayerMotion::DamegeAction;
-
-				attackMoveTimer = 0;
-				isPlayMotion = false;
-
-				attackConbo = 0;
-
-				frem = 30.0f;
-				receptionTime = 0;
-
-				SowrdDrowTime = 0;
-				MaxSowrdRotate = 35;
-				AttackRotX = 0.0f;
-				AttackRotY = 0.0f;
-				AttackRotZ = 0.0f;
-
-				AttackOnlyLeftRotX = 0.0f;
-				AttackOnlyLeftRotY = 0.0f;
-				AttackOnlyLeftRotZ = 0.0f;
-
-				AttackOnlyRightRotX = 0.0f;
-				AttackOnlyRightRotY = 0.0f;
-				AttackOnlyRightRotZ = 0.0f;
-
-				BoneParentRotY = 0.0f;
-
-				IsCombo = false;
-				IsCombo2 = false;
-				IsCombo3 = false;
-				IsCombo4 = false;
-				IsCombo5 = false;
-
-				LookingMove = { 0,0,0 };
-				AttackNowPos = worldTransform_.translation_;
+			if (AR <= BR)
+			{
+				worldTransform_.translation_ = KnockBackMove;
 			}
-			else {
-				isEnemyDamage = false;
-			}
-		}
+			worldTransform_.TransferMatrix();
 
+
+
+			NotMoveTime++;
+			playerNowMotion = PlayerMotion::DamegeAction;
+
+			attackMoveTimer = 0;
+			isPlayMotion = false;
+
+			attackConbo = 0;
+
+			frem = 30.0f;
+			receptionTime = 0;
+
+			SowrdDrowTime = 0;
+			MaxSowrdRotate = 35;
+			AttackRotX = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 0.0f;
+
+			AttackOnlyLeftRotX = 0.0f;
+			AttackOnlyLeftRotY = 0.0f;
+			AttackOnlyLeftRotZ = 0.0f;
+
+			AttackOnlyRightRotX = 0.0f;
+			AttackOnlyRightRotY = 0.0f;
+			AttackOnlyRightRotZ = 0.0f;
+
+			BoneParentRotY = 0.0f;
+
+			IsCombo = false;
+			IsCombo2 = false;
+			IsCombo3 = false;
+			IsCombo4 = false;
+			IsCombo5 = false;
+
+			LookingMove = { 0,0,0 };
+			AttackNowPos = worldTransform_.translation_;
+
+		}
+		else {
+			isEnemyDamage = false;
+		}
 	}
 	else
 	{
@@ -1763,7 +1808,12 @@ void Player::Draw(ViewProjection viewProjection_) {
 	RSowrdModel->Draw(RBoneTrans, viewProjection_);
 
 	if (isUltKenGeneration == true) {
-		ModelKEN->Draw(ULTKEN, viewProjection_);
+		if (spaceInput == false) {
+			if (isKnockBack == false || damageFlashFlame % 6 == 0)
+			{
+				ModelKEN->Draw(ULTKEN, viewProjection_);
+			}
+		}
 	}
 	//}
 
@@ -1792,7 +1842,6 @@ void Player::DrawHealth() {
 
 	// Hpの下の部分を減らす処理
 
-
 	if (IsHpAlfa) {
 		// 攻撃を受けてから 30 フレーム下のHpは動かない
 		if (hpAlfaTimer < 30) {
@@ -1815,7 +1864,6 @@ void Player::DrawHealth() {
 	}
 
 
-
 	Vector2 pos = { 54.5f,35.0f };
 
 	Vector2 AttackFontpos = { 150,380 };
@@ -1834,6 +1882,7 @@ void Player::DrawHealth() {
 
 	Vector2 HP_barPos = { 330,50 };
 
+
 	//Vector2 avoidGauge1Pos = { 175,520 };
 
 	//Vector2 avoidGauge2Pos = { 175,520 };
@@ -1845,6 +1894,8 @@ void Player::DrawHealth() {
 
 
 	// スプライト描画
+
+
 	healthAlfaSprite->Draw(pos, { 1,1,1,1 });
 
 	healthSprite->Draw(pos, { 1,1,1,1 });
@@ -1852,6 +1903,7 @@ void Player::DrawHealth() {
 	MoveFontSprite->Draw(MoveFontpos, { 1,1,1,1 });
 
 	HP_barSprite->Draw(HP_barPos, { 1,1,1,1 });
+
 
 	avoidGauge_under->Draw(avoidGaugeUnderPos, { 1,1,1,1 });
 	avoidGauge1->Draw(avoidGaugeUnderPos, { 1,1,1,spriteAlpha1 });
@@ -1933,6 +1985,65 @@ void Player::Collision(int damage)
 {
 	if (isKnockBack == false)
 	{
+		MaxMoveTime = 20;
+		KnockBackDistance = 30.0f;
+		playerDamegeSE.SoundPlayWave(false, 0.6f);
+		SetKnockBackCount();
+		HP -= damage;
+		damageFlashFlame = 0;
+		if (HP < 0)
+		{
+			HP = 0;
+		}
+
+		int ParticleNumber = 10;
+		if (HP <= 0)
+		{
+			ParticleNumber = 0;
+		}
+		//スペースキーを押していたら
+		for (int i = 0; i < ParticleNumber; i++)
+		{
+			//消えるまでの時間
+			const float rnd_life = 70.0f;
+			//最低限のライフ
+			const float constlife = 10;
+			float life = (float)rand() / RAND_MAX * rnd_life + constlife;
+
+			//XYZの広がる距離
+			const float rnd_pos = 30.0f;
+			//Y方向には最低限の飛ぶ距離
+			const float constPosY = 15;
+			Vector3 pos{};
+			pos.x = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+			pos.y = abs((float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f) + 2;
+			pos.z = (float)rand() / RAND_MAX * rnd_pos - rnd_pos / 2.0f;
+
+			Vector3 startPos = MyMath::GetWorldTransform(worldTransform_.matWorld_);
+
+			Vector3 controlPos = { MyMath::GetWorldTransform(worldTransform_.matWorld_).x,MyMath::GetWorldTransform(worldTransform_.matWorld_).y + pos.y,MyMath::GetWorldTransform(worldTransform_.matWorld_).z };
+
+			Vector3 endPos = MyMath::GetWorldTransform(worldTransform_.matWorld_) + pos;
+
+			startPos.y += 10;
+
+			controlPos.y += 10;
+
+			endPos.y += 10;
+			//追加
+			ParticleMan->Add(ParticleManager::Type::Out, life, true, startPos, controlPos, endPos, 1.0f, 1.0f, { 0.5,0,0,1 }, { 0.5,0,0,1 });
+		}
+		IsHpAlfa = true;
+		hpAlfaSize = hpSize;
+	}
+}
+
+void Player::Collision(int damage, int time)
+{
+	if (isKnockBack == false)
+	{
+		MaxMoveTime = time;
+		KnockBackDistance = 2.0f;
 		playerDamegeSE.SoundPlayWave(false, 0.6f);
 		SetKnockBackCount();
 		HP -= damage;
@@ -2032,9 +2143,26 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-void Player::SetPosition(Vector3 pos)
+void Player::SetPosition(const Vector3& pos)
 {
 	worldTransform_.translation_ = pos;
+}
+
+void Player::SetRotation(const Vector3& rot)
+{
+	worldTransform_.SetRot(rot);
+}
+
+void Player::SetPlayerMotion()
+{
+	frem = 0.0f;
+	playerNowMotion = PlayerMotion::taiki;
+	LBoneTrans.alpha = 0.0f;
+	RBoneTrans.alpha = 0.0f;
+	
+	fbxmodel->ModelAnimation(frem, modelAnim->GetAnimation(static_cast<int>(playerNowMotion)), BoneNum);
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
 }
 
 Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t)
@@ -2062,8 +2190,25 @@ Vector3 Player::splinePosition(const std::vector<Vector3>& points, size_t startI
 void Player::Reset()
 {
 
+	for (int i = 0; i < SphereCount; i++) {
+		AttackCollider[i]->SetAttribute(COLLISION_ATTR_NOTATTACK);
+	}
+
+	worldTransform_.alpha = 0;
 	playerAvoidance = 15.0f;
 	moveTime = 300;
+
+	LBoneTrans.translation_ = MyMath::GetWorldTransform(matL);
+	RBoneTrans.translation_ = MyMath::GetWorldTransform(matR);
+
+	LBoneTrans.scale_ = Vector3(5, 5, 5);
+	RBoneTrans.scale_ = Vector3(5, 5, 5);
+
+	LBoneTrans.alpha = 0;
+	RBoneTrans.alpha = 0;;
+
+	LBoneTrans.TransferMatrix();
+	RBoneTrans.TransferMatrix();
 
 
 	//worldTransform_.translation_ = { 0,0,-100 };
@@ -2074,9 +2219,38 @@ void Player::Reset()
 
 	worldTransform_.alpha = 0.0;
 
+	attackConbo = 0;
+
+	frem = 0.0f;
+	receptionTime = 0;
+
+	SowrdDrowTime = 0;
+	MaxSowrdRotate = 35;
+	AttackRotX = 0.0f;
+	AttackRotY = 0.0f;
+	AttackRotZ = 0.0f;
+
+	AttackOnlyLeftRotX = 0.0f;
+	AttackOnlyLeftRotY = 0.0f;
+	AttackOnlyLeftRotZ = 0.0f;
+
+	AttackOnlyRightRotX = 0.0f;
+	AttackOnlyRightRotY = 0.0f;
+	AttackOnlyRightRotZ = 0.0f;
+
+	BoneParentRotY = 0.0f;
+	FirstCoolTime = 0;
+
+	isPlayMotion = false;
+	playerNowMotion = PlayerMotion::taiki;
+	isEnemyDamage = false;
+
 	worldTransform_.TransferMatrix();
 	collider->Update(worldTransform_.matWorld_);
 
+	ModelTrans.alpha = 0;
+	ModelTrans.TransferMatrix();
+	AllRot = { 0.0f,MyMath::GetAngle(-90.0f),0.0f };
 	oldWorldTransform_.translation_ = { 0,0,0 };
 	oldWorldTransform_.rotation_ = { 0,0,0 };
 	oldWorldTransform_.scale_ = { 0,0,0 };
@@ -2086,6 +2260,7 @@ void Player::Reset()
 	playerAttackTransform_.rotation_ = { 0,0,0 };
 	playerAttackTransform_.scale_ = { 0,0,0 };
 	playerAttackTransform_.TransferMatrix();
+	isPlayerDieMotion = false;
 
 	for (int i = 0; i < SphereCount; i++) {
 		playerAttackTransformaaaa_[i].translation_ = { 0,0,0 };
@@ -2113,6 +2288,11 @@ void Player::Reset()
 	timer = 0;
 	alpha = 0.0f;
 	MaxMoveTime = 40;
+
+	isPlayerUlt = false;
+
+	spaceInput = false;
+	isEnemyDamage = false;
 
 	x = 0;
 	radius = 5.0f;//当たり判定半径
@@ -2178,19 +2358,33 @@ void Player::Reset()
 	PlayerRot = Vector3(0, MyMath::GetAngle(-90.0f), 0);
 
 	isInput = false;
+
+	IsCombo = false;
+	IsCombo2 = false;
+	IsCombo3 = false;
+	IsCombo4 = false;
+	IsCombo5 = false;
+
+	PlayerMoveMent = { 0,0,0 };
+	AvoidanceMove = { 0,0,0 };
+	AttackMovememt = { 0,0,0 };
+	AttackNowPos = { 0,0,0 };
 }
 
 void Player::AddUltCount(int count)
 {
 	if (UltGage < UltMaxGage) {
 		UltGage += count;
+		if (UltGage > UltMaxGage) {
+			UltGage = UltMaxGage;
+		}
 	}
 }
 
 void Player::UltStart()
 {
 	if (isPlayMotion == false) {
-		if (input_->TriggerKey(DIK_Q)) {
+		/*if (input_->TriggerKey(DIK_Q)) {
 			if (isPlayerUlt == false) {
 				if (UltGage >= UltMaxGage) {
 					isAwakening = true;
@@ -2202,15 +2396,40 @@ void Player::UltStart()
 					isUltKenGeneration = false;
 				}
 			}
-		}
+		}*/
 	}
 
+}
+
+void Player::UltUpdate()
+{
+
 	if (isPlayerUlt == true) {
-		if (UltGage > 1) {
+		if (UltGage > 0) {
 			UltGage--;
 		}
 		else {
-			isPlayerUlt = false;
+			playerNowMotion = PlayerMotion::AwakeningMotion;
+			FinULT = true;
+			isAwakening = true;
+			frem = 2.59f;
+			MinimumFrem = 2.6f;
+			MaxFrem = 2.6f;
+
+			AttackRotX = 0.0f;
+			AttackRotY = 0.0f;
+			AttackRotZ = 0.0f;
+
+			AllRot.z = 0.0f;
+
+			Matrix4 rooteee;
+			rooteee *= MyMath::Rotation(AllRot, 1);
+			rooteee *= MyMath::Rotation(AllRot, 3);
+			rooteee *= MyMath::Rotation(AllRot, 2);
+
+			ModelTrans.SetMatRot(rooteee);
+			ModelTrans.TransferMatrix();
+
 		}
 	}
 
@@ -2234,10 +2453,10 @@ void Player::SpriteInitialize()
 	// 画像の読み込み
 
 	//体力の画像読み込み
-	healthSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
+	healthSprite = Sprite::Create(TextureManager::Load("playerHp_inside.png"));
 	healthSprite->SetAnchorPoint({ 0,0 });
 
-	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_insideAlfa.png"));
+	healthAlfaSprite = Sprite::Create(TextureManager::Load("Hp_inside.png"));
 	healthAlfaSprite->SetAnchorPoint({ 0,0 });
 
 	HP_barSprite = Sprite::Create(TextureManager::Load("bossBar.png"));
@@ -2312,7 +2531,7 @@ void Player::SpriteInitialize()
 	Vector2 D_Fontsize = { 32.0f ,28.0f };
 	Vector2 AvoidFontsize = { 259.0f ,43.0f };
 	Vector2 HP_barSize = { 576.0f ,45.0f };
-
+	Vector2 Ult_barSize = { 480.0f ,45.0f };
 
 	avoidGauge1->SetSize(avoidGaugeUnderSize);
 	avoidGauge2->SetSize(avoidGaugeUnderSize);

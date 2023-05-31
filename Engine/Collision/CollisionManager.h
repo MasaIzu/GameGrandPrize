@@ -46,6 +46,7 @@ public://ÉÅÉìÉoä÷êî
 	int GetHitNumber() { return hitNumber; }
 	bool GetEnemySwordHit() { return isEnemySwordHit; }
 	bool GetIsEnemyReception() { return isEnemyReception; }
+	bool GetIsEnemyKingDrop() { return KingDrop; }
 
 	Vector3 GetPlayerPos() { return playerPos; }
 	Matrix4 GetEnemyWorldPos() { return EnemyWorldPos; }
@@ -74,10 +75,12 @@ private:
 
 	bool isEnemyReception = false;
 
-
-	int CoolTime = 0;
+	int FirstCoolTime = 0;
+	uint32_t CoolTime = 0;
 	bool isCoolTime = false;
 
 	bool aaa = false;
 
+
+	bool KingDrop = false;
 };

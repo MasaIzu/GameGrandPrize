@@ -127,6 +127,11 @@ private:
 	void UpdateAtkSword();
 
 	/// <summary>
+	/// 突進攻撃の前戯処理更新
+	/// </summary>
+	void UpdateAtkRushBeginMotion();
+
+	/// <summary>
 	/// 突進攻撃の更新
 	/// </summary>
 	void UpdateAtkRush();
@@ -185,7 +190,7 @@ private:
 		int damageTimer = 0;							//ボスの無敵時間
 
 		// ボスのHP関連
-		const float bossHpMax = 20;
+		const float bossHpMax = 40.0f;
 		float bossHealth = bossHpMax;							//ボスのHP
 
 		std::unique_ptr<Sprite> healthSprite;    // HPのスプライト
@@ -269,6 +274,13 @@ private:
 		bool IsBossSowrdSE = false;
 		float sowrdSETimer = 0;
 		float sowrdSETimeMax = 45;
+
+		bool AttackBegin = true;
+		bool AttackNow = false;
+
+		int BackTime = 0;
+		int BackTimeMax = 60;
+
 };
 
 
@@ -313,6 +325,10 @@ Vector3 LerpBezireQuadratic(const Vector3& start, const Vector3& contRollP, cons
 float LerpConbertInback(float t);
 
 float LerpConbertOut(float t);
+
+float LerpConbertOutbounce(float t);
+
+float LerpConbertIn(float t);
 
 /// <summary>
 /// 引数％の確率でtrueを返す関数

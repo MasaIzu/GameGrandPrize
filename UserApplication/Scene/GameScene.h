@@ -218,8 +218,13 @@ private: // メンバ変数
 
 	/*Scene scene = Scene::Title;
 
-	Scene oldScene = Scene::Title;*/
+
+	//Scene oldScene = Scene::Title;*/
 	std::unique_ptr<Sprite> gameClearFont;
+=======
+	//Scene oldScene = Scene::Title;
+
+
 
 
 	// シーンチェンジ用のスプライト
@@ -326,6 +331,9 @@ private: // メンバ変数
 
 	int ParticleFlame = 0;
 
+	// タイトルの連打禁止タイマー
+	float titleControlTimer = 0;
+	float titleControlTimeMax = 60 * 2.5;
 #pragma endregion
 
 #pragma region gameOver関連
@@ -355,6 +363,18 @@ private: // メンバ変数
 	Vector2 replayFontPos = { 400,520 };
 	Vector2 backTitleFontPos = { 900,520 };
 #pragma endregion
+
+#pragma region gameClear関連
+	float gameClearSpriteAlpha = 0;
+
+	std::unique_ptr<Sprite> gameClearFont;
+	std::unique_ptr<Sprite> spaceKeyFont;
+
+	Vector2 gameClearFontPos = { 650,200 };
+	Vector2 spaceKeyFontPos = { 650,550 };
+
+#pragma endregion
+
 
 #pragma region gameStartカメラ関連
 	// ゲームスタートのカメラになっているかフラグ
@@ -440,6 +460,12 @@ private://プライベート関数
 
 	//ボスの変身の更新
 	void UpdateBossChangeEventCamera();
+
+	//ボス2の死亡ムービーの初期化(開始)処理
+	void InitBossDeathEvent();
+
+	//ボス２の死亡ムービーの更新処理
+	void UpdateBossDeathEvent();
 };
 
 int MinMax(int param,int min, int max);

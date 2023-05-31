@@ -53,17 +53,21 @@ public:
 	void ParticleDraw(ViewProjection view);
 
 	void Collision(int damage);
+	void Collision(int damage,int time);
 	void DrawHealth();
 	void Reset();
 	void AddUltCount(int count);
 
 	void UltStart();
 
+	void UltUpdate();
+
 	void EnemyNotAttackCollision(bool IsPlayerEnemycontact, Vector3 Pos);
 
 	Vector3 bVelocity(Vector3 velocity, WorldTransform& worldTransform);
 	Vector3 GetWorldPosition();
-	void SetPosition(Vector3 pos);
+	void SetPosition(const Vector3& pos);
+	void SetRotation(const Vector3& rot);
 	float GetRadius() { return radius; }
 	unsigned short GetColliderAttribute() { return collider->GetAttribute(); }
 	bool GetSpaceInput() { return isSpace; }
@@ -80,7 +84,12 @@ public:
 
 	void SetParticlePos(Matrix4 ParticlePos_) { ParticlePos = ParticlePos_; }
 
-	bool GetAlive() {return isAlive ; }
+	void SetPlayerMotion();
+
+	bool GetAlive() { return isAlive; }
+	bool GetIsAwakening() { return isAwakening; }
+
+	bool GetUltState() { return isPlayerUlt; }
 
 private:
 	Vector3 splinePosition(const std::vector<Vector3>& points, size_t startIndex, float t);
@@ -233,7 +242,7 @@ private:
 
 	const int maxHP = 100;
 
-	float HP = maxHP;
+	float HP = 100;
 	std::unique_ptr<Sprite> healthSprite;
 	std::unique_ptr<Sprite> healthAlfaSprite;
 
@@ -253,6 +262,12 @@ private:
 	std::unique_ptr<Sprite> D_FontSprite[2];
 	std::unique_ptr<Sprite> AvoidFontSprite[2];
 
+	// ウルトのゲージ用のスプライト
+	float UltGage = 0;
+	const float UltMaxGage = 1000;
+	
+
+	// 回避のゲージのスプライト
 	std::unique_ptr<Sprite> avoidGauge1;
 	std::unique_ptr<Sprite> avoidGauge2;
 	std::unique_ptr<Sprite> avoidGauge3;
@@ -260,6 +275,9 @@ private:
 
 	Vector2 avoidGaugeUnderPos = { 1070,412 };
 	Vector2 avoidGaugeUnderSize = { 128,128 };
+
+
+
 	//Fbxモデル
 	WorldTransform ModelTrans;
 	std::unique_ptr<FbxModel> fbxmodel;
@@ -393,8 +411,7 @@ private:
 
 	bool isAwakening = false;
 
-	int UltGage = 0;
-	int UltMaxGage = 1000;
+
 
 
 	Sound playerDamegeSE;
@@ -418,5 +435,9 @@ private:
 	Vector3 AllRot;
 
 	Matrix4 LooKROT;
+
+	bool FinULT = false;
+
+	uint32_t FirstCoolTime = 0;
 
 };

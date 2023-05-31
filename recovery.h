@@ -44,7 +44,7 @@ private:
 
 	const float scale = 3;
 
-	const float MaxIntervalFlame = 6000;
+	const float MaxIntervalFlame = 1800;
 
 	float IntervalFlame = 0;
 

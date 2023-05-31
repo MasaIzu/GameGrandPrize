@@ -29,15 +29,12 @@ void Boss::Update(const Vector3& targetPos, const Vector3 stagePos, float stageR
 {
 	bossFish->Update(targetPos, stagePos, stageRadius);
 
-	//‘æˆêŒ`‘Ô‚ªŽ€‚ñ‚¾‚ç‘æ“ñŒ`‘Ô‚ÌƒXƒ|[ƒ“ˆ—‚Ö
+	//ç¬¬ä¸€å½¢æ…‹ãŒæ­»ã‚“ã ã‚‰ç¬¬äºŒå½¢æ…‹ã®ã‚¹ãƒãƒ¼ãƒ³å‡¦ç†ã¸
 	if (bossFish->GetIsDeathEnd() && !isBossSpawn) {
-		bossWarrier->Spawn();
+		bossWarrier->Spawn({ 0,16,0 });
 		isBossSpawn = true;
-	}
 
-	//ƒeƒXƒg—p
-	if (Input::GetInstance()->TriggerKey(DIK_P)) {
-		//bossWarrier->Spawn();
+
 	}
 
 	if (bossWarrier->GetAlive()) {
@@ -64,4 +61,8 @@ void Boss::DrawHealth()
 void Boss::Reset()
 {
 	bossFish->Reset();
+
+	bossWarrier->reset();
+	isBossSpawn = false;
+	
 }
